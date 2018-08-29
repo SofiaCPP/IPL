@@ -1,0 +1,20 @@
+baseURL = "https://example.com/"
+languageCode = "en-us"
+title = "A Hugo theme for creating Reveal.js presentations"
+disableKinds = ["sitemap", "RSS"]
+theme = "."
+themesDir = "../"
+
+[author]
+name = "Josh Dzielak"
+
+[params]
+description = "Includes a handy markdown-based syntax and shortcodes to help you get presentations done fast"
+
+[params.reveal_hugo]
+history = true
+
+[outputFormats.Reveal]
+baseName = "index"
+mediaType = "text/html"
+isHTML = true

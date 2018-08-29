@@ -1,0 +1,41 @@
+baseurl = "https://example.org/"
+languageCode = "en-us"
+title = "Natrium Theme"
+theme = "hugo-natrium-theme"
+preserveTaxonomyNames = true
+rssLimit = 10
+paginate = 10
+pygmentsCodefences = true
+pygmentsStyle = "native"
+
+[taxonomies]
+    category = "categories"  
+    tag = "tags"
+
+[permalinks]
+    post = "/:slug/"
+    page = "/:slug/"
+
+[[menu.main]]
+    name = "About"
+    url = "/about/"
+    weight = -110
+    
+[[menu.main]]
+    name = "Tags"
+    url = "/tags"
+    weight = -120
+
+[[menu.main]]
+    name = "Categories"
+    url = "/categories"
+    weight = -130
+
+[params]
+    description = ""
+
+    [params.logo]
+    url = "logo.png"
+    width = 50
+    height = 50
+    alt = "Logo"
