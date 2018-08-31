@@ -1,3 +1,0 @@
-{{ define "main" }}
-  {{ partial "reveal-hugo/slides" (union (slice .Page) (where .Data.Pages "Type" "home")) }}
-{{ end }}
