@@ -1,6 +1,6 @@
 baseURL = "https://sofiacpp.github.io/IPL/"
 languageCode = "en-us"
-title = "VM"
+title = "Implementation of Programming Languages"
 theme = "natrium"
 
 preserveTaxonomyNames = true
@@ -23,20 +23,16 @@ pygmentsStyle = "native"
     weight = -110
     
 [[menu.main]]
-    name = "Tags"
-    url = "/tags"
-    weight = -120
-
-[[menu.main]]
     name = "Categories"
     url = "/categories"
     weight = -130
 
 [params]
-    description = ""
+    description = "Course on implementing a programming language"
+    GitHubURL = "https://github.com/SofiaCPP/IPL"
 
     [params.logo]
-    url = "logo.png"
+    url = "wrench.png"
     width = 50
     height = 50
     alt = "Logo"
