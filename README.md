@@ -23,6 +23,7 @@ Simply clone this repository.
 1. Make sure that `git` and `hugo` are in the path
 2. Add the gh-pages as a *git worktree* under the public folder
 
+        git worktree add public gh-pages
 
 ### Creating new content
 
