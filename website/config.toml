@@ -21,7 +21,12 @@ pygmentsStyle = "native"
     name = "About"
     url = "/about/"
     weight = -110
-    
+
+[[menu.main]]
+    name = "Tags"
+    url = "/tags"
+    weight = -120
+
 [[menu.main]]
     name = "Categories"
     url = "/categories"

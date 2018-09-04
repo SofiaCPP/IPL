@@ -15,4 +15,6 @@ draft: false
 
 FMI course stuff.
 
+Here are some [slides]({{< ref "/slides" >}}).
+
 
