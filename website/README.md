@@ -40,6 +40,16 @@ Creating new slides requires using a different template. You can use the
     cp -R content/slides content/myslides
     edit content/myslides/_index.md
 
+### Checking out changes
+
+Run
+
+    hugo serve -D -F
+
+to checkout the website locally with drafts (*-D*) and future articles (*-F*).
+The `hugo` server will watch for changes and automatically reload the browser
+tab.
+
 ### Publishing changes
 
 1. Make any changes to the content and **COMMIT**
