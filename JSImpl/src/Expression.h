@@ -21,7 +21,7 @@ public:
 	BinaryExpression(IPLSharedPtr<Expression> exprLeft, IPLSharedPtr<Expression> exprRight, TokenType op);
 	virtual void Print(std::ostream& os);
 private:
-	IPLString GetBinaryTypeAsString();
+	IPLString GetOperatorTypeAsString();
 private:
 	IPLSharedPtr<Expression> m_Left;
 	IPLSharedPtr<Expression> m_Right;
@@ -37,7 +37,7 @@ public:
 	UnaryExpression(IPLSharedPtr<Expression> expr, TokenType op, bool suffix);
 	virtual void Print(std::ostream& os);
 private:
-	IPLString GetBinaryTypeAsString();
+	IPLString GetOperatorTypeAsString();
 private:
 	IPLSharedPtr<Expression> m_Expr;
 	TokenType m_Operator;

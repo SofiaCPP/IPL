@@ -6,7 +6,7 @@ BinaryExpression::BinaryExpression(IPLSharedPtr<Expression> exprLeft, IPLSharedP
 , m_Operator(op)
 {}
 
-IPLString BinaryExpression::GetBinaryTypeAsString()
+IPLString BinaryExpression::GetOperatorTypeAsString()
 {
 	// TODO: Implement
 	return "Binary";
@@ -15,14 +15,14 @@ IPLString BinaryExpression::GetBinaryTypeAsString()
 void BinaryExpression::Print(std::ostream& os)
 {
 	os << "{ \n";
-	os << " Expression Type: Binary";
+	os << " Expression Type: Binary" << std::endl;
 	os << " Left expr: ";
 	m_Left->Print(os);
 	
 	os << " Right expr:";
 	m_Right->Print(os);
 
-	os << " Operator Type: " << GetBinaryTypeAsString();
+	os << " Operator Type: " << GetOperatorTypeAsString();
 	os << "\n}\n";
 }
 
@@ -38,16 +38,31 @@ UnaryExpression::UnaryExpression(IPLSharedPtr<Expression> expr, TokenType op, bo
 void UnaryExpression::Print(std::ostream& os)
 {
 	os << "{ \n";
-	os << " Expression Type: Unary";
-	os << " Expr: ";
+	os << " Expression Type: Unary" << std::endl;
+	os << " Expression: ";
 	m_Expr->Print(os);
 
-	os << " Operator Type: " << GetBinaryTypeAsString() << std::endl;
+	os << " Operator Type: " << GetOperatorTypeAsString() << std::endl;
+	os << " Suffix Type: " << (m_Suffix ? "true" : "false") << std::endl;
 	os << "\n}\n";
 }
 
-IPLString UnaryExpression::GetBinaryTypeAsString()
+IPLString UnaryExpression::GetOperatorTypeAsString()
 {
+	switch (m_Operator)
+	{
+	case TokenType::Delete: return "delete";
+	case TokenType::MinusMinus: return "--";
+	case TokenType::PlusPlus: return "++";
+	case TokenType::Void: return "void";
+	case TokenType::Typeof: return "void";
+	case TokenType::Plus: return "+";
+	case TokenType::Minus: return "-";
+	case TokenType::BitwiseNot: return "~";
+	case TokenType::Bang: return "!";
+	default:
+		break;
+	}
 	// TODO: Implement
 	return "Unary";
 }
@@ -74,23 +89,27 @@ LiteralExpression::LiteralExpression(LiteralType type)
 void LiteralExpression::Print(std::ostream& os)
 {
 	os << "{ \n";
-	os << " Literal Type: Unary";
-	os << " Literal value: ";
+	os << " Expression Type: Unary" << std::endl;
 	switch (m_Type)
 	{
 	case LiteralType::Number:
-		os << m_NumValue;
+		os << " Literal Type: Number" << std::endl;
+		os << " Literal value: " << m_NumValue << std::endl;
 		break;
 	case LiteralType::String:
-		os << m_StringValue;
+		os << " Literal Type: String" << std::endl;
+		os << " Literal value: " << m_StringValue << std::endl;
 		break;
 	case LiteralType::Boolean:
-		os << m_BooleanValue;
+		os << " Literal Type: Boolean" << std::endl;
+		os << " Literal value: " << m_BooleanValue << std::endl;
 		break;
 	case LiteralType::Null:
-		os << "null";
+		os << " Literal Type: Null" << std::endl;
+		os << " Literal value: null" << std::endl;
 	case LiteralType::Undefined:
-		os << "undefined";
+		os << " Literal Type: Undefined" << std::endl;
+		os << " Literal value: undefined" << std::endl;
 		break;
 	default:
 		break;
