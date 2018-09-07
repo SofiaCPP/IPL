@@ -160,11 +160,17 @@ Token Tokenizer::NextToken()
 	case '+': m_Current++; return Match('+') ? ProduceToken(TokenType::PlusPlus) : ProduceToken(TokenType::Plus);
 	case ';': m_Current++; return ProduceToken(TokenType::Semicolon);
 	case '*': m_Current++; return ProduceToken(TokenType::Star);
+	case '/': m_Current++; return ProduceToken(TokenType::Division);
+	case '%': m_Current++; return ProduceToken(TokenType::Modulo);
 	case '~': m_Current++; return ProduceToken(TokenType::BitwiseNot);
 	case '=': m_Current++; return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictEqual) : ProduceToken(TokenType::EqualEqual) : ProduceToken(TokenType::Equal);
 	case '!': m_Current++; return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictNotEqual) : ProduceToken(TokenType::BangEqual) : ProduceToken(TokenType::Bang);
-	case '>': m_Current++; return Match('=') ? ProduceToken(TokenType::GreaterEqual) : ProduceToken(TokenType::Greater);
-	case '<': m_Current++; return Match('=') ? ProduceToken(TokenType::LessEqual) : ProduceToken(TokenType::Less);
+	case '>': m_Current++; return Match('=') ? ProduceToken(TokenType::GreaterEqual) : Match('>') ? ProduceToken(TokenType::RightShift) : ProduceToken(TokenType::Greater);
+	case '<': m_Current++; return Match('=') ? ProduceToken(TokenType::LessEqual) : Match('<') ? ProduceToken(TokenType::LeftShift) : ProduceToken(TokenType::Less);
+	case '&': m_Current++; return Match('&') ? ProduceToken(LogicalAnd) : ProduceToken(BitwiseAnd);
+	case '^': m_Current++; return ProduceToken(BitwiseXor);
+	case '|': m_Current++; return Match('|') ? ProduceToken(LogicalOr) : ProduceToken(BitwiseOr);
+
 	default:
 		break;
 	}

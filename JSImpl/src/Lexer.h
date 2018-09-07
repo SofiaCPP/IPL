@@ -15,9 +15,13 @@ enum TokenType
 	Minus,
 	Plus,
 	Semicolon,
-	Slash,
 	Star,
+	Division,
+	Modulo,
 	BitwiseNot,
+	BitwiseAnd,
+	BitwiseXor,
+	BitwiseOr,
 
 	// One or two character tokens
 	Bang,
@@ -32,6 +36,10 @@ enum TokenType
 	LessEqual,
 	MinusMinus,
 	PlusPlus,
+	LeftShift,
+	RightShift,
+	LogicalAnd,
+	LogicalOr,
 
 	Identifier,
 	String,
