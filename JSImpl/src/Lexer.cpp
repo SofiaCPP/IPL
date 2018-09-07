@@ -125,6 +125,19 @@ Token Tokenizer::ProduceToken(TokenType type, IPLString lexeme)
 	return{ type, m_Line, lexeme };
 }
 
+namespace
+{
+inline bool IsValidIdentifierStartingChar(char c)
+{
+	return (c >= 'A' && c <= 'z') || c == '_';
+}
+
+inline bool IsValidIdentifierChar(char c)
+{
+	return IsValidIdentifierStartingChar(c) || (c >= '0' && c <= '9');
+}
+}
+
 Token Tokenizer::NextToken()
 {
 	if (m_Code[m_Current] == '\0')
@@ -192,7 +205,20 @@ Token Tokenizer::NextToken()
 		{
 			return Token{ word->second, m_Line, key };
 		}
+		// It's not a key word so we must revert current counter
+		m_Current = start;
+	}
 
+	// Identifier
+	if (IsValidIdentifierStartingChar(c))
+	{
+		auto start = m_Current;
+		m_Current++;
+		while (IsValidIdentifierChar(m_Code[m_Current]))
+		{
+			++m_Current;
+		}
+		return Token{ TokenType::Identifier, m_Line, IPLString(m_Code + start, m_Code + m_Current) };
 	}
 	return Token{ TokenType::Eof, m_Line, "" };
 }

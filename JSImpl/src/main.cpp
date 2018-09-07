@@ -1,6 +1,7 @@
 #include "Lexer.h"
 #include <iostream>
 #define LOG(msg) std::cout << msg << std::endl
+#define EXECUTE_TEST(test) std::cout << #test << " "; test();
 void TestLess()
 {
 	auto tokens = Tokenize("<");
@@ -53,11 +54,30 @@ void TestKeyWord()
 	}
 }
 
+void TestVariableDeclaration()
+{
+	auto tokens = Tokenize("var pesho = 10");
+	if (tokens.size() == 5 && tokens[0].Type == TokenType::Var
+		&& tokens[1].Type == TokenType::Identifier
+		&& tokens[2].Type == TokenType::Equal
+		&& tokens[3].Type == TokenType::Number
+		&& tokens[4].Type == TokenType::Eof)
+	{
+		LOG("PASS");
+	}
+	else
+	{
+		LOG("FAIL");
+	}
+}
+
 int main()
 {
-	TestLess();
-	TestNumber();
-	TestString();
-	TestKeyWord();
+	EXECUTE_TEST(TestLess);
+	EXECUTE_TEST(TestNumber);
+	EXECUTE_TEST(TestString);
+	EXECUTE_TEST(TestKeyWord);
+	EXECUTE_TEST(TestVariableDeclaration);
+	std::system("pause");
 	return 0;
 }
