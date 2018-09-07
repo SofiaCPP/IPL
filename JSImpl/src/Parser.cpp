@@ -11,7 +11,12 @@ private:
 	ExpressionPtr Unary();
 	ExpressionPtr LeftSideExpression();
 	ExpressionPtr SimpleExpression();
-
+	ExpressionPtr MultiplicativeExpression();
+	ExpressionPtr AdditiveExpression();
+	ExpressionPtr ShiftExpression();
+	ExpressionPtr RelationalExpression();
+	ExpressionPtr EqualityExpression();
+	ExpressionPtr BitwiseAndExpression();
 	Token& Prev() { return m_Tokens[m_Current - 1]; }
 	std::function<void()> OnError;
 	unsigned m_Current;
@@ -166,6 +171,150 @@ ExpressionPtr Parser::Unary()
 		}
 		return leftSide;
 	}
+}
+
+ExpressionPtr Parser::MultiplicativeExpression()
+{
+	//MultiplicativeExpression
+	//	UnaryExpression
+	//	| MultiplicativeExpression * UnaryExpression normal
+	//	| MultiplicativeExpression / UnaryExpression normal
+	//	| MultiplicativeExpression % UnaryExpression normal
+	auto left = Unary();
+	if (MatchOneOf({ TokenType::Star, TokenType::Division, TokenType::Modulo }))
+	{
+		auto right = Unary();
+		return IPLMakeSharePtr<BinaryExpression>(left, right, Prev().Type);
+	}
+	return left;
+}
+
+ExpressionPtr Parser::AdditiveExpression()
+{
+	//AdditiveExpression
+	//	MultiplicativeExpression
+	//	| AdditiveExpression + MultiplicativeExpression normal
+	//	| AdditiveExpression - MultiplicativeExpression normal
+	auto left = MultiplicativeExpression();
+	if (MatchOneOf({ TokenType::Plus, TokenType::Minus}))
+	{
+		auto right = MultiplicativeExpression();
+		return IPLMakeSharePtr<BinaryExpression>(left, right, Prev().Type);
+	}
+	return left;
+}
+
+ExpressionPtr Parser::ShiftExpression()
+{
+	//ShiftExpression
+	//	AdditiveExpression
+	//	| ShiftExpression << AdditiveExpression normal
+	//	| ShiftExpression >> AdditiveExpression normal
+	//	| ShiftExpression >> > AdditiveExpression normal
+	auto left = AdditiveExpression();
+	if (MatchOneOf({ TokenType::LeftShift, TokenType::RightShift }))
+	{
+		auto right = AdditiveExpression();
+		return IPLMakeSharePtr<BinaryExpression>(left, right, Prev().Type);
+	}
+	return left;
+}
+
+ExpressionPtr Parser::RelationalExpression()
+{
+	//RelationalExpression, allowIn ->
+	//	ShiftExpression
+	//	| RelationalExpression, allowIn < ShiftExpression normal
+	//	| RelationalExpression, allowIn > ShiftExpression normal
+	//	| RelationalExpression, allowIn <= ShiftExpression normal
+	//	| RelationalExpression, allowIn >= ShiftExpression normal
+	//	| RelationalExpression, allowIn instanceof ShiftExpression normal
+	//	| RelationalExpression, allowIn in ShiftExpression normal
+	//	RelationalExpression, noIn ->
+	//	ShiftExpression
+	//	| RelationalExpression, noIn < ShiftExpression normal
+	//	| RelationalExpression, noIn > ShiftExpression normal
+	//	| RelationalExpression, noIn <= ShiftExpression normal
+	//	| RelationalExpression, noIn >= ShiftExpression normal
+	//	| RelationalExpression, noIn instanceof ShiftExpression normal
+	auto left = ShiftExpression();
+	if (MatchOneOf({ TokenType::Less,
+		TokenType::Greater,
+		TokenType::LessEqual,
+		TokenType::GreaterEqual,
+		TokenType::Instanceof,
+		TokenType::In
+	}))
+	{
+		auto right = ShiftExpression();
+		return IPLMakeSharePtr<BinaryExpression>(left, right, Prev().Type);
+	}
+	return left;
+}
+
+ExpressionPtr Parser::EqualityExpression()
+{
+	//EqualityExpression
+	//	RelationalExpression
+	//	| EqualityExpression == RelationalExpression normal
+	//	| EqualityExpression != RelationalExpression normal
+	//	| EqualityExpression == = RelationalExpression normal
+	//	| EqualityExpression != = RelationalExpression normal
+	auto left = RelationalExpression();
+	if (MatchOneOf({ TokenType::Equal,
+		TokenType::BangEqual,
+		TokenType::StrictEqual,
+		TokenType::StrictNotEqual,
+	}))
+	{
+		auto right = RelationalExpression();
+		return IPLMakeSharePtr<BinaryExpression>(left, right, Prev().Type);
+	}
+	return left;
+}
+
+ExpressionPtr Parser::BitwiseAndExpression()
+{
+	auto BitwiseAndExpression = [=]() -> ExpressionPtr {
+		//BitwiseAndExpression ->
+		//	EqualityExpression
+		//	| BitwiseAndExpression & EqualityExpression normal
+		auto left = EqualityExpression();
+		if (Match(TokenType::BitwiseAnd))
+		{
+			auto right = RelationalExpression();
+			return IPLMakeSharePtr<BinaryExpression>(left, right, Prev().Type);
+		}
+		return left;
+	};
+
+	auto BitwiseXorExpression = [=]() -> ExpressionPtr {
+		//BitwiseXorExpression ->
+		//	BitwiseAndExpression
+		//	| BitwiseXorExpression ^ BitwiseAndExpression normal
+		auto left = BitwiseAndExpression();
+		if (Match(TokenType::BitwiseAnd))
+		{
+			auto right = BitwiseAndExpression();
+			return IPLMakeSharePtr<BinaryExpression>(left, right, Prev().Type);
+		}
+		return left;
+	};
+
+	auto BitwiseOrExpression = [=]() -> ExpressionPtr {
+		//BitwiseOrExpression ->
+		//	BitwiseXorExpression
+		//	| BitwiseOrExpression | BitwiseXorExpression normal
+		auto left = BitwiseXorExpression();
+		if (Match(TokenType::BitwiseAnd))
+		{
+			auto right = BitwiseXorExpression();
+			return IPLMakeSharePtr<BinaryExpression>(left, right, Prev().Type);
+		}
+		return left;
+	};
+
+	return BitwiseOrExpression();
 }
 
 ExpressionPtr Parser::Parse()
