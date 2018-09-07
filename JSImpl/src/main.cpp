@@ -1,7 +1,10 @@
 #include "Lexer.h"
+#include "Parser.h"
 #include <iostream>
 #define LOG(msg) std::cout << msg << std::endl
 #define EXECUTE_TEST(test) std::cout << #test << " "; test();
+
+// Lexer Tests
 void TestLess()
 {
 	auto tokens = Tokenize("<");
@@ -70,6 +73,13 @@ void TestVariableDeclaration()
 		LOG("FAIL");
 	}
 }
+// Parser Tests
+void TestParseUnaryExpr()
+{
+	// TODO make actual test :D
+	auto expr = Parse(Tokenize("-10"));
+	expr->Print(std::cout);
+}
 
 int main()
 {
@@ -78,6 +88,7 @@ int main()
 	EXECUTE_TEST(TestString);
 	EXECUTE_TEST(TestKeyWord);
 	EXECUTE_TEST(TestVariableDeclaration);
+	EXECUTE_TEST(TestParseUnaryExpr);
 	std::system("pause");
 	return 0;
 }

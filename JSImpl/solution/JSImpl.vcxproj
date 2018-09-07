@@ -103,6 +103,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -111,11 +113,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\CommonTypes.h" />
+    <ClInclude Include="..\src\Expression.h" />
     <ClInclude Include="..\src\Lexer.h" />
+    <ClInclude Include="..\src\Parser.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Expression.cpp" />
     <ClCompile Include="..\src\Lexer.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\Parser.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
