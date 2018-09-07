@@ -156,12 +156,13 @@ Token Tokenizer::NextToken()
 	case '}': m_Current++; return ProduceToken(TokenType::RightBrace);
 	case ',': m_Current++; return ProduceToken(TokenType::Comma);
 	case '.': m_Current++; return ProduceToken(TokenType::Dot);
-	case '-': m_Current++; return ProduceToken(TokenType::Minums);
-	case '+': m_Current++; return ProduceToken(TokenType::Plus);
+	case '-': m_Current++; return Match('-') ? ProduceToken(TokenType::MinusMinus) : ProduceToken(TokenType::Minus);
+	case '+': m_Current++; return Match('+') ? ProduceToken(TokenType::PlusPlus) : ProduceToken(TokenType::Plus);
 	case ';': m_Current++; return ProduceToken(TokenType::Semicolon);
 	case '*': m_Current++; return ProduceToken(TokenType::Star);
-	case '=': m_Current++; return Match('=') ? ProduceToken(TokenType::EqualEqual) : ProduceToken(TokenType::Equal);
-	case '!': m_Current++; return Match('=') ? ProduceToken(TokenType::BangEqual) : ProduceToken(TokenType::Bang);
+	case '~': m_Current++; return ProduceToken(TokenType::BitwiseNot);
+	case '=': m_Current++; return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictEqual) : ProduceToken(TokenType::EqualEqual) : ProduceToken(TokenType::Equal);
+	case '!': m_Current++; return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictNotEqual) : ProduceToken(TokenType::BangEqual) : ProduceToken(TokenType::Bang);
 	case '>': m_Current++; return Match('=') ? ProduceToken(TokenType::GreaterEqual) : ProduceToken(TokenType::Greater);
 	case '<': m_Current++; return Match('=') ? ProduceToken(TokenType::LessEqual) : ProduceToken(TokenType::Less);
 	default:
@@ -220,5 +221,6 @@ Token Tokenizer::NextToken()
 		}
 		return Token{ TokenType::Identifier, m_Line, IPLString(m_Code + start, m_Code + m_Current) };
 	}
+	// TODO: Error reporting
 	return Token{ TokenType::Eof, m_Line, "" };
 }

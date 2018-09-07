@@ -12,27 +12,32 @@ enum TokenType
 	RightBrace,
 	Comma,
 	Dot,
-	Minums,
+	Minus,
 	Plus,
 	Semicolon,
 	Slash,
 	Star,
+	BitwiseNot,
 
 	// One or two character tokens
 	Bang,
 	BangEqual,
 	Equal,
 	EqualEqual,
+	StrictEqual,
+	StrictNotEqual,
 	Greater,
 	GreaterEqual,
 	Less,
 	LessEqual,
+	MinusMinus,
+	PlusPlus,
 
 	Identifier,
 	String,
 	Number,
 
-	// Keywords.
+	// Keywords. ECMAScript 2015
 	Break,
 	Case,
 	Catch,
