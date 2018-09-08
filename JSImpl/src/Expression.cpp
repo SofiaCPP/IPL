@@ -1,4 +1,5 @@
 #include "Expression.h"
+#include <assert.h>
 
 BinaryExpression::BinaryExpression(IPLSharedPtr<Expression> exprLeft, IPLSharedPtr<Expression> exprRight, TokenType op)
 : m_Left(exprLeft)
@@ -25,8 +26,6 @@ void BinaryExpression::Print(std::ostream& os)
 	os << " Operator Type: " << GetOperatorTypeAsString();
 	os << "\n}\n";
 }
-
-
 
 UnaryExpression::UnaryExpression(IPLSharedPtr<Expression> expr, TokenType op, bool suffix)
 	: m_Expr(expr)
@@ -82,9 +81,21 @@ LiteralExpression::LiteralExpression(bool v)
 	, m_BooleanValue(v)
 {}
 
-LiteralExpression::LiteralExpression(LiteralType type)
-	: m_Type(type)
-{}
+LiteralExpression::LiteralExpression(TokenType type)
+{
+	if (type == TokenType::Null)
+	{
+		m_Type = LiteralType::Null;
+	}
+	else if (type == TokenType::Undefined)
+	{
+		m_Type = LiteralType::Undefined;
+	}
+	else
+	{
+		assert(false);
+	}
+}
 
 void LiteralExpression::Print(std::ostream& os)
 {
@@ -115,5 +126,31 @@ void LiteralExpression::Print(std::ostream& os)
 		break;
 	}
 
+	os << "\n}\n";
+}
+
+IdentifierExpression::IdentifierExpression(IPLString name, ExpressionPtr value)
+	: m_Name(name)
+	, m_Value(value)
+{
+}
+
+void IdentifierExpression::Print(std::ostream& os)
+{
+	os << "{ \n";
+	os << " Expression Type: Identifier" << std::endl;
+	os << "Identifier name: " << m_Name << std::endl;
+	m_Value->Print(os);
+	os << "\n}\n";
+}
+
+void ListExpression::Print(std::ostream& os)
+{
+	os << "{ \n";
+	os << " Expression Type: List" << std::endl;
+	for (auto& e : m_Values)
+	{
+		e->Print(os);
+	}
 	os << "\n}\n";
 }

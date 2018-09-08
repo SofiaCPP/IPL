@@ -60,7 +60,7 @@ public:
 	LiteralExpression(double);
 	LiteralExpression(IPLString&);
 	LiteralExpression(bool);
-	LiteralExpression(LiteralType type);
+	LiteralExpression(TokenType type);
 	virtual void Print(std::ostream& os);
 private:
 	double m_NumValue;
@@ -69,3 +69,25 @@ private:
 	LiteralType m_Type;
 };
 
+
+class IdentifierExpression : public Expression
+{
+public:
+	IdentifierExpression(IPLString name, ExpressionPtr value);
+	virtual ~IdentifierExpression() {}
+	virtual void Print(std::ostream& os);
+private:
+	IPLString m_Name;
+	ExpressionPtr m_Value;
+};
+
+class ListExpression : public Expression
+{
+public:
+	ListExpression() {};
+	void Push(ExpressionPtr value) { m_Values.push_back(value); };
+	virtual ~ListExpression() {}
+	virtual void Print(std::ostream& os);
+private:
+	IPLVector<ExpressionPtr> m_Values;
+};
