@@ -71,6 +71,10 @@ Tokenizer::Tokenizer(const char* code, const std::function<void()>& onError)
 	m_KeyWordsTable["while"] = TokenType::While;
 	m_KeyWordsTable["with"] = TokenType::With;
 	m_KeyWordsTable["yield"] = TokenType::Yield;
+	m_KeyWordsTable["null"] = TokenType::Null;
+	m_KeyWordsTable["undefined"] = TokenType::Undefined;
+	m_KeyWordsTable["true"] = TokenType::True;
+	m_KeyWordsTable["false"] = TokenType::False;
 }
 
 IPLVector<Token> Tokenizer::Tokenize()
@@ -167,10 +171,13 @@ Token Tokenizer::NextToken()
 	case '!': m_Current++; return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictNotEqual) : ProduceToken(TokenType::BangEqual) : ProduceToken(TokenType::Bang);
 	case '>': m_Current++; return Match('=') ? ProduceToken(TokenType::GreaterEqual) : Match('>') ? ProduceToken(TokenType::RightShift) : ProduceToken(TokenType::Greater);
 	case '<': m_Current++; return Match('=') ? ProduceToken(TokenType::LessEqual) : Match('<') ? ProduceToken(TokenType::LeftShift) : ProduceToken(TokenType::Less);
-	case '&': m_Current++; return Match('&') ? ProduceToken(LogicalAnd) : ProduceToken(BitwiseAnd);
-	case '^': m_Current++; return ProduceToken(BitwiseXor);
-	case '|': m_Current++; return Match('|') ? ProduceToken(LogicalOr) : ProduceToken(BitwiseOr);
-
+	case '&': m_Current++; return Match('&') ? ProduceToken(TokenType::LogicalAnd) : ProduceToken(TokenType::BitwiseAnd);
+	case '^': m_Current++; return ProduceToken(TokenType::BitwiseXor);
+	case '|': m_Current++; return Match('|') ? ProduceToken(TokenType::LogicalOr) : ProduceToken(TokenType::BitwiseOr);
+	case '?': m_Current++; return ProduceToken(TokenType::QuestionMark);
+	case ':': m_Current++; return ProduceToken(TokenType::Colon);
+	case '[': m_Current++; return ProduceToken(TokenType::LeftSquareBracket);
+	case ']': m_Current++; return ProduceToken(TokenType::RightSquareBracket);
 	default:
 		break;
 	}

@@ -22,6 +22,10 @@ enum TokenType
 	BitwiseAnd,
 	BitwiseXor,
 	BitwiseOr,
+	QuestionMark,
+	Colon,
+	LeftSquareBracket,
+	RightSquareBracket,
 
 	// One or two character tokens
 	Bang,
@@ -40,6 +44,16 @@ enum TokenType
 	RightShift,
 	LogicalAnd,
 	LogicalOr,
+	StarEqual,
+	DivideEqual,
+	ModuloEqual,
+	PlusEqual,
+	MinusEqual,
+	LeftShiftEqual,
+	RightShiftEqual,
+	BitwiseAndEqual,
+	BitwiseXorEqual,
+	BitwiseOrEqual,
 
 	Identifier,
 	String,
@@ -79,6 +93,11 @@ enum TokenType
 	While,
 	With,
 	Yield,
+	Null,
+	Undefined,
+	True,
+	False,
+
 
 	Eof,
 };
