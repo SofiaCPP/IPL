@@ -7,13 +7,13 @@ BinaryExpression::BinaryExpression(IPLSharedPtr<Expression> exprLeft, IPLSharedP
 , m_Operator(op)
 {}
 
-IPLString BinaryExpression::GetOperatorTypeAsString()
+IPLString BinaryExpression::GetOperatorTypeAsString() const
 {
 	// TODO: Implement
 	return "Binary";
 }
 
-void BinaryExpression::Print(std::ostream& os)
+void BinaryExpression::Print(std::ostream& os) const
 {
 	os << "{ \n";
 	os << " Expression Type: Binary" << std::endl;
@@ -34,7 +34,7 @@ UnaryExpression::UnaryExpression(IPLSharedPtr<Expression> expr, TokenType op, bo
 {
 }
 
-void UnaryExpression::Print(std::ostream& os)
+void UnaryExpression::Print(std::ostream& os) const
 {
 	os << "{ \n";
 	os << " Expression Type: Unary" << std::endl;
@@ -46,7 +46,7 @@ void UnaryExpression::Print(std::ostream& os)
 	os << "\n}\n";
 }
 
-IPLString UnaryExpression::GetOperatorTypeAsString()
+IPLString UnaryExpression::GetOperatorTypeAsString() const
 {
 	switch (m_Operator)
 	{
@@ -97,7 +97,7 @@ LiteralExpression::LiteralExpression(TokenType type)
 	}
 }
 
-void LiteralExpression::Print(std::ostream& os)
+void LiteralExpression::Print(std::ostream& os) const
 {
 	os << "{ \n";
 	os << " Expression Type: Unary" << std::endl;
@@ -129,13 +129,13 @@ void LiteralExpression::Print(std::ostream& os)
 	os << "\n}\n";
 }
 
-IdentifierExpression::IdentifierExpression(IPLString name, ExpressionPtr value)
+IdentifierExpression::IdentifierExpression(IPLString& name, ExpressionPtr value)
 	: m_Name(name)
 	, m_Value(value)
 {
 }
 
-void IdentifierExpression::Print(std::ostream& os)
+void IdentifierExpression::Print(std::ostream& os) const
 {
 	os << "{ \n";
 	os << " Expression Type: Identifier" << std::endl;
@@ -144,7 +144,7 @@ void IdentifierExpression::Print(std::ostream& os)
 	os << "\n}\n";
 }
 
-void ListExpression::Print(std::ostream& os)
+void ListExpression::Print(std::ostream& os) const
 {
 	os << "{ \n";
 	os << " Expression Type: List" << std::endl;
@@ -154,3 +154,86 @@ void ListExpression::Print(std::ostream& os)
 	}
 	os << "\n}\n";
 }
+
+void VariableDefinitionExpression::Print(std::ostream& os) const
+{
+	os << "{ \n";
+	os << " Expression Type: VariableDefinition" << std::endl;
+	os << "Identifier name: " << m_Name << std::endl;
+	m_Value->Print(os);
+	os << "\n}\n";
+}
+
+void BlockStatement::Print(std::ostream& os) const
+{
+	os << "{ \n";
+	os << " Expression Type: BlockStatement" << std::endl;
+	for (auto& e : m_Values)
+	{
+		e->Print(os);
+	}
+	os << "\n}\n";
+}
+
+LabeledStatement::LabeledStatement(IPLString& identifier, ExpressionPtr statement)
+	: m_Identifier(identifier)
+	, m_Statement(statement)
+{
+}
+
+void LabeledStatement::Print(std::ostream& os) const
+{
+	os << "{ Not implemented yet !!}";
+}
+
+IfStatement::IfStatement(ExpressionPtr cond, ExpressionPtr ifStatement, ExpressionPtr elseStatement)
+	: m_Condition(cond)
+	, m_IfStatement(ifStatement)
+	, m_ElseStatement(elseStatement)
+{
+}
+
+void IfStatement::Print(std::ostream& os) const
+{
+	os << "{ Not implemented yet !!}";
+}
+
+SwitchStatement::SwitchStatement(ExpressionPtr cond, IPLVector<Case>& cases, ExpressionPtr defaultCase)
+	: m_Condition(cond)
+	, m_Cases(cases)
+	, m_DefaultCase(defaultCase)
+{
+}
+
+void SwitchStatement::Print(std::ostream& os) const
+{
+	os << "{ Not implemented yet !!}";
+}
+
+WhileStatement::WhileStatement(ExpressionPtr cond, ExpressionPtr body, bool doWhile)
+	: m_Condition(cond)
+	, m_Body(body)
+	, m_DoWhile(doWhile)
+{
+}
+
+
+void WhileStatement::Print(std::ostream& os) const
+{
+	os << "{ Not implemented yet !!}";
+}
+
+ForStatement::ForStatement(ExpressionPtr initialization, ExpressionPtr cond, ExpressionPtr iteration, ExpressionPtr body)
+	: m_Initialization(initialization)
+	, m_Condition(cond)
+	, m_Iteration(iteration)
+	, m_Body(body)
+{
+}
+
+void ForStatement::Print(std::ostream& os) const
+{
+	os << "{ Not implemented yet !!}";
+}
+
+

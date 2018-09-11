@@ -9,6 +9,8 @@ public:
 private:
 	bool MatchOneOf(IPLVector<TokenType> types);
 	bool Match(TokenType type);
+	ExpressionPtr RegularExpression();
+	ExpressionPtr ParenthesizedExpression();
 	ExpressionPtr PrimaryExpression();
 	ExpressionPtr FunctionExpression();
 	ExpressionPtr ObjectLiteral();
@@ -28,6 +30,29 @@ private:
 	ExpressionPtr ConditionalExpression();
 	ExpressionPtr AssignmentExpression();
 	ExpressionPtr Expression();
+	ExpressionPtr OptionalExpression();
+
+	//Statements
+	ExpressionPtr Statement();
+	ExpressionPtr EmptyStatement();
+	ExpressionPtr VariableDefinition();
+	ExpressionPtr Block();
+	ExpressionPtr LabeledStatement();
+	ExpressionPtr IfStatementfull();
+	ExpressionPtr SwitchStatement();
+	ExpressionPtr DoStatement();
+	ExpressionPtr WhileStatement();
+	ExpressionPtr ForStatement();
+	ExpressionPtr WithStatement();
+	ExpressionPtr ContinueStatement();
+	ExpressionPtr BreakStatement();
+	ExpressionPtr OptionalLabel();
+	ExpressionPtr ReturnStatement();
+	ExpressionPtr TryStatement();
+
+
+	ExpressionPtr FunctionDefinition();
+
 	Token& Prev() { return m_Tokens[m_Current - 1]; }
 	std::function<void()> OnError;
 	unsigned m_Current;
@@ -64,6 +89,11 @@ bool Parser::Match(TokenType type)
 	return false;
 }
 
+ExpressionPtr Parser::RegularExpression()
+{
+	return nullptr;
+}
+
 ExpressionPtr Parser::PrimaryExpression()
 {
 	if (auto simple = SimpleExpression())
@@ -77,6 +107,21 @@ ExpressionPtr Parser::PrimaryExpression()
 	else if (auto object = ObjectLiteral())
 	{
 		return object;
+	}
+	return nullptr;
+}
+
+ExpressionPtr  Parser::ParenthesizedExpression()
+{
+	if (Match(TokenType::LeftParen))
+	{
+		auto ex = Parser::Expression();
+		if (Match(TokenType::RightParen))
+		{
+			return ex;
+		}
+		// TODO log error
+		assert(false);
 	}
 	return nullptr;
 }
@@ -232,6 +277,10 @@ ExpressionPtr Parser::SimpleExpression()
 	else if (auto al = ArrayLiteral())
 	{
 		return al;
+	}
+	else if (auto p = ParenthesizedExpression())
+	{
+		return p;
 	}
 	else
 	{
@@ -561,8 +610,270 @@ ExpressionPtr Parser::AssignmentExpression()
 
 ExpressionPtr Parser::Expression()
 {
-	assert(false);
+	//Expression ->
+	//	AssignmentExpression
+	//	| Expression , AssignmentExpression normal
+	auto ae = AssignmentExpression();
+	while (Match(TokenType::Comma))
+	{
+		auto next = AssignmentExpression();
+		if (next)
+		{
+			ae = IPLMakeSharePtr<BinaryExpression>(ae, next, Prev().Type);
+		}
+		else
+		{
+			// TODO log
+			assert(false);
+		}
+	}
+	return ae;
+}
+
+
+ExpressionPtr Parser::Statement()
+{
+	if (auto result = EmptyStatement()) return result;
+	else if(auto result = VariableDefinition()) return result;
+	else if(auto result = Block()) return result;
+	else if(auto result = LabeledStatement()) return result;
+	else if(auto result = IfStatementfull()) return result;
+	else if(auto result = SwitchStatement()) return result;
+	else if(auto result = DoStatement()) return result;
+	else if(auto result = WhileStatement()) return result;
+	else if(auto result = ForStatement()) return result;
+	else if(auto result = WithStatement()) return result;
+	else if(auto result = ContinueStatement()) return result;
+	else if(auto result = BreakStatement()) return result;
+	else if(auto result = OptionalLabel()) return result;
+	else if(auto result = ReturnStatement()) return result;
+	else if(auto result = TryStatement()) return result;
+	assert(false); return nullptr;
+}
+
+ExpressionPtr Parser::EmptyStatement()
+{
+	if (Match(TokenType::Semicolon))
+	{
+		// Not sure what to do here;
+		// This just will consume ;
+		return nullptr;
+	}
 	return nullptr;
+}
+
+ExpressionPtr Parser::VariableDefinition()
+{
+	auto VariableDeclaration = [=]() -> ExpressionPtr {
+		//	VariableDeclaration -> Identifier VariableInitializer
+		//	VariableInitializer ->
+		//	«empty»
+		//	| = AssignmentExpressionnormal, 
+		if (Match(TokenType::Identifier))
+		{
+			auto ae = AssignmentExpression();
+			return IPLMakeSharePtr<VariableDefinitionExpression>(Prev().Lexeme, ae);
+		}
+		return nullptr;
+	};
+
+	auto VariableDeclarationList = [=]() -> ExpressionPtr {
+		//	VariableDeclarationList ->
+		//	VariableDeclaration
+		//	| VariableDeclarationList, VariableDeclaration
+		auto vdList = IPLMakeSharePtr<ListExpression>();
+		vdList->Push(VariableDeclaration());
+		while (Match(TokenType::Comma))
+		{
+			vdList->Push(VariableDeclaration());
+		}
+		return vdList;
+	};
+
+	//VariableDefinition -> var VariableDeclarationListallowIn
+	if (Match(TokenType::Var))
+	{
+		return VariableDeclarationList();
+	}
+
+	return nullptr;
+}
+
+ExpressionPtr Parser::Block()
+{
+	auto BlockStatementsPrefix = [=]() -> ExpressionPtr {
+		//	BlockStatementsPrefix ->
+		//	Statement full
+		//	| BlockStatementsPrefix Statement full
+
+		//return Statement;
+		auto StatementsList = IPLMakeSharePtr<BlockStatement>();
+		while (auto s = Statement())
+		{
+			StatementsList->Push(s);
+		}
+		return StatementsList;
+	};
+
+	if (Match(TokenType::LeftBrace))
+	{
+		if (Match(TokenType::RightBrace))
+		{
+			return BlockStatementsPrefix();
+		}
+		else
+		{
+			// TODO log error
+			assert(false);
+			return nullptr;
+		}
+	}
+	return nullptr;
+}
+
+ExpressionPtr Parser::LabeledStatement()
+{
+	if (Match(TokenType::Identifier))
+	{
+		auto identifier = Prev().Lexeme;
+		auto stament = Statement();
+		return IPLMakeSharePtr<::LabeledStatement>(identifier, stament);
+	}
+	return nullptr;
+}
+
+ExpressionPtr Parser::IfStatementfull()
+{
+	if (Match(TokenType::If))
+	{
+		auto cond = ParenthesizedExpression();
+		auto ifBody = Statement();
+		ExpressionPtr elseBody = nullptr;
+		if (Match(TokenType::Else))
+		{
+			elseBody = Statement();
+		}
+		return IPLMakeSharePtr<::IfStatement>(cond, ifBody, elseBody);
+	}
+	return nullptr;
+}
+
+ExpressionPtr Parser::SwitchStatement()
+{
+	if (Match(TokenType::Switch))
+	{
+		auto cond = ParenthesizedExpression();
+		IPLVector<SwitchStatement::Case> cases;
+		ExpressionPtr defaultCase = nullptr;
+		if (Match(TokenType::LeftBrace))
+		{
+
+			while (!Match(TokenType::RightBrace))
+			{
+				if (Match(TokenType::Case))
+				{
+					auto expr = Expression();
+					if (Match(TokenType::Colon))
+					{
+						cases.push_back({ expr, Statement() });
+					}
+				}
+				else if (Match(TokenType::Default))
+				{
+					if (Match(TokenType::Colon))
+					{
+						defaultCase = Statement();
+					}
+				}
+			}
+			return IPLMakeSharePtr<::SwitchStatement>(cond, cases, defaultCase);
+		}
+	}
+	return nullptr;
+}
+
+ExpressionPtr Parser::DoStatement()
+{
+	if(Match(TokenType::Do))
+	{ 
+		auto body = Statement();
+		if (Match(TokenType::While))
+		{
+			auto cond = ParenthesizedExpression();
+			auto isDoWhile = true;
+			return IPLMakeSharePtr<::WhileStatement>(cond, body, isDoWhile);
+		}
+		// TODO log error
+	}
+	return nullptr;
+}
+
+ExpressionPtr Parser::WhileStatement()
+{
+	if (Match(TokenType::While))
+	{
+		auto cond = ParenthesizedExpression();
+		auto body = Statement();
+		auto isDoWhile = false;
+		return IPLMakeSharePtr<::WhileStatement>(cond, body, isDoWhile);
+	}
+	return nullptr;
+}
+
+ExpressionPtr Parser::ForStatement()
+{
+	if (Match(TokenType::For))
+	{
+		auto initializer = Expression();
+		if (!initializer)
+		{
+			initializer = VariableDefinition();
+		}
+
+		auto cond = Expression();
+		auto iteration = Expression();
+		auto body = Statement();
+		return IPLMakeSharePtr<::ForStatement>(initializer, cond, iteration, body);
+	}
+	return nullptr;
+}
+
+ExpressionPtr Parser::WithStatement()
+{
+	assert(false); return nullptr;
+}
+
+ExpressionPtr Parser::ContinueStatement()
+{
+	assert(false); return nullptr;
+}
+
+ExpressionPtr Parser::BreakStatement()
+{
+	assert(false); return nullptr;
+}
+
+ExpressionPtr Parser::OptionalLabel()
+{
+	assert(false); return nullptr;
+}
+
+ExpressionPtr Parser::ReturnStatement()
+{
+	assert(false); return nullptr;
+}
+
+ExpressionPtr Parser::TryStatement()
+{
+	assert(false); return nullptr;
+}
+
+ExpressionPtr Parser::OptionalExpression()
+{
+	//OptionalExpression ->
+	//	Expressionnormal, allowIn
+	//	| «empty»
+	return Parser::Expression();
 }
 
 ExpressionPtr Parser::Parse()
