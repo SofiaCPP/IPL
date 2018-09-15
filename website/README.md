@@ -23,6 +23,8 @@ Simply clone this repository.
 1. Make sure that `git` and `hugo` are in the path
 2. Add the gh-pages as a *git worktree* under the public folder
 
+        git fetch origin gh-pages:gh-pages
+        git branch --set-upstream-to=origin/gh-pages gh-pages
         git worktree add public gh-pages
 
 ### Creating new content
