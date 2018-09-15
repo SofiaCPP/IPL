@@ -34,11 +34,13 @@ The normal hugo way of creating new posts applies
     hugo new content/posts/post.md
     hugo new content/page/page.md
 
+#### Creating new slides
+
 Creating new slides requires using a different template. You can use the
 *content/slides* as boilerplate.
 
-    cp -R content/slides content/myslides
-    edit content/myslides/_index.md
+    cp -R content/slides/template content/slides/myslides
+    edit content/slides/myslides/_index.md
 
 ### Checking out changes
 

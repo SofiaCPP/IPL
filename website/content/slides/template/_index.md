@@ -16,4 +16,12 @@ outputs: ["Reveal"]
 
 FMI course stuff.
 
+---
+
+    void f(int x) {
+        if (x) {
+        }
+    }
+
+---
 
