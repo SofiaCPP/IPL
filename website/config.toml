@@ -46,3 +46,8 @@ pygmentsStyle = "native"
 baseName = "index"
 mediaType = "text/html"
 isHTML = true
+
+[params.reveal_hugo]
+    highlight_theme = "monokai"
+    slide_number = true
+
