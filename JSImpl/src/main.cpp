@@ -77,7 +77,7 @@ void TestVariableDeclaration()
 void TestParseUnaryExpr()
 {
 	// TODO make actual test :D
-	auto expr = Parse(Tokenize("--10"));
+	auto expr = Parse(Tokenize("function pesho() { var a = 0; return a; }"));
 	expr->Print(std::cout);
 }
 

@@ -1,6 +1,24 @@
 #include "Expression.h"
 #include <assert.h>
 
+void PrintExpressionMember(ExpressionPtr expr, const char* name, std::ostream& os)
+{
+	os << name << ": {" << std::endl;
+	expr->Print(os);
+	os << "}";
+}
+
+void PrintExpressionMember(IPLVector<ExpressionPtr> exprs, const char* name, std::ostream& os)
+{
+	os << name << ": {" << std::endl;
+	for (auto& it : exprs)
+	{
+		it->Print(os);
+		os << ",\n";
+	}
+	os << "}";
+}
+
 BinaryExpression::BinaryExpression(IPLSharedPtr<Expression> exprLeft, IPLSharedPtr<Expression> exprRight, TokenType op)
 : m_Left(exprLeft)
 , m_Right(exprRight)
@@ -129,9 +147,8 @@ void LiteralExpression::Print(std::ostream& os) const
 	os << "\n}\n";
 }
 
-IdentifierExpression::IdentifierExpression(IPLString& name, ExpressionPtr value)
+IdentifierExpression::IdentifierExpression(IPLString& name)
 	: m_Name(name)
-	, m_Value(value)
 {
 }
 
@@ -140,7 +157,6 @@ void IdentifierExpression::Print(std::ostream& os) const
 	os << "{ \n";
 	os << " Expression Type: Identifier" << std::endl;
 	os << "Identifier name: " << m_Name << std::endl;
-	m_Value->Print(os);
 	os << "\n}\n";
 }
 
@@ -183,7 +199,7 @@ LabeledStatement::LabeledStatement(IPLString& identifier, ExpressionPtr statemen
 
 void LabeledStatement::Print(std::ostream& os) const
 {
-	os << "{ Not implemented yet !!}";
+	os << "{ LabeledStatement Not implemented yet !!}";
 }
 
 IfStatement::IfStatement(ExpressionPtr cond, ExpressionPtr ifStatement, ExpressionPtr elseStatement)
@@ -195,7 +211,7 @@ IfStatement::IfStatement(ExpressionPtr cond, ExpressionPtr ifStatement, Expressi
 
 void IfStatement::Print(std::ostream& os) const
 {
-	os << "{ Not implemented yet !!}";
+	os << "{ IfStatement  Not implemented yet !!}";
 }
 
 SwitchStatement::SwitchStatement(ExpressionPtr cond, IPLVector<Case>& cases, ExpressionPtr defaultCase)
@@ -207,7 +223,7 @@ SwitchStatement::SwitchStatement(ExpressionPtr cond, IPLVector<Case>& cases, Exp
 
 void SwitchStatement::Print(std::ostream& os) const
 {
-	os << "{ Not implemented yet !!}";
+	os << "{ SwitchStatement Not implemented yet !!}";
 }
 
 WhileStatement::WhileStatement(ExpressionPtr cond, ExpressionPtr body, bool doWhile)
@@ -220,7 +236,7 @@ WhileStatement::WhileStatement(ExpressionPtr cond, ExpressionPtr body, bool doWh
 
 void WhileStatement::Print(std::ostream& os) const
 {
-	os << "{ Not implemented yet !!}";
+	os << "{ WhileStatement Not implemented yet !!}";
 }
 
 ForStatement::ForStatement(ExpressionPtr initialization, ExpressionPtr cond, ExpressionPtr iteration, ExpressionPtr body)
@@ -233,7 +249,58 @@ ForStatement::ForStatement(ExpressionPtr initialization, ExpressionPtr cond, Exp
 
 void ForStatement::Print(std::ostream& os) const
 {
-	os << "{ Not implemented yet !!}";
+	os << "{ Expression Type: ForStatement " << std::endl;
+	os << "{ Initialization:" << std::endl;
+	m_Initialization->Print(os);
+	os << "}" << std::endl;
+	os << "{ Condition:" << std::endl;
+	m_Condition->Print(os);
+	os << "}" << std::endl;
+	os << "{ Iteration:" << std::endl;
+	m_Condition->Print(os);
+	os << "}" << std::endl;
+	os << "{ Body:" << std::endl;
+	m_Body->Print(os);
+	os << "}" << std::endl;
 }
 
 
+FunctionDeclaration::FunctionDeclaration(IPLString& functionName, IPLVector<IPLString>& argumentsIdentifiers, ExpressionPtr body)
+	: m_Name(functionName)
+	, m_ArgumentsIdentifiers(argumentsIdentifiers)
+	, m_Body(body)
+{
+}
+
+void FunctionDeclaration::Print(std::ostream& os) const
+{
+	os << "{ Expression Type: FunctionDeclaration " << std::endl;
+	os << "{ Function name: " << m_Name << std::endl;
+	os << "{ Function parameters: " << std::endl;
+	os << "{ " << std::endl;
+	for (auto it : m_ArgumentsIdentifiers)
+	{
+		os << it;
+	}
+	os << "}" << std::endl;
+	os << "{ Function body:" << std::endl;
+	m_Body->Print(os);
+	os << "}" << std::endl;
+	os << "}" << std::endl;
+}
+
+
+void TopStatements::Print(std::ostream& os) const
+{
+	os << "{ Expression Type: TopStatements " << std::endl;;
+	for (auto it : m_Values)
+	{
+		it->Print(os);
+	}
+	os << "}";
+}
+
+void EmptyExpression::Print(std::ostream& os) const
+{
+	os << "{ EmptyExpression }";
+}

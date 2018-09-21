@@ -73,12 +73,12 @@ private:
 class IdentifierExpression : public Expression
 {
 public:
-	IdentifierExpression(IPLString& name, ExpressionPtr value);
+	IdentifierExpression(IPLString& name);
 	virtual ~IdentifierExpression() {}
 	virtual void Print(std::ostream& os) const override;
 protected:
 	IPLString m_Name;
-	ExpressionPtr m_Value;
+
 };
 
 class ListExpression : public Expression
@@ -95,9 +95,11 @@ protected:
 class VariableDefinitionExpression : public IdentifierExpression
 {
 public:
-	VariableDefinitionExpression(IPLString& name, ExpressionPtr value) : IdentifierExpression(name, value){}
+	VariableDefinitionExpression(IPLString& name, ExpressionPtr value) : IdentifierExpression(name), m_Value(value){}
 	virtual ~VariableDefinitionExpression() {}
 	virtual void Print(std::ostream& os) const override;
+protected:
+	ExpressionPtr m_Value;
 };
 
 class BlockStatement : public ListExpression
@@ -174,3 +176,30 @@ private:
 	ExpressionPtr m_Body;
 };
 
+class FunctionDeclaration : public Expression
+{
+public:
+	FunctionDeclaration(IPLString& functionName, IPLVector<IPLString>& argumentsIdentifiers, ExpressionPtr body);
+	virtual ~FunctionDeclaration() {}
+	virtual void Print(std::ostream& os) const override;
+private:
+	IPLString m_Name;
+	IPLVector<IPLString> m_ArgumentsIdentifiers;
+	ExpressionPtr m_Body;
+};
+
+class TopStatements : public ListExpression
+{
+public:
+	TopStatements() {}
+	virtual ~TopStatements() {}
+	virtual void Print(std::ostream& os) const override;
+};
+
+class EmptyExpression : public Expression
+{
+public:
+	EmptyExpression() {}
+	virtual ~EmptyExpression() {}
+	virtual void Print(std::ostream& os) const override;
+};
