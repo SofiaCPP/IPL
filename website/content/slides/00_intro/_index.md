@@ -59,7 +59,8 @@ An university course.
 1. {{< frag c="Will to learn and time to experiment and write code" >}}
 2. {{< frag c="Programming with C++, fluent in C++ will be better" >}}
 3. {{< frag c="Data structures" >}}
-4. {{< frag c="How computers work - CPU, memory hierarchy, etc" >}}
+4. {{< frag c="Languages, Finite Automata, Computability" >}}
+5. {{< frag c="How computers work - CPU, memory hierarchy, etc" >}}
 
 ---
 # Contents of the course
