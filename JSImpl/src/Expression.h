@@ -2,55 +2,15 @@
 
 #include "CommonTypes.h"
 #include "Lexer.h"
-
-class Expression;
-class BinaryExpression;
-class UnaryExpression;
-class LiteralExpression;
-class IdentifierExpression;
-class ListExpression;
-class VariableDefinitionExpression;
-class BlockStatement;
-class LabeledStatement;
-class IfStatement;
-class SwitchStatement;
-class WhileStatement;
-class ForStatement;
-class FunctionDeclaration;
-class TopStatements;
-class EmptyExpression;
-using ExpressionPtr = IPLSharedPtr<Expression>;
-
-class ExpressionVisitor
-{
-public:
-	~ExpressionVisitor(){}
-	virtual void Visit(BinaryExpression* e) = 0;
-	virtual void Visit(UnaryExpression* e) = 0;
-	virtual void Visit(LiteralExpression* e) = 0;
-	virtual void Visit(IdentifierExpression* e) = 0;
-	virtual void Visit(ListExpression* e) = 0;
-	virtual void Visit(VariableDefinitionExpression* e) = 0;
-	virtual void Visit(BlockStatement* e) = 0;
-	virtual void Visit(LabeledStatement* e) = 0;
-	virtual void Visit(IfStatement* e) = 0;
-	virtual void Visit(SwitchStatement* e) = 0;
-	virtual void Visit(WhileStatement* e) = 0;
-	virtual void Visit(ForStatement* e) = 0;
-	virtual void Visit(FunctionDeclaration* e) = 0;
-	virtual void Visit(TopStatements* e) = 0;
-	virtual void Visit(EmptyExpression* e) = 0;
-};
+#include "ExpressionVisitor.h"
 
 class Expression : public IPLEnableShared<Expression>
 {
-
 	public:
 		virtual ~Expression() {}
 		virtual void Print(std::ostream& os) const {};
 		virtual void Accept(ExpressionVisitor& v) = 0;
 };
-
 
 // binary:= expression operator expression
 class BinaryExpression : public Expression

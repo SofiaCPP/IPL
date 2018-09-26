@@ -103,7 +103,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
@@ -112,12 +112,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\ASTPrinter.h" />
     <ClInclude Include="..\src\CommonTypes.h" />
     <ClInclude Include="..\src\Expression.h" />
+    <ClInclude Include="..\src\ExpressionsFwd.h" />
+    <ClInclude Include="..\src\ExpressionVisitor.h" />
     <ClInclude Include="..\src\Lexer.h" />
     <ClInclude Include="..\src\Parser.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ASTPrinter.cpp" />
     <ClCompile Include="..\src\Expression.cpp" />
     <ClCompile Include="..\src\Lexer.cpp" />
     <ClCompile Include="..\src\main.cpp" />
