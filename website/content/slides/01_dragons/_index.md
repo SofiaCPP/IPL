@@ -109,13 +109,68 @@ Recognizes the rules from stream of tokens and builds the AST of the program.
 - parser generation tool
 
 ---
-###### Parser
+###### Grammars
 
-# TODO: Expand
+The grammar of a languages defines the structure of correct sentences and how to
+derive their meaning.
 
-- CFG
-- PEG
-- LALR(n)
+---
+###### CFG
+
+Context Free Grammars
+
+    <expr> := <expr> <op> <expr> | (<expr>) | <term>
+    <op>   := + | - | * | /
+    <term> := [0-9]+
+
+---
+###### PEG
+
+Parser Expression Grammars are similar to CFG, but are more convinient for
+parsing, since the `|` operator is not ambigious.
+
+- CFG allows selecting any matching variant and can have more than one parse
+  tree.
+    - parsing algorithms try to resolve this
+- PEG pritizes the variants in the order that they are written.
+
+---
+###### PEG
+
+    <expr>  := <sum>
+    <sum>   := <prod> ([+-] <prod>)*
+    <prod>  := <value> ([*/] <value>)*
+    <value> := [0-9]+ / '(' <expr> ')'
+
+- That is a CFG as well, so for some grammars there is no difference.
+- Some languages can be expressed only with ambigious grammars.
+
+---
+###### CFG vs PEG
+
+Where the else goes?
+
+    <if> := if <expr> <stmnt> else <stmnt>
+        | if <expr> <stmnt>
+
+
+    if x0 if x1 s1 else s2
+
+    if x0 { if x1 s1 } else s2 // 1
+    if x0 { if x1 s1 else s2 } // 2
+
+- CFG - it is ambigious
+- PEG - 2 - because it is the first option
+
+---
+###### LALR(n)
+
+LR(n) and LALR(n) are family of parsing algorithms for CFG
+
+- n is the number of look ahead terminals
+- L - *left-to-right*,
+- R - *right-most derivation* - the right most non-terminal is replaced
+
 
 ---
 ###### Program
@@ -158,6 +213,8 @@ that is convinient for:
 
 - Static Single Assignment form
 
+# TODO: expand
+
 ---
 ### IR in LLVM
 
@@ -191,7 +248,26 @@ that is convinient for:
 
 - AOT - less overhead, faster startup, generally better performance
 - JIT - better chance for optimizations, since some of the program arguments
-  will be contstants once the program has started
+  will be constants once the program has started, some of the virtual calls can
+  be devirtuallized at runtime
+
+---
+## Transpiler
+
+> Takes program written in one language and translates that to another language.
+
+- cfront
+- CoffeScript, TypeScript
+- nim
+
+---
+## Code transformation tools
+
+Lots of tools can be created based on the AST representation of a program
+
+- code formatting - *clang-format*, *gofmt*, *autopep8*
+- code transformation - *clang-modernize*
+- code analysis - *clang-tidy*
 
 ---
 ## Virtual Machine
@@ -209,6 +285,8 @@ collection and most of the standard library of the language.
 
 ---
 ### RPN as an interperter
+
+# TODO: expand
 
 ---
 ## What is a machine?
