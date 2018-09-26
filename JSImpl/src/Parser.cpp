@@ -592,7 +592,7 @@ ExpressionPtr Parser::ConditionalExpression()
 		// TODO log parsing error
 		assert(false);
 	}
-	return LogicalExpression();
+	return condition;
 }
 
 ExpressionPtr Parser::AssignmentExpression()
@@ -688,7 +688,11 @@ ExpressionPtr Parser::VariableDefinition()
 		if (Match(TokenType::Identifier))
 		{
 			auto id = Prev().Lexeme;
-			auto ae = AssignmentExpression();
+			auto ae = CreateEmptyExpression();
+			if (Match(TokenType::Equal))
+			{
+				auto ae = AssignmentExpression();
+			}
 			return IPLMakeSharePtr<VariableDefinitionExpression>(id, ae);
 		}
 		return nullptr;

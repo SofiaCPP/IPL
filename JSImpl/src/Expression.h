@@ -203,3 +203,5 @@ public:
 	virtual ~EmptyExpression() {}
 	virtual void Print(std::ostream& os) const override;
 };
+
+inline ExpressionPtr CreateEmptyExpression() { return IPLMakeSharePtr<EmptyExpression>(); }
