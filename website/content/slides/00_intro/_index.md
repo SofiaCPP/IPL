@@ -1,7 +1,7 @@
 ---
 title: "Introduction to Implementation of Programming Languages"
 date: 2018-09-15T17:45:53+03:00
-draft: true
+draft: false
 outputs:
     - Reveal
 ---
@@ -18,9 +18,14 @@ FMI 2018
 ---
 # What is this?
 
-An university course.
+- An university course.
+- A group of people that find it interesting how computers work and how they are
+  programmed.
+
+- https://sofiacpp.github.io/IPL
 
 ---
+
 ## What we are going to talk about?
 
 - programming languages
@@ -39,7 +44,7 @@ An university course.
 ---
 ## What are you going to learn about?
 
-- how a programming language works"
+- how a programming language works
 - how to implement
     - a compiler
     - an interpreter
@@ -48,16 +53,70 @@ An university course.
 - how to automatically reclaim memory
 
 ---
+## How are *WE* going to learn about VMs?
+
+We are going to create a JavaScript interpreter from scratch!
+
+- JSImpl (tm)
+
+---
+## Design goals for the JSImpl
+
+- understandable
+- working
+- extensible
+
+---
 ## How you are going to be graded?
 
 - 50% mid-term test
 - 50% course project
+
+Projects will be individual and there will be simpler and complex projects.
+
+---
+### Projects
+
+A few sample of projects are:
+
+- create a Lua interpreter based on JSImpl with generational, incremental
+  garbage collector
+- create an AOT compiler for JavaScript
+
+---
+## Homework?
+
+- There will be homework assignments that will give you points.
+- The assignments will be similar to the final projects, but simpler
+- You don't have to do them, but if you do - you can choose a simpler project at
+  the end of the semester and still get 100%.
+
+---
+## Sample homeworks
+
+- a minifier (with variable renaming, tree-shaking, etc)
+- an obfuscator
+- a beautifier
+- a linter that detects usage of global variables, code complexity, etc
+- code browser that allows for searching where a variable is defined and used
+- transpiler
+
+---
+## Pull Requests
+
+You can make pull requests against the repository and get points based on their
+contribution.
+
+- you can fix typos
+- you can extend the VM we are implementing in a meaningful way
+    - i.e. add source location information to the AST
 
 ---
 ## What are the requirements?
 
 1. {{< frag c="Will to learn and time to experiment and write code" >}}
 2. {{< frag c="Programming with C++, fluent in C++ will be better" >}}
+2. {{< frag c="Programming with JavaScript or other dynamic language" >}}
 3. {{< frag c="Data structures" >}}
 4. {{< frag c="Languages, Finite Automata, Computability" >}}
 5. {{< frag c="How computers work - CPU, memory hierarchy, etc" >}}
@@ -136,6 +195,8 @@ Garbage collection
     - manual
     - automatic
 2. Garbage Collection algorithms
+    - "conservative, generational and incremental" - will start to have meaning
+      for you
 
 ---
 ## 8. JIT & AOT code generation
@@ -143,6 +204,15 @@ Garbage collection
 1. Machine code and generation
 2. Just in Time
 3. Ahead of Time
+
+---
+## Resources
+
+- https://github.com/SofiaCPP/IPL
+
+- https://sofiacpp.github.io/IPL
+
+- Links to resources will be there too!
 
 ---
 # ?
