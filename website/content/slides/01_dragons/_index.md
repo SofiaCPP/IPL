@@ -1,7 +1,7 @@
 ---
 title: "The dragons"
 date: 2018-08-02T17:45:53+03:00
-draft: true
+draft: false
 outputs: ["Reveal"]
 ---
 # The dragons
@@ -73,8 +73,8 @@ Three-stage compiler structure
 
 1. Front end
     - understands the program
-2. Middle end
-    - does the optimizations
+2. Middle
+    - does the optimizations and removes syntactic sugar
 3. Back end
     - generates the machine code
 
@@ -200,7 +200,7 @@ LR(n) and LALR(n) are family of parsing algorithms for CFG
 # TODO: use JavaScript AST dumper
 
 ---
-### Middle end
+### Middle
 
 Takes the AST and transforms that to some *Intermediate Representation* (IR)
 that is convinient for:
@@ -211,14 +211,29 @@ that is convinient for:
 ---
 ### IR
 
-- Static Single Assignment form
-
-# TODO: expand
+- A compiler might have different levels and types of IR
+    - text and binary
+- [Static Single Assignment form](https://en.wikipedia.org/wiki/Static_single_assignment_form)
 
 ---
-### IR in LLVM
+### IR in LLVM - C
 
-# TODO: find a clang AST dumper
+    int mul_add(int x, int y, int z) {
+      return x * y + z;
+    }
+
+---
+### IR in LLVM - IR
+
+    define i32 @mul_add(i32 %x, i32 %y, i32 %z) {
+    entry:
+      %tmp = mul i32 %x, %y
+      %tmp2 = add i32 %tmp, %z
+      ret i32 %tmp2
+    }
+---
+###
+
 
 ---
 ### Back end
@@ -226,11 +241,22 @@ that is convinient for:
 > Takes the IR and produces native code for a particular machine
 
 ---
-## Interperter
+## Interpreter
 
 > Like the compiler, but instead of producing machine code, executes the program
 > instruction by instruction translating from program instructions to machine
 > instructions.
+
+---
+## Interpreter
+
+- Most interpreters have a REPL which makes them great for experiments.
+- You don't need build an executable to run your program
+
+---
+### Compiler vs Interpreter
+
+- https://www.youtube.com/watch?v=_C5AHaS1mOA
 
 ---
 ### AOT compilation
@@ -281,12 +307,21 @@ collection and most of the standard library of the language.
 ### VMs
 
 - stack based
+    - all computations are done with operands pushed onto a stack, then popped
+      and the result is pushed back
+    - simple, but inefficient
 - register based
+    - some of the computations are using registers (generally each local
+      variable gets a register)
+    - code generation is a bit harder, but the machine is more efficient
 
 ---
 ### RPN as an interperter
 
-# TODO: expand
+Calculating an expression using postfix notation is actually an interpreter for
+expressions.
+
+- Forth is a complete programming language based on that.
 
 ---
 ## What is a machine?
