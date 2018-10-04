@@ -1,7 +1,7 @@
 baseURL = "https://sofiacpp.github.io/IPL/"
 languageCode = "en-us"
 title = "Implementation of Programming Languages"
-theme = "natrium"
+theme = "base16"
 
 preserveTaxonomyNames = true
 rssLimit = 10
@@ -33,7 +33,7 @@ pygmentsStyle = "native"
     weight = -130
 
 [params]
-    description = "Course on implementing a programming language"
+    description = "Course on implementing programming languages"
     GitHubURL = "https://github.com/SofiaCPP/IPL"
 
     [params.logo]
