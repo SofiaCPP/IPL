@@ -44,9 +44,9 @@ Most often the tokens are defined with regular grammar over the alphabet.
 ---
 ### Rules
 
-The rules for composing sentances from words.
+The rules for composing sentences from words.
 
-Most often the sentances are defined with context free grammar over the tokens.
+Most often the sentences are defined with context free grammar over the tokens.
 
 ---
 ## Compiler
@@ -126,13 +126,13 @@ Context Free Grammars
 ---
 ###### PEG
 
-Parser Expression Grammars are similar to CFG, but are more convinient for
-parsing, since the `|` operator is not ambigious.
+Parser Expression Grammars are similar to CFG, but are more convenient for
+parsing, since the `|` operator is not ambiguous.
 
 - CFG allows selecting any matching variant and can have more than one parse
   tree.
     - parsing algorithms try to resolve this
-- PEG pritizes the variants in the order that they are written.
+- PEG prioritizes the variants in the order that they are written.
 
 ---
 ###### PEG
@@ -143,7 +143,7 @@ parsing, since the `|` operator is not ambigious.
     <value> := [0-9]+ / '(' <expr> ')'
 
 - That is a CFG as well, so for some grammars there is no difference.
-- Some languages can be expressed only with ambigious grammars.
+- Some languages can be expressed only with ambiguous grammars.
 
 ---
 ###### CFG vs PEG
@@ -159,7 +159,7 @@ Where the else goes?
     if x0 { if x1 s1 } else s2 // 1
     if x0 { if x1 s1 else s2 } // 2
 
-- CFG - it is ambigious
+- CFG - it is ambiguous
 - PEG - 2 - because it is the first option
 
 ---
@@ -203,9 +203,9 @@ LR(n) and LALR(n) are family of parsing algorithms for CFG
 ### Middle
 
 Takes the AST and transforms that to some *Intermediate Representation* (IR)
-that is convinient for:
+that is convenient for:
 
-- optmization - constant propagation, loop unrolling, etc
+- optimization - constant propagation, loop unrolling, etc
 - machine code generation - register allocation, etc
 
 ---
@@ -231,9 +231,6 @@ that is convinient for:
       %tmp2 = add i32 %tmp, %z
       ret i32 %tmp2
     }
----
-###
-
 
 ---
 ### Back end
