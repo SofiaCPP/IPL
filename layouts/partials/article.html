@@ -1,0 +1,30 @@
+{{ $page := .Page }}
+<article class="single" itemscope itemtype="http://schema.org/BlogPosting">
+  <div class="meta">
+{{ if not .Page.Date.IsZero }}
+    <span class="key">published on</span>
+    <span class="val"><time itemprop="datePublished" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 02, 2006" }}</time></span>
+{{ end }}
+{{ with .Params.categories }}
+    <span class="key">{{ if $page.Date.IsZero }}published {{ end }}in</span>
+    <span class="val">
+{{ range . }}
+        <a href="{{ . | printf "categories/%s" | relURL }}">{{ . }}</a>
+{{ end }}
+    </span>
+{{ end }}
+{{ with .Params.tags }}
+    <br>
+    <span class="key">tags:</span>
+    <span class="val">
+{{ range . }}
+        <a href="{{ . | printf "tags/%s" | relURL }}">{{ . }}</a>
+{{ end }}
+    </span>
+{{ end }}
+  </div>
+  <h1 class="headline" itemprop="headline">{{ .Title }}</h1>
+  <section class="body" itemprop="articleBody">
+    {{ .Content }}
+  </section>
+</article>
