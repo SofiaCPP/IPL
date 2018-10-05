@@ -100,6 +100,7 @@ enum TokenType
 
 
 	Eof,
+	Invalid
 };
 
 struct Token
