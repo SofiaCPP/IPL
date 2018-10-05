@@ -8,62 +8,32 @@ class Expression : public IPLEnableShared<Expression>
 {
 	public:
 		virtual ~Expression() {}
-		virtual void Print(std::ostream&) const {};
 		virtual void Accept(ExpressionVisitor& v) = 0;
 };
 
-// binary:= expression operator expression
-class BinaryExpression : public Expression
+enum class LiteralType
 {
-public:
-	virtual ~BinaryExpression() {}
-	BinaryExpression(ExpressionPtr exprLeft, ExpressionPtr exprRight, TokenType op);
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-private:
-	IPLString GetOperatorTypeAsString() const;
-private:
-	ExpressionPtr m_Left;
-	ExpressionPtr m_Right;
-	TokenType m_Operator;
+	Number,
+	String,
+	Boolean,
+	Null,
+	Undefined
 };
 
-// binary:= expression operator |
-//          operator expression
-class UnaryExpression : public Expression
-{
-public:
-	virtual ~UnaryExpression() {}
-	UnaryExpression(IPLSharedPtr<Expression> expr, TokenType op, bool suffix);
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-private:
-	IPLString GetOperatorTypeAsString() const;
-private:
-	IPLSharedPtr<Expression> m_Expr;
-	TokenType m_Operator;
-	bool m_Suffix;
-};
-
-// literal:= number | string | true | false | null | undefined
 class LiteralExpression : public Expression
 {
 public:
-	enum LiteralType
-	{
-		Number,
-		String,
-		Boolean,
-		Null,
-		Undefined,
-	};
+
 	virtual ~LiteralExpression() {}
 	LiteralExpression(double);
 	LiteralExpression(IPLString&);
 	LiteralExpression(bool);
 	LiteralExpression(TokenType type);
-	virtual void Print(std::ostream& os) const override;
 	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
+	double GetNumValue() const { return m_NumValue; }
+	const IPLString& GetStringValue() const { return m_StringValue; }
+	bool GetBooleanValue() const { return m_BooleanValue; }
+	LiteralType GetLiteralType() const { return m_Type; }
 private:
 	LiteralType m_Type;
 	bool m_BooleanValue;
@@ -72,150 +42,122 @@ private:
 };
 
 
-class IdentifierExpression : public Expression
-{
-public:
-	IdentifierExpression(IPLString& name);
-	virtual ~IdentifierExpression() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-protected:
-	IPLString m_Name;
+#define EXPAND_ARGUMENT(type, name, def)\
+		type name = def,
 
-};
+#define EXPAND_INITIALIZER_LIST(type, name, def)\
+		m_##name(name),
 
-class ListExpression : public Expression
-{
-public:
-	ListExpression() {};
-	void Push(ExpressionPtr value) { m_Values.push_back(value); };
-	virtual ~ListExpression() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-protected:
-	IPLVector<ExpressionPtr> m_Values;
-};
+#define GENERATE_GETTERS(type, name, def)\
+		const type& Get##name() const { return m_##name; }\
+		type& Get##name##ByRef()  { return m_##name; }
 
-class VariableDefinitionExpression : public IdentifierExpression
-{
-public:
-	VariableDefinitionExpression(IPLString& name, ExpressionPtr value) : IdentifierExpression(name), m_Value(value){}
-	virtual ~VariableDefinitionExpression() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-protected:
-	ExpressionPtr m_Value;
-};
+#define GENERATE_MEMBER_DEFINITIONS(type, name, def)\
+		type m_##name;
 
-class BlockStatement : public ListExpression
-{
-public:
-	BlockStatement() {};
-	virtual ~BlockStatement() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-private:
-};
-
-class LabeledStatement : public Expression
-{
-public:
-	LabeledStatement(IPLString& identifier, ExpressionPtr statements);
-	virtual ~LabeledStatement() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-private:
-	IPLString m_Identifier;
-	ExpressionPtr m_Statement;
-};
-
-class IfStatement : public Expression
-{
-public:
-	IfStatement(ExpressionPtr cond, ExpressionPtr ifStatement, ExpressionPtr elseStatement);
-	virtual ~IfStatement() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-private:
-	ExpressionPtr m_Condition;
-	ExpressionPtr m_IfStatement;
-	ExpressionPtr m_ElseStatement;
-};
-
-class SwitchStatement : public Expression
-{
-public:
-	struct Case
-	{
-		ExpressionPtr Condition;
-		ExpressionPtr Body;
+#define GENERATE_EXPRESSION(ClassName, Base, MEMBERS_ITERATOR)                 \
+	class ClassName : public Base                                              \
+	{                                                                          \
+		public:                                                                \
+		ClassName(MEMBERS_ITERATOR(EXPAND_ARGUMENT) bool __dummy = 0)          \
+		:                                                                      \
+		MEMBERS_ITERATOR(EXPAND_INITIALIZER_LIST) m_dummy(__dummy) {}          \
+		virtual ~ClassName() {}                                                \
+		virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }  \
+                                                                               \
+		MEMBERS_ITERATOR(GENERATE_GETTERS)                                     \
+		private:                                                               \
+		MEMBERS_ITERATOR(GENERATE_MEMBER_DEFINITIONS)                          \
+		bool m_dummy;                                                          \
 	};
-	SwitchStatement(ExpressionPtr cond, IPLVector<Case>& cases, ExpressionPtr defaultCase);
-	virtual ~SwitchStatement() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-private:
-	ExpressionPtr m_Condition;
-	IPLVector<Case> m_Cases;
-	ExpressionPtr m_DefaultCase;
-};
 
-class WhileStatement : public Expression
-{
-public:
-	WhileStatement(ExpressionPtr cond, ExpressionPtr body, bool doWhile);
-	virtual ~WhileStatement() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-private:
-	ExpressionPtr m_Condition;
-	ExpressionPtr m_Body;
-	bool m_DoWhile;
-};
 
-class ForStatement : public Expression
-{
-public:
-	ForStatement(ExpressionPtr initialization, ExpressionPtr cond, ExpressionPtr iteration, ExpressionPtr body);
-	virtual ~ForStatement() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-private:
-	ExpressionPtr m_Initialization;
-	ExpressionPtr m_Condition;
-	ExpressionPtr m_Iteration;
-	ExpressionPtr m_Body;
-};
+#define BINARY_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(ExpressionPtr, Left, nullptr)\
+		MACRO(ExpressionPtr, Right, nullptr)\
+		MACRO(TokenType, Operator, TokenType::Invalid)
 
-class FunctionDeclaration : public Expression
-{
-public:
-	FunctionDeclaration(IPLString& functionName, IPLVector<IPLString>& argumentsIdentifiers, ExpressionPtr body);
-	virtual ~FunctionDeclaration() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-private:
-	IPLString m_Name;
-	IPLVector<IPLString> m_ArgumentsIdentifiers;
-	ExpressionPtr m_Body;
-};
+#define UNARY_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(IPLSharedPtr<Expression>, Expr, nullptr)\
+		MACRO(TokenType, Operator, TokenType::Invalid)\
+		MACRO(bool, Suffix, false)
 
-class TopStatements : public ListExpression
-{
-public:
-	TopStatements() {}
-	virtual ~TopStatements() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-};
+#define LITERAL_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(double, NumValue, 0.)\
+		MACRO(IPLString, StringValue, "")\
+		MACRO(bool, BooleanValue, false)\
+		MACRO(LiteralType, Type, LiteralType::Undefined)
 
-class EmptyExpression : public Expression
-{
-public:
-	EmptyExpression() {}
-	virtual ~EmptyExpression() {}
-	virtual void Print(std::ostream& os) const override;
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-};
+#define IDENTIFIER_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(IPLString, Name, "")
+
+#define VARIABLEDEFINITION_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(IPLString, Name, "")\
+		MACRO(ExpressionPtr, Value, nullptr)
+
+#define LIST_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(IPLVector<ExpressionPtr>, Values, IPLVector<ExpressionPtr>())
+
+#define BLOCK_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(IPLVector<ExpressionPtr>, Values, IPLVector<ExpressionPtr>())
+
+#define LABELED_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(IPLString, Identifier, "")\
+		MACRO(ExpressionPtr, Statement, nullptr)
+
+#define IF_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(ExpressionPtr, Condition, nullptr)\
+		MACRO(ExpressionPtr, IfStatement, nullptr)\
+		MACRO(ExpressionPtr, ElseStatement, nullptr)
+
+#define CASE_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(ExpressionPtr, Condition, nullptr)\
+		MACRO(ExpressionPtr, Body, nullptr)
+
+#define SWITCH_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(ExpressionPtr, Condition, nullptr)\
+		MACRO(IPLVector<ExpressionPtr>, Cases, IPLVector<ExpressionPtr>())\
+		MACRO(ExpressionPtr, DefaultCase, nullptr)
+
+#define WHILE_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(ExpressionPtr, Condition, nullptr)\
+		MACRO(ExpressionPtr, Body, nullptr)\
+		MACRO(bool, DoWhile, false)
+
+#define FOR_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(ExpressionPtr, Initialization, nullptr)\
+		MACRO(ExpressionPtr, Condition, nullptr)\
+		MACRO(ExpressionPtr, Iteration, nullptr)\
+		MACRO(ExpressionPtr, Body, nullptr)
+
+#define FUNCTION_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(IPLString, Name, "")\
+		MACRO(IPLVector<IPLString>, ArgumentsIdentifiers, IPLVector<IPLString>())\
+		MACRO(ExpressionPtr, Body, nullptr)
+
+#define TOP_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(IPLVector<ExpressionPtr>, Values, IPLVector<ExpressionPtr>())
+
+#define EMPTY_EXPRESSION_MEMBERS(MACRO)
+
+#define EXPRESSION_DEFINITION_ITERATOR(MACRO)\
+		MACRO(BinaryExpression, Expression, BINARY_EXPRESSION_MEMBERS)\
+		MACRO(UnaryExpression, Expression, UNARY_EXPRESSION_MEMBERS)\
+		MACRO(IdentifierExpression, Expression, IDENTIFIER_EXPRESSION_MEMBERS)\
+		MACRO(VariableDefinitionExpression, Expression, VARIABLEDEFINITION_EXPRESSION_MEMBERS)\
+		MACRO(ListExpression, Expression, LIST_EXPRESSION_MEMBERS)\
+		MACRO(BlockStatement, Expression, BLOCK_EXPRESSION_MEMBERS)\
+		MACRO(LabeledStatement, Expression, LABELED_EXPRESSION_MEMBERS)\
+		MACRO(IfStatement, Expression, IF_EXPRESSION_MEMBERS)\
+		MACRO(SwitchStatement, Expression, SWITCH_EXPRESSION_MEMBERS)\
+		MACRO(CaseStatement, Expression, CASE_EXPRESSION_MEMBERS)\
+		MACRO(WhileStatement, Expression, WHILE_EXPRESSION_MEMBERS)\
+		MACRO(ForStatement, Expression, FOR_EXPRESSION_MEMBERS)\
+		MACRO(FunctionDeclaration, Expression, FUNCTION_EXPRESSION_MEMBERS)\
+		MACRO(TopStatements, Expression, TOP_EXPRESSION_MEMBERS)\
+		MACRO(EmptyExpression, Expression, EMPTY_EXPRESSION_MEMBERS)
+
+
+EXPRESSION_DEFINITION_ITERATOR(GENERATE_EXPRESSION);
 
 inline ExpressionPtr CreateEmptyExpression() { return IPLMakeSharePtr<EmptyExpression>(); }

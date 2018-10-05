@@ -16,6 +16,7 @@ public:
 	virtual void Visit(LabeledStatement* e) = 0;
 	virtual void Visit(IfStatement* e) = 0;
 	virtual void Visit(SwitchStatement* e) = 0;
+	virtual void Visit(CaseStatement* e) = 0;
 	virtual void Visit(WhileStatement* e) = 0;
 	virtual void Visit(ForStatement* e) = 0;
 	virtual void Visit(FunctionDeclaration* e) = 0;

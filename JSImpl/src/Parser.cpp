@@ -204,7 +204,7 @@ ExpressionPtr Parser::ArrayLiteral()
 			auto result = IPLMakeSharePtr<ListExpression>();
 			while (auto lf = LiteralElement())
 			{
-				result->Push(lf);
+				result->GetValuesByRef().push_back(lf);
 				if (!Match(TokenType::Comma))
 				{
 					break;
@@ -703,10 +703,10 @@ ExpressionPtr Parser::VariableDefinition()
 		//	VariableDeclaration
 		//	| VariableDeclarationList, VariableDeclaration
 		auto vdList = IPLMakeSharePtr<ListExpression>();
-		vdList->Push(VariableDeclaration());
+		vdList->GetValuesByRef().push_back(VariableDeclaration());
 		while (Match(TokenType::Comma))
 		{
-			vdList->Push(VariableDeclaration());
+			vdList->GetValuesByRef().push_back(VariableDeclaration());
 		}
 		return vdList;
 	};
@@ -731,7 +731,7 @@ ExpressionPtr Parser::Block()
 		auto StatementsList = IPLMakeSharePtr<BlockStatement>();
 		while (auto s = Statement())
 		{
-			StatementsList->Push(s);
+			StatementsList->GetValuesByRef().push_back(s);
 		}
 		return StatementsList;
 	};
@@ -784,7 +784,7 @@ ExpressionPtr Parser::SwitchStatement()
 	if (Match(TokenType::Switch))
 	{
 		auto cond = ParenthesizedExpression();
-		IPLVector<SwitchStatement::Case> cases;
+		IPLVector<ExpressionPtr> cases;
 		ExpressionPtr defaultCase = nullptr;
 		if (Match(TokenType::LeftBrace))
 		{
@@ -796,7 +796,8 @@ ExpressionPtr Parser::SwitchStatement()
 					auto expr = Expression();
 					if (Match(TokenType::Colon))
 					{
-						cases.push_back({ expr, Statement() });
+						auto statement = Statement();
+						cases.push_back(IPLMakeSharePtr<CaseStatement>(expr, statement));
 					}
 				}
 				else if (Match(TokenType::Default))
@@ -996,7 +997,7 @@ ExpressionPtr Parser::TopStatements()
 	auto statements = IPLMakeSharePtr<::TopStatements>();
 	while (auto ts = TopStatement())
 	{
-		statements->Push(ts);
+		statements->GetValuesByRef().push_back(ts);
 	}
 	return statements;
 }
