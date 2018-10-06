@@ -3,6 +3,7 @@ solution 'IPL'
     flags {
         'FatalWarnings',
         'ExtraWarnings',
+        'Cpp14',
     }
 
     local root = '../build/'

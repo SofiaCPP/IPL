@@ -30,6 +30,7 @@ BinaryExpression::BinaryExpression(IPLSharedPtr<Expression> exprLeft, IPLSharedP
 IPLString BinaryExpression::GetOperatorTypeAsString() const
 {
 	// TODO: Implement
+        (void)m_Operator;
 	return "Binary";
 }
 
@@ -238,6 +239,7 @@ WhileStatement::WhileStatement(ExpressionPtr cond, ExpressionPtr body, bool doWh
 
 void WhileStatement::Print(std::ostream& os) const
 {
+        (void)(m_DoWhile);
 	os << "{ WhileStatement Not implemented yet !!}";
 }
 
