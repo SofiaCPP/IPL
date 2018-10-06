@@ -1,34 +1,34 @@
 #include "ASTPrinter.h"
 
-ASTPrinter::ASTPrinter(std::ostream& os)
+ASTPrinter::ASTPrinter(std::ostream&)
 {}
-void ASTPrinter::Visit(BinaryExpression* e)
+void ASTPrinter::Visit(BinaryExpression*)
 {}
-void ASTPrinter::Visit(UnaryExpression* e)
+void ASTPrinter::Visit(UnaryExpression*)
 {}
-void ASTPrinter::Visit(LiteralExpression* e)
+void ASTPrinter::Visit(LiteralExpression*)
 {}
-void ASTPrinter::Visit(IdentifierExpression* e)
+void ASTPrinter::Visit(IdentifierExpression*)
 {}
-void ASTPrinter::Visit(ListExpression* e)
+void ASTPrinter::Visit(ListExpression*)
 {}
-void ASTPrinter::Visit(VariableDefinitionExpression* e)
+void ASTPrinter::Visit(VariableDefinitionExpression*)
 {}
-void ASTPrinter::Visit(BlockStatement* e)
+void ASTPrinter::Visit(BlockStatement*)
 {}
-void ASTPrinter::Visit(LabeledStatement* e)
+void ASTPrinter::Visit(LabeledStatement*)
 {}
-void ASTPrinter::Visit(IfStatement* e)
+void ASTPrinter::Visit(IfStatement*)
 {}
-void ASTPrinter::Visit(SwitchStatement* e)
+void ASTPrinter::Visit(SwitchStatement*)
 {}
-void ASTPrinter::Visit(WhileStatement* e)
+void ASTPrinter::Visit(WhileStatement*)
 {}
-void ASTPrinter::Visit(ForStatement* e)
+void ASTPrinter::Visit(ForStatement*)
 {}
-void ASTPrinter::Visit(FunctionDeclaration* e)
+void ASTPrinter::Visit(FunctionDeclaration*)
 {}
-void ASTPrinter::Visit(TopStatements* e)
+void ASTPrinter::Visit(TopStatements*)
 {}
-void ASTPrinter::Visit(EmptyExpression* e)
+void ASTPrinter::Visit(EmptyExpression*)
 {}

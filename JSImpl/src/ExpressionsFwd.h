@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CommonTypes.h"
+
 class Expression;
 class BinaryExpression;
 class UnaryExpression;
@@ -16,4 +18,5 @@ class ForStatement;
 class FunctionDeclaration;
 class TopStatements;
 class EmptyExpression;
+
 using ExpressionPtr = IPLSharedPtr<Expression>;

@@ -1,6 +1,8 @@
 #include "Expression.h"
 #include <assert.h>
 
+#include <iostream>
+
 void PrintExpressionMember(ExpressionPtr expr, const char* name, std::ostream& os)
 {
 	os << name << ": {" << std::endl;

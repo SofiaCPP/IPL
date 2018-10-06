@@ -89,6 +89,8 @@ int main()
 	EXECUTE_TEST(TestKeyWord);
 	EXECUTE_TEST(TestVariableDeclaration);
 	EXECUTE_TEST(TestParseUnaryExpr);
+#if defined(_WIN32)
 	std::system("pause");
+#endif
 	return 0;
 }

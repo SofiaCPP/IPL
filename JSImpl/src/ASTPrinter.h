@@ -2,10 +2,7 @@
 
 #include "ExpressionVisitor.h"
 
-namespace std
-{
-class ostream;
-}
+#include <iosfwd>
 
 class ASTPrinter : public ExpressionVisitor
 {
