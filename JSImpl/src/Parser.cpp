@@ -4,7 +4,7 @@
 class Parser
 {
 public:
-	Parser(IPLVector<Token>& tokens, const std::function<void()>& onError = {});
+	Parser(const IPLVector<Token>& tokens, const std::function<void()>& onError = {});
 	ExpressionPtr Parse();
 private:
 	bool MatchOneOf(IPLVector<TokenType> types);
@@ -56,15 +56,15 @@ private:
 	ExpressionPtr TopStatement();
 
 	Token& Prev() { return m_Tokens[m_Current - 1]; }
-	std::function<void()> OnError;
-	unsigned m_Current;
 	IPLVector<Token> m_Tokens;
+	unsigned m_Current;
+	std::function<void()> OnError;
 };
 
-Parser::Parser(IPLVector<Token>& tokens, const std::function<void()>& onError)
+Parser::Parser(const IPLVector<Token>& tokens, const std::function<void()>& onError)
 	: m_Tokens(tokens)
-	, OnError(onError)
 	, m_Current(0)
+	, OnError(onError)
 {
 }
 
@@ -1011,7 +1011,7 @@ ExpressionPtr Parser::TopStatement()
 	return result;
 }
 
-ExpressionPtr Parse(IPLVector<Token>& tokens, const std::function<void()>& onError)
+ExpressionPtr Parse(const IPLVector<Token>& tokens, const std::function<void()>& onError)
 {
 	Parser p(tokens, onError);
 	return p.Parse();

@@ -8,7 +8,7 @@ class Expression : public IPLEnableShared<Expression>
 {
 	public:
 		virtual ~Expression() {}
-		virtual void Print(std::ostream& os) const {};
+		virtual void Print(std::ostream&) const {};
 		virtual void Accept(ExpressionVisitor& v) = 0;
 };
 
@@ -65,10 +65,10 @@ public:
 	virtual void Print(std::ostream& os) const override;
 	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
 private:
+	LiteralType m_Type;
+	bool m_BooleanValue;
 	double m_NumValue;
 	IPLString m_StringValue;
-	bool m_BooleanValue;
-	LiteralType m_Type;
 };
 
 
