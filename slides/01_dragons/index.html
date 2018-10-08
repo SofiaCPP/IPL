@@ -2,20 +2,20 @@
 programs.</p></blockquote></section><section><h2 id=program>Program</h2><blockquote><p>A set of instructions used to control the behaviour of a machine.</p></blockquote></section><section><h2 id=formal-language>Formal language</h2><blockquote><p>Non human language.</p><p>A set of strings and symbols together with a set of rules.</p></blockquote></section><section><h3 id=string-and-symbols>String and symbols</h3><ul><li>The language has alphabet and words.</li><li>Also known as tokens.</li></ul><p>Most often the tokens are defined with regular grammar over the alphabet.
 - regular grammars
 - regular expressions
-- finite automata</p></section><section><h3 id=rules>Rules</h3><p>The rules for composing sentances from words.</p><p>Most often the sentances are defined with context free grammar over the tokens.</p></section><section><h2 id=compiler>Compiler</h2><blockquote><p>Takes a program written in a high-level programming language and translates it
+- finite automata</p></section><section><h3 id=rules>Rules</h3><p>The rules for composing sentences from words.</p><p>Most often the sentences are defined with context free grammar over the tokens.</p></section><section><h2 id=compiler>Compiler</h2><blockquote><p>Takes a program written in a high-level programming language and translates it
 to machine language.</p></blockquote></section><section><h3 id=building-an-executable>Building an executable</h3><p>Compiler + linker = executable</p></section><section><h3 id=compiler-1>Compiler</h3><ol><li>Takes a program in a high-level language</li><li>Understands the program meaning</li><li>Generates a machine language program with the same meaning</li></ol></section><section><h3 id=compiler-architecture>Compiler architecture</h3><p>Three-stage compiler structure</p><ol><li>Front end<ul><li>understands the program</li></ul></li><li>Middle<ul><li>does the optimizations and removes syntactic sugar</li></ul></li><li>Back end<ul><li>generates the machine code</li></ul></li></ol></section><section><h4 id=front-end>Front end</h4><p>Understands the program?</p><p>Builds an Abstract Syntax Tree (AST) of the program.</p><ol><li>Converts source to stream of token.<ul><li>Lexer</li></ul></li><li>Converts the stream of tokens to a AST.<ul><li>Parser</li></ul></li></ol></section><section><h5 id=lexer>Lexer</h5><p>Recognizes all the tokens in the program. Most often that involves regular
 expressions and finite automata.</p><ul><li>hand-written lexer</li><li>lexer generation tool - takes a list of regular expressions and code to
 execute</li></ul></section><section><h5 id=parser>Parser</h5><p>Recognizes the rules from stream of tokens and builds the AST of the program.</p><ul><li>hand-written parser</li><li>parser generation tool</li></ul></section><section><h6 id=grammars>Grammars</h6><p>The grammar of a languages defines the structure of correct sentences and how to
 derive their meaning.</p></section><section><h6 id=cfg>CFG</h6><p>Context Free Grammars</p><pre><code>&lt;expr&gt; := &lt;expr&gt; &lt;op&gt; &lt;expr&gt; | (&lt;expr&gt;) | &lt;term&gt;
 &lt;op&gt;   := + | - | * | /
 &lt;term&gt; := [0-9]+
-</code></pre></section><section><h6 id=peg>PEG</h6><p>Parser Expression Grammars are similar to CFG, but are more convinient for
-parsing, since the <code>|</code> operator is not ambigious.</p><ul><li>CFG allows selecting any matching variant and can have more than one parse
-tree.<ul><li>parsing algorithms try to resolve this</li></ul></li><li>PEG pritizes the variants in the order that they are written.</li></ul></section><section><h6 id=peg-1>PEG</h6><pre><code>&lt;expr&gt;  := &lt;sum&gt;
+</code></pre></section><section><h6 id=peg>PEG</h6><p>Parser Expression Grammars are similar to CFG, but are more convenient for
+parsing, since the <code>|</code> operator is not ambiguous.</p><ul><li>CFG allows selecting any matching variant and can have more than one parse
+tree.<ul><li>parsing algorithms try to resolve this</li></ul></li><li>PEG prioritizes the variants in the order that they are written.</li></ul></section><section><h6 id=peg-1>PEG</h6><pre><code>&lt;expr&gt;  := &lt;sum&gt;
 &lt;sum&gt;   := &lt;prod&gt; ([+-] &lt;prod&gt;)*
 &lt;prod&gt;  := &lt;value&gt; ([*/] &lt;value&gt;)*
 &lt;value&gt; := [0-9]+ / '(' &lt;expr&gt; ')'
-</code></pre><ul><li>That is a CFG as well, so for some grammars there is no difference.</li><li>Some languages can be expressed only with ambigious grammars.</li></ul></section><section><h6 id=cfg-vs-peg>CFG vs PEG</h6><p>Where the else goes?</p><pre><code>&lt;if&gt; := if &lt;expr&gt; &lt;stmnt&gt; else &lt;stmnt&gt;
+</code></pre><ul><li>That is a CFG as well, so for some grammars there is no difference.</li><li>Some languages can be expressed only with ambiguous grammars.</li></ul></section><section><h6 id=cfg-vs-peg>CFG vs PEG</h6><p>Where the else goes?</p><pre><code>&lt;if&gt; := if &lt;expr&gt; &lt;stmnt&gt; else &lt;stmnt&gt;
     | if &lt;expr&gt; &lt;stmnt&gt;
 
 
@@ -23,11 +23,11 @@ if x0 if x1 s1 else s2
 
 if x0 { if x1 s1 } else s2 // 1
 if x0 { if x1 s1 else s2 } // 2
-</code></pre><ul><li>CFG - it is ambigious</li><li>PEG - 2 - because it is the first option</li></ul></section><section><h6 id=lalr-n>LALR(n)</h6><p>LR(n) and LALR(n) are family of parsing algorithms for CFG</p><ul><li>n is the number of look ahead terminals</li><li>L - <em>left-to-right</em>,</li><li>R - <em>right-most derivation</em> - the right most non-terminal is replaced</li></ul></section><section><h6 id=program-1>Program</h6><pre><code>function answer() {
+</code></pre><ul><li>CFG - it is ambiguous</li><li>PEG - 2 - because it is the first option</li></ul></section><section><h6 id=lalr-n>LALR(n)</h6><p>LR(n) and LALR(n) are family of parsing algorithms for CFG</p><ul><li>n is the number of look ahead terminals</li><li>L - <em>left-to-right</em>,</li><li>R - <em>right-most derivation</em> - the right most non-terminal is replaced</li></ul></section><section><h6 id=program-1>Program</h6><pre><code>function answer() {
     return 6*7;
 }
 </code></pre></section><section><h6 id=tokens>Tokens</h6><ul><li>keyword: <code>function</code></li><li>identifier: <code>answer</code></li><li>symbol: <code>(</code></li><li>symbol: <code>)</code></li><li>symbol: <code>{</code></li><li>keyword: <code>return</code></li><li>number: 6</li><li>symbol: <code>*</code></li><li>number: 7</li><li>symbol: <code>;</code></li><li>symbol: <code>}</code></li></ul></section><section><h6 id=ast>AST</h6><h1 id=todo-use-javascript-ast-dumper>TODO: use JavaScript AST dumper</h1></section><section><h3 id=middle>Middle</h3><p>Takes the AST and transforms that to some <em>Intermediate Representation</em> (IR)
-that is convinient for:</p><ul><li>optmization - constant propagation, loop unrolling, etc</li><li>machine code generation - register allocation, etc</li></ul></section><section><h3 id=ir>IR</h3><ul><li>A compiler might have different levels and types of IR<ul><li>text and binary</li></ul></li><li><a href=https://en.wikipedia.org/wiki/Static_single_assignment_form>Static Single Assignment form</a></li></ul></section><section><h3 id=ir-in-llvm-c>IR in LLVM - C</h3><pre><code>int mul_add(int x, int y, int z) {
+that is convenient for:</p><ul><li>optimization - constant propagation, loop unrolling, etc</li><li>machine code generation - register allocation, etc</li></ul></section><section><h3 id=ir>IR</h3><ul><li>A compiler might have different levels and types of IR<ul><li>text and binary</li></ul></li><li><a href=https://en.wikipedia.org/wiki/Static_single_assignment_form>Static Single Assignment form</a></li></ul></section><section><h3 id=ir-in-llvm-c>IR in LLVM - C</h3><pre><code>int mul_add(int x, int y, int z) {
   return x * y + z;
 }
 </code></pre></section><section><h3 id=ir-in-llvm-ir>IR in LLVM - IR</h3><pre><code>define i32 @mul_add(i32 %x, i32 %y, i32 %z) {
@@ -36,7 +36,7 @@ entry:
   %tmp2 = add i32 %tmp, %z
   ret i32 %tmp2
 }
-</code></pre></section><section><p>###</p></section><section><h3 id=back-end>Back end</h3><blockquote><p>Takes the IR and produces native code for a particular machine</p></blockquote></section><section><h2 id=interpreter>Interpreter</h2><blockquote><p>Like the compiler, but instead of producing machine code, executes the program
+</code></pre></section><section><h3 id=back-end>Back end</h3><blockquote><p>Takes the IR and produces native code for a particular machine</p></blockquote></section><section><h2 id=interpreter>Interpreter</h2><blockquote><p>Like the compiler, but instead of producing machine code, executes the program
 instruction by instruction translating from program instructions to machine
 instructions.</p></blockquote></section><section><h2 id=interpreter-1>Interpreter</h2><ul><li>Most interpreters have a REPL which makes them great for experiments.</li><li>You don&rsquo;t need build an executable to run your program</li></ul></section><section><h3 id=compiler-vs-interpreter>Compiler vs Interpreter</h3><ul><li><a href="https://www.youtube.com/watch?v=_C5AHaS1mOA">https://www.youtube.com/watch?v=_C5AHaS1mOA</a></li></ul></section><section><h3 id=aot-compilation>AOT compilation</h3><ul><li>Ahead of Time - the program is compiled before it is being run</li></ul></section><section><h3 id=jit-compilation>JIT compilation</h3><ul><li>Just in Time - the program is running (typically in an interpreter) and parts
 of it are being compiled to native machine code while it is being executed</li></ul></section><section><h4 id=aot-vs-jit>AOT vs JIT</h4><ul><li>AOT - less overhead, faster startup, generally better performance</li><li>JIT - better chance for optimizations, since some of the program arguments
