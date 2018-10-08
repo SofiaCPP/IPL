@@ -92,6 +92,14 @@ A few sample of projects are:
   the end of the semester and still get 100%.
 
 ---
+## Homework
+
+- Homeworks will be announced at the end of a lecture
+- In two weeks on the lecture we will discuss the best homeworks
+- You can submit the homework at any moment
+    - doing that after the two weeks, you will score less points
+
+---
 ## Sample homeworks
 
 - a minifier (with variable renaming, tree-shaking, etc)
