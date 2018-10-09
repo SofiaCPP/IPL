@@ -1,0 +1,26 @@
+%{
+#include "Token.h"
+%}
+struct Token {
+    const char* Value;
+    TokenType Type;
+};
+%%
+if, TokenType::if
+else, TokenType::else
+for, TokenType::for
+while, TokenType::while
+do, TokenType::do
+break, TokenType::break
+switch, TokenType::switch
+case, TokenType::case
+function, TokenType::function
+return,TokenType::return
+new, TokenType::new
+delete, TokenType::delete
+try, TokenType::try
+throw, TokenType::throw
+catch, TokenType::catch
+class, TokenType::class
+public, TokenType::public
+private, TokenType::private
