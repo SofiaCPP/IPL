@@ -91,6 +91,7 @@ Right:
     Foo foo { bar };
 
 Wrong:
+
     Foo foo{ bar };
     Foo foo {bar};
 
@@ -283,7 +284,7 @@ Wrong:
 
     MyOtherClass::MyOtherClass() : MySuperClass() {}
 
-## Using namespace - do not use `using` never!
+## Using namespace - do not use `using`!
 
 ## Pointers and memory managment
 
