@@ -98,6 +98,14 @@ A few sample of projects are:
 - In two weeks on the lecture we will discuss the best homeworks
 - You can submit the homework at any moment
     - doing that after the two weeks, you will score less points
+- Submitting your homework is done by issuing a pull request
+
+---
+## Homework
+
+- Make a folder inside the *homework* folder with your faculty number and a
+  folder inside that for each homework
+- Sample - https://github.com/SofiaCPP/IPL/tree/master/homework/80095/js2html
 
 ---
 ## Sample homeworks
@@ -120,6 +128,11 @@ contribution.
     - i.e. add source location information to the AST
 
 ---
+## Pull Requests
+
+- Follow the pull request template
+- Add your faculty number in the description
+
 ## What are the requirements?
 
 1. {{< frag c="Will to learn and time to experiment and write code" >}}
