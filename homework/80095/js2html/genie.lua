@@ -1,4 +1,4 @@
-solution 'FlexDemos'
+solution 'js2html'
     configurations {'debug', 'release'}
     configuration 'Linux'
         flags {
@@ -20,12 +20,12 @@ solution 'FlexDemos'
         objdir(root .. 'obj/release')
     configuration '*'
 
-    project 'FlexLexer'
+    project 'js2html'
         kind 'ConsoleApp'
         language 'C'
-        uuid(os.uuid('FlexLexer'))
+        uuid(os.uuid('js2html'))
         files {
-            'lex.yy.c',
-            'JavaScript.flex',
+            'js2html.c',
+            'js2html.flex',
         }
         debugargs 'hello.js'
