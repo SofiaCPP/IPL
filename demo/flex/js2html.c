@@ -529,6 +529,7 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "js2html.flex"
 /* scanner for a toy JavaScript-like language */
+#define YY_NO_UNISTD_H
 #line 4 "js2html.flex"
 #line 534 "js2html.c"
 

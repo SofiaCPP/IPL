@@ -3,6 +3,7 @@
 %{
 /* need this for the call to atof() below */
 #include <math.h>
+#define YY_NO_UNISTD_H
 %}
 
 DIGIT    [0-9]

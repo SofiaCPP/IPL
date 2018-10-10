@@ -531,6 +531,8 @@ char *yytext;
 #line 4 "JavaScript.flex"
 /* need this for the call to atof() below */
 #include <math.h>
+#define YY_NO_UNISTD_H
+//int isatty(int) { return 0; }
 #line 535 "lex.yy.c"
 
 #define INITIAL 0
