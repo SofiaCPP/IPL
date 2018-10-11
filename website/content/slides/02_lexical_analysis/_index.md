@@ -1,7 +1,7 @@
 ---
 title: "Lexical Analysis"
 date: 2018-09-30T13:45:53+03:00
-draft: true
+draft: false
 outputs: ["Reveal"]
 ---
 
