@@ -1,0 +1,74 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><title>Lexical Analysis</title><meta name=description content="Course on implementing programming languages"><meta name=author content><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css id=theme><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css><script>var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=window.location.search.match(/print-pdf/gi)?'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/pdf.css':'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/paper.css';document.getElementsByTagName('head')[0].appendChild(link);</script></head><body><div class=reveal><div class=slides><section><h1 id=lexical-analysis>Lexical Analysis</h1><blockquote><p>Converting the sequence of characters into a sequence of tokens for the
+language grammar.</p></blockquote></section><section><h2 id=theory>Theory</h2><p>Programming languages have a finite set of keywords and rules for defining
+numbers and identifiers.</p><p>These are most easily modeled as a regular language, so you can use regex and
+DFA to recognize the tokens.</p></section><section><h2 id=a-short-refresher-on-re>A short refresher on RE</h2><ul><li><em>a</em> matches a</li><li><em>ab</em> matches ab</li><li><em>a|b</em> matches a or b</li><li><code>a*</code> matches a zero or more times</li><li><em>a?</em> matches a or <em>empty</em></li><li><em>[0-9]</em> matches any digit</li><li><em>a{m,n}</em> matches between <em>m</em> and <em>n</em> *a*s</li></ul></section><section><h3 id=what-we-can-do-with-regular-expressions>What we can do with regular expressions</h3><ul><li>We can define regular language.</li><li>We can recognize words from regular language.</li><li>We can find patterns in sequence of characters.</li></ul></section><section><h3 id=what-we-can-t-do-with-regular-expressions>What we can&rsquo;t do with regular expressions</h3><ul><li>We can&rsquo;t recognize a{n}b{2n}</li><li>We can&rsquo;t recognize if something is valid HTML</li><li>We can&rsquo;t recognize if something is valid (place here almost every programing
+language)</li></ul></section><section><h2 id=token>Token</h2><blockquote><p>A token is a single terminal symbol for the language grammar.</p></blockquote><p>Tokens have type and value - i.e. <code>3.14</code> is a <em>number</em> and has value <em>3.14</em></p></section><section><h3 id=tokens>Tokens</h3><p>Typical tokens are:</p><ul><li>keyword - if, else, for, while, do, function</li><li>number - integer - 42, double - 3.14, float - 3.14f</li><li>string</li><li>operator - <code>==</code>, <code>+</code>,</li><li>symbol - <code>(</code>, <code>)</code>,<ul><li>it might be easier to split these into <em>LPAREN</em>, <em>RPAREN</em>.</li></ul></li><li>identifier - starts with a [a-zA-Z_]. Why?</li></ul></section><section><h3 id=because>Because</h3><blockquote><p>it is easy to distinguish between identifiers, numbers, strings and symbols by
+looking at the first character</p></blockquote></section><section><h2 id=how-to-implement-a-token>How to implement a token?</h2></section><section><h3 id=what-goes-into-a-token>What goes into a token</h3><ul><li>type</li><li>value</li><li>file, line and column</li></ul></section><section><h4 id=token-type>Token Type</h4><pre><code>enum TokenType
+{
+    LeftParen,
+    RightParen,
+    // ...
+    While,
+    // ...
+    True,
+    False,
+    Eof,
+};
+</code></pre></section><section><h3 id=token-struct>Token struct</h3><pre><code>struct Token
+{
+        TokenType Type;
+        unsigned Line;
+        IPLString Lexeme;
+        double Number = 0.0;
+};
+</code></pre></section><section><p>###</p><ul><li><code>std::variant&lt;double, IPLString</code> will require <em>C++17</em></li><li><code>union</code> does&rsquo;t work good with strings</li><li><code>union</code> with <code>string_view</code> -&gt; <em>C++17</em></li><li>tokens can just keep strings and leave the parser to turn them into numbers</li></ul></section><section><h2 id=lexer>Lexer</h2><p>The lexer is the component of the compiler that does lexical analysis.</p></section><section><h3 id=how-a-lexer-works>How a lexer works</h3><p>Reads the source character by character and tries to match that against the
+regexes that define the language.</p><ul><li>Generally the longest match is preferred, so that <code>&gt;=</code> is preferred over <code>&gt;</code>.</li></ul></section><section><h3 id=how-to-write-a-lexer>How to write a lexer</h3><ul><li>generate it with a tool</li><li>write one by hand</li><li>for an existing language<ul><li>search in google: &ldquo;Lexical grammar for <em>language you prefer</em>&ldquo;</li><li>it might be in a format ready for some tool</li></ul></li><li>for a custom language write down on paper the lexical grammar<ul><li>define your keywords</li><li>rules for identifiers, numbers, strings, &hellip;</li><li>&hellip;</li></ul></li></ul></section><section><h4 id=generate-a-lexer>Generate a lexer</h4><p>Tools use finite automata to recognize the tokens. When a token is recognized,
+an user action code is executed, so that the type and the value of the token can
+be stored.</p></section><section><h4 id=tools>Tools</h4><ul><li><em>flex</em> - uses tables for the states of the automaton</li><li><em>re2c</em> - generates code for the automaton in <em>C</em><ul><li>claims easier debuggability, but still the generated code is pretty
+complex</li></ul></li><li>some parser generators have built-in lexer as well</li></ul></section><section><h3 id=flex>Flex</h3><pre><code>definitions
+%%
+rules
+%%
+user code
+</code></pre></section><section><pre><code>%{
+/* include verbatim code */
+#include &lt;math.h&gt;
+%}
+
+DIGIT    [0-9]
+ID       [a-z][a-z0-9]*
+
+%%
+</code></pre></section><section><pre><code>{DIGIT}+    {
+            printf(&quot;An int:%s:%d\n&quot;, yytext, atoi(yytext));
+            }
+
+{DIGIT}+&quot;.&quot;{DIGIT}*        {
+            printf(&quot;A float:%s:%g\n&quot;, yytext, atof(yytext));
+            }
+
+if|then|while|do|for|function        {
+            printf(&quot;A keyword:%s\n&quot;, yytext);
+            }
+
+{ID}        printf(&quot;An identifier:%s\n&quot;, yytext);
+</code></pre></section><section><h3 id=input>Input</h3><p><a href=https://github.com/SofiaCPP/IPL/blob/master/demo/flex/JavaScript.flex>https://github.com/SofiaCPP/IPL/blob/master/demo/flex/JavaScript.flex</a></p></section><section><h3 id=output>Output</h3><p><a href=https://github.com/SofiaCPP/IPL/blob/master/demo/flex/lex.yy.c>https://github.com/SofiaCPP/IPL/blob/master/demo/flex/lex.yy.c</a></p></section><section><h3 id=disclaimer>Disclaimer</h3><blockquote><p>Default options used!</p></blockquote><p><code>flex</code> is quite customizable, either by options, or by defines for the file.
+We have used the default options for simplicity.</p></section><section><h3 id=debugging-tool-generated-code>Debugging tool generated code</h3><ul><li>pretty much impossible in the generated code</li><li>the tool is created to allow defining the lexer in high-level language</li></ul><blockquote><p>Debug the high-level language definition, not the generated code</p></blockquote></section><section><h2 id=writing-a-lexer-by-hand>Writing a lexer by hand</h2><ol><li>Start with the lexical grammar</li><li>Read input symbol by symbol, for each symbol follow rules that are still
+possible</li><li>Continue reading until no more input is possible -&gt; emit the last possible
+token</li></ol></section><section><h2 id=writing-a-lexer-by-hand-1>Writing a lexer by hand</h2><p>For our sample lexical grammar:</p><pre><code>while (c != '\0') {
+    if (isdigit(c)) {
+        emit_number();
+    }
+    else if (c &gt;= 'a' &amp;&amp; c &lt;= 'z') {
+        auto word = read_word();
+        if (keyword(word)) {
+            emit_keyword(word);
+        } else {
+            emit_identifier(word);
+        }
+    }
+    else { error(); }
+}
+</code></pre></section><section><h3 id=keyword-vs-identifier>Keyword vs identifier</h3><blockquote><p>The set of keywords is fixed and finite.</p></blockquote><ul><li>it is possible to create a perfect hash<ul><li>gperf is a tool for that</li></ul></li><li>use a good data-structure that will allow for very fast look-up</li></ul></section><section><h3 id=note>Note</h3><p>Some languages do not have/need grammar for compilation</p><ul><li>assembler languages</li><li>Languages based on reverse or prefix notation</li><li>Forth</li></ul></section><section><h3 id=homework>Homework</h3><p>Create a xxx2html syntax highlighter for a language of your choice.</p></section><section><h1 id=toc_27>?</h1></section></div></div><script type=application/json id=reveal-hugo-page-params>null</script><script type=application/json id=reveal-hugo-site-params>{"highlight_theme":"monokai","slide_number":true,"transition":"none"}</script><script type=application/json id=reveal-hugo-defaults>{"center":true,"controls":true,"highlight_theme":"default","history":true,"progress":true,"theme":"black","transition":"slide"}</script><script>window.revealHugoDependencies={dependencies:[{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/lib/js/classList.js',condition:function(){return!document.body.classList;}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/marked.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/markdown.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/highlight/highlight.js',async:true,callback:function(){hljs.initHighlightingOnLoad();}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/zoom-js/zoom.js',async:true},{src:'\/IPL\/reveal-hugo\/plugin\/notes\/notes.js',async:true}]};</script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/js/head.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.js></script><script>function camelize(map){if(map){Object.keys(map).forEach(function(k){newK=k.replace(/(\_\w)/g,function(m){return m[1].toUpperCase()});if(newK!=k){map[newK]=map[k];delete map[k];}});}
+return map;}
+var revealHugoPageParams=JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);var revealHugoSiteParams=JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);var revealHugoDefaults=JSON.parse(document.getElementById('reveal-hugo-defaults').innerHTML);var options=Object.assign({},camelize(revealHugoDefaults),camelize(revealHugoSiteParams),camelize(revealHugoPageParams),revealHugoDependencies);Reveal.initialize(options);</script></body></html>
