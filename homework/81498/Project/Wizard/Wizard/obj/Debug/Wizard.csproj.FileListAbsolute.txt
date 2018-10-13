@@ -1,0 +1,7 @@
+E:\IPL\homework\81498\Wizard\Wizard\bin\Debug\Wizard.exe.config
+E:\IPL\homework\81498\Wizard\Wizard\bin\Debug\Wizard.exe
+E:\IPL\homework\81498\Wizard\Wizard\bin\Debug\Wizard.pdb
+E:\IPL\homework\81498\Wizard\Wizard\obj\Debug\Wizard.csprojAssemblyReference.cache
+E:\IPL\homework\81498\Wizard\Wizard\obj\Debug\Wizard.csproj.CoreCompileInputs.cache
+E:\IPL\homework\81498\Wizard\Wizard\obj\Debug\Wizard.exe
+E:\IPL\homework\81498\Wizard\Wizard\obj\Debug\Wizard.pdb
