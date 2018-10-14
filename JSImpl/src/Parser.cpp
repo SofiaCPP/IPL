@@ -691,7 +691,7 @@ ExpressionPtr Parser::VariableDefinition()
 			auto ae = CreateEmptyExpression();
 			if (Match(TokenType::Equal))
 			{
-				auto ae = AssignmentExpression();
+				ae = AssignmentExpression();
 			}
 			return IPLMakeSharePtr<VariableDefinitionExpression>(id, ae);
 		}
