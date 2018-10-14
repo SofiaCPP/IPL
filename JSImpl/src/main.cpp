@@ -1,11 +1,10 @@
 #include "Lexer.h"
 #include "Parser.h"
+#include "ASTPrinter.h"
 #include <iostream>
 #define LOG(msg) std::cout << msg << std::endl
 #define EXECUTE_TEST(test) std::cout << #test << " "; test();
 #define CHECK(cond)	if (cond) {LOG("PASS");} else {LOG(#cond " FAIL");}
-
-#define CHECK(cond) cond ? LOG("PASS") : LOG("FAIL")
 
 // Lexer Tests
 void TestLess()
@@ -23,13 +22,13 @@ void TestNumber()
 void TestNumberStartWithNine()
 {
 	auto tokens = Tokenize("999");
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999);
 }
 
 void TestNumberStartWithZero()
 {
 	auto tokens = Tokenize("0999");
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999);
 }
 
 void TestSpaceNewLineSpace()
@@ -73,25 +72,27 @@ void TestVariableDeclaration()
 void TestParseUnaryExpr()
 {
 	// TODO make actual test :D
-	auto expr = Parse(Tokenize("function pesho() { var a = 0; return a; }"));
+	auto expr = Parse(Tokenize("function pesho(v1) { var a = 0; return a; }"));
+	ASTPrinter p(std::cout);
+	expr->Accept(p);
 }
 
 int main()
 {
-	EXECUTE_TEST(TestLess);
-	EXECUTE_TEST(TestNumber);
-	EXECUTE_TEST(TestNumberStartWithNine);
-	EXECUTE_TEST(TestNumberStartWithZero);
-	EXECUTE_TEST(TestString);
-	EXECUTE_TEST(TestSpaceNewLineSpace);
-	EXECUTE_TEST(TestStringSingleQuotedStrings);
-	EXECUTE_TEST(TestKeyWord);
-	EXECUTE_TEST(TestVariableDeclaration);
+	//EXECUTE_TEST(TestLess);
+	//EXECUTE_TEST(TestNumber);
+	//EXECUTE_TEST(TestNumberStartWithNine);
+	//EXECUTE_TEST(TestNumberStartWithZero);
+	//EXECUTE_TEST(TestString);
+	//EXECUTE_TEST(TestSpaceNewLineSpace);
+	//EXECUTE_TEST(TestStringSingleQuotedStrings);
+	//EXECUTE_TEST(TestKeyWord);
+	//EXECUTE_TEST(TestVariableDeclaration);
 
 
-	//EXECUTE_TEST(TestParseUnaryExpr);
+	EXECUTE_TEST(TestParseUnaryExpr);
 #if defined(_WIN32)
-	std::system("pause");
+	//std::system("pause");
 #endif
 	return 0;
 }
