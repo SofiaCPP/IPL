@@ -1,8 +1,11 @@
 #pragma once
 #include "CommonTypes.h"
 
-#include "CommonTypes.h"
-
+class LiteralNull;
+class LiteralUndefined;
+class LiteralNumber;
+class LiteralString;
+class LiteralBoolean;
 class Expression;
 class BinaryExpression;
 class UnaryExpression;

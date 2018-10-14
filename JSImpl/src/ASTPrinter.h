@@ -8,9 +8,13 @@ class ASTPrinter : public ExpressionVisitor
 public:
 	ASTPrinter(std::ostream& os);
 	~ASTPrinter() {}
+	virtual void Visit(LiteralNull* e) override;
+	virtual void Visit(LiteralUndefined* e) override;
+	virtual void Visit(LiteralString* e) override;
+	virtual void Visit(LiteralNumber* e) override;
+	virtual void Visit(LiteralBoolean* e) override;
 	virtual void Visit(BinaryExpression* e) override;
 	virtual void Visit(UnaryExpression* e) override;
-	virtual void Visit(LiteralExpression* e) override;
 	virtual void Visit(IdentifierExpression* e) override;
 	virtual void Visit(ListExpression* e) override;
 	virtual void Visit(VariableDefinitionExpression* e) override;

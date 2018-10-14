@@ -11,37 +11,6 @@ class Expression : public IPLEnableShared<Expression>
 		virtual void Accept(ExpressionVisitor& v) = 0;
 };
 
-enum class LiteralType
-{
-	Number,
-	String,
-	Boolean,
-	Null,
-	Undefined
-};
-
-class LiteralExpression : public Expression
-{
-public:
-
-	virtual ~LiteralExpression() {}
-	LiteralExpression(double);
-	LiteralExpression(IPLString&);
-	LiteralExpression(bool);
-	LiteralExpression(TokenType type);
-	virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }
-	double GetNumValue() const { return m_NumValue; }
-	const IPLString& GetStringValue() const { return m_StringValue; }
-	bool GetBooleanValue() const { return m_BooleanValue; }
-	LiteralType GetLiteralType() const { return m_Type; }
-private:
-	LiteralType m_Type;
-	bool m_BooleanValue;
-	double m_NumValue;
-	IPLString m_StringValue;
-};
-
-
 #define EXPAND_ARGUMENT(type, name, def)\
 		type name = def,
 
@@ -71,6 +40,17 @@ private:
 		bool m_dummy;                                                          \
 	};
 
+
+#define NO_MEMBERS(MACRO)
+
+#define LITERAL_BOOLEAN_MEMBERS(MACRO)\
+		MACRO(bool, Value, false)
+
+#define LITERAL_NUMBER_MEMBERS(MACRO)\
+		MACRO(double, Value, 0.0)
+
+#define LITERAL_STRING_MEMBERS(MACRO)\
+		MACRO(IPLString, Value, "")
 
 #define BINARY_EXPRESSION_MEMBERS(MACRO)\
 		MACRO(ExpressionPtr, Left, nullptr)\
@@ -141,6 +121,11 @@ private:
 #define EMPTY_EXPRESSION_MEMBERS(MACRO)
 
 #define EXPRESSION_DEFINITION_ITERATOR(MACRO)\
+		MACRO(LiteralNull, Expression, NO_MEMBERS)\
+		MACRO(LiteralUndefined, Expression, NO_MEMBERS)\
+		MACRO(LiteralBoolean, Expression, LITERAL_BOOLEAN_MEMBERS)\
+		MACRO(LiteralNumber, Expression, LITERAL_NUMBER_MEMBERS)\
+		MACRO(LiteralString, Expression, LITERAL_STRING_MEMBERS)\
 		MACRO(BinaryExpression, Expression, BINARY_EXPRESSION_MEMBERS)\
 		MACRO(UnaryExpression, Expression, UNARY_EXPRESSION_MEMBERS)\
 		MACRO(IdentifierExpression, Expression, IDENTIFIER_EXPRESSION_MEMBERS)\
@@ -156,7 +141,6 @@ private:
 		MACRO(FunctionDeclaration, Expression, FUNCTION_EXPRESSION_MEMBERS)\
 		MACRO(TopStatements, Expression, TOP_EXPRESSION_MEMBERS)\
 		MACRO(EmptyExpression, Expression, EMPTY_EXPRESSION_MEMBERS)
-
 
 EXPRESSION_DEFINITION_ITERATOR(GENERATE_EXPRESSION);
 

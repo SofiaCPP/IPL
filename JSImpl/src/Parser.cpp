@@ -248,29 +248,29 @@ ExpressionPtr Parser::SimpleExpression()
 	//	| ArrayLiteral
 	if (Match(TokenType::Number))
 	{
-		return IPLMakeSharePtr<LiteralExpression>(Prev().Number);
+		return IPLMakeSharePtr<LiteralNumber>(Prev().Number);
 	}
 	else if (Match(TokenType::String))
 	{
-		return IPLMakeSharePtr<LiteralExpression>(Prev().Lexeme);
+		return IPLMakeSharePtr<LiteralString>(Prev().Lexeme);
 	}
 	else if (Match(TokenType::Null))
 	{
-		return IPLMakeSharePtr<LiteralExpression>(Prev().Type);
+		return IPLMakeSharePtr<LiteralNull>();
 	}
 	else if (Match(TokenType::Undefined))
 	{
-		return IPLMakeSharePtr<LiteralExpression>(Prev().Type);
+		return IPLMakeSharePtr<LiteralUndefined>();
 	}
 	else if (Match(TokenType::True))
 	{
 		bool t = true;
-		return IPLMakeSharePtr<LiteralExpression>(t);
+		return IPLMakeSharePtr<LiteralBoolean>(t);
 	}
 	else if (Match(TokenType::False))
 	{
 		bool f = false;
-		return IPLMakeSharePtr<LiteralExpression>(f);
+		return IPLMakeSharePtr<LiteralBoolean>(f);
 	}
 	else if (Match(TokenType::Identifier))
 	{
