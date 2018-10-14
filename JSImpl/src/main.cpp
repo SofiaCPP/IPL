@@ -3,42 +3,38 @@
 #include <iostream>
 #define LOG(msg) std::cout << msg << std::endl
 #define EXECUTE_TEST(test) std::cout << #test << " "; test();
-#define CHECH(cond)	if (cond) {LOG("PASS");} else {LOG(#cond " FAIL");}
+#define CHECK(cond)	if (cond) {LOG("PASS");} else {LOG(#cond " FAIL");}
 
 // Lexer Tests
 void TestLess()
 {
 	auto tokens = Tokenize("<");
-	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::Less);
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Less);
 
 }
 
 void TestNumber()
 {
-	{
-		auto tokens = Tokenize("213434.24");
-		CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24)
-
-	}
-
+	auto tokens = Tokenize("213434.24");
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24)
 }
 
 void TestNumberStartWithNine()
 {
 	auto tokens = Tokenize("999");
-	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
 }
 
 void TestNumberStartWithZero()
 {
 	auto tokens = Tokenize("0999");
-	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
 }
 
 void TestSpaceNewLineSpace()
 {
 	auto tokens = Tokenize(" \n var a = 4;");
-	CHECH(tokens.size() == 6 && tokens[0].Type == TokenType::Var &&
+	CHECK(tokens.size() == 6 && tokens[0].Type == TokenType::Var &&
 		tokens[1].Type == TokenType::Identifier &&
 		tokens[2].Type == TokenType::Equal &&
 		tokens[3].Type == TokenType::Number &&
@@ -48,25 +44,25 @@ void TestSpaceNewLineSpace()
 void TestString()
 {
 	auto tokens = Tokenize("\"alabala\"");
-	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "\"alabala\"");
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "\"alabala\"");
 }
 
 void TestStringSingleQuotedStrings()
 {
 	auto tokens = Tokenize("'alabala'");
-	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "'alabala'");
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "'alabala'");
 }
 
 void TestKeyWord()
 {
 	auto tokens = Tokenize("for");
-	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::For);
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::For);
 }
 
 void TestVariableDeclaration()
 {
 	auto tokens = Tokenize("var pesho = 10");
-	CHECH(tokens.size() == 5 && tokens[0].Type == TokenType::Var
+	CHECK(tokens.size() == 5 && tokens[0].Type == TokenType::Var
 		&& tokens[1].Type == TokenType::Identifier
 		&& tokens[2].Type == TokenType::Equal
 		&& tokens[3].Type == TokenType::Number
