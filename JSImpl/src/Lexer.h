@@ -107,7 +107,7 @@ struct Token
 	TokenType Type;
 	unsigned Line;
 	IPLString Lexeme;
-	double Number = 0.0;
+	double Number;
 };
 
 IPLVector<Token> Tokenize(const char* code, const std::function<void()>& onError = {});

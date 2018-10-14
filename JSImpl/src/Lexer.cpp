@@ -121,12 +121,12 @@ bool Tokenizer::Match(const char c)
 
 Token Tokenizer::ProduceToken(TokenType type)
 {
-	return { type, m_Line, "" };
+	return { type, m_Line, "", 0.0 };
 }
 
 Token Tokenizer::ProduceToken(TokenType type, IPLString lexeme)
 {
-	return{ type, m_Line, lexeme };
+	return{ type, m_Line, lexeme, 0.0 };
 }
 
 namespace
@@ -146,7 +146,7 @@ Token Tokenizer::NextToken()
 {
 	if (m_Code[m_Current] == '\0')
 	{
-		return Token{ TokenType::Eof, 0, "" };
+		return Token{ TokenType::Eof, 0, "", 0.0 };
 	}
 
 	while (SkipWhiteSpaces() || SkipNewLine());
@@ -183,7 +183,7 @@ Token Tokenizer::NextToken()
 	}
 	// Number
 	const char c = m_Code[m_Current];
-	if (c >= '0' && c < '9')
+	if (c >= '0' && c <= '9')
 	{
 		size_t parsedBytes = 0;
 		const double number = std::stod(m_Code + m_Current, &parsedBytes);
@@ -201,7 +201,7 @@ Token Tokenizer::NextToken()
 			++m_Current;
 		}
 		m_Current++; // skip second '"'
-		return Token{ TokenType::String, m_Line, IPLString(m_Code + start, m_Code + m_Current) };
+		return Token{ TokenType::String, m_Line, IPLString(m_Code + start, m_Code + m_Current), 0.0 };
 	}
 
 	// Key words
@@ -217,7 +217,7 @@ Token Tokenizer::NextToken()
 		auto word = m_KeyWordsTable.find(key);
 		if (word != m_KeyWordsTable.end())
 		{
-			return Token{ word->second, m_Line, key };
+			return Token{ word->second, m_Line, key, 0.0 };
 		}
 		// It's not a key word so we must revert current counter
 		m_Current = start;
@@ -232,8 +232,8 @@ Token Tokenizer::NextToken()
 		{
 			++m_Current;
 		}
-		return Token{ TokenType::Identifier, m_Line, IPLString(m_Code + start, m_Code + m_Current) };
+		return Token{ TokenType::Identifier, m_Line, IPLString(m_Code + start, m_Code + m_Current), 0.0 };
 	}
 	// TODO: Error reporting
-	return Token{ TokenType::Eof, m_Line, "" };
+	return Token{ TokenType::Eof, m_Line, "", 0.0 };
 }

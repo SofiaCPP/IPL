@@ -3,75 +3,68 @@
 #include <iostream>
 #define LOG(msg) std::cout << msg << std::endl
 #define EXECUTE_TEST(test) std::cout << #test << " "; test();
+#define CHECH(cond)	if (cond) {LOG("PASS");} else {LOG(#cond " FAIL");}
 
 // Lexer Tests
 void TestLess()
 {
 	auto tokens = Tokenize("<");
-	if (tokens.size() == 2 && tokens[0].Type == TokenType::Less)
-	{
-		LOG("PASS");
-	}
-	else
-	{
-		LOG("FAIL");
-	}
+	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::Less);
+
 }
 
 void TestNumber()
 {
-	auto tokens = Tokenize("213434.24");
-	if (tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24)
 	{
-		LOG("PASS");
+		auto tokens = Tokenize("213434.24");
+		CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24)
+
 	}
-	else
-	{
-		LOG("FAIL");
-	}
+
+}
+
+void TestNumberStartWithNine()
+{
+	auto tokens = Tokenize("999");
+	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
+}
+
+void TestNumberStartWithZero()
+{
+	auto tokens = Tokenize("0999");
+	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
+}
+
+void TestSpaceNewLineSpace()
+{
+	auto tokens = Tokenize(" \n var a = 4;");
+	CHECH(tokens.size() == 6 && tokens[0].Type == TokenType::Var &&
+		tokens[1].Type == TokenType::Identifier &&
+		tokens[2].Type == TokenType::Equal &&
+		tokens[3].Type == TokenType::Number &&
+		tokens[4].Type == TokenType::Semicolon);
 }
 
 void TestString()
 {
 	auto tokens = Tokenize("\"alabala\"");
-	if (tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "\"alabala\"")
-	{
-		LOG("PASS");
-	}
-	else
-	{
-		LOG("FAIL");
-	}
+	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "\"alabala\"");
 }
 
 void TestKeyWord()
 {
 	auto tokens = Tokenize("for");
-	if (tokens.size() == 2 && tokens[0].Type == TokenType::For)
-	{
-		LOG("PASS");
-	}
-	else
-	{
-		LOG("FAIL");
-	}
+	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::For);
 }
 
 void TestVariableDeclaration()
 {
 	auto tokens = Tokenize("var pesho = 10");
-	if (tokens.size() == 5 && tokens[0].Type == TokenType::Var
+	CHECH(tokens.size() == 5 && tokens[0].Type == TokenType::Var
 		&& tokens[1].Type == TokenType::Identifier
 		&& tokens[2].Type == TokenType::Equal
 		&& tokens[3].Type == TokenType::Number
-		&& tokens[4].Type == TokenType::Eof)
-	{
-		LOG("PASS");
-	}
-	else
-	{
-		LOG("FAIL");
-	}
+		&& tokens[4].Type == TokenType::Eof);
 }
 // Parser Tests
 void TestParseUnaryExpr()
@@ -85,10 +78,14 @@ int main()
 {
 	EXECUTE_TEST(TestLess);
 	EXECUTE_TEST(TestNumber);
+	EXECUTE_TEST(TestNumberStartWithNine);
+	EXECUTE_TEST(TestNumberStartWithZero);
 	EXECUTE_TEST(TestString);
+	EXECUTE_TEST(TestSpaceNewLineSpace);
 	EXECUTE_TEST(TestKeyWord);
 	EXECUTE_TEST(TestVariableDeclaration);
-	EXECUTE_TEST(TestParseUnaryExpr);
+
+	//EXECUTE_TEST(TestParseUnaryExpr);
 #if defined(_WIN32)
 	std::system("pause");
 #endif
