@@ -930,7 +930,7 @@ ExpressionPtr Parser::Parse()
 
 ExpressionPtr Parser::FunctionDefinition()
 {
-	auto  FormalParameters = [=](IPLVector<IPLString> identifiers) -> bool {
+	auto  FormalParameters = [=](IPLVector<IPLString>& identifiers) -> bool {
 		if (Match(TokenType::LeftParen))
 		{
 			while (Match(TokenType::Identifier))

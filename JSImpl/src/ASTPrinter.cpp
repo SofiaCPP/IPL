@@ -36,12 +36,13 @@ void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVec
 
 void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVector<IPLString>& list, bool isLast)
 {
-	os << "\"" << name << "\" : [ \n";
+	os << "\"" << name << "\" : [";
 	for (auto i = 0; i < list.size(); ++i)
 	{
+		os << "\"" << list[i] << "\"";
 		if (i + 1 != list.size())
 		{
-			os << list[i] << ",";
+			os << ",";
 		}
 	}
 	os << "]";
