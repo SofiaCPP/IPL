@@ -3,38 +3,43 @@
 #include <iostream>
 #define LOG(msg) std::cout << msg << std::endl
 #define EXECUTE_TEST(test) std::cout << #test << " "; test();
-#define CHECK(cond)	if (cond) {LOG("PASS");} else {LOG(#cond " FAIL");}
-
 #define CHECK(cond) cond ? LOG("PASS") : LOG("FAIL")
 
 // Lexer Tests
 void TestLess()
 {
-	auto tokens = Tokenize("<");
+	IPLVector<Token> tokens;
+	Tokenize("<", tokens);
+
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Less);
 }
 
 void TestNumber()
 {
-	auto tokens = Tokenize("213434.24");
+	IPLVector<Token> tokens;
+	Tokenize("213434.24", tokens);
+
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24);
 }
 
 void TestNumberStartWithNine()
 {
-	auto tokens = Tokenize("999");
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
+	IPLVector<Token> tokens;
+	Tokenize("999", tokens);
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999);
 }
 
 void TestNumberStartWithZero()
 {
-	auto tokens = Tokenize("0999");
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999)
+	IPLVector<Token> tokens;
+	Tokenize("0999", tokens);
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999);
 }
 
 void TestSpaceNewLineSpace()
 {
-	auto tokens = Tokenize(" \n var a = 4;");
+	IPLVector<Token> tokens;
+	Tokenize(" \n var a = 4; ", tokens);
 	CHECK(tokens.size() == 6 && tokens[0].Type == TokenType::Var &&
 		tokens[1].Type == TokenType::Identifier &&
 		tokens[2].Type == TokenType::Equal &&
@@ -44,36 +49,53 @@ void TestSpaceNewLineSpace()
 
 void TestString()
 {
-	auto tokens = Tokenize("\"alabala\"");
+	IPLVector<Token> tokens;
+	Tokenize("\"alabala\"", tokens);
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "\"alabala\"");
 }
 
 void TestStringSingleQuotedStrings()
 {
-	auto tokens = Tokenize("'alabala'");
+	IPLVector<Token> tokens;
+	Tokenize("'alabala'", tokens);
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "'alabala'");
 }
 
 void TestKeyWord()
 {
-	auto tokens = Tokenize("for");
+	IPLVector<Token> tokens;
+	Tokenize("for", tokens);
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::For);
 }
 
 void TestVariableDeclaration()
 {
-	auto tokens = Tokenize("var pesho = 10");
+	IPLVector<Token> tokens;
+	Tokenize("var pesho = 10", tokens);
+
 	CHECK(tokens.size() == 5 && tokens[0].Type == TokenType::Var
 		&& tokens[1].Type == TokenType::Identifier
 		&& tokens[2].Type == TokenType::Equal
 		&& tokens[3].Type == TokenType::Number
 		&& tokens[4].Type == TokenType::Eof);
 }
+
+void TestStringError()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("\"aaaa", tokens);
+
+	CHECK(!res.IsSuccessful && res.Error.Row == 0 && res.Error.Column == 5);
+}
+
 // Parser Tests
 void TestParseUnaryExpr()
 {
+	IPLVector<Token> tokens;
+	Tokenize("function pesho() { var a = 0; return a; }", tokens);
+
 	// TODO make actual test :D
-	auto expr = Parse(Tokenize("function pesho() { var a = 0; return a; }"));
+	auto expr = Parse(tokens);
 }
 
 int main()
@@ -87,7 +109,7 @@ int main()
 	EXECUTE_TEST(TestStringSingleQuotedStrings);
 	EXECUTE_TEST(TestKeyWord);
 	EXECUTE_TEST(TestVariableDeclaration);
-
+	EXECUTE_TEST(TestStringError);
 
 	//EXECUTE_TEST(TestParseUnaryExpr);
 #if defined(_WIN32)

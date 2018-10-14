@@ -344,7 +344,7 @@ ExpressionPtr Parser::Unary()
 	//	| -UnaryExpressionnormal
 	//	| ~UnaryExpressionnormal
 	//	| !UnaryExpressionnormal
-	if (MatchOneOf({ 
+	if (MatchOneOf({
 		TokenType::Delete,
 		TokenType::MinusMinus,
 		TokenType::PlusPlus,
