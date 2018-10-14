@@ -204,6 +204,18 @@ Token Tokenizer::NextToken()
 		return Token{ TokenType::String, m_Line, IPLString(m_Code + start, m_Code + m_Current), 0.0 };
 	}
 
+	if (c == '\'')
+	{
+		auto start = m_Current;
+		m_Current++; // skip first '
+		while (m_Code[m_Current] != '\'')
+		{
+			++m_Current;
+		}
+		m_Current++; // skip second '
+		return Token{ TokenType::String, m_Line, IPLString(m_Code + start, m_Code + m_Current), 0.0 };
+	}
+
 	// Key words
 	if (c >= 'a' && c <= 'z')
 	{

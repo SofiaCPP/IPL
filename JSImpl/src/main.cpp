@@ -51,6 +51,12 @@ void TestString()
 	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "\"alabala\"");
 }
 
+void TestStringSingleQuotedStrings()
+{
+	auto tokens = Tokenize("'alabala'");
+	CHECH(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "'alabala'");
+}
+
 void TestKeyWord()
 {
 	auto tokens = Tokenize("for");
@@ -82,8 +88,10 @@ int main()
 	EXECUTE_TEST(TestNumberStartWithZero);
 	EXECUTE_TEST(TestString);
 	EXECUTE_TEST(TestSpaceNewLineSpace);
+	EXECUTE_TEST(TestStringSingleQuotedStrings);
 	EXECUTE_TEST(TestKeyWord);
 	EXECUTE_TEST(TestVariableDeclaration);
+
 
 	//EXECUTE_TEST(TestParseUnaryExpr);
 #if defined(_WIN32)
