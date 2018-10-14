@@ -13,12 +13,45 @@ namespace Wizard
         public Tokenizer(string code, string location)
         {
             Code = code;
+            Location = location;
             CurrentLine = 0;
             CurrentIndex = 0;
             Keywords = new Dictionary<string, TokenType>()
             {
-                { "function", TokenType.Function },
-                { "return",TokenType.Return }
+                { "break", TokenType.Break },
+                { "case",TokenType.Case},
+                {"catch", TokenType.Catch },
+                {"class", TokenType.Class },
+                {"const", TokenType.Const },
+                {"continue", TokenType.Continue },
+                {"debugger", TokenType.Debugger },
+                {"default", TokenType.Default },
+                {"delete", TokenType.Delete },
+                {"do", TokenType.Do },
+                {"else", TokenType.Else },
+                {"export", TokenType.Export },
+                {"extends", TokenType.Extends },
+                {"finally", TokenType.Finally },
+                {"for", TokenType.For },
+                {"function", TokenType.Function },
+                {"if", TokenType.If },
+                {"import", TokenType.Import },
+                {"in", TokenType.In },
+                {"instanceof", TokenType.Instanceof },
+                {"let", TokenType.Let },
+                {"new", TokenType.New },
+                {"return", TokenType.Return },
+                {"super", TokenType.Super },
+                {"switch", TokenType.Switch },
+                {"this", TokenType.This },
+                {"throw", TokenType.Throw },
+                {"try", TokenType.Try },
+                {"typeof", TokenType.Typeof },
+                {"var", TokenType.Var },
+                {"void", TokenType.Void },
+                {"while", TokenType.While },
+                {"with", TokenType.With },
+                {"yield", TokenType.Yield }
             };
         }
 
@@ -66,17 +99,52 @@ namespace Wizard
 
             switch (c)
             {
-                case '\0': CurrentIndex++; return GenerateToken(TokenType.EOF);
-                case '(': CurrentIndex++; return GenerateToken(TokenType.LeftParenthesis);
-                case ')': CurrentIndex++; return GenerateToken(TokenType.RightParenthesis);
+                case '\0': CurrentIndex++; return GenerateToken(TokenType.Eof);
+                case '&': CurrentIndex++; return GenerateToken(TokenType.BitwiseAnd); // &=
+                case '~': CurrentIndex++; return GenerateToken(TokenType.BitwiseNot); // ~=
+                case '|': CurrentIndex++; return GenerateToken(TokenType.BitwiseOr); // |=
+                case '^': CurrentIndex++; return GenerateToken(TokenType.BitwiseXor); // ^=
+                case ':': CurrentIndex++; return GenerateToken(TokenType.Colon);
                 case ',': CurrentIndex++; return GenerateToken(TokenType.Comma);
+                case '/': CurrentIndex++; return GenerateToken(TokenType.Division);// /=
+                case '.': CurrentIndex++; return GenerateToken(TokenType.Dot);
                 case '{': CurrentIndex++; return GenerateToken(TokenType.LeftBrace);
+                case '(': CurrentIndex++; return GenerateToken(TokenType.LeftParenthesis);
+                case '[': CurrentIndex++; return GenerateToken(TokenType.LeftSquareBracket);
+                case '-': CurrentIndex++; return GenerateToken(TokenType.Minus);// -- -=
+                case '%': CurrentIndex++; return GenerateToken(TokenType.Modulo); // %=
+                case '\n': CurrentIndex++; return GenerateToken(TokenType.Newline);
+                case '+': CurrentIndex++; return GenerateToken(TokenType.Plus);// ++ +=
+                case '?': CurrentIndex++; return GenerateToken(TokenType.QuestionMark);
                 case '}': CurrentIndex++; return GenerateToken(TokenType.RightBrace);
+                case ')': CurrentIndex++; return GenerateToken(TokenType.RightParenthesis);
+                case ']': CurrentIndex++; return GenerateToken(TokenType.RightSquareBracket);
                 case ';': CurrentIndex++; return GenerateToken(TokenType.Semicolon);
-                case '+': CurrentIndex++; return GenerateToken(TokenType.Plus);
-                case ' ': CurrentIndex++; return GenerateToken(TokenType.Whitespace);
+                case '*': CurrentIndex++; return GenerateToken(TokenType.Star);// ** *=
                 case '\t': CurrentIndex++; return GenerateToken(TokenType.Tab);
-                case '\n': CurrentIndex++; ++CurrentLine; return GenerateToken(TokenType.Newline);
+                case ' ': CurrentIndex++; return GenerateToken(TokenType.Whitespace);
+
+                case '!': CurrentIndex++;
+                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.BangEqual) : GenerateToken(TokenType.Bang);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '&=': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '': CurrentIndex++; return GenerateToken(TokenType.);
                 default:
                     break;
             }
