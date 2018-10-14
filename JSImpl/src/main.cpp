@@ -90,7 +90,7 @@ int main()
 	//EXECUTE_TEST(TestVariableDeclaration);
 
 
-	EXECUTE_TEST(TestParseUnaryExpr);
+	TestParseUnaryExpr();
 #if defined(_WIN32)
 	//std::system("pause");
 #endif
