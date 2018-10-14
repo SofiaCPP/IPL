@@ -85,26 +85,6 @@ void Print<const IPLString&>(std::ostream& os, ASTPrinter &printer, const char* 
 	}
 	os << "\n";
 }
-//
-//IPLString AsString(LiteralType type)
-//{
-//	switch (type)
-//	{
-//	case LiteralType::Number:
-//		return "Number";
-//	case LiteralType::String:
-//		return "String";
-//	case LiteralType::Boolean:
-//		return "Boolean";
-//	case LiteralType::Null:
-//		return "Null";
-//	case LiteralType::Undefined:
-//		return "Undefined";
-//	default:
-//		break;
-//	}
-//	return "Undefined";
-//}
 
 std::ostream& operator<<(std::ostream& os, const TokenType& t)
 {
@@ -204,16 +184,6 @@ std::ostream& operator<<(std::ostream& os, const TokenType& t)
 	return os;
 }
 
-//void ASTPrinter::Visit(LiteralExpression* e)
-//{
-//	os << "{\n" << "\"ExpresionType\": \"LiteralExpression\"," << '\n';
-//	Print(os, *this, "BooleanValue", e->GetBooleanValue(), false);
-//	Print(os, *this, "LiteralType", AsString(e->GetLiteralType()), false);
-//	Print(os, *this, "NumValue", e->GetNumValue(), false);
-//	Print(os, *this, "StringValue", e->GetStringValue(), true);
-//	os << "}\n";
-//}
-//
 #define MEMBERS_COUNT(type, name, def) ++membersCount;
 #define VISIT_MEMBER(type, name, def) ++currentVisitCount; Print(os, *this, #name, e->Get##name(), currentVisitCount == membersCount);;
 
