@@ -5,18 +5,19 @@
 #define EXECUTE_TEST(test) std::cout << #test << " "; test();
 #define CHECK(cond)	if (cond) {LOG("PASS");} else {LOG(#cond " FAIL");}
 
+#define CHECK(cond) cond ? LOG("PASS") : LOG("FAIL")
+
 // Lexer Tests
 void TestLess()
 {
 	auto tokens = Tokenize("<");
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Less);
-
 }
 
 void TestNumber()
 {
 	auto tokens = Tokenize("213434.24");
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24)
+	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24);
 }
 
 void TestNumberStartWithNine()
@@ -73,7 +74,6 @@ void TestParseUnaryExpr()
 {
 	// TODO make actual test :D
 	auto expr = Parse(Tokenize("function pesho() { var a = 0; return a; }"));
-	expr->Print(std::cout);
 }
 
 int main()

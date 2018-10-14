@@ -1,4 +1,5 @@
 #pragma once
+#include "CommonTypes.h"
 
 #include "CommonTypes.h"
 
@@ -13,6 +14,7 @@ class BlockStatement;
 class LabeledStatement;
 class IfStatement;
 class SwitchStatement;
+class CaseStatement;
 class WhileStatement;
 class ForStatement;
 class FunctionDeclaration;
