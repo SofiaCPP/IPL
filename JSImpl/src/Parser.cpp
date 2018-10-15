@@ -204,7 +204,7 @@ ExpressionPtr Parser::ArrayLiteral()
 			auto result = IPLMakeSharePtr<ListExpression>();
 			while (auto lf = LiteralElement())
 			{
-				result->Push(lf);
+				result->GetValuesByRef().push_back(lf);
 				if (!Match(TokenType::Comma))
 				{
 					break;
@@ -248,29 +248,29 @@ ExpressionPtr Parser::SimpleExpression()
 	//	| ArrayLiteral
 	if (Match(TokenType::Number))
 	{
-		return IPLMakeSharePtr<LiteralExpression>(Prev().Number);
+		return IPLMakeSharePtr<LiteralNumber>(Prev().Number);
 	}
 	else if (Match(TokenType::String))
 	{
-		return IPLMakeSharePtr<LiteralExpression>(Prev().Lexeme);
+		return IPLMakeSharePtr<LiteralString>(Prev().Lexeme);
 	}
 	else if (Match(TokenType::Null))
 	{
-		return IPLMakeSharePtr<LiteralExpression>(Prev().Type);
+		return IPLMakeSharePtr<LiteralNull>();
 	}
 	else if (Match(TokenType::Undefined))
 	{
-		return IPLMakeSharePtr<LiteralExpression>(Prev().Type);
+		return IPLMakeSharePtr<LiteralUndefined>();
 	}
 	else if (Match(TokenType::True))
 	{
 		bool t = true;
-		return IPLMakeSharePtr<LiteralExpression>(t);
+		return IPLMakeSharePtr<LiteralBoolean>(t);
 	}
 	else if (Match(TokenType::False))
 	{
 		bool f = false;
-		return IPLMakeSharePtr<LiteralExpression>(f);
+		return IPLMakeSharePtr<LiteralBoolean>(f);
 	}
 	else if (Match(TokenType::Identifier))
 	{
@@ -344,7 +344,7 @@ ExpressionPtr Parser::Unary()
 	//	| -UnaryExpressionnormal
 	//	| ~UnaryExpressionnormal
 	//	| !UnaryExpressionnormal
-	if (MatchOneOf({ 
+	if (MatchOneOf({
 		TokenType::Delete,
 		TokenType::MinusMinus,
 		TokenType::PlusPlus,
@@ -691,7 +691,7 @@ ExpressionPtr Parser::VariableDefinition()
 			auto ae = CreateEmptyExpression();
 			if (Match(TokenType::Equal))
 			{
-				auto ae = AssignmentExpression();
+				ae = AssignmentExpression();
 			}
 			return IPLMakeSharePtr<VariableDefinitionExpression>(id, ae);
 		}
@@ -703,10 +703,10 @@ ExpressionPtr Parser::VariableDefinition()
 		//	VariableDeclaration
 		//	| VariableDeclarationList, VariableDeclaration
 		auto vdList = IPLMakeSharePtr<ListExpression>();
-		vdList->Push(VariableDeclaration());
+		vdList->GetValuesByRef().push_back(VariableDeclaration());
 		while (Match(TokenType::Comma))
 		{
-			vdList->Push(VariableDeclaration());
+			vdList->GetValuesByRef().push_back(VariableDeclaration());
 		}
 		return vdList;
 	};
@@ -731,7 +731,7 @@ ExpressionPtr Parser::Block()
 		auto StatementsList = IPLMakeSharePtr<BlockStatement>();
 		while (auto s = Statement())
 		{
-			StatementsList->Push(s);
+			StatementsList->GetValuesByRef().push_back(s);
 		}
 		return StatementsList;
 	};
@@ -784,7 +784,7 @@ ExpressionPtr Parser::SwitchStatement()
 	if (Match(TokenType::Switch))
 	{
 		auto cond = ParenthesizedExpression();
-		IPLVector<SwitchStatement::Case> cases;
+		IPLVector<ExpressionPtr> cases;
 		ExpressionPtr defaultCase = nullptr;
 		if (Match(TokenType::LeftBrace))
 		{
@@ -796,7 +796,8 @@ ExpressionPtr Parser::SwitchStatement()
 					auto expr = Expression();
 					if (Match(TokenType::Colon))
 					{
-						cases.push_back({ expr, Statement() });
+						auto statement = Statement();
+						cases.push_back(IPLMakeSharePtr<CaseStatement>(expr, statement));
 					}
 				}
 				else if (Match(TokenType::Default))
@@ -929,7 +930,7 @@ ExpressionPtr Parser::Parse()
 
 ExpressionPtr Parser::FunctionDefinition()
 {
-	auto  FormalParameters = [=](IPLVector<IPLString> identifiers) -> bool {
+	auto  FormalParameters = [=](IPLVector<IPLString>& identifiers) -> bool {
 		if (Match(TokenType::LeftParen))
 		{
 			while (Match(TokenType::Identifier))
@@ -996,7 +997,7 @@ ExpressionPtr Parser::TopStatements()
 	auto statements = IPLMakeSharePtr<::TopStatements>();
 	while (auto ts = TopStatement())
 	{
-		statements->Push(ts);
+		statements->GetValuesByRef().push_back(ts);
 	}
 	return statements;
 }

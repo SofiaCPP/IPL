@@ -14,4 +14,5 @@ Table of contents for all the slides of the course.
 0. Introduction - [slides]({{< ref "/slides/01_dragons" >}}),
    [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/01_dragons/_index.md)
 
-
+0. Lexical analysis - [slides]({{< ref "/slides/02_lexical_analysis" >}}),
+   [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/02_lexical_analysis/_index.md)

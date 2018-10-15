@@ -1,9 +1,8 @@
 #pragma once
 
 #include "CommonTypes.h"
-#include <functional>
 
-enum TokenType
+enum class TokenType
 {
 	// Single-character tokens.
 	LeftParen,
@@ -98,8 +97,8 @@ enum TokenType
 	True,
 	False,
 
-
 	Eof,
+	Invalid
 };
 
 struct Token
@@ -107,7 +106,13 @@ struct Token
 	TokenType Type;
 	unsigned Line;
 	IPLString Lexeme;
-	double Number = 0.0;
+	double Number;
 };
 
-IPLVector<Token> Tokenize(const char* code, const std::function<void()>& onError = {});
+struct LexerResult
+{
+	bool IsSuccessful;
+	IPLError Error;
+};
+
+LexerResult Tokenize(const char* code, IPLVector<Token>& tokens);

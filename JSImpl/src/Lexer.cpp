@@ -1,42 +1,128 @@
 #include "Lexer.h"
+#include <utility>
+
+namespace
+{
+inline bool IsUpperCase(char c)
+{
+	return c >= 'A' && c <= 'Z';
+}
+
+inline bool IsLowerCase(char c)
+{
+	return c >= 'a' && c <= 'z';
+}
+
+inline bool IsDigit(char c)
+{
+	return c >= '0' && c <= '9';
+}
+
+inline bool IsValidIdentifierStartingChar(char c)
+{
+	return IsUpperCase(c) || IsLowerCase(c) || c == '_';
+}
+
+inline bool IsValidIdentifierChar(char c)
+{
+	return IsValidIdentifierStartingChar(c) || IsDigit(c);
+}
+
+inline bool IsStringBound(char c)
+{
+	return c == '\'' || c == '"';
+}
+
+inline bool IsWhiteSpace(char c)
+{
+	return c == ' ' || c == '\t';
+}
+
+inline bool IsNewLine(char c)
+{
+	return c == '\n';
+}
+
+inline bool IsEnd(char c)
+{
+	return c == '\0';
+}
+}
+
+struct Keyword
+{
+	TokenType Type;
+	IPLString Content;
+};
+
+using Identifier = Keyword;
+
+enum class State: unsigned char
+{
+	Success,
+	Fail,
+	Error
+};
+
+#define RETURN_SUCCESS(ret) m_GenerationState = State::Success; return ret;
+#define RETURN_FAIL(ret) m_GenerationState = State::Fail; return ret;
+#define RETURN_ERROR(ret) m_GenerationState = State::Error; return ret;
 
 class Tokenizer
 {
 public:
-	Tokenizer(const char* code, const std::function<void()>& onError);
-	IPLVector<Token> Tokenize();
+	Tokenizer(const char* code);
+	LexerResult Tokenize(IPLVector<Token>& tokens);
 
 private:
 	Token NextToken();
 
-	Token ProduceToken(TokenType type);
-	Token ProduceToken(TokenType type, IPLString lexeme);
+	inline Token ProduceToken(TokenType type);
+	inline Token ProduceToken(TokenType type, IPLString lexeme, double number);
+	inline Token ProduceErrorToken();
+
 	double ParseNumber();
 	IPLString ParseString();
+	Keyword ParseKeyword();
+	Identifier ParseIdentifier();
+
+	inline bool IsStateSuccess() const;
+	inline bool IsStateError() const;
+
+	void SetError(const IPLString& what);
+
 	bool SkipWhiteSpaces();
 	bool SkipNewLine();
 	bool Match(const char c);
 
-	std::function<void()> OnError;
+	inline void NextSymbol();
+	inline void NextLine();
+
 	unsigned m_Line;
+	unsigned m_Column;
 	unsigned m_Current;
 	const char* m_Code;
+
+	IPLError m_Error;
+	State m_GenerationState;
 
 	IPLUnorderedMap<IPLString, TokenType> m_KeyWordsTable;
 };
 
-IPLVector<Token> Tokenize(const char* code, const std::function<void()>& onError)
+LexerResult Tokenize(const char* code, IPLVector<Token>& tokens)
 {
-	Tokenizer tokenizer(code, onError);
+	Tokenizer tokenizer(code);
 
-	return tokenizer.Tokenize();
+	return tokenizer.Tokenize(tokens);
 }
 
-Tokenizer::Tokenizer(const char* code, const std::function<void()>& onError)
-	: OnError(onError)
-	, m_Line(0)
+Tokenizer::Tokenizer(const char* code)
+	: m_Line(0)
+	, m_Column(0)
 	, m_Current(0)
 	, m_Code(code)
+	, m_Error()
+	, m_GenerationState(State::Success)
 {
 	m_KeyWordsTable["break"] = TokenType::Break;
 	m_KeyWordsTable["case"] = TokenType::Case;
@@ -77,23 +163,30 @@ Tokenizer::Tokenizer(const char* code, const std::function<void()>& onError)
 	m_KeyWordsTable["false"] = TokenType::False;
 }
 
-IPLVector<Token> Tokenizer::Tokenize()
+LexerResult Tokenizer::Tokenize(IPLVector<Token>& tokens)
 {
-	IPLVector<Token> result;
 	do
 	{
-		result.push_back(NextToken());
-	} while (result.back().Type != TokenType::Eof);
+		const auto& token = NextToken();
 
-	return result;
+		if (m_GenerationState == State::Error)
+		{
+			return LexerResult{ false, IPLError(m_Error) };
+		}
+
+		tokens.emplace_back(token);
+
+	} while (tokens.back().Type != TokenType::Eof);
+
+	return LexerResult{ true, IPLError() };
 }
 
 bool Tokenizer::SkipWhiteSpaces()
 {
 	const auto old = m_Current;
-	while (m_Code[m_Current] == ' ' || m_Code[m_Current] == '\t')
+	while (IsWhiteSpace(m_Code[m_Current]))
 	{
-		m_Current++;
+		NextSymbol();
 	}
 	return old != m_Current;
 }
@@ -101,10 +194,9 @@ bool Tokenizer::SkipWhiteSpaces()
 bool Tokenizer::SkipNewLine()
 {
 	const auto old = m_Current;
-	while (m_Code[m_Current] == '\n')
+	while (IsNewLine(m_Code[m_Current]))
 	{
-		m_Current++;
-		m_Line++;
+		NextLine();
 	}
 	return old != m_Current;
 }
@@ -113,40 +205,160 @@ bool Tokenizer::Match(const char c)
 {
 	if (c == m_Code[m_Current])
 	{
-		++m_Current;
+		if (!IsNewLine(m_Code[m_Current]))
+		{
+			NextSymbol();
+		}
+		else
+		{
+			NextLine();
+		}
+
 		return true;
 	}
 	return false;
 }
 
-Token Tokenizer::ProduceToken(TokenType type)
+inline void Tokenizer::NextSymbol()
 {
-	return { type, m_Line, "" };
+	++m_Current;
+	++m_Column;
 }
 
-Token Tokenizer::ProduceToken(TokenType type, IPLString lexeme)
+inline void Tokenizer::NextLine()
 {
-	return{ type, m_Line, lexeme };
+	++m_Current;
+	++m_Line;
+	m_Column = 0;
 }
 
-namespace
+inline Token Tokenizer::ProduceToken(TokenType type)
 {
-inline bool IsValidIdentifierStartingChar(char c)
-{
-	return (c >= 'A' && c <= 'z') || c == '_';
+	return Token{ type, m_Line, "", 0.0 };
 }
 
-inline bool IsValidIdentifierChar(char c)
+inline Token Tokenizer::ProduceToken(TokenType type, IPLString lexeme, double number = 0.0)
 {
-	return IsValidIdentifierStartingChar(c) || (c >= '0' && c <= '9');
+	return Token{ type, m_Line, lexeme, number };
 }
+
+inline Token Tokenizer::ProduceErrorToken()
+{
+	return Token{ TokenType::Eof, m_Line, "", 0.0 };
+}
+
+double Tokenizer::ParseNumber()
+{
+	if (!IsDigit(m_Code[m_Current]))
+	{
+		RETURN_FAIL(0.0);
+	}
+
+	size_t parsedBytes = 0;
+	double number = std::stod(m_Code + m_Current, &parsedBytes);
+	m_Current += static_cast<unsigned>(parsedBytes);
+	m_Column += static_cast<unsigned>(parsedBytes);
+
+	RETURN_SUCCESS(number);
+}
+
+IPLString Tokenizer::ParseString()
+{
+	if (!IsStringBound(m_Code[m_Current]))
+	{
+		RETURN_FAIL(IPLString());
+	}
+
+	char bound = m_Code[m_Current];
+	auto start = m_Current;
+
+	// skip first " or '
+	NextSymbol();
+	while (m_Code[m_Current] != bound && !IsEnd(m_Code[m_Current]) && !IsNewLine(m_Code[m_Current]))
+	{
+		NextSymbol();
+	}
+
+	if (IsEnd(m_Code[m_Current])  || IsNewLine(m_Code[m_Current]))
+	{
+		SetError("\"\" string literal contains an unescaped line break");
+		RETURN_ERROR(IPLString());
+	}
+
+	// skip second " or '
+	NextSymbol();
+
+	RETURN_SUCCESS(IPLString(m_Code + start, m_Code + m_Current));
+}
+
+Keyword Tokenizer::ParseKeyword()
+{
+	if (!IsLowerCase(m_Code[m_Current]))
+	{
+		RETURN_FAIL(Keyword());
+	}
+
+	auto start = m_Current;
+
+	NextSymbol();
+	while (IsLowerCase(m_Code[m_Current]))
+	{
+		NextSymbol();
+	}
+
+	auto key = IPLString(m_Code + start, m_Code + m_Current);
+	auto keyword = m_KeyWordsTable.find(key);
+
+	if (keyword == m_KeyWordsTable.end())
+	{
+		// It's not a keyword so we must revert current counter
+		m_Current = start;
+		m_Column = start;
+
+		RETURN_FAIL(Keyword());
+	}
+
+	RETURN_SUCCESS((Keyword{ keyword->second, keyword->first }));
+}
+
+Identifier Tokenizer::ParseIdentifier()
+{
+	if (!IsValidIdentifierStartingChar(m_Code[m_Current]))
+	{
+		RETURN_FAIL(Identifier());
+	}
+
+	auto start = m_Current;
+
+	NextSymbol();
+	while (IsValidIdentifierChar(m_Code[m_Current]))
+	{
+		NextSymbol();
+	}
+
+	RETURN_SUCCESS((Identifier{ TokenType::Identifier, IPLString(m_Code + start, m_Code + m_Current) }));
+}
+
+inline bool Tokenizer::IsStateSuccess() const
+{
+	return m_GenerationState == State::Success;
+}
+
+inline bool Tokenizer::IsStateError() const
+{
+	return m_GenerationState == State::Error;
+}
+
+void Tokenizer::SetError(const IPLString & what)
+{
+	m_Error = IPLError{ m_Line, m_Column, "", what };
 }
 
 Token Tokenizer::NextToken()
 {
-	if (m_Code[m_Current] == '\0')
+	if (IsEnd(m_Code[m_Current]))
 	{
-		return Token{ TokenType::Eof, 0, "" };
+		ProduceToken(TokenType::Eof);
 	}
 
 	while (SkipWhiteSpaces() || SkipNewLine());
@@ -154,86 +366,61 @@ Token Tokenizer::NextToken()
 	// Single Char
 	switch (m_Code[m_Current])
 	{
-	case '(': m_Current++; return ProduceToken(TokenType::LeftParen);
-	case ')': m_Current++; return ProduceToken(TokenType::RightParen);
-	case '{': m_Current++; return ProduceToken(TokenType::LeftBrace);
-	case '}': m_Current++; return ProduceToken(TokenType::RightBrace);
-	case ',': m_Current++; return ProduceToken(TokenType::Comma);
-	case '.': m_Current++; return ProduceToken(TokenType::Dot);
-	case '-': m_Current++; return Match('-') ? ProduceToken(TokenType::MinusMinus) : ProduceToken(TokenType::Minus);
-	case '+': m_Current++; return Match('+') ? ProduceToken(TokenType::PlusPlus) : ProduceToken(TokenType::Plus);
-	case ';': m_Current++; return ProduceToken(TokenType::Semicolon);
-	case '*': m_Current++; return ProduceToken(TokenType::Star);
-	case '/': m_Current++; return ProduceToken(TokenType::Division);
-	case '%': m_Current++; return ProduceToken(TokenType::Modulo);
-	case '~': m_Current++; return ProduceToken(TokenType::BitwiseNot);
-	case '=': m_Current++; return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictEqual) : ProduceToken(TokenType::EqualEqual) : ProduceToken(TokenType::Equal);
-	case '!': m_Current++; return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictNotEqual) : ProduceToken(TokenType::BangEqual) : ProduceToken(TokenType::Bang);
-	case '>': m_Current++; return Match('=') ? ProduceToken(TokenType::GreaterEqual) : Match('>') ? ProduceToken(TokenType::RightShift) : ProduceToken(TokenType::Greater);
-	case '<': m_Current++; return Match('=') ? ProduceToken(TokenType::LessEqual) : Match('<') ? ProduceToken(TokenType::LeftShift) : ProduceToken(TokenType::Less);
-	case '&': m_Current++; return Match('&') ? ProduceToken(TokenType::LogicalAnd) : ProduceToken(TokenType::BitwiseAnd);
-	case '^': m_Current++; return ProduceToken(TokenType::BitwiseXor);
-	case '|': m_Current++; return Match('|') ? ProduceToken(TokenType::LogicalOr) : ProduceToken(TokenType::BitwiseOr);
-	case '?': m_Current++; return ProduceToken(TokenType::QuestionMark);
-	case ':': m_Current++; return ProduceToken(TokenType::Colon);
-	case '[': m_Current++; return ProduceToken(TokenType::LeftSquareBracket);
-	case ']': m_Current++; return ProduceToken(TokenType::RightSquareBracket);
+	case '(': NextSymbol(); return ProduceToken(TokenType::LeftParen);
+	case ')': NextSymbol(); return ProduceToken(TokenType::RightParen);
+	case '{': NextSymbol(); return ProduceToken(TokenType::LeftBrace);
+	case '}': NextSymbol(); return ProduceToken(TokenType::RightBrace);
+	case ',': NextSymbol(); return ProduceToken(TokenType::Comma);
+	case '.': NextSymbol(); return ProduceToken(TokenType::Dot);
+	case '-': NextSymbol(); return Match('-') ? ProduceToken(TokenType::MinusMinus) : ProduceToken(TokenType::Minus);
+	case '+': NextSymbol(); return Match('+') ? ProduceToken(TokenType::PlusPlus) : ProduceToken(TokenType::Plus);
+	case ';': NextSymbol(); return ProduceToken(TokenType::Semicolon);
+	case '*': NextSymbol(); return ProduceToken(TokenType::Star);
+	case '/': NextSymbol(); return ProduceToken(TokenType::Division);
+	case '%': NextSymbol(); return ProduceToken(TokenType::Modulo);
+	case '~': NextSymbol(); return ProduceToken(TokenType::BitwiseNot);
+	case '=': NextSymbol(); return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictEqual) : ProduceToken(TokenType::EqualEqual) : ProduceToken(TokenType::Equal);
+	case '!': NextSymbol(); return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictNotEqual) : ProduceToken(TokenType::BangEqual) : ProduceToken(TokenType::Bang);
+	case '>': NextSymbol(); return Match('=') ? ProduceToken(TokenType::GreaterEqual) : Match('>') ? ProduceToken(TokenType::RightShift) : ProduceToken(TokenType::Greater);
+	case '<': NextSymbol(); return Match('=') ? ProduceToken(TokenType::LessEqual) : Match('<') ? ProduceToken(TokenType::LeftShift) : ProduceToken(TokenType::Less);
+	case '&': NextSymbol(); return Match('&') ? ProduceToken(TokenType::LogicalAnd) : ProduceToken(TokenType::BitwiseAnd);
+	case '^': NextSymbol(); return ProduceToken(TokenType::BitwiseXor);
+	case '|': NextSymbol(); return Match('|') ? ProduceToken(TokenType::LogicalOr) : ProduceToken(TokenType::BitwiseOr);
+	case '?': NextSymbol(); return ProduceToken(TokenType::QuestionMark);
+	case ':': NextSymbol(); return ProduceToken(TokenType::Colon);
+	case '[': NextSymbol(); return ProduceToken(TokenType::LeftSquareBracket);
+	case ']': NextSymbol(); return ProduceToken(TokenType::RightSquareBracket);
 	default:
 		break;
 	}
-	// Number
-	const char c = m_Code[m_Current];
-	if (c >= '0' && c < '9')
+
+	const auto& number = ParseNumber();
+	if (IsStateSuccess())
 	{
-		size_t parsedBytes = 0;
-		const double number = std::stod(m_Code + m_Current, &parsedBytes);
-		m_Current += (unsigned)parsedBytes;
-		return Token{ TokenType::Number, m_Line, "", number };
+		return ProduceToken(TokenType::Number, "", number);
 	}
 
-	// String
-	if (c == '"')
+	const auto& string = ParseString();
+	if (IsStateSuccess())
 	{
-		auto start = m_Current;
-		m_Current++; // skip first '"'
-		while (m_Code[m_Current] != '"')
-		{
-			++m_Current;
-		}
-		m_Current++; // skip second '"'
-		return Token{ TokenType::String, m_Line, IPLString(m_Code + start, m_Code + m_Current) };
+		return ProduceToken(TokenType::String, string);
+	}
+	else if (IsStateError())
+	{
+		return ProduceErrorToken();
 	}
 
-	// Key words
-	if (c >= 'a' && c <= 'z')
+	const auto& keyword = ParseKeyword();
+	if (IsStateSuccess())
 	{
-		auto start = m_Current;
-		m_Current++;
-		while (m_Code[m_Current] >= 'a' && m_Code[m_Current] <= 'z')
-		{
-			++m_Current;
-		}
-		auto key = IPLString(m_Code + start, m_Code + m_Current);
-		auto word = m_KeyWordsTable.find(key);
-		if (word != m_KeyWordsTable.end())
-		{
-			return Token{ word->second, m_Line, key };
-		}
-		// It's not a key word so we must revert current counter
-		m_Current = start;
+		return ProduceToken(keyword.Type, keyword.Content);
 	}
 
-	// Identifier
-	if (IsValidIdentifierStartingChar(c))
+	const auto& identifier = ParseIdentifier();
+	if (IsStateSuccess())
 	{
-		auto start = m_Current;
-		m_Current++;
-		while (IsValidIdentifierChar(m_Code[m_Current]))
-		{
-			++m_Current;
-		}
-		return Token{ TokenType::Identifier, m_Line, IPLString(m_Code + start, m_Code + m_Current) };
+		return ProduceToken(identifier.Type, identifier.Content);
 	}
-	// TODO: Error reporting
-	return Token{ TokenType::Eof, m_Line, "" };
+
+	return ProduceErrorToken();
 }

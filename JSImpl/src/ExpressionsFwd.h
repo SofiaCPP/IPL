@@ -1,7 +1,11 @@
 #pragma once
-
 #include "CommonTypes.h"
 
+class LiteralNull;
+class LiteralUndefined;
+class LiteralNumber;
+class LiteralString;
+class LiteralBoolean;
 class Expression;
 class BinaryExpression;
 class UnaryExpression;
@@ -13,6 +17,7 @@ class BlockStatement;
 class LabeledStatement;
 class IfStatement;
 class SwitchStatement;
+class CaseStatement;
 class WhileStatement;
 class ForStatement;
 class FunctionDeclaration;
