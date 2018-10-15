@@ -21,3 +21,11 @@ inline IPLSharedPtr<T> IPLMakeSharePtr(Args&&... args) {
 
 template< typename T>
 using IPLEnableShared = std::enable_shared_from_this<T>;
+
+struct IPLError
+{
+	unsigned Row;
+	unsigned Column;
+	IPLString File;
+	IPLString What;
+};
