@@ -109,7 +109,7 @@ Typical tokens are:
     };
 
 ---
-###
+### double + string ~ wasteful
 
 - `std::variant<double, IPLString` will require *C++17*
 - `union` does't work good with strings
