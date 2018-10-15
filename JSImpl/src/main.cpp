@@ -1,9 +1,11 @@
 #include "Lexer.h"
 #include "Parser.h"
+#include "ASTPrinter.h"
 #include <iostream>
 #define LOG(msg) std::cout << msg << std::endl
 #define EXECUTE_TEST(test) std::cout << #test << " "; test();
-#define CHECK(cond) cond ? LOG("PASS") : LOG("FAIL")
+
+#define CHECK(cond)	if (cond) {LOG("PASS");} else {LOG(#cond " FAIL");}
 
 // Lexer Tests
 void TestLess()
@@ -96,22 +98,23 @@ void TestParseUnaryExpr()
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
+	ASTPrinter p(std::cout);
+	expr->Accept(p);
 }
 
 int main()
 {
-	EXECUTE_TEST(TestLess);
-	EXECUTE_TEST(TestNumber);
-	EXECUTE_TEST(TestNumberStartWithNine);
-	EXECUTE_TEST(TestNumberStartWithZero);
-	EXECUTE_TEST(TestString);
-	EXECUTE_TEST(TestSpaceNewLineSpace);
-	EXECUTE_TEST(TestStringSingleQuotedStrings);
-	EXECUTE_TEST(TestKeyWord);
-	EXECUTE_TEST(TestVariableDeclaration);
-	EXECUTE_TEST(TestStringError);
+	//EXECUTE_TEST(TestLess);
+	//EXECUTE_TEST(TestNumber);
+	//EXECUTE_TEST(TestNumberStartWithNine);
+	//EXECUTE_TEST(TestNumberStartWithZero);
+	//EXECUTE_TEST(TestString);
+	//EXECUTE_TEST(TestSpaceNewLineSpace);
+	//EXECUTE_TEST(TestStringSingleQuotedStrings);
+	//EXECUTE_TEST(TestKeyWord);
+	//EXECUTE_TEST(TestVariableDeclaration);
 
-	//EXECUTE_TEST(TestParseUnaryExpr);
+	TestParseUnaryExpr();
 #if defined(_WIN32)
 	std::system("pause");
 #endif

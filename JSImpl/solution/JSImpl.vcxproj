@@ -115,6 +115,7 @@
     <ClInclude Include="..\src\ASTPrinter.h" />
     <ClInclude Include="..\src\CommonTypes.h" />
     <ClInclude Include="..\src\Expression.h" />
+    <ClInclude Include="..\src\ExpressionDefinitions.h" />
     <ClInclude Include="..\src\ExpressionsFwd.h" />
     <ClInclude Include="..\src\ExpressionVisitor.h" />
     <ClInclude Include="..\src\Lexer.h" />

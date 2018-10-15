@@ -36,12 +36,13 @@ void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVec
 
 void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVector<IPLString>& list, bool isLast)
 {
-	os << "\"" << name << "\" : [ \n";
+	os << "\"" << name << "\" : [";
 	for (auto i = 0; i < list.size(); ++i)
 	{
+		os << "\"" << list[i] << "\"";
 		if (i + 1 != list.size())
 		{
-			os << list[i] << ",";
+			os << ",";
 		}
 	}
 	os << "]";
@@ -83,26 +84,6 @@ void Print<const IPLString&>(std::ostream& os, ASTPrinter &printer, const char* 
 		os << ",";
 	}
 	os << "\n";
-}
-
-IPLString AsString(LiteralType type)
-{
-	switch (type)
-	{
-	case LiteralType::Number:
-		return "Number";
-	case LiteralType::String:
-		return "String";
-	case LiteralType::Boolean:
-		return "Boolean";
-	case LiteralType::Null:
-		return "Null";
-	case LiteralType::Undefined:
-		return "Undefined";
-	default:
-		break;
-	}
-	return "Undefined";
 }
 
 std::ostream& operator<<(std::ostream& os, const TokenType& t)
@@ -201,16 +182,6 @@ std::ostream& operator<<(std::ostream& os, const TokenType& t)
 		break;
 	}
 	return os;
-}
-
-void ASTPrinter::Visit(LiteralExpression* e)
-{
-	os << "{\n" << "\"ExpresionType\": \"LiteralExpression\"," << '\n';
-	Print(os, *this, "BooleanValue", e->GetBooleanValue(), false);
-	Print(os, *this, "LiteralType", AsString(e->GetLiteralType()), false);
-	Print(os, *this, "NumValue", e->GetNumValue(), false);
-	Print(os, *this, "StringValue", e->GetStringValue(), true);
-	os << "}\n";
 }
 
 #define MEMBERS_COUNT(type, name, def) ++membersCount;
