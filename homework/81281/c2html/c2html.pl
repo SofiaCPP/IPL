@@ -1,6 +1,56 @@
 :- use_module(library(dcg/basics)).
 :- use_module(library(readutil)).
 
+main:-
+    open("test.c", read, RFile),
+    read_stream_to_codes(RFile, CSource),
+    close(RFile),
+    phrase(tokens(Tokens), CSource),
+%%    write(Tokens),
+    open('page.html', write, WFile),
+    write(WFile,"<!doctype>
+    <html>
+    <head>
+        <title>hello.c</title>
+        <style>
+           .keyword {
+               color: blue;
+           }
+           .number {
+               color: violet;
+           }
+           .identifier {
+               color: green;
+           }
+           .operator {
+               font-style: bold;
+               color: blue;
+           }
+           .comment {
+               color: lime;
+           }
+           .string {
+               color: orange;
+           }
+           .parenthese {
+               font-style: bold;
+               color: brown;
+           }
+           .quotation {
+               font-style: bold;
+               color: black;
+           }
+           .function {
+               color: purple;
+           }
+       </style>
+    </head>
+    <body>
+        <pre class=\"code\">"),
+    tohtmlfile(WFile,Tokens),
+    close(WFile).
+
+%% Definitions of tokens
 token([tauto, "auto" ]) --> "auto", !.
 token([tbreak, "break" ]) --> "break", !.
 token([tcase, "case" ]) --> "case", !.
@@ -37,13 +87,15 @@ token([tinclude, "#include" ]) --> "#include", !.
 
 token([tcomment1, IA]) --> comment1(I), !,
     {atom_chars(IA,I)}.
+
+%% Handling windows written files with "\r\n"
 token([[tcomment2, IA], [execNL, '\n']]) --> comment2(I), !,
     {append(I1, [C1, C2], I),
     ((char_code('\r', C1), char_code('\n', C2), atom_chars(IA,I1));
     (\+ char_code('\r', C1), char_code('\n', C2),
     append(I1, [C1], I2), atom_chars(IA,I2)))}.
 
-token([tprintEffect, IA]) --> prEf(I), !,
+token([ttypesPrintF, IA]) --> prFT(I), !,
     {atom_chars(IA,I)}.
 token([tstring, IA]) --> stringy(I), !,
     {atom_chars(IA,I)}.
@@ -95,47 +147,47 @@ token([tidentifier, IA]) -->  identifier(I), !,
     {atom_chars(IA,I)}.
 token([tnumber, I]) --> number(I), !.
 
-token([tunknown, IA]) --> ally(I), !,
+token([tunknown, IA]) --> allThatIsNotAToken(I), !,
     {I \= [], atom_chars(IA, I)}.
 
-ally([C|Cs]) --> [C|Cs], \+ tokens(C), \+ tokens([C|Cs]), ally(Cs).
-ally([]) --> [].
 
+%% Main predicate
 tokens([Token | Tail]) --> token(Token), !, tokens(Tail).
 tokens([]) --> !, [], !.
 
 
+%% Helper predicates (regular expressions)
 identifier([C|Cs]) --> [C], {char_type(C, csymf)}, !,
-    ident(Cs).
+    identifierHelper(Cs).
 
-ident([C|Cs]) --> [C], {char_type(C, csym)}, !,
-    ident(Cs).
-ident([C]) --> [C], {char_type(C, csym), \+ char_code('_', C)}, !.
-ident([]) --> [], !.
+identifierHelper([C|Cs]) --> [C], {char_type(C, csym)}, !,
+    identifierHelper(Cs).
+identifierHelper([C]) --> [C], {char_type(C, csym), \+ char_code('_', C)}, !.
+identifierHelper([]) --> [], !.
 
 func([C|Cs]) --> [C], {char_type(C, csymf)}, !,
-    funky(Cs).
+    funkHelper(Cs).
 
-funky([C|Cs]) --> [C], {char_type(C, csym)}, !,
-    funky(Cs).
-funky([C]) --> [C], {char_code("(", C)}, !.
+funkHelper([C|Cs]) --> [C], {char_type(C, csym)}, !,
+    funkHelper(Cs).
+funkHelper([C]) --> [C], {char_code("(", C)}, !.
 
 stringy([C|Cs]) --> [C], {char_code('\"', C)}, !,
-    str(Cs).
+    stringyHelper(Cs).
 
-str([C|Cs]) --> [C], {char_type(C, csymf); char_code('.', C)},
-    str(Cs).
-str([C]) --> [C], {char_code('\"', C)}.
+stringyHelper([C|Cs]) --> [C], {char_type(C, csymf); char_code('.', C)},
+    stringyHelper(Cs).
+stringyHelper([C]) --> [C], {char_code('\"', C)}.
 
 header([C|Cs]) --> [C], {char_code('<', C)}, !,
-    heady(Cs).
+    hederHelper(Cs).
 
-heady([C|Cs]) --> [C],
+hederHelper([C|Cs]) --> [C],
     {char_type(C, csymf); char_code('.', C); char_code('/', C); char_code('+', C)},
-    heady(Cs).
-heady([C]) --> [C], {char_code('>', C)}.
+    hederHelper(Cs).
+hederHelper([C]) --> [C], {char_code('>', C)}.
 
-prEf([C|Cs]) --> [C], {char_code('%', C)}, !,
+prFT([C|Cs]) --> [C], {char_code('%', C)}, !,
     pr(Cs).
 
 pr([C]) --> [C], {char_type(C, csym)}.
@@ -150,12 +202,18 @@ comment2([C1,C2|Cs]) --> [C1,C2], {char_code('/', C1), char_code('/', C2)}, !,
 anything([C|Cs]) --> [C], anything(Cs).
 anything([]) --> [].
 
+allThatIsNotAToken([C|Cs]) --> [C|Cs], \+ tokens(C), \+ tokens([C|Cs]),
+    allThatIsNotAToken(Cs).
+allThatIsNotAToken([]) --> [].
+
 anytingButNL([C|Cs]) --> [C],
     {\+ char_code('\r', C), \+ char_code('\n', C)}, anytingButNL(Cs).
 anytingButNL([C1,C2|_]) --> [C1,C2],
     {(char_code('\r', C1),  char_code('\n', C2));
     (\+ char_code('\r', C1),  char_code('\n', C2))}.
 
+
+%% Definitions of lists of different types of tokens
 is_keyWord([H,_]):- member(H, [tauto, tbreak, tcase, tchar, tconst, tcontinue,
     tdefault, tdo, tdouble, telse, tenum, textern, tfloat, tfor, tgoto, tif,
     tint, tlong, tregister, treturn, tshort, tsigned, tsizeof, tstatic, tstruct,
@@ -172,7 +230,7 @@ is_quotation([H,_]):- member(H, [tquot, tdoubleQuot, tcomma, tdot, tquestion]).
 
 is_unknown([H,_]):- member(H, [tunknown]).
 
-is_number([H,_]):- member(H, [tnumber, tprintEffect]).
+is_number([H,_]):- member(H, [tnumber, ttypesPrintF]).
 
 is_function([[H,_],_]):- member(H, [tfunction]).
 
@@ -188,6 +246,8 @@ is_string([H,_]):-  member(H, [tstring]).
 
 is_header([H,_]):- member(H, [theader]).
 
+
+%% Writing to html file the stream of tokens
 tohtmlfile(Stream, []):- !, write(Stream, '</pre></body></html>'), !.
 
 tohtmlfile(Stream, [H|T]) :- is_identifier(H), H = [_,Lexem],
@@ -275,53 +335,3 @@ tohtmlfile(Stream, [H|T]) :- is_blank(H), H = [_,Lexem],
     write(Stream, Lexem),
     !,
     tohtmlfile(Stream, T).
-
-
-main:-
-    open("test.c", read, RFile),
-    read_stream_to_codes(RFile, CSource),
-    close(RFile),
-    phrase(tokens(Tokens), CSource),
-%%    write(Tokens),
-    open('page.html', write, WFile),
-    write(WFile,"<!doctype>
-    <html>
-    <head>
-        <title>hello.c</title>
-        <style>
-           .keyword {
-               color: blue;
-           }
-           .number {
-               color: violet;
-           }
-           .identifier {
-               color: green;
-           }
-           .operator {
-               font-style: bold;
-               color: blue;
-           }
-           .comment {
-               color: lime;
-           }
-           .string {
-               color: orange;
-           }
-           .parenthese {
-               font-style: bold;
-               color: brown;
-           }
-           .quotation {
-               font-style: bold;
-               color: black;
-           }
-           .function {
-               color: purple;
-           }
-       </style>
-    </head>
-    <body>
-        <pre class=\"code\">"),
-    tohtmlfile(WFile,Tokens),
-    close(WFile).
