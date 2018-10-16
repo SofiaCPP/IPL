@@ -12,7 +12,7 @@ namespace Wizard
         static void Main(string[] args)
         {
             string programAsText = "";
-            string path = "E:\\IPL\\homework\\81498\\Wizard\\Wizard\\Text files\\simpleFunction.js";
+            string path = "E:\\IPL\\homework\\81498\\Project\\Wizard\\Wizard\\Text files\\simpleFunction.js";
             using (var reader = new StreamReader(path))
             {
                 while (!reader.EndOfStream)
@@ -26,9 +26,9 @@ namespace Wizard
                 tokenizer.PrintTokens();
             }
 
-            using (var writer = new StreamWriter("E:\\IPL\\homework\\81498\\Wizard\\Wizard\\Text files\\simpleFunction.html"))
+            using (var writer = new StreamWriter("E:\\IPL\\homework\\81498\\Project\\Wizard\\Wizard\\Text files\\simpleFunction.html"))
             {
-                writer.Write("<h1> " + programAsText + "</h1>");
+               
             }
         }
     }

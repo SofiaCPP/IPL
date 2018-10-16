@@ -100,51 +100,100 @@ namespace Wizard
             switch (c)
             {
                 case '\0': CurrentIndex++; return GenerateToken(TokenType.Eof);
-                case '&': CurrentIndex++; return GenerateToken(TokenType.BitwiseAnd); // &=
-                case '~': CurrentIndex++; return GenerateToken(TokenType.BitwiseNot); // ~=
-                case '|': CurrentIndex++; return GenerateToken(TokenType.BitwiseOr); // |=
-                case '^': CurrentIndex++; return GenerateToken(TokenType.BitwiseXor); // ^=
-                case ':': CurrentIndex++; return GenerateToken(TokenType.Colon);
-                case ',': CurrentIndex++; return GenerateToken(TokenType.Comma);
-                case '/': CurrentIndex++; return GenerateToken(TokenType.Division);// /=
-                case '.': CurrentIndex++; return GenerateToken(TokenType.Dot);
-                case '{': CurrentIndex++; return GenerateToken(TokenType.LeftBrace);
                 case '(': CurrentIndex++; return GenerateToken(TokenType.LeftParenthesis);
                 case '[': CurrentIndex++; return GenerateToken(TokenType.LeftSquareBracket);
-                case '-': CurrentIndex++; return GenerateToken(TokenType.Minus);// -- -=
-                case '%': CurrentIndex++; return GenerateToken(TokenType.Modulo); // %=
-                case '\n': CurrentIndex++; return GenerateToken(TokenType.Newline);
-                case '+': CurrentIndex++; return GenerateToken(TokenType.Plus);// ++ +=
-                case '?': CurrentIndex++; return GenerateToken(TokenType.QuestionMark);
+                case '{': CurrentIndex++; return GenerateToken(TokenType.LeftBrace);
                 case '}': CurrentIndex++; return GenerateToken(TokenType.RightBrace);
                 case ')': CurrentIndex++; return GenerateToken(TokenType.RightParenthesis);
                 case ']': CurrentIndex++; return GenerateToken(TokenType.RightSquareBracket);
+                case '?': CurrentIndex++; return GenerateToken(TokenType.QuestionMark);
+                case '.': CurrentIndex++; return GenerateToken(TokenType.Dot);
+                case ',': CurrentIndex++; return GenerateToken(TokenType.Comma);
+                case ':': CurrentIndex++; return GenerateToken(TokenType.Colon);
                 case ';': CurrentIndex++; return GenerateToken(TokenType.Semicolon);
-                case '*': CurrentIndex++; return GenerateToken(TokenType.Star);// ** *=
+                case '~': CurrentIndex++; return GenerateToken(TokenType.BitwiseNot);
+                case '\n': CurrentIndex++; return GenerateToken(TokenType.Newline);
                 case '\t': CurrentIndex++; return GenerateToken(TokenType.Tab);
                 case ' ': CurrentIndex++; return GenerateToken(TokenType.Whitespace);
 
-                case '!': CurrentIndex++;
-                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.BangEqual) : GenerateToken(TokenType.Bang);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '&=': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
-                case '': CurrentIndex++; return GenerateToken(TokenType.);
+                case '/':
+                    CurrentIndex++;
+                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.DivideEqual) : GenerateToken(TokenType.Division);
+                case '%':
+                    CurrentIndex++;
+                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.ModuloEqual) : GenerateToken(TokenType.Modulo); // %=
+                case '^':
+                    CurrentIndex++;
+                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.BitwiseXorEqual) : GenerateToken(TokenType.BitwiseXor);
+                case '+':
+                    CurrentIndex++;
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.PlusEqual);
+                    if (Code[CurrentIndex] == '+') return GenerateToken(TokenType.PlusPlus);
+                    return GenerateToken(TokenType.Plus);// ++ +=
+                case '-':
+                    CurrentIndex++;
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.MinusEqual);
+                    if (Code[CurrentIndex] == '-') return GenerateToken(TokenType.MinusMinus);
+                    return GenerateToken(TokenType.Minus);// -- -=
+                case '&':
+                    CurrentIndex++;
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.BitwiseAndEqual);
+                    if (Code[CurrentIndex] == '&') return GenerateToken(TokenType.LogicalAnd);
+                    return GenerateToken(TokenType.BitwiseAnd);
+                case '|': // 
+                    CurrentIndex++;
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.BitwiseOrEqual);
+                    if (Code[CurrentIndex] == '|') return GenerateToken(TokenType.LogicalOr);
+                    return GenerateToken(TokenType.BitwiseOr);
+
+                case '=': // = == ===
+                    CurrentIndex++;
+                    if (Code[CurrentIndex] == '=')
+                    {
+                        CurrentIndex++;
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.StrictEqual) : GenerateToken(TokenType.EqualEqual);
+                    }
+                    return GenerateToken(TokenType.Equal);
+
+                case '!': // ! !! != !==
+                    CurrentIndex++;
+                    if (Code[CurrentIndex] == '!') return GenerateToken(TokenType.DoubleBang);
+                    if (Code[CurrentIndex] == '=')
+                    {
+                        CurrentIndex++;
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.StrictNotEqual) : GenerateToken(TokenType.BangEqual);
+                    }
+                    return GenerateToken(TokenType.Bang);
+
+                case '*': // * *= ** **=
+                    CurrentIndex++;
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.StarEqual);
+                    if (Code[CurrentIndex] == '*')
+                    {
+                        CurrentIndex++;
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.DoubleStarEqual) : GenerateToken(TokenType.DoubleStar);
+                    }
+                    return GenerateToken(TokenType.Star);
+
+                case '>': // > >= >> >>=
+                    CurrentIndex++;
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.GreaterEqual);
+                    if (Code[CurrentIndex] == '>')
+                    {
+                        CurrentIndex++;
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.RightShiftEqual) : GenerateToken(TokenType.RightShift);
+                    }
+                    return GenerateToken(TokenType.Greater);
+
+                case '<': // < <= << <<=
+                    CurrentIndex++;
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.LessEqual);
+                    if (Code[CurrentIndex] == '<')
+                    {
+                        CurrentIndex++;
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.LeftShiftEqual) : GenerateToken(TokenType.LeftShift);
+                    }
+                    return GenerateToken(TokenType.Less);
                 default:
                     break;
             }
@@ -182,7 +231,7 @@ namespace Wizard
 
                 throw new Exception("GetCurrentNumber failed you my boi.\n");
             }
-            return new Token(TokenType.EOF, CurrentLine, "", Location, null);
+            return new Token(TokenType.Eof, CurrentLine, "", Location, null);
         }
 
         private double GetCurrentNumber(out int nextEmptySpaceIndex)
