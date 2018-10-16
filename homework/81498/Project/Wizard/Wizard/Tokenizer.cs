@@ -80,7 +80,7 @@ namespace Wizard
                 Console.WriteLine(token.ToString());
             }
         }
-        List<Token> GenerateTokens()
+        public List<Token> GenerateTokens()
         {
             var tokens = new List<Token>();
 
@@ -100,19 +100,24 @@ namespace Wizard
             {
                 foreach (var token in tokens)
                 {
-                    if (token.Type == TokenType.Whitespace) writer.Write(" ");
+                    if (token.Type == TokenType.Whitespace) writer.Write("&nbsp;");
                     else if (token.Type == TokenType.Newline) writer.Write("<br>");
-                    else if (token.Type == TokenType.Number) writer.Write("<h3 style=\"color: lightgreen\">" + token.Number + "</h3>");
-                    else if (token.Type == TokenType.Identifier) writer.Write("<h3 style=\"color: skyblue\">" + token.Lexeme + "</h3>");
+                    else if (token.Type == TokenType.Number) writer.Write("<span><font color=\"#00FFFF  \">" + token.Lexeme + "</font></span>");
+                    else if (token.Type == TokenType.Identifier) writer.Write("<span><font color=\"#FFC300\">" + token.Lexeme + "</font></span>");
+                    else if (token.Type == TokenType.String) writer.Write("<span><font color=\"#C70039\">\"" + token.Lexeme + "\"</font></span>");
                     else if (Keywords.ContainsValue(token.Type))
                     {
-                        writer.Write("<h3 style=\"color: darkblue\">" + token.Type + "</h3>");
+                        writer.Write("<span><font color=\"#900C3F\">" + token.Lexeme + "</font></span>");
                     }
-                    else if (operators.Contains(token.Type)) writer.Write("<h3><b>" + token.Lexeme + "</b></h3>");
+                    else if (operators.Contains(token.Type)) writer.Write("<span><b>" + token.Lexeme + "</b></span>");
+                    else
+                    {
+                        writer.Write("<span><font color=\"#581845\">" + token.Lexeme + "</font></span>");
+                    }
                 }
             }
         }
-
+        
         private List<TokenType> LoadOperators()
         {
             var operators = new List<TokenType>();
@@ -279,7 +284,7 @@ namespace Wizard
 
                 if (Keywords.ContainsKey(word))
                 {
-                    return new Token(Keywords[word], CurrentLine, "", Location, null);
+                    return new Token(Keywords[word], CurrentLine, word, Location, null);
                 }
 
                 return new Token(TokenType.Identifier, CurrentLine, word, Location, null);
