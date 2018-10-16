@@ -156,7 +156,7 @@ tokens([Token | Tail]) --> token(Token), !, tokens(Tail).
 tokens([]) --> !, [], !.
 
 
-%% Helper predicates (regular expressions)
+%% Helper predicates 
 identifier([C|Cs]) --> [C], {char_type(C, csymf)}, !,
     identifierHelper(Cs).
 
