@@ -1,4 +1,5 @@
 function sum(a, b, c, d) {
+    let asd = "hello madafaka";
     let sum1  = 0;
     let sum2  = 0;
     let sum3  = 0;

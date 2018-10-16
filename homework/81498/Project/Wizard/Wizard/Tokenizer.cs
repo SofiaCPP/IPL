@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,7 +63,6 @@ namespace Wizard
         public Dictionary<string, TokenType> Keywords { get; }
 
 
-
         public Token GenerateToken(TokenType type)
         {
             return new Token(type, CurrentLine, "", Location, null);
@@ -93,6 +93,73 @@ namespace Wizard
             return tokens;
         }
 
+        public void PrettyPrint(List<Token> tokens, string fileDestination)
+        {
+            List<TokenType> operators = LoadOperators();//keywords identifier let number string var
+            using (var writer = new StreamWriter(fileDestination))
+            {
+                foreach (var token in tokens)
+                {
+                    if (token.Type == TokenType.Whitespace) writer.Write(" ");
+                    else if (token.Type == TokenType.Newline) writer.Write("<br>");
+                    else if (token.Type == TokenType.Number) writer.Write("<h3 style=\"color: lightgreen\">" + token.Number + "</h3>");
+                    else if (token.Type == TokenType.Identifier) writer.Write("<h3 style=\"color: skyblue\">" + token.Lexeme + "</h3>");
+                    else if (Keywords.ContainsValue(token.Type))
+                    {
+                        writer.Write("<h3 style=\"color: darkblue\">" + token.Type + "</h3>");
+                    }
+                    else if (operators.Contains(token.Type)) writer.Write("<h3><b>" + token.Lexeme + "</b></h3>");
+                }
+            }
+        }
+
+        private List<TokenType> LoadOperators()
+        {
+            var operators = new List<TokenType>();
+            operators.Add(TokenType.Bang);
+            operators.Add(TokenType.BangEqual);
+            operators.Add(TokenType.BitwiseAnd);
+            operators.Add(TokenType.BitwiseAndEqual);
+            operators.Add(TokenType.BitwiseNot);
+            operators.Add(TokenType.BitwiseOr);
+            operators.Add(TokenType.BitwiseOrEqual);
+            operators.Add(TokenType.BitwiseXor);
+            operators.Add(TokenType.BitwiseXorEqual);
+            operators.Add(TokenType.DivideEqual);
+            operators.Add(TokenType.Division);
+            operators.Add(TokenType.DoubleBang);
+            operators.Add(TokenType.DoubleStar);
+            operators.Add(TokenType.DoubleStarEqual);
+            operators.Add(TokenType.Equal);
+            operators.Add(TokenType.EqualEqual);
+            operators.Add(TokenType.Greater);
+            operators.Add(TokenType.GreaterEqual);
+            operators.Add(TokenType.LeftShift);
+            operators.Add(TokenType.LeftShiftEqual);
+            operators.Add(TokenType.Less);
+            operators.Add(TokenType.LessEqual);
+            operators.Add(TokenType.LogicalAnd);
+            operators.Add(TokenType.LogicalOr);
+            operators.Add(TokenType.Minus);
+            operators.Add(TokenType.MinusEqual);
+            operators.Add(TokenType.MinusMinus);
+            operators.Add(TokenType.Modulo);
+            operators.Add(TokenType.ModuloEqual);
+            operators.Add(TokenType.Plus);
+            operators.Add(TokenType.PlusEqual);
+            operators.Add(TokenType.PlusPlus);
+            operators.Add(TokenType.QuestionMark);
+            operators.Add(TokenType.RightShift);
+            operators.Add(TokenType.RightShiftEqual);
+            operators.Add(TokenType.Star);
+            operators.Add(TokenType.StarEqual);
+            operators.Add(TokenType.StrictEqual);
+            operators.Add(TokenType.StrictNotEqual);
+
+            return operators;
+        }
+
+
         private Token NextToken()
         {
             char c = Code[CurrentIndex];
@@ -100,115 +167,115 @@ namespace Wizard
             switch (c)
             {
                 case '\0': CurrentIndex++; return GenerateToken(TokenType.Eof);
-                case '(': CurrentIndex++; return GenerateToken(TokenType.LeftParenthesis);
-                case '[': CurrentIndex++; return GenerateToken(TokenType.LeftSquareBracket);
-                case '{': CurrentIndex++; return GenerateToken(TokenType.LeftBrace);
-                case '}': CurrentIndex++; return GenerateToken(TokenType.RightBrace);
-                case ')': CurrentIndex++; return GenerateToken(TokenType.RightParenthesis);
-                case ']': CurrentIndex++; return GenerateToken(TokenType.RightSquareBracket);
-                case '?': CurrentIndex++; return GenerateToken(TokenType.QuestionMark);
-                case '.': CurrentIndex++; return GenerateToken(TokenType.Dot);
-                case ',': CurrentIndex++; return GenerateToken(TokenType.Comma);
-                case ':': CurrentIndex++; return GenerateToken(TokenType.Colon);
-                case ';': CurrentIndex++; return GenerateToken(TokenType.Semicolon);
-                case '~': CurrentIndex++; return GenerateToken(TokenType.BitwiseNot);
-                case '\n': CurrentIndex++; return GenerateToken(TokenType.Newline);
-                case '\t': CurrentIndex++; return GenerateToken(TokenType.Tab);
-                case ' ': CurrentIndex++; return GenerateToken(TokenType.Whitespace);
+                case '(': CurrentIndex++; return GenerateToken(TokenType.LeftParenthesis, "(");
+                case '[': CurrentIndex++; return GenerateToken(TokenType.LeftSquareBracket, "[");
+                case '{': CurrentIndex++; return GenerateToken(TokenType.LeftBrace, "{");
+                case '}': CurrentIndex++; return GenerateToken(TokenType.RightBrace, "}");
+                case ')': CurrentIndex++; return GenerateToken(TokenType.RightParenthesis, ")");
+                case ']': CurrentIndex++; return GenerateToken(TokenType.RightSquareBracket, "]");
+                case '?': CurrentIndex++; return GenerateToken(TokenType.QuestionMark, "?");
+                case '.': CurrentIndex++; return GenerateToken(TokenType.Dot, ".");
+                case ',': CurrentIndex++; return GenerateToken(TokenType.Comma, ",");
+                case ':': CurrentIndex++; return GenerateToken(TokenType.Colon, ":");
+                case ';': CurrentIndex++; return GenerateToken(TokenType.Semicolon, ";");
+                case '~': CurrentIndex++; return GenerateToken(TokenType.BitwiseNot, "~");
+                case '\n': CurrentIndex++; return GenerateToken(TokenType.Newline, "\n");
+                case '\t': CurrentIndex++; return GenerateToken(TokenType.Tab, "\t");
+                case ' ': CurrentIndex++; return GenerateToken(TokenType.Whitespace, " ");
 
                 case '/':
                     CurrentIndex++;
-                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.DivideEqual) : GenerateToken(TokenType.Division);
+                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.DivideEqual, "/=") : GenerateToken(TokenType.Division, "/");
                 case '%':
                     CurrentIndex++;
-                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.ModuloEqual) : GenerateToken(TokenType.Modulo); // %=
+                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.ModuloEqual, "%=") : GenerateToken(TokenType.Modulo, "%"); // %=
                 case '^':
                     CurrentIndex++;
-                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.BitwiseXorEqual) : GenerateToken(TokenType.BitwiseXor);
+                    return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.BitwiseXorEqual, "^=") : GenerateToken(TokenType.BitwiseXor, "^");
                 case '+':
                     CurrentIndex++;
-                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.PlusEqual);
-                    if (Code[CurrentIndex] == '+') return GenerateToken(TokenType.PlusPlus);
-                    return GenerateToken(TokenType.Plus);// ++ +=
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.PlusEqual, "+=");
+                    if (Code[CurrentIndex] == '+') return GenerateToken(TokenType.PlusPlus, "++");
+                    return GenerateToken(TokenType.Plus, "+");// + ++ +=
                 case '-':
                     CurrentIndex++;
-                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.MinusEqual);
-                    if (Code[CurrentIndex] == '-') return GenerateToken(TokenType.MinusMinus);
-                    return GenerateToken(TokenType.Minus);// -- -=
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.MinusEqual, "-=");
+                    if (Code[CurrentIndex] == '-') return GenerateToken(TokenType.MinusMinus, "--");
+                    return GenerateToken(TokenType.Minus, "-");// -- -=
                 case '&':
                     CurrentIndex++;
-                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.BitwiseAndEqual);
-                    if (Code[CurrentIndex] == '&') return GenerateToken(TokenType.LogicalAnd);
-                    return GenerateToken(TokenType.BitwiseAnd);
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.BitwiseAndEqual, "&=");
+                    if (Code[CurrentIndex] == '&') return GenerateToken(TokenType.LogicalAnd, "&&");
+                    return GenerateToken(TokenType.BitwiseAnd, "&");
                 case '|': // 
                     CurrentIndex++;
-                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.BitwiseOrEqual);
-                    if (Code[CurrentIndex] == '|') return GenerateToken(TokenType.LogicalOr);
-                    return GenerateToken(TokenType.BitwiseOr);
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.BitwiseOrEqual, "|=");
+                    if (Code[CurrentIndex] == '|') return GenerateToken(TokenType.LogicalOr, "||");
+                    return GenerateToken(TokenType.BitwiseOr, "|");
 
                 case '=': // = == ===
                     CurrentIndex++;
                     if (Code[CurrentIndex] == '=')
                     {
                         CurrentIndex++;
-                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.StrictEqual) : GenerateToken(TokenType.EqualEqual);
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.StrictEqual, "===") : GenerateToken(TokenType.EqualEqual, "==");
                     }
-                    return GenerateToken(TokenType.Equal);
+                    return GenerateToken(TokenType.Equal, "=");
 
                 case '!': // ! !! != !==
                     CurrentIndex++;
-                    if (Code[CurrentIndex] == '!') return GenerateToken(TokenType.DoubleBang);
+                    if (Code[CurrentIndex] == '!') return GenerateToken(TokenType.DoubleBang, "!!");
                     if (Code[CurrentIndex] == '=')
                     {
                         CurrentIndex++;
-                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.StrictNotEqual) : GenerateToken(TokenType.BangEqual);
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.StrictNotEqual, "!==") : GenerateToken(TokenType.BangEqual, "!=");
                     }
-                    return GenerateToken(TokenType.Bang);
+                    return GenerateToken(TokenType.Bang, "!");
 
                 case '*': // * *= ** **=
                     CurrentIndex++;
-                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.StarEqual);
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.StarEqual, "*=");
                     if (Code[CurrentIndex] == '*')
                     {
                         CurrentIndex++;
-                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.DoubleStarEqual) : GenerateToken(TokenType.DoubleStar);
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.DoubleStarEqual, "**=") : GenerateToken(TokenType.DoubleStar, "**");
                     }
-                    return GenerateToken(TokenType.Star);
+                    return GenerateToken(TokenType.Star, "*");
 
                 case '>': // > >= >> >>=
                     CurrentIndex++;
-                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.GreaterEqual);
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.GreaterEqual, ">=");
                     if (Code[CurrentIndex] == '>')
                     {
                         CurrentIndex++;
-                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.RightShiftEqual) : GenerateToken(TokenType.RightShift);
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.RightShiftEqual, ">>=") : GenerateToken(TokenType.RightShift, ">>");
                     }
-                    return GenerateToken(TokenType.Greater);
+                    return GenerateToken(TokenType.Greater, ">");
 
                 case '<': // < <= << <<=
                     CurrentIndex++;
-                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.LessEqual);
+                    if (Code[CurrentIndex] == '=') return GenerateToken(TokenType.LessEqual, "<=");
                     if (Code[CurrentIndex] == '<')
                     {
                         CurrentIndex++;
-                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.LeftShiftEqual) : GenerateToken(TokenType.LeftShift);
+                        return Code[CurrentIndex] == '=' ? GenerateToken(TokenType.LeftShiftEqual, "<<=") : GenerateToken(TokenType.LeftShift, "<<");
                     }
-                    return GenerateToken(TokenType.Less);
+                    return GenerateToken(TokenType.Less, "<");
                 default:
                     break;
             }
 
             if (IsLetterOrUnderscore(c))
             {
-                int nextEmptySpaceIndex = -1;
-                string word = GetCurrentWord(out nextEmptySpaceIndex);
+                int nextSeparatorIndex = -1;
+                string word = GetCurrentWord(out nextSeparatorIndex);
 
-                if (nextEmptySpaceIndex == -1)
+                if (nextSeparatorIndex == -1)
                 {
                     throw new Exception("GetCurrentWord blew up boi.\n");
                 }
 
-                CurrentIndex = nextEmptySpaceIndex;
+                CurrentIndex = nextSeparatorIndex;
 
                 if (Keywords.ContainsKey(word))
                 {
@@ -218,14 +285,24 @@ namespace Wizard
                 return new Token(TokenType.Identifier, CurrentLine, word, Location, null);
             }
 
+            if (c == '"')// requires additional logic for errors and corner cases
+            {
+                CurrentIndex++;
+
+                int indexOfNextDoubleQuotes = Code.IndexOf('"', CurrentIndex);
+                string str = Code.Substring(CurrentIndex, indexOfNextDoubleQuotes - CurrentIndex);
+
+                CurrentIndex = indexOfNextDoubleQuotes + 1;
+                return GenerateToken(TokenType.String, str);
+            }
             if (IsNumber(c))
             {
-                int nextEmptySpaceIndex = -1;
-                double number = GetCurrentNumber(out nextEmptySpaceIndex);
+                int nextSeparatorIndex = -1;
+                double number = GetCurrentNumber(out nextSeparatorIndex);
 
-                if (nextEmptySpaceIndex != -1)
+                if (nextSeparatorIndex != -1)
                 {
-                    CurrentIndex = nextEmptySpaceIndex;
+                    CurrentIndex = nextSeparatorIndex;
                     return new Token(TokenType.Number, CurrentLine, number.ToString(), Location, number);
                 }
 
@@ -234,10 +311,10 @@ namespace Wizard
             return new Token(TokenType.Eof, CurrentLine, "", Location, null);
         }
 
-        private double GetCurrentNumber(out int nextEmptySpaceIndex)
+        private double GetCurrentNumber(out int nextSeparatorIndex)
         {
 
-            string word = GetCurrentWord(out nextEmptySpaceIndex);
+            string word = GetCurrentWord(out nextSeparatorIndex);
             double number;
 
             if (double.TryParse(word, out number))
@@ -245,7 +322,7 @@ namespace Wizard
                 return number;
             }
 
-            nextEmptySpaceIndex = -1;
+            nextSeparatorIndex = -1;
             return -1;
         }
 
@@ -254,10 +331,10 @@ namespace Wizard
             return c >= '0' && c <= '9';
         }
 
-        private string GetCurrentWord(out int emptySpaceIndex)
+        private string GetCurrentWord(out int nextSeparatorIndex)
         {
-            emptySpaceIndex = GetNextEmptySpaceIndex();
-            int length = emptySpaceIndex - CurrentIndex;
+            nextSeparatorIndex = GetNextSeparatorIndex();
+            int length = nextSeparatorIndex - CurrentIndex;
             string currentWord = Code.Substring(CurrentIndex, length);
             //if (IsValidString(currentWord)) 
             return currentWord;
@@ -265,22 +342,23 @@ namespace Wizard
         }
 
 
-        private int GetNextEmptySpaceIndex()
+        private int GetNextSeparatorIndex()// wrong implementation, should check if separator is any operator
         {
-            var emptySpaces = new List<int>();
-            emptySpaces.Add(Code.IndexOf('\n', CurrentIndex));
-            emptySpaces.Add(Code.IndexOf('\t', CurrentIndex));
-            emptySpaces.Add(Code.IndexOf(' ', CurrentIndex));
-            emptySpaces.Add(Code.IndexOf(',', CurrentIndex));
-            emptySpaces.Add(Code.IndexOf('(', CurrentIndex));
-            emptySpaces.Add(Code.IndexOf(')', CurrentIndex));
-            emptySpaces.Add(Code.IndexOf(';', CurrentIndex));
+            var separators = new List<int>();
+            separators.Add(Code.IndexOf('\n', CurrentIndex));
+            separators.Add(Code.IndexOf('\t', CurrentIndex));
+            separators.Add(Code.IndexOf(' ', CurrentIndex));
+            separators.Add(Code.IndexOf(',', CurrentIndex));
+            separators.Add(Code.IndexOf('(', CurrentIndex));
+            separators.Add(Code.IndexOf(')', CurrentIndex));
+            separators.Add(Code.IndexOf(';', CurrentIndex));
+            separators.Add(Code.IndexOf('+', CurrentIndex));
+            separators.Add(Code.IndexOf('-', CurrentIndex));
+            separators.Sort();
 
-            emptySpaces.Sort();
-
-            foreach (var emptySpace in emptySpaces)
+            foreach (var separator in separators)
             {
-                if (emptySpace >= 0) return emptySpace;
+                if (separator >= 0) return separator;
             }
 
             return -1;
