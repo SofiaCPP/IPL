@@ -125,7 +125,7 @@ token([tbitwiseOr, "|"]) --> "|", !.
 token([tspace , " "]) --> "\s", !.
 token([ttab , "\t"]) --> "\t", !.
 token([execTAB , "\\t"]) --> "\\t", !.
-token([execNL,'\n']) --> ( "\n"; "\r\n"), !.
+token([execNL, "\n"]) --> ( "\n"; "\r\n"), !.
 token([tnl, "\\n"]) --> "\\n", !.
 
 token([tleftParen,"("]) --> "(", !.
@@ -133,7 +133,7 @@ token([trightParen, ")"]) --> ")", !.
 token([tleftBrace, "{"]) --> "{", !.
 token([trightBrace, "}"]) --> "}", !.
 token([tleftSqParen, "["]) --> "[", !.
-token([trightSqParen,"]" ]) --> "]", !.
+token([trightSqParen, "]" ]) --> "]", !.
 token([tsemicolon, ";"]) --> ";", !.
 token([ttwodots, ":"]) --> ":", !.
 token([tquestion, "?"]) --> "?", !.
