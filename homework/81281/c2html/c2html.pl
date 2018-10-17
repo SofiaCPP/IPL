@@ -1,8 +1,22 @@
 :- use_module(library(dcg/basics)).
 :- use_module(library(readutil)).
 
-main:-
-    open("test.c", read, RFile),
+:- set_prolog_flag(verbose, silent).
+
+:- initialization(main, main).
+
+main :-
+    current_prolog_flag(argv, Argv),
+    Argv = [H|_],
+    atom_string(H, File),
+    mainy(File),
+    format('You can see the result in the html file.~n'),
+    halt.
+main :-
+    halt(1).
+
+mainy(File):-
+    open(File, read, RFile),
     read_stream_to_codes(RFile, CSource),
     close(RFile),
     phrase(tokens(Tokens), CSource),
@@ -156,7 +170,7 @@ tokens([Token | Tail]) --> token(Token), !, tokens(Tail).
 tokens([]) --> !, [], !.
 
 
-%% Helper predicates 
+%% Helper predicates
 identifier([C|Cs]) --> [C], {char_type(C, csymf)}, !,
     identifierHelper(Cs).
 
