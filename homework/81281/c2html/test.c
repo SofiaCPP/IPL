@@ -1,15 +1,25 @@
-#include <bits/stdc++.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 int N = 0;
 int a[750001] = {0};
 /*Problem Secrect DAA*/
-// lalallala
+//// mauuu
+
+void swap(int* i, int* j)
+{
+    int t = *i;
+    *i = *j;
+    *j = t;
+}
+
 int partition(int l, int r)
 {
     int randIdx = l + rand() % (r - l);
 
     int pivot = a[randIdx];
 
-    std::swap(a[l], a[randIdx]);
+    swap(&a[l], &a[randIdx]);
     int ind = l;
 
     for (int i = l + 1; i < r; ++i)
@@ -17,11 +27,11 @@ int partition(int l, int r)
         if (a[i] <= pivot)
         {
             ind++;
-            std::swap(a[i], a[ind]);
+            swap(&a[i], &a[ind]);
         }
     }
 
-    std::swap(a[l], a[ind]);
+    swap(&a[l], &a[ind]);
     return ind;
 }
 
