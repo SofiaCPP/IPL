@@ -5,7 +5,7 @@ draft: true
 outputs: ["Reveal"]
 ---
 
-# Parsing
+# 3. Parsing
 
 ---
 ## Contents
@@ -51,7 +51,7 @@ The grammar has two alphabets:
    side
 
 ---
-####
+##### Terminals and Non-terminals
 
 In the expression grammar:
 
@@ -90,7 +90,7 @@ specifications for EBNF, but they have the same power, just different syntax.
 # TODO: DO we want this?
 
 Parser Expression Grammars are similar to CFG, but are more convenient for
-parsing, since the `|` operator is not ambiguous.
+parsing, since the `/` (note not `|`) operator is not ambiguous.
 
 - CFG allows selecting any matching variant and can have more than one parse
   tree.
@@ -111,10 +111,10 @@ parsing, since the `|` operator is not ambiguous.
 ---
 #### CFG vs PEG
 
-Where the else goes?
+Where the `else` goes?
 
     <if> ::= if <expr> <stmnt> else <stmnt>
-        | if <expr> <stmnt>
+        / if <expr> <stmnt>
 
 
     if x0 if x1 s1 else s2
@@ -124,16 +124,6 @@ Where the else goes?
 
 - CFG - it is ambiguous
 - PEG - 2 - because it is the first option
-
----
-#### LALR(n)
-
-LR(n) and LALR(n) are family of parsing algorithms for CFG
-
-- n is the number of look ahead terminals
-- L - *left-to-right*,
-- R - *right-most derivation* - the right most non-terminal is replaced
-
 
 ---
 #### Program
@@ -158,7 +148,71 @@ LR(n) and LALR(n) are family of parsing algorithms for CFG
 - symbol: `}`
 
 ---
-## Abstract Syntax Tree
+## Abstract Syntax Tree (AST)
+
+---
+### Concrete Syntax tree (CST)
+
+- aka Parse Tree
+- aka Derivation Tree
+
+> The tree that starts from the grammar inital non-terminal and generates
+> a string in the language.
+
+---
+### Abstract vs Concrete
+
+> AST differ from CST because superficial distinctions of from, unimportant for
+> translation, do not appear in AST.
+
+---
+
+We will be focusing solely on AST, since it is used for translation and it
+  easy to skip the CST and generate directly AST.
+
+---
+### Parsing algorithms
+
+- There a lot of algorithms for parsing grammars, with different time / memory
+  tradeoffs
+- The algorithms can be:
+    - top-down or bottom-up
+    - left-most derivation or right-most derivation
+
+- Most of the algorithms require making the grammar follow a specific form and
+  then explain how to create a parser for the language.
+
+---
+### Parsing algorithms
+
+- Recursive descent parsing
+- Operator-precedence parsing
+- Pratt parsing - top-down operator-precedence parsing
+- [LL](https://en.wikipedia.org/wiki/LL_parser)
+- [LR](https://en.wikipedia.org/wiki/LR_parser)
+- [LALR](https://en.wikipedia.org/wiki/LALR_parser)
+
+These are the major grammar forms and parsing algorithms. While they are not
+exactly the same in terms of algorithms and power.
+
+{{<  note >}}
+
+- First three are easy to implement manual, the second three are better
+  generated.
+- Pratt parsing is a mix between recursive descent and operator-precedence.
+
+{{< /note >}}
+
+---
+## Hand-crafted parser
+
+Disclaimer: It is possible to write every parser manually, but we'll be
+discussing:
+
+- top-down AKA recursive-descent parsers
+- operator precedence parser
+
+When we get to generated parsers, will be discussing bottom-up parsers as well.
 
 ---
 ## Hand-crafted parser
@@ -186,7 +240,10 @@ How to write a hand-crafted parser?
     <value> ::= [0-9]+ / '(' <expr> ')'
 
 ---
-#### Code
+#### Recursive descent
+
+---
+##### Expr
 
     // <expr>  ::= <sum>
 
@@ -195,7 +252,7 @@ How to write a hand-crafted parser?
     }
 
 ---
-#### Code
+##### Sum
 
     // <sum>   ::= <prod> ([+-] <prod>)*
 
@@ -210,7 +267,7 @@ How to write a hand-crafted parser?
     }
 
 ---
-#### Code
+##### Prod
 
     // <prod>  ::= <value> ([*/] <value>)*
 
@@ -225,13 +282,13 @@ How to write a hand-crafted parser?
     }
 
 ---
-#### Code
+##### Value
 
     // <value> ::= [0-9]+ / '(' <expr> ')'
 
     AST parse_value() {
         auto token = next_token();
-        if (token.type == NUMBER) {
+        if (token == NUMBER) {
             return make_number(token);
         }
         else if (token == '(') {
@@ -240,6 +297,89 @@ How to write a hand-crafted parser?
             return expr;
         }
         throw error;
+    }
+
+---
+#### Operator precedence
+
+[Shunting yard](https://en.wikipedia.org/wiki/Shunting-yard_algorithm)
+
+---
+    int precedence(token) {
+        switch (token) {
+            case EOF:
+                return 0;
+            case '(':
+                return 2;
+            case ')':
+                return 5;
+            case '+':
+            case '-':
+                return 10;
+            case '*':
+            case '/':
+                return 20;
+        }
+    }
+---
+
+    AST parse_expr() {
+        stack<AST> output;
+        stack<Token> operators;
+        auto token = next_token();
+        while (token != EOF) {
+            handle_token(token, output, operators);
+            token = next_token();
+        }
+
+        AST result = output.top();
+        output.pop();
+        assert(output.empty());
+        return result;
+    }
+
+---
+
+    void handle_token(token, output, operators) {
+        switch (token) {
+            case NUMBER:
+                output.push(make_number(token));
+                break;
+            case OPERATOR:
+            case ')':
+            case '(':
+                handle_operator(token, output, operators);
+                break;
+        }
+    }
+
+---
+
+    void handle_operator(token, output, operators) {
+        auto prec = precedence(token);
+        while (!operators.empty() &&
+            (precedence(operators.top()) >= prec)) {
+            output_tree(operators.top());
+            operators.pop();
+        }
+        if (token == ')') {
+            assert(operators.top() == '(');
+            operators.pop();
+        } else if (token != EOF) {
+            // '(' or an operator
+            operators.push(token);
+        }
+    }
+
+---
+
+
+    void output_tree(Token operator, output) {
+        auto rhs = output.top();
+        output.pop();
+        auto lhs = output.top();
+        output.pop();
+        output.push(make_op(operator, lhs, rhs));
     }
 
 ---
