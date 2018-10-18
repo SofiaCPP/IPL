@@ -1,0 +1,37 @@
+name:                clex
+version:             0.0.0.1
+author:              "Georgi Lyubenovj"
+maintainer:          "godzbanebane@gmail.com"
+
+description:         Lex C and keep whitespace so I can print it afterwards.
+
+dependencies:
+- base >= 4.7 && < 5
+- bytestring
+- attoparsec
+- word8
+
+library:
+  source-dirs: src
+
+executables:
+  clex-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - clex
+
+tests:
+  clex-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - clex
