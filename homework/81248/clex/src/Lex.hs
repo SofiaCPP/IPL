@@ -8,7 +8,10 @@ module Lex
 import           Prelude hiding (takeWhile)
 
 import           Data.Foldable (asum)
-import           Data.Word8    (Word8, isHexDigit, isOctDigit, isAlpha)
+import           Data.Word8    ( Word8, isHexDigit, isOctDigit, isAlpha
+                               , _e, _E, _x, _X,_f, _F, _u, _U, _l, _L, _0
+                               , _plus, _hyphen, _underscore, _quotesingle
+                               , _quotedbl, _backslash, _period)
 
 import           Data.Attoparsec.ByteString
 import           Data.Attoparsec.ByteString.Char8 (isDigit_w8, isSpace_w8)
@@ -60,43 +63,45 @@ isDigit :: Word8 -> Bool
 isDigit = isDigit_w8
 
 isLetter :: Word8 -> Bool
-isLetter b = isAlpha b || b == 0x5f
+isLetter b = isAlpha b
+          || b == _underscore
 
 exponentParser :: Parser ByteString
 exponentParser = do
-    e      <- satisfy (\c -> c == 69 || c == 101)   -- small or capital e
+    e      <- satisfy (\c -> c == _E || c == _e)
     sign   <- option "" plusMinus
     digits <- takeWhile1 isDigit_w8
     pure $ BS.singleton e <> sign <> digits
     where
-        plusMinus = BS.singleton <$> satisfy (\c -> c == 43 || c == 45) -- plus or minus
+        plusMinus = BS.singleton <$> satisfy (\c -> c == _plus || c == _hyphen) -- plus or minus
 
 float :: Parser Word8
 float = satisfy $
-    \c -> c == 70
-       || c == 102
-       || c == 76
-       || c == 108
+    \c -> c == _F
+       || c == _f
+       || c == _L
+       || c == _l
 
 unsigned :: Parser Word8
 unsigned = satisfy $
-    \c -> c == 68
-       || c == 100
-       || c == 76
-       || c == 108
+    \c -> c == _U
+       || c == _u
+       || c == _L
+       || c == _l
 
 isxX :: Word8 -> Bool
-isxX c = c == 88 || c == 120
+isxX c = c == _X
+      || c == _x
 
 singleQuote :: Parser Word8
-singleQuote = word8 39
+singleQuote = word8 _quotesingle
 
 doubleQuote :: Parser Word8
-doubleQuote = word8 34
+doubleQuote = word8 _quotedbl
 
 charParser :: Parser Token
 charParser = do
-    l   <- option "" (BS.singleton <$> word8 76) -- capital L
+    l   <- option "" (BS.singleton <$> word8 _L)
     _   <- singleQuote
     str <- BS.concat <$> many1' ((BS.snoc <$> string "\\" <*> anyWord8) <|> notInWeirdClass)
     sq  <- singleQuote
@@ -104,12 +109,12 @@ charParser = do
     pure $ CharLit ((l <> (sq `BS.cons` str)) `BS.snoc` sq)
     where
         notInWeirdClass = BS.singleton <$>
-                            satisfy (\c -> c /= 92  -- back slash
-                                        && c /= 39) -- single quote
+                            satisfy (\c -> c /= _backslash
+                                        && c /= _quotesingle)
 
 stringParser :: Parser Token
 stringParser = do
-    l   <- option "" (BS.singleton <$> word8 76) -- capital L
+    l   <- option "" (BS.singleton <$> word8 _L)
     _   <- doubleQuote
     str <- BS.concat <$> many' ((BS.snoc <$> string "\\" <*> anyWord8) <|> notInWeirdClass)
     dq  <- doubleQuote
@@ -117,28 +122,28 @@ stringParser = do
     pure $ StringLit ((l <> (dq `BS.cons` str)) `BS.snoc` dq)
     where
         notInWeirdClass = BS.singleton <$>
-                            satisfy (\c -> c /= 92  -- back slash
-                                        && c /= 34) -- double quote
+                            satisfy (\c -> c /= _backslash
+                                        && c /= _quotedbl)
 
 zero :: Parser Word8
-zero = word8 48
+zero = word8 _0
 
 hexNumParser :: Parser Token
 hexNumParser = do
-    _   <- zero
+    z   <- zero
     x   <- satisfy isxX
     hex <- takeWhile1 isHexDigit
     f   <- option "" (BS.singleton <$> unsigned)
 
-    pure $ HexNumber (48 `BS.cons` x `BS.cons` hex <> f)
+    pure $ HexNumber (z `BS.cons` x `BS.cons` hex <> f)
 
 octNumParser :: Parser Token
 octNumParser = do
-    _   <- zero
+    z   <- zero
     oct <- takeWhile1 isOctDigit
     f   <- option "" (BS.singleton <$> unsigned)
 
-    pure $ OctNumber (48 `BS.cons` oct <> f)
+    pure $ OctNumber (z `BS.cons` oct <> f)
 
 numParser :: Parser Token
 numParser = do
@@ -157,7 +162,7 @@ scientificParser = do
 dotFloatParser :: Parser Token
 dotFloatParser = do
     leadingDigits <- takeWhile isDigit
-    d <- BS.singleton <$> word8 46 -- a dot
+    d <- BS.singleton <$> word8 _period
     afterDigits <- takeWhile1 isDigit
     expon <- option "" exponentParser
     f   <- option "" (BS.singleton <$> float)
@@ -166,7 +171,7 @@ dotFloatParser = do
 leadingDotParser :: Parser Token
 leadingDotParser = do
     leadingDigits <- takeWhile1 isDigit
-    d <- BS.singleton <$> word8 46 -- a dot
+    d <- BS.singleton <$> word8 _period
     afterDigits <- takeWhile isDigit
     expon <- option "" exponentParser
     f   <- option "" (BS.singleton <$> float)
