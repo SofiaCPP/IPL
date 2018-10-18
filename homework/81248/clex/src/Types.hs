@@ -5,6 +5,7 @@ module Types
     , allKeyWords
     , allOpers
     , recognize
+    , tokenToBS
     ) where
 
 import           Data.ByteString (ByteString)
@@ -87,18 +88,16 @@ data Token =
     | Mul
     | Div
     | Mod
-    | Pow
+    | Xor
     | Ternary
-    | HexNumber ByteString
-    | OctNumber ByteString
-    | Number    ByteString
-    | CharLit   ByteString
-
-    | Scientific           ByteString -- ???
-    | DotFloat        ByteString -- ???
-    | LeadingDot ByteString -- ???
-
-    | StringLit ByteString
+    | HexNumber  ByteString
+    | OctNumber  ByteString
+    | Number     ByteString
+    | CharLit    ByteString
+    | Scientific ByteString
+    | DotFloat   ByteString
+    | LeadingDot ByteString
+    | StringLit  ByteString
     | Identifier ByteString
     deriving (Show, Eq)
 
@@ -141,26 +140,28 @@ recognize "while"    = While
 -- operators
 --
 -- two-byte
-recognize ".." = Ellipsis
-recognize "+=" = AddAssign
-recognize "-=" = SubAssign
-recognize "*=" = MulAssign
-recognize "/=" = DivAssign
-recognize "%=" = ModAssign
-recognize "&=" = AndAssign
-recognize "^=" = XorAssign
-recognize "|=" = OrAssign
-recognize "++" = Incr
-recognize "--" = Decr
-recognize "->" = Ptr
-recognize "&&" = And
-recognize "||" = Or
-recognize "<=" = LtEq
-recognize ">=" = GtEq
-recognize "==" = Eq
-recognize "!=" = NEq
-recognize ">>" = RightShift
-recognize "<<" = LeftShift
+recognize "..." = Ellipsis
+recognize ">>=" = RightShiftAssign
+recognize "<<=" = LeftShiftAssign
+recognize "+="  = AddAssign
+recognize "-="  = SubAssign
+recognize "*="  = MulAssign
+recognize "/="  = DivAssign
+recognize "%="  = ModAssign
+recognize "&="  = AndAssign
+recognize "^="  = XorAssign
+recognize "|="  = OrAssign
+recognize "++"  = Incr
+recognize "--"  = Decr
+recognize "->"  = Ptr
+recognize "&&"  = And
+recognize "||"  = Or
+recognize "<="  = LtEq
+recognize ">="  = GtEq
+recognize "=="  = Eq
+recognize "!="  = NEq
+recognize ">>"  = RightShift
+recognize "<<"  = LeftShift
 
 -- one-byte
 recognize "."  = Dot
@@ -185,7 +186,7 @@ recognize "+"  = Add
 recognize "*"  = Mul
 recognize "/"  = Div
 recognize "%"  = Mod
-recognize "^"  = Pow
+recognize "^"  = Xor
 recognize "?"  = Ternary
 
 -- if all else fails an identifier
@@ -232,7 +233,9 @@ allKeyWords =
 -- have @"constconstconst"@.
 allOpers :: [ByteString]
 allOpers =
-    [ ".."
+    [ "..."
+    , ">>="
+    , "<<="
     , "+="
     , "-="
     , "*="
@@ -277,3 +280,93 @@ allOpers =
     , "^"
     , "?"
     ]
+
+tokenToBS :: Token -> ByteString
+tokenToBS (Whitespace bs)  = bs
+tokenToBS Auto             = "auto"
+tokenToBS Break            = "break"
+tokenToBS Case             = "case"
+tokenToBS Char             = "char"
+tokenToBS Const            = "const"
+tokenToBS Continue         = "continue"
+tokenToBS Default          = "default"
+tokenToBS Do               = "do"
+tokenToBS Double           = "double"
+tokenToBS Else             = "else"
+tokenToBS Enum             = "enum"
+tokenToBS Extern           = "extern"
+tokenToBS Float            = "float"
+tokenToBS For              = "for"
+tokenToBS Goto             = "goto"
+tokenToBS If               = "if"
+tokenToBS Int              = "int"
+tokenToBS Long             = "long"
+tokenToBS Register         = "register"
+tokenToBS Return           = "return"
+tokenToBS Short            = "short"
+tokenToBS Signed           = "signed"
+tokenToBS Sizeof           = "sizeof"
+tokenToBS Static           = "static"
+tokenToBS Struct           = "struct"
+tokenToBS Switch           = "switch"
+tokenToBS Typedef          = "typedef"
+tokenToBS Union            = "union"
+tokenToBS Unsigned         = "unsigned"
+tokenToBS Void             = "void"
+tokenToBS Volatile         = "volatile"
+tokenToBS While            = "while"
+tokenToBS Ellipsis         = "..."
+tokenToBS RightShiftAssign = ">>="
+tokenToBS LeftShiftAssign  = "<<="
+tokenToBS AddAssign        = "+="
+tokenToBS SubAssign        = "-="
+tokenToBS MulAssign        = "*="
+tokenToBS DivAssign        = "/="
+tokenToBS ModAssign        = "%="
+tokenToBS AndAssign        = "&="
+tokenToBS XorAssign        = "^="
+tokenToBS OrAssign         = "|="
+tokenToBS Incr             = "++"
+tokenToBS Decr             = "--"
+tokenToBS Ptr              = "->"
+tokenToBS Dot              = "."
+tokenToBS And              = "&&"
+tokenToBS Or               = "||"
+tokenToBS Not              = "!="
+tokenToBS LtEq             = "<="
+tokenToBS GtEq             = ">="
+tokenToBS Eq               = "=="
+tokenToBS NEq              = "!="
+tokenToBS Lt               = "<"
+tokenToBS Gt               = ">"
+tokenToBS Semicolon        = ";"
+tokenToBS LeftCurly        = "{"
+tokenToBS RightCurly       = "}"
+tokenToBS Comma            = ","
+tokenToBS Colon            = ":"
+tokenToBS Assign           = "="
+tokenToBS LeftBracket      = "("
+tokenToBS RightBracket     = ")"
+tokenToBS LeftSquare       = "["
+tokenToBS RightSquare      = "]"
+tokenToBS RightShift       = ">>"
+tokenToBS LeftShift        = "<<"
+tokenToBS BitAnd           = "&"
+tokenToBS BitOr            = "|"
+tokenToBS BitNot           = "~"
+tokenToBS Sub              = "-"
+tokenToBS Add              = "+"
+tokenToBS Mul              = "*"
+tokenToBS Div              = "/"
+tokenToBS Mod              = "%"
+tokenToBS Xor              = "^"
+tokenToBS Ternary          = "?"
+tokenToBS (HexNumber  bs)  = bs
+tokenToBS (OctNumber  bs)  = bs
+tokenToBS (Number     bs)  = bs
+tokenToBS (CharLit    bs)  = bs
+tokenToBS (Scientific bs)  = bs
+tokenToBS (DotFloat   bs)  = bs
+tokenToBS (LeadingDot bs)  = bs
+tokenToBS (StringLit  bs)  = bs
+tokenToBS (Identifier bs)  = bs
