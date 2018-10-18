@@ -84,7 +84,6 @@ int main(int argc, const char* argv[]) {
         "<!DOCTYPE html>"
         "<html>"
         "<head>"
-        "    <title>hello.js</title>"
         "    <style>"
         "        .comment {"
         "            color: gray;"
