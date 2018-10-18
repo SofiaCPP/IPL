@@ -20,8 +20,24 @@ import           Control.Applicative ((<|>))
 
 import           Boilerplate
 
+
+lexC :: ByteString -> Either String [Token]
+lexC = parseOnly (cParser <* endOfInput)
+
 cParser :: Parser [Token]
 cParser = many' tokenParser
+
+-- Order is important! For example we need to first check for a floating point number
+-- with a leading digit, instead of one without, because the second one will always match the first one.
+tokenParser :: Parser Token
+tokenParser = asum $ concat
+    [ [whitespaceParser]
+    , [ scientificParser, leadingDotParser, dotFloatParser
+      , numParser, hexNumParser, octNumParser, charParser, stringParser
+      ]
+    , map keywordParser allKeyWords
+    , map operParser allOpers
+    , [identifierParser]]
 
 whitespaceParser :: Parser Token
 whitespaceParser = Whitespace <$> takeWhile1 isSpace_w8
@@ -34,8 +50,8 @@ keywordParser kw = do
     let parsed' = pure parsed
     case next of
         Nothing -> parsed'
-        (Just x) -> if isSpace_w8 x then parsed'
-                                    else fail "more input after keyword"
+        (Just x) -> if (not . isAlpha) x then parsed'
+                                         else fail "more input after keyword"
 
 operParser :: ByteString -> Parser Token
 operParser = (recognize <$>) . string
@@ -158,16 +174,3 @@ leadingDotParser = do
 
 identifierParser :: Parser Token
 identifierParser = Identifier <$> takeWhile1 isLetter
-
-tokenParser :: Parser Token
-tokenParser = asum $ concat
-    [ [whitespaceParser]
-    , [ scientificParser, leadingDotParser, dotFloatParser
-      , numParser, hexNumParser, octNumParser, charParser, stringParser
-      ]
-    , map keywordParser allKeyWords
-    , map operParser allOpers
-    , [identifierParser]]
-
-lexC :: ByteString -> Either String [Token]
-lexC = parseOnly (cParser <* endOfInput)
