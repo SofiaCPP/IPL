@@ -67,17 +67,17 @@ SYMBOL  "::"|"->"|"#"|"["|"]"|"("|")"|"{"|"}"|","|";"
     printf("<span class=\"comment\">%s</span>", yytext);
 }
 
-. printf("%s", yytext);  /* echo the rest */
+. {
+    printf("%s", yytext);  /* echo the rest */
+}
 
 %%
 
-int yywrap()
-{
+int yywrap() {
     return 1;
 }
 
-int main(int argc, const char* argv[])
-{
+int main(int argc, const char* argv[]) {
     yyin = argc > 1 ? fopen(argv[1], "r") : stdin;
 
     puts(
