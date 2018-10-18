@@ -81,7 +81,7 @@ int main(int argc, const char* argv[]) {
     yyin = argc > 1 ? fopen(argv[1], "r") : stdin;
 
     puts(
-        "<!doctype>"
+        "<!DOCTYPE html>"
         "<html>"
         "<head>"
         "    <title>hello.js</title>"
@@ -99,7 +99,7 @@ int main(int argc, const char* argv[]) {
         "            color: blue;"
         "        }"
         "        .symbol {"
-        "            font-style: bold;"
+        "            font-weight: bold;"
         "        }"
         "    </style>"
         "</head>"
@@ -107,7 +107,10 @@ int main(int argc, const char* argv[]) {
         "    <pre class=\"code\">"
     );
     yylex();
-    puts("</pre></body></html>");
+    puts(
+        "    </pre>"
+        "</body>"
+        "</html>");
 
     return 0;
 }
