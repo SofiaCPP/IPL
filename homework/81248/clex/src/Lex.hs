@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Lex where
+module Lex
+    ( lexC
+    ) where
 
 
 import           Prelude hiding (takeWhile)
@@ -8,14 +10,13 @@ import           Prelude hiding (takeWhile)
 import           Data.Foldable (asum)
 import           Data.Word8    (Word8, isHexDigit, isOctDigit, isAlpha)
 
-import           Data.Attoparsec.ByteString       hiding (char)
-import           Data.Attoparsec.ByteString.Char8 (isDigit_w8, isSpace_w8, isAlpha_ascii, char)
+import           Data.Attoparsec.ByteString
+import           Data.Attoparsec.ByteString.Char8 (isDigit_w8, isSpace_w8)
 
 import           Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 
 import           Control.Applicative ((<|>))
-import           Control.Arrow       ((&&&))
 
 import           Boilerplate
 
@@ -133,27 +134,27 @@ numParser = do
 scientificParser :: Parser Token
 scientificParser = do
     digits <- takeWhile1 isDigit
-    exp <- exponentParser
+    expon <- exponentParser
     f   <- option "" (BS.singleton <$> float)
-    pure $ Scientific $ digits <> exp <> f
+    pure $ Scientific $ digits <> expon <> f
 
 dotFloatParser :: Parser Token
 dotFloatParser = do
     leadingDigits <- takeWhile isDigit
     d <- BS.singleton <$> word8 46 -- a dot
     afterDigits <- takeWhile1 isDigit
-    exp <- option "" exponentParser
+    expon <- option "" exponentParser
     f   <- option "" (BS.singleton <$> float)
-    pure $ DotFloat $ leadingDigits <> d <> afterDigits <> exp <> f
+    pure $ DotFloat $ leadingDigits <> d <> afterDigits <> expon <> f
 
 leadingDotParser :: Parser Token
 leadingDotParser = do
     leadingDigits <- takeWhile1 isDigit
     d <- BS.singleton <$> word8 46 -- a dot
     afterDigits <- takeWhile isDigit
-    exp <- option "" exponentParser
+    expon <- option "" exponentParser
     f   <- option "" (BS.singleton <$> float)
-    pure $ LeadingDot $ leadingDigits <> d <> afterDigits <> exp <> f
+    pure $ LeadingDot $ leadingDigits <> d <> afterDigits <> expon <> f
 
 identifierParser :: Parser Token
 identifierParser = Identifier <$> takeWhile1 isLetter
@@ -168,5 +169,5 @@ tokenParser = asum $ concat
     , map operParser allOpers
     , [identifierParser]]
 
-psc = parseOnly (cParser <* endOfInput)
-ps = parseOnly . (<* endOfInput)
+lexC :: ByteString -> Either String [Token]
+lexC = parseOnly (cParser <* endOfInput)

@@ -14,6 +14,10 @@ dependencies:
 library:
   source-dirs: src
 
+ghc-options:
+- -Wall
+- -Werror
+
 executables:
   clex-exe:
     main:                Main.hs
