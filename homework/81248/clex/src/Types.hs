@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Boilerplate
+module Types
     ( Token(..)
     , allKeyWords
     , allOpers

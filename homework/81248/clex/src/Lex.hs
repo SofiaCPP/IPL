@@ -21,7 +21,7 @@ import qualified Data.ByteString as BS
 
 import           Control.Applicative ((<|>))
 
-import           Boilerplate
+import           Types
 
 
 lexC :: ByteString -> Either String [Token]
