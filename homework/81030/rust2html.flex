@@ -11,8 +11,8 @@ IDENTIFIER     [A-Za-z_][0-9A-Za-z_]*
 ESCAPE         \\(\\|n|r|t|0|x[a-fA-F0-9][a-fA-F0-9]|u\{[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]\})
 BYTE_CHAR      b'([^']|(\\\'|n|r|t|0|x[a-fA-F0-9][a-fA-F0-9]))'
 BYTE_STRING    b\"([^\"]|(\\\"|n|r|t|0|x[a-fA-F0-9][a-fA-F0-9]))*\"
-BLOCK_COMMENT  \/\*.*\*\/
-LINE_COMMENT   \/\/[^\n]*
+BLOCK_COMMENT  "/*".*"*/"
+LINE_COMMENT   "//"[^\n]*
 
 %%
 
