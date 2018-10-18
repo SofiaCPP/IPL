@@ -111,14 +111,14 @@ stringParser :: Parser Token
 stringParser = do
     l   <- option "" (BS.singleton <$> word8 76) -- capital L
     _   <- doubleQuote
-    str <- BS.concat <$> many' (string "\\" <|> notInWeirdClass)
+    str <- BS.concat <$> many' ((BS.snoc <$> string "\\" <*> anyWord8) <|> notInWeirdClass)
     dq  <- doubleQuote
 
     pure $ StringLit ((l <> (dq `BS.cons` str)) `BS.snoc` dq)
     where
         notInWeirdClass = BS.singleton <$>
                             satisfy (\c -> c /= 92  -- back slash
-                                        && c /= 34) -- single quote
+                                        && c /= 34) -- double quote
 
 zero :: Parser Word8
 zero = word8 48
