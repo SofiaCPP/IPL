@@ -79,8 +79,10 @@ has been parsed.</li><li><code>*</code> (repeats) are translated to <code>while 
 &lt;sum&gt;   ::= &lt;prod&gt; ([+-] &lt;prod&gt;)*
 &lt;prod&gt;  ::= &lt;value&gt; ([*/] &lt;value&gt;)*
 &lt;value&gt; ::= [0-9]+ / '(' &lt;expr&gt; ')'
-</code></pre></section><section><h5 id=handling-precedence>Handling precedence</h5><ul><li>The higher the precedence -&gt; the lower in the tree</li><li><p>Lower precedence <em>Non-terminals</em> generate higher ones</p><p><sum>::= <prod>([+-] <prod>)*
-<prod>::= <value>([<em>/] <value>)</em></p></li></ul></section><section><h5 id=handling-associativity>Handling associativity</h5><ul><li>Left associative operators go deep (loop) on the left</li><li>Right associative operators go deep (loop) on the right</li><li><p>Or can be handled in the parser</p><p><sum>::= <prod>[+-] <prod>| <sum>[+-] <prod></p></li></ul></section><section><h4 id=recursive-descent>Recursive descent</h4></section><section><h5 id=expr>Expr</h5><pre><code>// &lt;expr&gt;  ::= &lt;sum&gt;
+</code></pre></section><section><h5 id=handling-precedence>Handling precedence</h5><ul><li>The higher the precedence -&gt; the lower in the tree</li><li><p>Lower precedence <em>non-terminals</em> generate higher ones</p><pre><code>&lt;sum&gt;   ::= &lt;prod&gt; ([+-] &lt;prod&gt;)*
+&lt;prod&gt;  ::= &lt;value&gt; ([*/] &lt;value&gt;)*
+</code></pre></li></ul></section><section><h5 id=handling-associativity>Handling associativity</h5><ul><li>Left associative operators go deep (loop) on the left</li><li>Right associative operators go deep (loop) on the right</li><li><p>Or can be handled in the parser</p><pre><code>&lt;sum&gt;   ::= &lt;prod&gt; [+-] &lt;prod&gt; | &lt;sum&gt; [+-] &lt;prod&gt;
+</code></pre></li></ul></section><section><h4 id=recursive-descent>Recursive descent</h4></section><section><h5 id=expr>Expr</h5><pre><code>// &lt;expr&gt;  ::= &lt;sum&gt;
 
 AST parse_expr() {
     return parse_sum();
