@@ -1,0 +1,186 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><title>Parsing</title><meta name=description content="Course on implementing programming languages"><meta name=author content><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css id=theme><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css><script>var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=window.location.search.match(/print-pdf/gi)?'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/pdf.css':'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/paper.css';document.getElementsByTagName('head')[0].appendChild(link);</script></head><body><div class=reveal><div class=slides><section><h1 id=3-parsing>3. Parsing</h1></section><section><h2 id=contents>Contents</h2><ol><li>CFG and PEG</li><li>AST</li><li>Visitor pattern</li><li>Hand-crafted parsers</li></ol><h3 id=parser>Parser</h3><blockquote><p>Recognizes the rules from stream of tokens and builds the Abstract Syntax Tree
+(AST) of the program.</p></blockquote></section><section><h3 id=grammars>Grammars</h3><p>The grammar of a languages defines the structure of correct sentences and how to
+derive their meaning.</p></section><section><h4 id=cfg>CFG</h4><p>Context Free Grammars are:</p><ol><li>formal grammars - they describe all the strings in a formal language</li><li><p>context free - there is only one non-terminal on left hand side of each rule</p><p><expr>::= <expr><op><expr>| (<expr>) | <term><op>::= + | - | * | /
+<term>::= [0-9]+</p></li></ol><blockquote><p>Does this grammar allow for operator precedence?</p></blockquote></section><section><h5 id=terminals-and-non-terminals>Terminals and Non-terminals</h5><p>The grammar has two alphabets:</p><ol><li>Terminals - symbols in the strings of the language, only on right side of
+rules</li><li>Non-terminals - stand on left side in each rule and can be used on the right
+side</li></ol></section><section><h5 id=terminals-and-non-terminals-1>Terminals and Non-terminals</h5><p>In the expression grammar:</p><ul><li>terminals - ( ) + - * / 0-9</li><li>non-terminals - expr, op, term</li></ul></section><section><h4 id=backus-naur-form-bnf>Backus-Naur Form - BNF</h4><p>Notation for describing context-free grammars.</p><pre><code>&lt;expr&gt; ::= &lt;expr&gt; &lt;op&gt; &lt;expr&gt; | &quot;(&quot; &lt;expr&gt; &quot;)&quot; | &lt;term&gt;
+&lt;op&gt;   ::= &quot;+&quot; | &quot;-&quot; | &quot;*&quot; | &quot;/&quot;
+&lt;term&gt; ::= &lt;digit&gt; | &lt;digit&gt;&lt;term&gt;
+&lt;digit&gt;::= &quot;0&quot; | &quot;1&quot; | &quot;2&quot; | &quot;3&quot; | &quot;4&quot; | &quot;5&quot; | &quot;6&quot; | &quot;7&quot; | &quot;8&quot; | &quot;9&quot;
+</code></pre></section><section><h4 id=extended-backus-naur-form-ebnf>Extended Backus-Naur Form - EBNF</h4><p>Extended BNF for more compact represenation of grammars. There are different
+specifications for EBNF, but they have the same power, just different syntax.</p><ul><li><p><a href=https://www.w3.org/TR/REC-xml/#sec-notation>https://www.w3.org/TR/REC-xml/#sec-notation</a></p><p>expr = expr , op , expr | &ldquo;(&rdquo; , expr , &ldquo;)&rdquo; | term
+op = &ldquo;+&rdquo; | &ldquo;-&rdquo; | &ldquo;*&rdquo; | &ldquo;/&rdquo;
+term = { digit }
+digit = &ldquo;0&rdquo; | &ldquo;1&rdquo; | &ldquo;2&rdquo; | &ldquo;3&rdquo; | &ldquo;4&rdquo; | &ldquo;5&rdquo; | &ldquo;6&rdquo; | &ldquo;7&rdquo; | &ldquo;8&rdquo; | &ldquo;9&rdquo;</p></li></ul></section><section><h4 id=peg>PEG</h4><p>Parser Expression Grammars are similar to CFG, but are more convenient for
+parsing, since the <code>/</code> (note not <code>|</code>) operator is not ambiguous.</p><ul><li>CFG allows selecting any matching variant and can have more than one parse
+tree.<ul><li>parsing algorithms try to resolve this by extra rules</li></ul></li><li>PEG prioritizes the variants in the order that they are written.</li></ul></section><section><h4 id=peg-1>PEG</h4><pre><code>&lt;expr&gt;  ::= &lt;sum&gt;
+&lt;sum&gt;   ::= &lt;prod&gt; ([+-] &lt;prod&gt;)*
+&lt;prod&gt;  ::= &lt;value&gt; ([*/] &lt;value&gt;)*
+&lt;value&gt; ::= [0-9]+ / '(' &lt;expr&gt; ')'
+</code></pre><ul><li>That is a CFG as well, so for some grammars there is no difference.</li><li>Some languages can be expressed only with ambiguous grammars.</li></ul></section><section><h4 id=cfg-vs-peg>CFG vs PEG</h4><p>Where the <code>else</code> goes?</p><pre><code>&lt;if&gt; ::= if &lt;expr&gt; &lt;stmnt&gt; else &lt;stmnt&gt;
+    / if &lt;expr&gt; &lt;stmnt&gt;
+
+
+if x0 if x1 s1 else s2
+
+if x0 { if x1 s1 } else s2 // 1
+if x0 { if x1 s1 else s2 } // 2
+</code></pre><ul><li>CFG - it is ambiguous</li><li>PEG - 2 - because it is the first option</li></ul></section><section><h4 id=program>Program</h4><pre><code>function answer() {
+    return 6*7;
+}
+</code></pre></section><section><h6 id=tokens>Tokens</h6><ul><li>keyword: <code>function</code></li><li>identifier: <code>answer</code></li><li>symbol: <code>(</code></li><li>symbol: <code>)</code></li><li>symbol: <code>{</code></li><li>keyword: <code>return</code></li><li>number: 6</li><li>symbol: <code>*</code></li><li>number: 7</li><li>symbol: <code>;</code></li><li>symbol: <code>}</code></li></ul></section><section><h2 id=abstract-syntax-tree-ast>Abstract Syntax Tree (AST)</h2></section><section><h3 id=concrete-syntax-tree-cst>Concrete Syntax tree (CST)</h3><ul><li>aka Parse Tree</li><li>aka Derivation Tree</li></ul><blockquote><p>The tree that starts from the grammar inital non-terminal and generates
+a string in the language.</p></blockquote></section><section><h3 id=abstract-vs-concrete>Abstract vs Concrete</h3><blockquote><p>AST differ from CST because superficial distinctions of from, unimportant for
+translation, do not appear in AST.</p></blockquote></section><section><p>We will be focusing solely on AST, since it is used for translation and it
+easy to skip the CST and generate directly AST.</p></section><section><h3 id=creating-an-ast>Creating an AST</h3><ul><li><p>Most implementations use a common base class for each Node type and a derived
+class for each specific node</p><p>struct Node {
+virtual ~Node() = 0;
+};</p><p>typedef std::unique_ptr<node> NodePtr;</p></li></ul></section><section><h4 id=node-for-a-for-cycle>Node for a <code>for</code> cycle</h4><pre><code>struct ForNode : Node {
+    virtual ~ForNode() override = default;
+    NodePtr m_Init;
+    NodePtr m_Condition;
+    NodePtr m_Increment;
+    NodePtr m_Body;
+};
+</code></pre></section><section><h4 id=using-the-ast>Using the AST</h4><ul><li>Compilers use the AST a lot to:<ul><li>remove syntactic sugar</li><li>optmize</li><li>generate IR or code</li></ul></li><li>It makes sense to be able to execute different code on the AST</li></ul></section><section><h4 id=how>How?</h4><ul><li>a <code>virtual</code> method for each operation?</li><li>a recursive function (or a stack) with <code>switch</code> for each node type?</li></ul><blockquote><p>No, adding a new algorithm or a node will be difficult in both cases.</p></blockquote></section><section><h4 id=visitor-pattern>Visitor pattern</h4><blockquote><p>Represent an operation to be performed on elements of an object structure.</p><p>Visitor lets you define a new operation without changing the classes of the
+elements on which it operates.</p></blockquote></section><section><h3 id=visitor-in-c>Visitor in C++</h3><pre><code>struct NodeVisitor {
+    virtual ~NodeVisitor() = 0;
+    virtual Visit(IfNode&amp; node) = 0;
+    virtual Visit(ForNode&amp; node) = 0;
+    // etc
+};
+</code></pre><ul><li>There must be overloads for all the Node types.</li><li>It is expected that the nodes change very rarely, while new visitors are
+constantly added.</li></ul></section><section><h3 id=node>Node</h3><pre><code>struct NodeVisitor;
+
+struct Node {
+    virtual ~Node() = 0;
+    virtual void Visit(NodeVisitor&amp; visitor) = 0;
+};
+</code></pre></section><section><h4 id=node-for-a-for-cycle-1>Node for a <code>for</code> cycle</h4><pre><code>struct ForNode : Node {
+    virtual ~ForNode() override = default;
+    virtual void Visit(NodeVisitor&amp; visitor) override {
+        visitor.Visit(*this);
+    }
+
+    NodePtr m_Init;
+    NodePtr m_Condition;
+    NodePtr m_Increment;
+    NodePtr m_Body;
+};
+</code></pre></section><section></section><section><h3 id=parsing-algorithms>Parsing algorithms</h3><ul><li>There a lot of algorithms for parsing grammars, with different time / memory
+tradeoffs</li><li><p>The algorithms can be:</p><ul><li>top-down or bottom-up</li><li>left-most derivation or right-most derivation</li></ul></li><li><p>Most of the algorithms require making the grammar follow a specific form and
+then explain how to create a parser for the language.</p></li></ul></section><section><h3 id=parsing-algorithms-1>Parsing algorithms</h3><ul><li>Recursive descent parsing</li><li>Operator-precedence parsing</li><li>Pratt parsing - top-down operator-precedence parsing</li><li>Packrat parsing</li><li><a href=https://en.wikipedia.org/wiki/LL_parser>LL</a></li><li><a href=https://en.wikipedia.org/wiki/LR_parser>LR</a></li><li><a href=https://en.wikipedia.org/wiki/LALR_parser>LALR</a></li></ul><p>These are the major grammar forms and parsing algorithms. While they are not
+exactly the same in terms of algorithms and power.</p><aside class=notes>- First three are easy to implement manual, the second three are better
+generated.
+- Pratt parsing is a mix between recursive descent and operator-precedence.</aside></section><section><h2 id=hand-crafted-parser>Hand-crafted parser</h2><p>Disclaimer: It is possible to write every parser manually, but we&rsquo;ll be
+discussing:</p><ul><li>top-down AKA recursive-descent parsers</li><li>operator precedence parser</li></ul><p>When we get to generated parsers, will be discussing bottom-up parsers as well.</p></section><section><h2 id=hand-crafted-parser-1>Hand-crafted parser</h2><p>How to write a hand-crafted parser?</p><ol><li>Start with a grammar</li><li>For each <em>Non-terminal</em> <em>E</em> write a function that parses it and generates AST
+for it.</li></ol></section><section><h3 id=how-to-parse-a-non-terminal>How to parse a <em>Non-terminal</em></h3><p>for each rule that has <em>E</em> as a symbol on the left, make a case in the function
+that parser the rule.</p><ul><li>&rsquo;|&rsquo; is translated to <code>if</code> and <code>match(XXX)</code> or check whether a subexpression
+has been parsed.</li><li><code>*</code> (repeats) are translated to <code>while (match(XXX))</code></li><li><em>Non-terminals</em> are translated to calls to their functions</li><li><em>terminals</em> are translated to <code>require(XXX)</code></li></ul><p>Where <code>XXX</code> is a token (aka <em>terminal</em>).</p></section><section><h3 id=math-expression-example>Math expression example</h3></section><section><h4 id=grammar>Grammar</h4><pre><code>&lt;expr&gt;  ::= &lt;sum&gt;
+&lt;sum&gt;   ::= &lt;prod&gt; ([+-] &lt;prod&gt;)*
+&lt;prod&gt;  ::= &lt;value&gt; ([*/] &lt;value&gt;)*
+&lt;value&gt; ::= [0-9]+ / '(' &lt;expr&gt; ')'
+</code></pre></section><section><h5 id=handling-precedence>Handling precedence</h5><ul><li>The higher the precedence -&gt; the lower in the tree</li><li><p>Lower precedence <em>Non-terminals</em> generate higher ones</p><p><sum>::= <prod>([+-] <prod>)*
+<prod>::= <value>([<em>/] <value>)</em></p></li></ul></section><section><h5 id=handling-associativity>Handling associativity</h5><ul><li>Left associative operators go deep (loop) on the left</li><li>Right associative operators go deep (loop) on the right</li><li><p>Or can be handled in the parser</p><p><sum>::= <prod>[+-] <prod>| <sum>[+-] <prod></p></li></ul></section><section><h4 id=recursive-descent>Recursive descent</h4></section><section><h5 id=expr>Expr</h5><pre><code>// &lt;expr&gt;  ::= &lt;sum&gt;
+
+AST parse_expr() {
+    return parse_sum();
+}
+</code></pre></section><section><h5 id=sum>Sum</h5><pre><code>// &lt;sum&gt;   ::= &lt;prod&gt; ([+-] &lt;prod&gt;)*
+
+AST parse_sum() {
+    AST left = parse_prod();
+    auto token = next_token();
+    while (token != '+' || token != '-') {
+        AST right = parse_prod();
+        left = make_op(token, left, right);
+    }
+    return left;
+}
+</code></pre></section><section><h5 id=prod>Prod</h5><pre><code>// &lt;prod&gt;  ::= &lt;value&gt; ([*/] &lt;value&gt;)*
+
+AST parse_prod() {
+    AST left = parse_value();
+    auto token = next_token();
+    while (token != '*' || token != '/') {
+        AST right = parse_value();
+        left = make_op(token, left, right);
+    }
+    return left;
+}
+</code></pre></section><section><h5 id=value>Value</h5><pre><code>// &lt;value&gt; ::= [0-9]+ / '(' &lt;expr&gt; ')'
+
+AST parse_value() {
+    auto token = next_token();
+    if (token == NUMBER) {
+        return make_number(token);
+    }
+    else if (token == '(') {
+        AST expr = parse_expr();
+        require_token(')');
+        return expr;
+    }
+    throw error;
+}
+</code></pre></section><section><h4 id=operator-precedence>Operator precedence</h4><p><a href=https://en.wikipedia.org/wiki/Shunting-yard_algorithm>Shunting yard</a></p></section><section><pre><code>int precedence(token) {
+    switch (token) {
+        case EOF: return 0;
+        case '(': return 2;
+        case ')': return 5;
+        case '+':
+        case '-': return 10;
+        case '*':
+        case '/': return 20;
+    }
+}
+</code></pre></section><section><pre><code>AST parse_expr() {
+    stack&lt;AST&gt; output;
+    stack&lt;Token&gt; operators;
+
+    do {
+        auto token = next_token();
+        handle_token(token, output, operators);
+    } while (token != EOF);
+
+    AST result = output.top();
+    output.pop();
+    assert(output.empty());
+    return result;
+}
+</code></pre></section><section><pre><code>void handle_token(token, output, operators) {
+    switch (token) {
+        case NUMBER:
+            output.push(make_number(token));
+            break;
+        case OPERATOR:
+        case ')':
+        case '(':
+            handle_operator(token, output, operators);
+            break;
+    }
+}
+</code></pre></section><section><pre><code>void handle_operator(token, output, operators) {
+    auto prec = precedence(token);
+    while (!operators.empty() &amp;&amp;
+        (precedence(operators.top()) &gt;= prec)) {
+        output_tree(operators.top());
+        operators.pop();
+    }
+    if (token == ')') {
+        assert(operators.top() == '(');
+        operators.pop();
+    } else if (token != EOF) { // '(' or an operator
+        operators.push(token);
+    }
+}
+</code></pre></section><section><pre><code>void output_tree(Token operator, output) {
+    auto rhs = output.top();
+    output.pop();
+    auto lhs = output.top();
+    output.pop();
+    output.push(make_op(operator, lhs, rhs));
+}
+</code></pre></section><section><p>Most hand-written parsers use combination of recursive descent and operator
+precendence for expression for better performance when parsing expressions.</p></section><section><h1 id=homework>Homework</h1><p>Extend the xxx2html tool to:</p><ol><li>Produce pretty-printed html<ul><li>bonus: support line length limit</li></ul></li><li>Produce html where functions have their background colored depending on
+cyclomatic complexity ranging from light green to light read.</li><li>Produce html where control structures can be collapsed.</li></ol></section><section><h1 id=toc_41>?</h1></section></div></div><script type=application/json id=reveal-hugo-page-params>null</script><script type=application/json id=reveal-hugo-site-params>{"highlight_theme":"monokai","slide_number":true,"transition":"none"}</script><script type=application/json id=reveal-hugo-defaults>{"center":true,"controls":true,"highlight_theme":"default","history":true,"progress":true,"theme":"black","transition":"slide"}</script><script>window.revealHugoDependencies={dependencies:[{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/lib/js/classList.js',condition:function(){return!document.body.classList;}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/marked.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/markdown.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/highlight/highlight.js',async:true,callback:function(){hljs.initHighlightingOnLoad();}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/zoom-js/zoom.js',async:true},{src:'\/IPL\/reveal-hugo\/plugin\/notes\/notes.js',async:true}]};</script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/js/head.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.js></script><script>function camelize(map){if(map){Object.keys(map).forEach(function(k){newK=k.replace(/(\_\w)/g,function(m){return m[1].toUpperCase()});if(newK!=k){map[newK]=map[k];delete map[k];}});}
+return map;}
+var revealHugoPageParams=JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);var revealHugoSiteParams=JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);var revealHugoDefaults=JSON.parse(document.getElementById('reveal-hugo-defaults').innerHTML);var options=Object.assign({},camelize(revealHugoDefaults),camelize(revealHugoSiteParams),camelize(revealHugoPageParams),revealHugoDependencies);Reveal.initialize(options);</script></body></html>
