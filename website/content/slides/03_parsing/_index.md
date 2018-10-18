@@ -341,10 +341,10 @@ Where `XXX` is a token (aka *terminal*).
 ##### Handling precedence
 
 - The higher the precedence -> the lower in the tree
-- Lower precedence *Non-terminals* generate higher ones
+- Lower precedence *non-terminals* generate higher ones
 
-    <sum>   ::= <prod> ([+-] <prod>)*
-    <prod>  ::= <value> ([*/] <value>)*
+        <sum>   ::= <prod> ([+-] <prod>)*
+        <prod>  ::= <value> ([*/] <value>)*
 
 ---
 ##### Handling associativity
@@ -353,7 +353,7 @@ Where `XXX` is a token (aka *terminal*).
 - Right associative operators go deep (loop) on the right
 - Or can be handled in the parser
 
-    <sum>   ::= <prod> [+-] <prod> | <sum> [+-] <prod>
+        <sum>   ::= <prod> [+-] <prod> | <sum> [+-] <prod>
 
 ---
 #### Recursive descent
