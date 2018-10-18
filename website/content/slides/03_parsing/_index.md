@@ -1,7 +1,7 @@
 ---
 title: "Parsing"
 date: 2018-08-02T17:45:53+03:00
-draft: true
+draft: false
 outputs: ["Reveal"]
 ---
 
@@ -12,8 +12,8 @@ outputs: ["Reveal"]
 
 1. CFG and PEG
 2. AST
-3. Hand-crafted parsers
-4. Visitor pattern
+3. Visitor pattern
+4. Hand-crafted parsers
 
 ### Parser
 
@@ -38,7 +38,7 @@ Context Free Grammars are:
     <op>   ::= + | - | * | /
     <term> ::= [0-9]+
 
-# TODO: show how this does not cover precedence
+> Does this grammar allow for operator precedence?
 
 ---
 ##### Terminals and Non-terminals
@@ -87,14 +87,12 @@ specifications for EBNF, but they have the same power, just different syntax.
 ---
 #### PEG
 
-# TODO: DO we want this?
-
 Parser Expression Grammars are similar to CFG, but are more convenient for
 parsing, since the `/` (note not `|`) operator is not ambiguous.
 
 - CFG allows selecting any matching variant and can have more than one parse
   tree.
-    - parsing algorithms try to resolve this
+    - parsing algorithms try to resolve this by extra rules
 - PEG prioritizes the variants in the order that they are written.
 
 ---
@@ -171,6 +169,95 @@ We will be focusing solely on AST, since it is used for translation and it
   easy to skip the CST and generate directly AST.
 
 ---
+### Creating an AST
+
+- Most implementations use a common base class for each Node type and a derived
+  class for each specific node
+
+    struct Node {
+        virtual ~Node() = 0;
+    };
+
+    typedef std::unique_ptr<Node> NodePtr;
+
+---
+#### Node for a `for` cycle
+
+    struct ForNode : Node {
+        virtual ~ForNode() override = default;
+        NodePtr m_Init;
+        NodePtr m_Condition;
+        NodePtr m_Increment;
+        NodePtr m_Body;
+    };
+
+---
+#### Using the AST
+
+- Compilers use the AST a lot to:
+    - remove syntactic sugar
+    - optmize
+    - generate IR or code
+- It makes sense to be able to execute different code on the AST
+
+---
+#### How?
+
+- a `virtual` method for each operation?
+- a recursive function (or a stack) with `switch` for each node type?
+
+> No, adding a new algorithm or a node will be difficult in both cases.
+
+---
+#### Visitor pattern
+
+> Represent an operation to be performed on elements of an object structure.
+
+> Visitor lets you define a new operation without changing the classes of the
+> elements on which it operates.
+
+---
+### Visitor in C++
+
+    struct NodeVisitor {
+        virtual ~NodeVisitor() = 0;
+        virtual Visit(IfNode& node) = 0;
+        virtual Visit(ForNode& node) = 0;
+        // etc
+    };
+
+- There must be overloads for all the Node types.
+- It is expected that the nodes change very rarely, while new visitors are
+  constantly added.
+
+---
+### Node
+
+    struct NodeVisitor;
+
+    struct Node {
+        virtual ~Node() = 0;
+        virtual void Visit(NodeVisitor& visitor) = 0;
+    };
+
+---
+#### Node for a `for` cycle
+
+    struct ForNode : Node {
+        virtual ~ForNode() override = default;
+        virtual void Visit(NodeVisitor& visitor) override {
+            visitor.Visit(*this);
+        }
+
+        NodePtr m_Init;
+        NodePtr m_Condition;
+        NodePtr m_Increment;
+        NodePtr m_Body;
+    };
+
+---
+
+---
 ### Parsing algorithms
 
 - There a lot of algorithms for parsing grammars, with different time / memory
@@ -188,6 +275,7 @@ We will be focusing solely on AST, since it is used for translation and it
 - Recursive descent parsing
 - Operator-precedence parsing
 - Pratt parsing - top-down operator-precedence parsing
+- Packrat parsing
 - [LL](https://en.wikipedia.org/wiki/LL_parser)
 - [LR](https://en.wikipedia.org/wiki/LR_parser)
 - [LALR](https://en.wikipedia.org/wiki/LALR_parser)
@@ -223,10 +311,20 @@ How to write a hand-crafted parser?
 2. For each *Non-terminal* *E* write a function that parses it and generates AST
    for it.
 
-    1. for each rule that has *E* as a symbol on the left, make a case in the
-      function that parser the rule
-        - the rule is translated to checks for matching tokens and calls to
-          non-terminal functions
+---
+### How to parse a *Non-terminal*
+
+for each rule that has *E* as a symbol on the left, make a case in the function
+that parser the rule.
+
+- '|'  is translated to `if` and `match(XXX)` or check whether a subexpression
+  has been parsed.
+- `*` (repeats) are translated to `while (match(XXX))`
+- *Non-terminals* are translated to calls to their functions
+- *terminals* are translated to `require(XXX)`
+
+Where `XXX` is a token (aka *terminal*).
+
 
 ---
 ### Math expression example
@@ -238,6 +336,24 @@ How to write a hand-crafted parser?
     <sum>   ::= <prod> ([+-] <prod>)*
     <prod>  ::= <value> ([*/] <value>)*
     <value> ::= [0-9]+ / '(' <expr> ')'
+
+---
+##### Handling precedence
+
+- The higher the precedence -> the lower in the tree
+- Lower precedence *Non-terminals* generate higher ones
+
+    <sum>   ::= <prod> ([+-] <prod>)*
+    <prod>  ::= <value> ([*/] <value>)*
+
+---
+##### Handling associativity
+
+- Left associative operators go deep (loop) on the left
+- Right associative operators go deep (loop) on the right
+- Or can be handled in the parser
+
+    <sum>   ::= <prod> [+-] <prod> | <sum> [+-] <prod>
 
 ---
 #### Recursive descent
@@ -307,18 +423,13 @@ How to write a hand-crafted parser?
 ---
     int precedence(token) {
         switch (token) {
-            case EOF:
-                return 0;
-            case '(':
-                return 2;
-            case ')':
-                return 5;
+            case EOF: return 0;
+            case '(': return 2;
+            case ')': return 5;
             case '+':
-            case '-':
-                return 10;
+            case '-': return 10;
             case '*':
-            case '/':
-                return 20;
+            case '/': return 20;
         }
     }
 ---
@@ -326,11 +437,11 @@ How to write a hand-crafted parser?
     AST parse_expr() {
         stack<AST> output;
         stack<Token> operators;
-        auto token = next_token();
-        while (token != EOF) {
+
+        do {
+            auto token = next_token();
             handle_token(token, output, operators);
-            token = next_token();
-        }
+        } while (token != EOF);
 
         AST result = output.top();
         output.pop();
@@ -365,14 +476,12 @@ How to write a hand-crafted parser?
         if (token == ')') {
             assert(operators.top() == '(');
             operators.pop();
-        } else if (token != EOF) {
-            // '(' or an operator
+        } else if (token != EOF) { // '(' or an operator
             operators.push(token);
         }
     }
 
 ---
-
 
     void output_tree(Token operator, output) {
         auto rhs = output.top();
@@ -383,4 +492,20 @@ How to write a hand-crafted parser?
     }
 
 ---
-#?
+
+Most hand-written parsers use combination of recursive descent and operator
+precendence for expression for better performance when parsing expressions.
+
+---
+# Homework
+
+Extend the xxx2html tool to:
+
+1. Produce pretty-printed html
+    - bonus: support line length limit
+2. Produce html where functions have their background colored depending on
+   cyclomatic complexity ranging from light green to light read.
+3. Produce html where control structures can be collapsed.
+
+---
+# ?

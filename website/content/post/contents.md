@@ -4,7 +4,7 @@ date: 2018-08-02T17:45:53+03:00
 draft: false
 ---
 
-Table of contents for all the slides of the course.
+Table of contents for the course.
 
 <!--more-->
 
@@ -16,3 +16,6 @@ Table of contents for all the slides of the course.
 
 0. Lexical analysis - [slides]({{< ref "/slides/02_lexical_analysis" >}}),
    [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/02_lexical_analysis/_index.md)
+
+0. Parsing - [slides]({{< ref "/slides/03_parsing" >}}),
+   [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/03_parsing/_index.md)
