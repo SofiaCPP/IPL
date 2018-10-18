@@ -1,6 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Boilerplate where
+module Boilerplate
+    ( Token(..)
+    , allKeyWords
+    , allOpers
+    , recognize
+    ) where
 
 import           Data.ByteString (ByteString)
 
@@ -97,6 +102,7 @@ data Token =
     | Identifier ByteString
     deriving (Show, Eq)
 
+-- Mapping from ByteStrings to Tokens
 recognize :: ByteString -> Token
 -- keywords
 recognize "auto"     = Auto
@@ -221,6 +227,9 @@ allKeyWords =
     , "while"
     ]
 
+-- Opers need to be seperate because they have different rules
+-- for formation. For example you can have @"()()()"@, but you can't
+-- have @"constconstconst"@.
 allOpers :: [ByteString]
 allOpers =
     [ ".."
