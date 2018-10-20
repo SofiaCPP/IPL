@@ -71,7 +71,7 @@ enum class State: unsigned char
 class Tokenizer
 {
 public:
-	Tokenizer(const char* code);
+	Tokenizer(const char* code, const LexerSettings& settings);
 	LexerResult Tokenize(IPLVector<Token>& tokens);
 
 private:
@@ -81,6 +81,7 @@ private:
 	inline Token ProduceToken(TokenType type, IPLString lexeme, double number);
 	inline Token ProduceErrorToken();
 
+	IPLString ParseWhitespaces();
 	double ParseNumber();
 	IPLString ParseString();
 	Keyword ParseKeyword();
@@ -106,23 +107,26 @@ private:
 	IPLError m_Error;
 	State m_GenerationState;
 
+	LexerSettings m_Settings;
+
 	IPLUnorderedMap<IPLString, TokenType> m_KeyWordsTable;
 };
 
-LexerResult Tokenize(const char* code, IPLVector<Token>& tokens)
+LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings)
 {
-	Tokenizer tokenizer(code);
+	Tokenizer tokenizer(code, settings);
 
 	return tokenizer.Tokenize(tokens);
 }
 
-Tokenizer::Tokenizer(const char* code)
+Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 	: m_Line(0)
 	, m_Column(0)
 	, m_Current(0)
 	, m_Code(code)
 	, m_Error()
 	, m_GenerationState(State::Success)
+	, m_Settings(settings)
 {
 	m_KeyWordsTable["break"] = TokenType::Break;
 	m_KeyWordsTable["case"] = TokenType::Case;
@@ -247,6 +251,33 @@ inline Token Tokenizer::ProduceErrorToken()
 	return Token{ TokenType::Eof, m_Line, "", 0.0 };
 }
 
+IPLString Tokenizer::ParseWhitespaces()
+{
+	if (!IsWhiteSpace(m_Code[m_Current]) && !IsNewLine(m_Code[m_Current]))
+	{
+		RETURN_FAIL(IPLString());
+	}
+
+	auto start = m_Current;
+	while (1)
+	{
+		if (IsWhiteSpace(m_Code[m_Current]))
+		{
+			NextSymbol();
+		}
+		else if (IsNewLine(m_Code[m_Current]))
+		{
+			NextLine();
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return IPLString(m_Code + start, m_Code + m_Current);
+}
+
 double Tokenizer::ParseNumber()
 {
 	if (!IsDigit(m_Code[m_Current]))
@@ -361,7 +392,11 @@ Token Tokenizer::NextToken()
 		ProduceToken(TokenType::Eof);
 	}
 
-	while (SkipWhiteSpaces() || SkipNewLine());
+	const auto& spaces = ParseWhitespaces();
+	if (IsStateSuccess() && m_Settings.CreateWhitespaceTokens)
+	{
+		return ProduceToken(TokenType::Whitespace, spaces);
+	}
 
 	// Single Char
 	switch (m_Code[m_Current])
