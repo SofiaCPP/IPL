@@ -14,7 +14,7 @@ import           Html (cToHtml)
 main :: IO ()
 main = do
     xs <- getArgs
-    if (length xs /= 3)
+    if length xs /= 3
     then putStrLn usage
     else do
         let [inFile, outFile, col] = xs

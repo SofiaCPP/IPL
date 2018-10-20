@@ -15,15 +15,15 @@ import           Test.Hspec.QuickCheck
 import           Data.ByteString.Arbitrary
 
 spec :: Spec
-spec = describe "types" $
+spec = describe "types"
         conversionSpec
 
 conversionSpec :: Spec
 conversionSpec = describe "ByteString conversions" $ do
     prop "recognize is inverse to tokenToBS" $
-        \x -> (not . isLiteral) x ==> x == (recognize $ tokenToBS x)
+        \x -> (not . isLiteral) x ==> x == recognize (tokenToBS x)
     prop "tokenToBS is inverse to recognize" $
-        \x -> let x' = fromABS x in x' == (tokenToBS $ recognize x')
+        \x -> let x' = fromABS x in x' == tokenToBS (recognize x')
 
 isLiteral :: Token -> Bool
 isLiteral (HexNumber  _) = True

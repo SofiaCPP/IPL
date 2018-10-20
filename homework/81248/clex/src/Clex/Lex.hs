@@ -83,7 +83,7 @@ float = satisfy $
        || c == _l
 
 unsigned :: Parser ByteString
-unsigned = BS.pack <$> (many' $ satisfy $
+unsigned = BS.pack <$> many' (satisfy $
     \c -> c == _U
        || c == _u
        || c == _L

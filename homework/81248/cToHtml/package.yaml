@@ -7,7 +7,6 @@ description:         Lex c using clex and then output white coloured C.
 
 extra-source-files:
 - README.md
-- ChangeLog.md
 
 dependencies:
 - base >= 4.7 && < 5

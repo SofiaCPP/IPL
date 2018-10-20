@@ -35,7 +35,7 @@ newtype ValidC = ValidC {unValidC :: ByteString}
 
 instance Arbitrary TokenC where
     arbitrary = TokenC . packWhitespaceTokens . concat <$>
-        (listOf1 $ do
+        listOf1 (do
             x <- arbitrary
             whitespace <- whitespaceGen
             pure [x, whitespace])
@@ -43,7 +43,7 @@ instance Arbitrary TokenC where
             whitespaceGen = Whitespace . pack <$> do listOf1 $ elements ['\t', ' ', '\n']
 
 instance Arbitrary ValidC where
-    arbitrary = ValidC . BS.concat . map tokenToBS <$> (listOf1 $ frequency
+    arbitrary = ValidC . BS.concat . map tokenToBS <$> listOf1 (frequency
         [ (30, arbitrary)
         , (60, whitespaceGen)
         ])
