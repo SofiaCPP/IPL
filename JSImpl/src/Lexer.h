@@ -97,6 +97,8 @@ enum class TokenType
 	True,
 	False,
 
+	Whitespace,
+
 	Eof,
 	Invalid
 };
@@ -115,4 +117,9 @@ struct LexerResult
 	IPLError Error;
 };
 
-LexerResult Tokenize(const char* code, IPLVector<Token>& tokens);
+struct LexerSettings
+{
+	bool CreateWhitespaceTokens;
+};
+
+LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings);
