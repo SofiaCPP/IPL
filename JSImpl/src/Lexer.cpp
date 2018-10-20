@@ -266,7 +266,7 @@ inline Token Tokenizer::ProduceToken(TokenType type)
 	switch (type)
 	{
 	case TokenType::RightSquareBracket:
-		return ProduceToken(type, "[");
+		return ProduceToken(type, "]");
 	case TokenType::LeftSquareBracket:
 		return ProduceToken(type, "[");
 	case TokenType::Colon:
