@@ -11,7 +11,7 @@
 void TestLess()
 {
 	IPLVector<Token> tokens;
-	Tokenize("<", tokens, { false });
+	Tokenize("<", tokens, { false, false });
 
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Less);
 }
@@ -19,7 +19,7 @@ void TestLess()
 void TestNumber()
 {
 	IPLVector<Token> tokens;
-	Tokenize("213434.24", tokens, { false });
+	Tokenize("213434.24", tokens, { false, false });
 
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24);
 }
@@ -27,7 +27,7 @@ void TestNumber()
 void TestNumberStartWithNine()
 {
 	IPLVector<Token> tokens;
-	Tokenize("999", tokens, { false });
+	Tokenize("999", tokens, { false, false });
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999);
 }
 
@@ -41,7 +41,7 @@ void TestNumberStartWithZero()
 void TestSpaceNewLineSpace()
 {
 	IPLVector<Token> tokens;
-	Tokenize(" \n var a = 4; ", tokens, { false });
+	Tokenize(" \n var a = 4; ", tokens, { false, false });
 	CHECK(tokens.size() == 6 && tokens[0].Type == TokenType::Var &&
 		tokens[1].Type == TokenType::Identifier &&
 		tokens[2].Type == TokenType::Equal &&
@@ -52,28 +52,28 @@ void TestSpaceNewLineSpace()
 void TestString()
 {
 	IPLVector<Token> tokens;
-	Tokenize("\"alabala\"", tokens, { false });
+	Tokenize("\"alabala\"", tokens, { false, false });
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "\"alabala\"");
 }
 
 void TestStringSingleQuotedStrings()
 {
 	IPLVector<Token> tokens;
-	Tokenize("'alabala'", tokens, { false });
+	Tokenize("'alabala'", tokens, { false, false });
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "'alabala'");
 }
 
 void TestKeyWord()
 {
 	IPLVector<Token> tokens;
-	Tokenize("for", tokens, { false });
+	Tokenize("for", tokens, { false, false });
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::For);
 }
 
 void TestVariableDeclaration()
 {
 	IPLVector<Token> tokens;
-	Tokenize("var pesho = 10", tokens, { false });
+	Tokenize("var pesho = 10", tokens, { false, false });
 
 	CHECK(tokens.size() == 5 && tokens[0].Type == TokenType::Var
 		&& tokens[1].Type == TokenType::Identifier
@@ -85,7 +85,7 @@ void TestVariableDeclaration()
 void TestStringError()
 {
 	IPLVector<Token> tokens;
-	const auto& res = Tokenize("\" aaaa", tokens, { false });
+	const auto& res = Tokenize("\" aaaa", tokens, { false, false });
 
 	CHECK(!res.IsSuccessful && res.Error.Row == 0 && res.Error.Column == 6);
 }
@@ -93,7 +93,7 @@ void TestStringError()
 void TestWhiteSpaceTokens()
 {
 	IPLVector<Token> tokens;
-	const auto& res = Tokenize(" 1\n2  abc\n \n", tokens, { true });
+	const auto& res = Tokenize(" 1\n2  abc\n \n", tokens, { true, false });
 	CHECK(res.IsSuccessful
 		&& tokens.size() == 8
 		&& tokens[0].Type == TokenType::Whitespace
@@ -111,6 +111,80 @@ void TestWhiteSpaceTokens()
 		&& tokens[6].Type == TokenType::Whitespace
 		&& tokens[6].Lexeme == "\n \n"
 		&& tokens[7].Type == TokenType::Eof);
+}
+
+void TestSimpleComment()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("//comment", tokens, { false, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 2
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "//comment"
+		&& tokens[1].Type == TokenType::Eof);
+}
+
+void TestSimpleMultiLineComment()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("/*comment\ncomment*/", tokens, { false, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 2
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "/*comment\ncomment*/"
+		&& tokens[1].Type == TokenType::Eof);
+}
+
+void TestConsecutiveMultiLineComment()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("/*comment1\ncomment1*//*comment2\ncomment2*/", tokens, { false, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 3
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "/*comment1\ncomment1*/"
+		&& tokens[1].Type == TokenType::Comment
+		&& tokens[1].Lexeme == "/*comment2\ncomment2*/"
+		&& tokens[2].Type == TokenType::Eof);
+}
+
+void TestConsecutiveMultiLineCommentWithSpace()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("/*comment1\ncomment1*/\n\n\n/*comment2\ncomment2*/", tokens, { false, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 3
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "/*comment1\ncomment1*/"
+		&& tokens[1].Type == TokenType::Comment
+		&& tokens[1].Lexeme == "/*comment2\ncomment2*/"
+		&& tokens[2].Type == TokenType::Eof);
+}
+
+void TestConsecutiveMultiLineCommentWithSpaceWithTokens()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("//comment1\n/*comment2\ncomment2*/\n\n\n/*comment3\ncomment3*/", tokens, { true, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 6
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "//comment1"
+		&& tokens[1].Type == TokenType::Whitespace
+		&& tokens[1].Lexeme == "\n"
+		&& tokens[2].Type == TokenType::Comment
+		&& tokens[2].Lexeme == "/*comment2\ncomment2*/"
+		&& tokens[3].Type == TokenType::Whitespace
+		&& tokens[3].Lexeme == "\n\n\n"
+		&& tokens[4].Type == TokenType::Comment
+		&& tokens[4].Lexeme == "/*comment3\ncomment3*/"
+		&& tokens[5].Type == TokenType::Eof);
+}
+
+void TestCommentError()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize(" aa\n /*", tokens, { false, true });
+	CHECK(!res.IsSuccessful && res.Error.Row == 1 && res.Error.Column == 3);
 }
 
 // Parser Tests
@@ -137,6 +211,12 @@ int main()
 	EXECUTE_TEST(TestKeyWord);
 	EXECUTE_TEST(TestVariableDeclaration);
 	EXECUTE_TEST(TestWhiteSpaceTokens);
+	EXECUTE_TEST(TestSimpleComment);
+	EXECUTE_TEST(TestSimpleMultiLineComment);
+	EXECUTE_TEST(TestConsecutiveMultiLineComment);
+	EXECUTE_TEST(TestConsecutiveMultiLineCommentWithSpace);
+	EXECUTE_TEST(TestConsecutiveMultiLineCommentWithSpaceWithTokens);
+	EXECUTE_TEST(TestCommentError);
 
 	// TestParseUnaryExpr();
 #if defined(_WIN32)

@@ -57,7 +57,7 @@ struct Keyword
 
 using Identifier = Keyword;
 
-enum class State: unsigned char
+enum class State : unsigned char
 {
 	Success,
 	Fail,
@@ -77,10 +77,12 @@ public:
 private:
 	Token NextToken();
 
+	inline Token ProduceSkipToken();
 	inline Token ProduceToken(TokenType type);
 	inline Token ProduceToken(TokenType type, IPLString lexeme, double number);
 	inline Token ProduceErrorToken();
 
+	IPLString ParseComment();
 	IPLString ParseWhitespaces();
 	double ParseNumber();
 	IPLString ParseString();
@@ -97,6 +99,7 @@ private:
 	bool Match(const char c);
 
 	inline void NextSymbol();
+	inline void PreviousSymbol();
 	inline void NextLine();
 
 	unsigned m_Line;
@@ -108,6 +111,7 @@ private:
 	State m_GenerationState;
 
 	LexerSettings m_Settings;
+	bool m_SkipNextToken;
 
 	IPLUnorderedMap<IPLString, TokenType> m_KeyWordsTable;
 };
@@ -127,6 +131,7 @@ Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 	, m_Error()
 	, m_GenerationState(State::Success)
 	, m_Settings(settings)
+	, m_SkipNextToken(false)
 {
 	m_KeyWordsTable["break"] = TokenType::Break;
 	m_KeyWordsTable["case"] = TokenType::Case;
@@ -157,6 +162,7 @@ Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 	m_KeyWordsTable["try"] = TokenType::Try;
 	m_KeyWordsTable["typeof"] = TokenType::Typeof;
 	m_KeyWordsTable["var"] = TokenType::Var;
+	m_KeyWordsTable["let"] = TokenType::Let;
 	m_KeyWordsTable["void"] = TokenType::Void;
 	m_KeyWordsTable["while"] = TokenType::While;
 	m_KeyWordsTable["with"] = TokenType::With;
@@ -171,7 +177,11 @@ LexerResult Tokenizer::Tokenize(IPLVector<Token>& tokens)
 {
 	do
 	{
-		const auto& token = NextToken();
+		Token token;
+		do
+		{
+			token = NextToken();
+		} while (m_SkipNextToken);
 
 		if (m_GenerationState == State::Error)
 		{
@@ -179,7 +189,6 @@ LexerResult Tokenizer::Tokenize(IPLVector<Token>& tokens)
 		}
 
 		tokens.emplace_back(token);
-
 	} while (tokens.back().Type != TokenType::Eof);
 
 	return LexerResult{ true, IPLError() };
@@ -229,6 +238,12 @@ inline void Tokenizer::NextSymbol()
 	++m_Column;
 }
 
+inline void Tokenizer::PreviousSymbol()
+{
+	--m_Current;
+	--m_Column;
+}
+
 inline void Tokenizer::NextLine()
 {
 	++m_Current;
@@ -236,19 +251,137 @@ inline void Tokenizer::NextLine()
 	m_Column = 0;
 }
 
-inline Token Tokenizer::ProduceToken(TokenType type)
-{
-	return Token{ type, m_Line, "", 0.0 };
-}
-
 inline Token Tokenizer::ProduceToken(TokenType type, IPLString lexeme, double number = 0.0)
 {
 	return Token{ type, m_Line, lexeme, number };
 }
 
+inline Token Tokenizer::ProduceSkipToken()
+{
+	return ProduceToken(TokenType::Invalid, "");
+}
+
+inline Token Tokenizer::ProduceToken(TokenType type)
+{
+	switch (type)
+	{
+	case TokenType::RightSquareBracket:
+		return ProduceToken(type, "[");
+	case TokenType::LeftSquareBracket:
+		return ProduceToken(type, "[");
+	case TokenType::Colon:
+		return ProduceToken(type, ":");
+	case TokenType::QuestionMark:
+		return ProduceToken(type, "?");
+	case TokenType::BitwiseXor:
+		return ProduceToken(type, "^");
+	case TokenType::LogicalOr:
+		return ProduceToken(type, "||");
+	case TokenType::BitwiseOr:
+		return ProduceToken(type, "|");
+	case TokenType::LogicalAnd:
+		return ProduceToken(type, "&&");
+	case TokenType::BitwiseAnd:
+		return ProduceToken(type, "&");
+	case TokenType::LessEqual:
+		return ProduceToken(type, "<=");
+	case TokenType::LeftShift:
+		return ProduceToken(type, "<<");
+	case TokenType::Less:
+		return ProduceToken(type, "<");
+	case TokenType::GreaterEqual:
+		return ProduceToken(type, ">=");
+	case TokenType::RightShift:
+		return ProduceToken(type, ">>");
+	case TokenType::Greater:
+		return ProduceToken(type, ">");
+	case TokenType::StrictNotEqual:
+		return ProduceToken(type, "!==");
+	case TokenType::BangEqual:
+		return ProduceToken(type, "!=");
+	case TokenType::Bang:
+		return ProduceToken(type, "!");
+	case TokenType::StrictEqual:
+		return ProduceToken(type, "===");
+	case TokenType::EqualEqual:
+		return ProduceToken(type, "==");
+	case TokenType::Equal:
+		return ProduceToken(type, "=");
+	case TokenType::BitwiseNot:
+		return ProduceToken(type, "~");
+	case TokenType::Modulo:
+		return ProduceToken(type, "%");
+	case TokenType::Division:
+		return ProduceToken(type, "/");
+	case TokenType::LeftParen:
+		return ProduceToken(type, "(");
+	case TokenType::RightParen:
+		return ProduceToken(type, ")");
+	case TokenType::LeftBrace:
+		return ProduceToken(type, "{");
+	case TokenType::RightBrace:
+		return ProduceToken(type, "}");
+	case TokenType::Comma:
+		return ProduceToken(type, ",");
+	case TokenType::Dot:
+		return ProduceToken(type, ".");
+	case TokenType::Minus:
+		return ProduceToken(type, "-");
+	case TokenType::MinusMinus:
+		return ProduceToken(type, "--");
+	case TokenType::Plus:
+		return ProduceToken(type, "+");
+	case TokenType::PlusPlus:
+		return ProduceToken(type, "++");
+	case TokenType::Semicolon:
+		return ProduceToken(type, ";");
+	case TokenType::Star:
+		return ProduceToken(type, "*");
+	default: // EoF Invalid
+		break;
+	}
+	return ProduceToken(type, "");
+}
+
 inline Token Tokenizer::ProduceErrorToken()
 {
-	return Token{ TokenType::Eof, m_Line, "", 0.0 };
+	return ProduceToken(TokenType::Invalid, "");
+}
+
+IPLString Tokenizer::ParseComment()
+{
+	auto start = m_Current;
+
+	if (!Match('/'))
+	{
+		RETURN_FAIL(IPLString());
+	}
+
+	if (Match('/'))
+	{
+		while (!IsEnd(m_Code[m_Current]) && !IsNewLine(m_Code[m_Current]))
+		{
+			NextSymbol();
+		}
+		RETURN_SUCCESS(IPLString(m_Code + start, m_Code + m_Current))
+	}
+	else if (!Match('*'))
+	{
+		PreviousSymbol();
+		RETURN_FAIL(IPLString());
+	}
+
+	while (!IsEnd(m_Code[m_Current]))
+	{
+		if (Match('*') && Match('/'))
+		{
+			RETURN_SUCCESS(IPLString(m_Code + start, m_Code + m_Current));
+		}
+		NextSymbol();
+	}
+
+	SetError("unterminated comment");
+	RETURN_ERROR(IPLString());
 }
 
 IPLString Tokenizer::ParseWhitespaces()
@@ -275,7 +408,7 @@ IPLString Tokenizer::ParseWhitespaces()
 		}
 	}
 
-	return IPLString(m_Code + start, m_Code + m_Current);
+	RETURN_SUCCESS(IPLString(m_Code + start, m_Code + m_Current));
 }
 
 double Tokenizer::ParseNumber()
@@ -310,7 +443,7 @@ IPLString Tokenizer::ParseString()
 		NextSymbol();
 	}
 
-	if (IsEnd(m_Code[m_Current])  || IsNewLine(m_Code[m_Current]))
+	if (IsEnd(m_Code[m_Current]) || IsNewLine(m_Code[m_Current]))
 	{
 		SetError("\"\" string literal contains an unescaped line break");
 		RETURN_ERROR(IPLString());
@@ -343,8 +476,8 @@ Keyword Tokenizer::ParseKeyword()
 	if (keyword == m_KeyWordsTable.end())
 	{
 		// It's not a keyword so we must revert current counter
+		m_Column -= m_Current - start;
 		m_Current = start;
-		m_Column = start;
 
 		RETURN_FAIL(Keyword());
 	}
@@ -380,21 +513,43 @@ inline bool Tokenizer::IsStateError() const
 	return m_GenerationState == State::Error;
 }
 
-void Tokenizer::SetError(const IPLString & what)
+void Tokenizer::SetError(const IPLString& what)
 {
-	m_Error = IPLError{ m_Line, m_Column, "", what };
+	m_Error = IPLError{ m_Line, m_Column, "", "Syntax error: " + what };
 }
 
 Token Tokenizer::NextToken()
 {
+	m_SkipNextToken = false;
+
 	if (IsEnd(m_Code[m_Current]))
 	{
-		ProduceToken(TokenType::Eof);
+		return ProduceToken(TokenType::Eof);
+	}
+
+	const auto& comment = ParseComment();
+	if (IsStateError())
+	{
+		return ProduceErrorToken();
+	}
+	if (IsStateSuccess())
+	{
+		if (!m_Settings.CreateCommentTokens)
+		{
+			m_SkipNextToken = true;
+			return ProduceSkipToken();
+		}
+		return ProduceToken(TokenType::Comment, comment);
 	}
 
 	const auto& spaces = ParseWhitespaces();
-	if (IsStateSuccess() && m_Settings.CreateWhitespaceTokens)
+	if (IsStateSuccess())
 	{
+		if (!m_Settings.CreateWhitespaceTokens)
+		{
+			m_SkipNextToken = true;
+			return ProduceSkipToken();
+		}
 		return ProduceToken(TokenType::Whitespace, spaces);
 	}
 

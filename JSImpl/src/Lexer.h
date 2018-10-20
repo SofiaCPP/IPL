@@ -88,6 +88,7 @@ enum class TokenType
 	Try,
 	Typeof,
 	Var,
+	Let,
 	Void,
 	While,
 	With,
@@ -98,6 +99,7 @@ enum class TokenType
 	False,
 
 	Whitespace,
+	Comment,
 
 	Eof,
 	Invalid
@@ -120,6 +122,7 @@ struct LexerResult
 struct LexerSettings
 {
 	bool CreateWhitespaceTokens;
+	bool CreateCommentTokens;
 };
 
 LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings);
