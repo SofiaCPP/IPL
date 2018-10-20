@@ -3,6 +3,6 @@
 
 # Install
   Pretty simple.
-  '''bash
+  ```bash
   make
-  '''
+  ```
