@@ -342,6 +342,8 @@ inline Token Tokenizer::ProduceToken(TokenType type)
 		return ProduceToken(type, ";");
 	case TokenType::Star:
 		return ProduceToken(type, "*");
+	case TokenType::Backslash:
+		return ProduceToken(type, "\\");
 	default: // EoF Invalid
 		break;
 	}
@@ -585,6 +587,7 @@ Token Tokenizer::NextToken()
 	case ':': NextSymbol(); return ProduceToken(TokenType::Colon);
 	case '[': NextSymbol(); return ProduceToken(TokenType::LeftSquareBracket);
 	case ']': NextSymbol(); return ProduceToken(TokenType::RightSquareBracket);
+	case '\\': NextSymbol(); return ProduceToken(TokenType::Backslash);
 	default:
 		break;
 	}

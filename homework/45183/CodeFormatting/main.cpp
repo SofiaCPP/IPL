@@ -35,25 +35,6 @@ IPLString GetSolutionDir()
 
 	return IPLString();
 }
-//
-//bool GetInFile(const IPLString& dir, std::ifstream& in)
-//{
-//	IPLString path = dir + IN_FILE;
-//
-//	in.open(path);
-//	if (in.good())
-//	{
-//		return true;
-//	}
-//
-//	in.clear();
-//
-//	std::ofstream create(path, std::ios::app);
-//	create.close();
-//
-//	in.open(path);
-//	return in.good();
-//}
 
 IPLString GetInputCode()
 {
@@ -81,6 +62,7 @@ IPLString GetInputCode()
 #define NUMBER_COLOR "#dd7076"
 #define STRING_COLOR "#8daf56"
 #define BACKGROUND_COLOR "#1e1e1e"
+#define COMMENT_COLOR "#5d6371"
 
 void DumpFileBeginning(std::ofstream& out)
 {
@@ -98,7 +80,8 @@ void DumpFileBeginning(std::ofstream& out)
 		<< "\t\t.keyword1 {\n" << " \t\t\tcolor: " << KEYWORD_COLOR_1 << ";\n" << "\t\t}\n\n"
 		<< "\t\t.keyword2 {\n" << " \t\t\tcolor: " << KEYWORD_COLOR_2 << ";\n" << "\t\t}\n\n"
 		<< "\t\t.number {\n" << "\t\t\tcolor: " << NUMBER_COLOR << ";\n" << "\t\t}\n\n"
-		<< "\t\t.string {\n" << "\t\t\tcolor: " << STRING_COLOR << ";\n" << "\t\t}\n"
+		<< "\t\t.string {\n" << "\t\t\tcolor: " << STRING_COLOR << ";\n" << "\t\t}\n\n"
+		<< "\t\t.comment {\n" << "\t\t\tcolor: " << COMMENT_COLOR << ";\n" << "\t\t}\n"
 		<< "\t</style>\n"
 		<< "</head>\n\n"
 		<< "<body>\n"
@@ -115,6 +98,33 @@ void DumpFileEnd(std::ofstream& out)
 		<< "</html>";
 }
 
+void DumpCompatibleHTML(std::ofstream& out, const IPLString& text)
+{
+	for (auto& ch : text)
+	{
+		if (ch == '\n')
+		{
+			out << "\\n";
+		}
+		else if (ch == '\t')
+		{
+			out << "\\t";
+		}
+		else if (ch == '<')
+		{
+			out << "&#60;";
+		}
+		else if (ch == '>')
+		{
+			out << "&#62;";
+		}
+		else
+		{
+			out << ch;
+		}
+	}
+}
+
 void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens)
 {
 	for (auto& token : tokens)
@@ -123,29 +133,18 @@ void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens)
 
 		switch (token.Type)
 		{
+		case TokenType::Comment:
+			out << "<span class=\"comment\">";
+			DumpCompatibleHTML(out, token.Lexeme);
+			out << "</span>";
+			break;
 		case TokenType::Whitespace:
-			for (auto& ch : token.Lexeme)
-			{
-				if (ch == '\n')
-				{
-					out << "\\n";
-				}
-				else if (ch == '\t')
-				{
-					out << "\\t";
-				}
-				else if (ch == ' ')
-				{
-					out << ch;
-				}
-				else
-				{
-					assert(false);
-				}
-			}
+			DumpCompatibleHTML(out, token.Lexeme);
 			break;
 		case TokenType::Identifier:
-			out << "<span class=\"identifier\">" << token.Lexeme << "</span>";
+			out << "<span class=\"identifier\">";
+			DumpCompatibleHTML(out, token.Lexeme);
+			out << "</span>";
 			break;
 		case TokenType::Null:
 		case TokenType::Undefined:
@@ -226,25 +225,29 @@ void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens)
 		case TokenType::EqualEqual:
 		case TokenType::StrictEqual:
 		case TokenType::StrictNotEqual:
-		case TokenType::Greater:
-		case TokenType::GreaterEqual:
-		case TokenType::Less:
-		case TokenType::LessEqual:
 		case TokenType::MinusMinus:
 		case TokenType::PlusPlus:
-		case TokenType::LeftShift:
-		case TokenType::RightShift:
 		case TokenType::LogicalAnd:
 		case TokenType::LogicalOr:
 		case TokenType::StarEqual:
 		case TokenType::DivideEqual:
 		case TokenType::ModuloEqual:
-		case TokenType::LeftShiftEqual:
-		case TokenType::RightShiftEqual:
 		case TokenType::BitwiseAndEqual:
 		case TokenType::BitwiseXorEqual:
 		case TokenType::BitwiseOrEqual:
 			out << "<span class=\"keyword2\">" << token.Lexeme << "</span>"; break;
+		case TokenType::Greater:
+		case TokenType::GreaterEqual:
+		case TokenType::LessEqual:
+		case TokenType::Less:
+		case TokenType::RightShift:
+		case TokenType::LeftShift:
+		case TokenType::LeftShiftEqual:
+		case TokenType::RightShiftEqual:
+			out << "<span class=\"keyword2\">";
+			DumpCompatibleHTML(out, token.Lexeme);
+			out << "</span>";
+			break;
 		case TokenType::Eof:
 			return;
 		default:
@@ -276,11 +279,12 @@ bool DumpFormattedCode(const IPLVector<Token>& tokens)
 
 int main()
 {
+	// TODO Path will break on x64
 	IPLString code = GetInputCode();
 	if (!code.empty())
 	{
 		IPLVector<Token> tokens;
-		const auto& res = Tokenize(code.c_str(), tokens, { true });
+		const auto& res = Tokenize(code.c_str(), tokens, { true, true });
 		if (!res.IsSuccessful)
 		{
 			std::cerr << "Lexer error at row " << res.Error.Row << " column " << res.Error.Column << ": " << res.Error.What;
