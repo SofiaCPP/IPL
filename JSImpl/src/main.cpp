@@ -11,7 +11,7 @@
 void TestLess()
 {
 	IPLVector<Token> tokens;
-	Tokenize("<", tokens);
+	Tokenize("<", tokens, { false, false });
 
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Less);
 }
@@ -19,7 +19,7 @@ void TestLess()
 void TestNumber()
 {
 	IPLVector<Token> tokens;
-	Tokenize("213434.24", tokens);
+	Tokenize("213434.24", tokens, { false, false });
 
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24);
 }
@@ -27,21 +27,21 @@ void TestNumber()
 void TestNumberStartWithNine()
 {
 	IPLVector<Token> tokens;
-	Tokenize("999", tokens);
+	Tokenize("999", tokens, { false, false });
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999);
 }
 
 void TestNumberStartWithZero()
 {
 	IPLVector<Token> tokens;
-	Tokenize("0999", tokens);
+	Tokenize("0999", tokens, { false });
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999);
 }
 
 void TestSpaceNewLineSpace()
 {
 	IPLVector<Token> tokens;
-	Tokenize(" \n var a = 4; ", tokens);
+	Tokenize(" \n var a = 4; ", tokens, { false, false });
 	CHECK(tokens.size() == 6 && tokens[0].Type == TokenType::Var &&
 		tokens[1].Type == TokenType::Identifier &&
 		tokens[2].Type == TokenType::Equal &&
@@ -52,28 +52,28 @@ void TestSpaceNewLineSpace()
 void TestString()
 {
 	IPLVector<Token> tokens;
-	Tokenize("\"alabala\"", tokens);
+	Tokenize("\"alabala\"", tokens, { false, false });
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "\"alabala\"");
 }
 
 void TestStringSingleQuotedStrings()
 {
 	IPLVector<Token> tokens;
-	Tokenize("'alabala'", tokens);
+	Tokenize("'alabala'", tokens, { false, false });
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "'alabala'");
 }
 
 void TestKeyWord()
 {
 	IPLVector<Token> tokens;
-	Tokenize("for", tokens);
+	Tokenize("for", tokens, { false, false });
 	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::For);
 }
 
 void TestVariableDeclaration()
 {
 	IPLVector<Token> tokens;
-	Tokenize("var pesho = 10", tokens);
+	Tokenize("var pesho = 10", tokens, { false, false });
 
 	CHECK(tokens.size() == 5 && tokens[0].Type == TokenType::Var
 		&& tokens[1].Type == TokenType::Identifier
@@ -86,7 +86,6 @@ void TestStringError()
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize("\" aaaa", tokens);
-
 	CHECK(!res.IsSuccessful && res.Error.Row == 0 && res.Error.Column == 6);
 }
 
@@ -191,7 +190,7 @@ void TestCommentError()
 void TestParseUnaryExpr()
 {
 	IPLVector<Token> tokens;
-	Tokenize("function pesho() { var a = 0; return a; }", tokens);
+	Tokenize("function pesho() { var a = 0; return a; }", tokens, { false });
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
@@ -235,6 +234,7 @@ int main()
 	EXECUTE_TEST(TestCommentError);
 	EXECUTE_TEST(TestHexNumber);
 	EXECUTE_TEST(TestScientificNotationNumber);
+
 	// TestParseUnaryExpr();
 #if defined(_WIN32)
 	std::system("pause");

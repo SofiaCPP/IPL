@@ -3,50 +3,50 @@
 
 namespace
 {
-inline bool IsUpperCase(char c)
-{
-	return c >= 'A' && c <= 'Z';
-}
+	inline bool IsUpperCase(char c)
+	{
+		return c >= 'A' && c <= 'Z';
+	}
 
-inline bool IsLowerCase(char c)
-{
-	return c >= 'a' && c <= 'z';
-}
+	inline bool IsLowerCase(char c)
+	{
+		return c >= 'a' && c <= 'z';
+	}
 
-inline bool IsDigit(char c)
-{
-	return c >= '0' && c <= '9';
-}
+	inline bool IsDigit(char c)
+	{
+		return c >= '0' && c <= '9';
+	}
 
-inline bool IsValidIdentifierStartingChar(char c)
-{
-	return IsUpperCase(c) || IsLowerCase(c) || c == '_';
-}
+	inline bool IsValidIdentifierStartingChar(char c)
+	{
+		return IsUpperCase(c) || IsLowerCase(c) || c == '_';
+	}
 
-inline bool IsValidIdentifierChar(char c)
-{
-	return IsValidIdentifierStartingChar(c) || IsDigit(c);
-}
+	inline bool IsValidIdentifierChar(char c)
+	{
+		return IsValidIdentifierStartingChar(c) || IsDigit(c);
+	}
 
-inline bool IsStringBound(char c)
-{
-	return c == '\'' || c == '"';
-}
+	inline bool IsStringBound(char c)
+	{
+		return c == '\'' || c == '"';
+	}
 
-inline bool IsWhiteSpace(char c)
-{
-	return c == ' ' || c == '\t';
-}
+	inline bool IsWhiteSpace(char c)
+	{
+		return c == ' ' || c == '\t';
+	}
 
-inline bool IsNewLine(char c)
-{
-	return c == '\n';
-}
+	inline bool IsNewLine(char c)
+	{
+		return c == '\n';
+	}
 
-inline bool IsEnd(char c)
-{
-	return c == '\0';
-}
+	inline bool IsEnd(char c)
+	{
+		return c == '\0';
+	}
 }
 
 struct Keyword
