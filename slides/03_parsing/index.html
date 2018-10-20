@@ -1,17 +1,20 @@
-<!doctype html><html lang=en><head><meta charset=utf-8><title>Parsing</title><meta name=description content="Course on implementing programming languages"><meta name=author content><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css id=theme><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css><script>var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=window.location.search.match(/print-pdf/gi)?'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/pdf.css':'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/paper.css';document.getElementsByTagName('head')[0].appendChild(link);</script></head><body><div class=reveal><div class=slides><section><h1 id=3-parsing>3. Parsing</h1></section><section><h2 id=contents>Contents</h2><ol><li>CFG and PEG</li><li>AST</li><li>Visitor pattern</li><li>Hand-crafted parsers</li></ol><h3 id=parser>Parser</h3><blockquote><p>Recognizes the rules from stream of tokens and builds the Abstract Syntax Tree
+<!doctype html><html lang=en><head><meta charset=utf-8><title>Parsing</title><meta name=description content="Course on implementing programming languages"><meta name=author content><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css id=theme><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css><script>var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=window.location.search.match(/print-pdf/gi)?'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/pdf.css':'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/paper.css';document.getElementsByTagName('head')[0].appendChild(link);</script></head><body><div class=reveal><div class=slides><section><h1 id=3-parsing>3. Parsing</h1></section><section><h2 id=contents>Contents</h2><ol><li>CFG and PEG</li><li>AST</li><li>Visitor pattern</li><li>Hand-crafted parsers</li></ol></section><section><h3 id=parser>Parser</h3><blockquote><p>Recognizes the rules from stream of tokens and builds the Abstract Syntax Tree
 (AST) of the program.</p></blockquote></section><section><h3 id=grammars>Grammars</h3><p>The grammar of a languages defines the structure of correct sentences and how to
-derive their meaning.</p></section><section><h4 id=cfg>CFG</h4><p>Context Free Grammars are:</p><ol><li>formal grammars - they describe all the strings in a formal language</li><li><p>context free - there is only one non-terminal on left hand side of each rule</p><p><expr>::= <expr><op><expr>| (<expr>) | <term><op>::= + | - | * | /
-<term>::= [0-9]+</p></li></ol><blockquote><p>Does this grammar allow for operator precedence?</p></blockquote></section><section><h5 id=terminals-and-non-terminals>Terminals and Non-terminals</h5><p>The grammar has two alphabets:</p><ol><li>Terminals - symbols in the strings of the language, only on right side of
+derive their meaning.</p></section><section><h4 id=cfg>CFG</h4><p>Context Free Grammars are:</p><ol><li>formal grammars - they describe all the strings in a formal language</li><li><p>context free - there is only one non-terminal on left hand side of each rule</p><pre><code>&lt;expr&gt; ::= &lt;expr&gt; &lt;op&gt; &lt;expr&gt; | (&lt;expr&gt;) | &lt;term&gt;
+&lt;op&gt;   ::= + | - | * | /
+&lt;term&gt; ::= [0-9]+
+</code></pre></li></ol><blockquote><p>Does this grammar allow for operator precedence? (No, more later)</p></blockquote></section><section><h5 id=terminals-and-non-terminals>Terminals and Non-terminals</h5><p>The grammar has two alphabets:</p><ol><li>Terminals - symbols in the strings of the language, only on right side of
 rules</li><li>Non-terminals - stand on left side in each rule and can be used on the right
 side</li></ol></section><section><h5 id=terminals-and-non-terminals-1>Terminals and Non-terminals</h5><p>In the expression grammar:</p><ul><li>terminals - ( ) + - * / 0-9</li><li>non-terminals - expr, op, term</li></ul></section><section><h4 id=backus-naur-form-bnf>Backus-Naur Form - BNF</h4><p>Notation for describing context-free grammars.</p><pre><code>&lt;expr&gt; ::= &lt;expr&gt; &lt;op&gt; &lt;expr&gt; | &quot;(&quot; &lt;expr&gt; &quot;)&quot; | &lt;term&gt;
 &lt;op&gt;   ::= &quot;+&quot; | &quot;-&quot; | &quot;*&quot; | &quot;/&quot;
 &lt;term&gt; ::= &lt;digit&gt; | &lt;digit&gt;&lt;term&gt;
 &lt;digit&gt;::= &quot;0&quot; | &quot;1&quot; | &quot;2&quot; | &quot;3&quot; | &quot;4&quot; | &quot;5&quot; | &quot;6&quot; | &quot;7&quot; | &quot;8&quot; | &quot;9&quot;
 </code></pre></section><section><h4 id=extended-backus-naur-form-ebnf>Extended Backus-Naur Form - EBNF</h4><p>Extended BNF for more compact represenation of grammars. There are different
-specifications for EBNF, but they have the same power, just different syntax.</p><ul><li><p><a href=https://www.w3.org/TR/REC-xml/#sec-notation>https://www.w3.org/TR/REC-xml/#sec-notation</a></p><p>expr = expr , op , expr | &ldquo;(&rdquo; , expr , &ldquo;)&rdquo; | term
-op = &ldquo;+&rdquo; | &ldquo;-&rdquo; | &ldquo;*&rdquo; | &ldquo;/&rdquo;
-term = { digit }
-digit = &ldquo;0&rdquo; | &ldquo;1&rdquo; | &ldquo;2&rdquo; | &ldquo;3&rdquo; | &ldquo;4&rdquo; | &ldquo;5&rdquo; | &ldquo;6&rdquo; | &ldquo;7&rdquo; | &ldquo;8&rdquo; | &ldquo;9&rdquo;</p></li></ul></section><section><h4 id=peg>PEG</h4><p>Parser Expression Grammars are similar to CFG, but are more convenient for
+specifications for EBNF, but they have the same power, just different syntax.</p><ul><li><p><a href=https://www.w3.org/TR/REC-xml/#sec-notation>https://www.w3.org/TR/REC-xml/#sec-notation</a></p><pre><code>expr  = expr , op , expr | &quot;(&quot; , expr ,  &quot;)&quot; | term
+op    = &quot;+&quot; | &quot;-&quot; | &quot;*&quot; | &quot;/&quot;
+term  = { digit }
+digit = &quot;0&quot; | &quot;1&quot; | &quot;2&quot; | &quot;3&quot; | &quot;4&quot; | &quot;5&quot; | &quot;6&quot; | &quot;7&quot; | &quot;8&quot; | &quot;9&quot;
+</code></pre></li></ul></section><section><h4 id=peg>PEG</h4><p>Parser Expression Grammars are similar to CFG, but are more convenient for
 parsing, since the <code>/</code> (note not <code>|</code>) operator is not ambiguous.</p><ul><li>CFG allows selecting any matching variant and can have more than one parse
 tree.<ul><li>parsing algorithms try to resolve this by extra rules</li></ul></li><li>PEG prioritizes the variants in the order that they are written.</li></ul></section><section><h4 id=peg-1>PEG</h4><pre><code>&lt;expr&gt;  ::= &lt;sum&gt;
 &lt;sum&gt;   ::= &lt;prod&gt; ([+-] &lt;prod&gt;)*
@@ -92,7 +95,7 @@ AST parse_expr() {
 AST parse_sum() {
     AST left = parse_prod();
     auto token = next_token();
-    while (token != '+' || token != '-') {
+    while (token == '+' || token == '-') {
         AST right = parse_prod();
         left = make_op(token, left, right);
     }
@@ -103,7 +106,7 @@ AST parse_sum() {
 AST parse_prod() {
     AST left = parse_value();
     auto token = next_token();
-    while (token != '*' || token != '/') {
+    while (token == '*' || token == '/') {
         AST right = parse_value();
         left = make_op(token, left, right);
     }
@@ -149,15 +152,10 @@ AST parse_value() {
     return result;
 }
 </code></pre></section><section><pre><code>void handle_token(token, output, operators) {
-    switch (token) {
-        case NUMBER:
-            output.push(make_number(token));
-            break;
-        case OPERATOR:
-        case ')':
-        case '(':
-            handle_operator(token, output, operators);
-            break;
+    if (token == NUMBER) {
+        output.push(make_number(token));
+    } else {
+        handle_operator(token, output, operators);
     }
 }
 </code></pre></section><section><pre><code>void handle_operator(token, output, operators) {
