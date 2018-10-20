@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Lex
+module Clex.Lex
     ( lexC
     ) where
 
@@ -21,7 +21,7 @@ import qualified Data.ByteString as BS
 
 import           Control.Applicative ((<|>))
 
-import           Types
+import           Clex.Types
 
 
 lexC :: ByteString -> Either String [Token]
@@ -36,7 +36,7 @@ tokenParser :: Parser Token
 tokenParser = asum $ concat
     [ [whitespaceParser]
     , [ scientificParser, leadingDotParser, dotFloatParser
-      , numParser, hexNumParser, octNumParser, charParser, stringParser
+      , hexNumParser, octNumParser, numParser, charParser, stringParser
       ]
     , map keywordParser allKeyWords
     , map operParser allOpers
@@ -82,12 +82,12 @@ float = satisfy $
        || c == _L
        || c == _l
 
-unsigned :: Parser Word8
-unsigned = satisfy $
+unsigned :: Parser ByteString
+unsigned = BS.pack <$> (many' $ satisfy $
     \c -> c == _U
        || c == _u
        || c == _L
-       || c == _l
+       || c == _l)
 
 isxX :: Word8 -> Bool
 isxX c = c == _X
@@ -133,7 +133,7 @@ hexNumParser = do
     z   <- zero
     x   <- satisfy isxX
     hex <- takeWhile1 isHexDigit
-    f   <- option "" (BS.singleton <$> unsigned)
+    f   <- unsigned
 
     pure $ HexNumber (z `BS.cons` x `BS.cons` hex <> f)
 
@@ -141,14 +141,14 @@ octNumParser :: Parser Token
 octNumParser = do
     z   <- zero
     oct <- takeWhile1 isOctDigit
-    f   <- option "" (BS.singleton <$> unsigned)
+    f   <- unsigned
 
     pure $ OctNumber (z `BS.cons` oct <> f)
 
 numParser :: Parser Token
 numParser = do
     num <- takeWhile1 isDigit
-    f   <- option "" (BS.singleton <$> unsigned)
+    f   <- unsigned
 
     pure $ Number (num <> f)
 

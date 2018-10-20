@@ -10,6 +10,7 @@ dependencies:
 - bytestring
 - attoparsec
 - word8
+- lucid
 
 library:
   source-dirs: src
@@ -39,3 +40,6 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - clex
+    - QuickCheck
+    - hspec
+    - bytestring-arbitrary

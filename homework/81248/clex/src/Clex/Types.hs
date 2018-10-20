@@ -1,14 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Types
+module Clex.Types
     ( Token(..)
     , allKeyWords
     , allOpers
     , recognize
     , tokenToBS
+    , tokensToBS
     ) where
 
 import           Data.ByteString (ByteString)
+import qualified Data.ByteString as BS
 
 data Token =
       Whitespace ByteString
@@ -281,6 +283,9 @@ allOpers =
     , "?"
     ]
 
+tokensToBS :: [Token] -> ByteString
+tokensToBS = BS.concat . map tokenToBS
+
 tokenToBS :: Token -> ByteString
 tokenToBS (Whitespace bs)  = bs
 tokenToBS Auto             = "auto"
@@ -332,7 +337,7 @@ tokenToBS Ptr              = "->"
 tokenToBS Dot              = "."
 tokenToBS And              = "&&"
 tokenToBS Or               = "||"
-tokenToBS Not              = "!="
+tokenToBS Not              = "!"
 tokenToBS LtEq             = "<="
 tokenToBS GtEq             = ">="
 tokenToBS Eq               = "=="
