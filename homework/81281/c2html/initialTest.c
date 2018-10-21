@@ -3,7 +3,8 @@
 #include <time.h>
 int N = 0;
 int a[750001] = {0};
-/*Problem Secrect DAA*/
+/*Problem Secrect DAA
+*/
 //// mauuu
 
 void swap(int* i, int* j)
