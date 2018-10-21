@@ -123,6 +123,11 @@ LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSett
 	return tokenizer.Tokenize(tokens);
 }
 
+LexerResult Tokenize(const char * code, IPLVector<Token>& tokens)
+{
+	return Tokenize(code, tokens, { false, false });
+}
+
 Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 	: m_Line(0)
 	, m_Column(0)

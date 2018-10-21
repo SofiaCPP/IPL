@@ -126,3 +126,4 @@ struct LexerSettings
 };
 
 LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings);
+LexerResult Tokenize(const char* code, IPLVector<Token>& tokens);
