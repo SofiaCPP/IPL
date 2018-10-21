@@ -1,0 +1,56 @@
+<html>
+
+<head>
+	<style>
+		div {
+			white-space: pre-wrap;
+		}
+
+		body {
+			background-color: #1e1e1e;
+			font-size: 18px;
+			font-family: 'Consolas';
+		}
+
+		.identifier {
+			color: #e2c071;
+		}
+
+		.single-keyword {
+			color: #b9b8b9;
+		}
+
+		.keyword {
+ 			color: #bd6fd6;
+		}
+
+		.operator-keyword {
+			color: #5faee8; font-weight: bold;
+		}
+
+		.number {
+			color: #e2c071;
+		}
+
+		.string {
+			color: #8daf56;
+		}
+
+		.comment {
+			color: #5d6371;
+		}
+
+		.misc {
+			color: #dd7076;
+		}
+	</style>
+</head>
+
+<body>
+	<div id='text'></div>
+	<script>
+		document.getElementById('text').innerHTML = '<span class="operator-keyword">/</span><span class="identifier">regexp</span><span class="operator-keyword">/</span><span class="identifier">i</span>';
+	</script>
+</body>
+
+</html>

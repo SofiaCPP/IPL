@@ -5,12 +5,58 @@
 #include <sstream>
 #include <cassert>
 
-#define IN_FILE "input.js"
-#define OUT_FILE "output.html"
+// Theme
+#define IDENTIFIER_COLOR "#e2c071"
+#define SINGLE_KEYWORD_COLOR "#b9b8b9"
+#define KEYWORD_COLOR "#bd6fd6"
+#define OPERATOR_KEYWORD_COLOR "#5faee8"
+#define NUMBER_COLOR "#e2c071"
+#define STRING_COLOR "#8daf56"
+#define BACKGROUND_COLOR "#1e1e1e"
+#define COMMENT_COLOR "#5d6371"
+#define MISC_COLOR "#dd7076"
+#define BOLD "font-weight: bold;"
+
+void FormatCode(const IPLString& in, const IPLString& out);
+
+IPLString GetSolutionDir();
+IPLString GetInputCode(const IPLString& inputName);
+bool DumpFormattedCode(const IPLVector<Token>& tokens, const IPLString& outName);
+void PreviewFormattedCode(const IPLString& outName);
+
+void DumpFileBeginning(std::ofstream& out);
+void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens);
+void DumpFileEnd(std::ofstream& out);
+
+inline void DumpClassWithValue(std::ofstream& out, const IPLString& cssClass, const IPLString& lexeme);
+inline void DumpClassWithValue(std::ofstream& out, const IPLString& cssClass, double number);
+inline void DumpClassWithFormattedLexeme(std::ofstream& out, const IPLString& cssClass, const IPLString& lexeme);
+void DumpCompatibleHTML(std::ofstream& out, const IPLString& text);
+
+inline void DumpOperatorKeyword(std::ofstream& out, const Token& token);
+inline void DumpSingleKeyword(std::ofstream& out, const Token& token);
+inline void DumpKeyword(std::ofstream& out, const Token& token);
+inline void DumpString(std::ofstream& out, const Token& token);
+inline void DumpMisc(std::ofstream& out, const Token& token);
+inline void DumpNumber(std::ofstream& out, const Token& token);
+inline void DumpIdentifier(std::ofstream& out, const Token& token);
+inline void DumpComment(std::ofstream& out, const Token& token);
+
+int main()
+{
+	const IPLVector<IPLString> inputs = { "input1.js","input2.js", "input3.js",/* "input4.js", */"input5.js"};
+	const IPLString outputFilePrefix = "output";
+
+	for (std::size_t i = 0; i < inputs.size(); ++i)
+	{
+		FormatCode(inputs[i], outputFilePrefix + std::to_string(i + 1) + ".html");
+	}
+
+	return 0;
+}
 
 IPLString GetSolutionDir()
 {
-#ifdef _WIN32
 	TCHAR* buffer = new TCHAR[MAX_PATH];
 	int nSize = GetModuleFileName(NULL, buffer, MAX_PATH);
 
@@ -31,17 +77,16 @@ IPLString GetSolutionDir()
 			return ret;
 		}
 	}
-#endif // _WIN32
 
 	return IPLString();
 }
 
-IPLString GetInputCode()
+IPLString GetInputCode(const IPLString& inputName)
 {
 	auto dir = GetSolutionDir();
 	if (!dir.empty())
 	{
-		std::ifstream input(dir + IN_FILE);
+		std::ifstream input(dir + inputName);
 		if (input.good())
 		{
 			std::stringstream buffer;
@@ -55,33 +100,25 @@ IPLString GetInputCode()
 	return IPLString();
 }
 
-#define IDENTIFIER_COLOR "#e2c071"
-#define SINGLE_KEYWORD_COLOR "#b9b8b9"
-#define KEYWORD_COLOR_1 "#bd6fd6"
-#define KEYWORD_COLOR_2 "#5faee8"
-#define NUMBER_COLOR "#dd7076"
-#define STRING_COLOR "#8daf56"
-#define BACKGROUND_COLOR "#1e1e1e"
-#define COMMENT_COLOR "#5d6371"
-
 void DumpFileBeginning(std::ofstream& out)
 {
 	out << "<html>\n\n"
 		<< "<head>\n"
 		<< "\t<style>\n"
-		<< "\t\tdiv {\n" << "\t\t\twhite-space: pre-wrap;\n" << "\t\t}\n\n"
+		<< "\t\tdiv {\n\t\t\twhite-space: pre-wrap;\n\t\t}\n\n"
 		<< "\t\tbody {\n"
 		<< "\t\t\tbackground-color: " << BACKGROUND_COLOR << ";\n"
 		<< "\t\t\tfont-size: 18px;\n"
 		<< "\t\t\tfont-family: 'Consolas';\n"
 		<< "\t\t}\n\n"
-		<< "\t\t.identifier {\n" << "\t\t\tcolor: " << IDENTIFIER_COLOR << ";\n" << "\t\t}\n\n"
-		<< "\t\t.single-keyword {\n" << "\t\t\tcolor: " << SINGLE_KEYWORD_COLOR << ";\n" << "\t\t}\n\n"
-		<< "\t\t.keyword1 {\n" << " \t\t\tcolor: " << KEYWORD_COLOR_1 << ";\n" << "\t\t}\n\n"
-		<< "\t\t.keyword2 {\n" << " \t\t\tcolor: " << KEYWORD_COLOR_2 << ";\n" << "\t\t}\n\n"
-		<< "\t\t.number {\n" << "\t\t\tcolor: " << NUMBER_COLOR << ";\n" << "\t\t}\n\n"
-		<< "\t\t.string {\n" << "\t\t\tcolor: " << STRING_COLOR << ";\n" << "\t\t}\n\n"
-		<< "\t\t.comment {\n" << "\t\t\tcolor: " << COMMENT_COLOR << ";\n" << "\t\t}\n"
+		<< "\t\t.identifier {\n\t\t\tcolor: " << IDENTIFIER_COLOR << ";\n\t\t}\n\n"
+		<< "\t\t.single-keyword {\n\t\t\tcolor: " << SINGLE_KEYWORD_COLOR << ";\n\t\t}\n\n"
+		<< "\t\t.keyword {\n \t\t\tcolor: " << KEYWORD_COLOR << ";\n\t\t}\n\n"
+		<< "\t\t.operator-keyword {\n\t\t\tcolor: " << OPERATOR_KEYWORD_COLOR << "; " << BOLD << "\n\t\t}\n\n"
+		<< "\t\t.number {\n\t\t\tcolor: " << NUMBER_COLOR << ";\n\t\t}\n\n"
+		<< "\t\t.string {\n\t\t\tcolor: " << STRING_COLOR << ";\n\t\t}\n\n"
+		<< "\t\t.comment {\n\t\t\tcolor: " << COMMENT_COLOR << ";\n\t\t}\n\n"
+		<< "\t\t.misc {\n\t\t\tcolor: " << MISC_COLOR << ";\n\t\t}\n"
 		<< "\t</style>\n"
 		<< "</head>\n\n"
 		<< "<body>\n"
@@ -125,6 +162,66 @@ void DumpCompatibleHTML(std::ofstream& out, const IPLString& text)
 	}
 }
 
+inline void DumpClassWithValue(std::ofstream& out, const IPLString& cssClass, const IPLString& lexeme)
+{
+	out << "<span class=\"" << cssClass << "\">" << lexeme << "</span>";
+}
+
+inline void DumpClassWithValue(std::ofstream& out, const IPLString& cssClass, double number)
+{
+	out << "<span class=\"" << cssClass << "\">" << number << "</span>";
+}
+
+inline void DumpClassWithFormattedLexeme(std::ofstream& out, const IPLString& cssClass, const IPLString& lexeme)
+{
+	out << "<span class=\"" << cssClass << "\">";
+	DumpCompatibleHTML(out, lexeme);
+	out << "</span>";
+}
+
+inline void DumpComment(std::ofstream& out, const Token& token)
+{
+	DumpClassWithFormattedLexeme(out, "comment", token.Lexeme);
+}
+
+inline void DumpIdentifier(std::ofstream& out, const Token& token)
+{
+	DumpClassWithFormattedLexeme(out, "identifier", token.Lexeme);
+}
+
+inline void DumpNumber(std::ofstream& out, const Token& token)
+{
+	DumpClassWithValue(out, "number", token.Number);
+}
+
+inline void DumpMisc(std::ofstream& out, const Token& token)
+{
+	DumpClassWithValue(out, "misc", token.Lexeme);
+}
+
+inline void DumpString(std::ofstream& out, const Token& token)
+{
+	auto str = token.Lexeme;
+	str.insert(str.begin(), '\\');
+	str.insert(str.end() - 1, '\\');
+	DumpClassWithValue(out, "string", str);
+}
+
+inline void DumpKeyword(std::ofstream& out, const Token& token)
+{
+	DumpClassWithValue(out, "keyword", token.Lexeme);
+}
+
+inline void DumpSingleKeyword(std::ofstream& out, const Token& token)
+{
+	DumpClassWithValue(out, "single-keyword", token.Lexeme);
+}
+
+inline void DumpOperatorKeyword(std::ofstream& out, const Token& token)
+{
+	DumpClassWithFormattedLexeme(out, "operator-keyword", token.Lexeme);
+}
+
 void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens)
 {
 	for (auto& token : tokens)
@@ -134,33 +231,26 @@ void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens)
 		switch (token.Type)
 		{
 		case TokenType::Comment:
-			out << "<span class=\"comment\">";
-			DumpCompatibleHTML(out, token.Lexeme);
-			out << "</span>";
+			DumpComment(out, token);
 			break;
 		case TokenType::Whitespace:
 			DumpCompatibleHTML(out, token.Lexeme);
 			break;
 		case TokenType::Identifier:
-			out << "<span class=\"identifier\">";
-			DumpCompatibleHTML(out, token.Lexeme);
-			out << "</span>";
+			DumpIdentifier(out, token);
 			break;
 		case TokenType::Null:
 		case TokenType::Undefined:
 		case TokenType::True:
 		case TokenType::False:
+			DumpMisc(out, token);
+			break;
 		case TokenType::Number:
-			out << "<span class=\"number\">" << token.Number << "</span>";
+			DumpNumber(out, token);
 			break;
 		case TokenType::String:
-		{
-			auto str = token.Lexeme;
-			str.insert(str.begin(), '\\');
-			str.insert(str.end() - 1, '\\');
-			out << "<span class=\"string\">" << str << "</span>";
+			DumpString(out, token);
 			break;
-		}
 		case TokenType::Break:
 		case TokenType::Case:
 		case TokenType::Catch:
@@ -196,7 +286,8 @@ void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens)
 		case TokenType::Var:
 		case TokenType::Let:
 		case TokenType::Dot:
-			out << "<span class=\"keyword1\">" << token.Lexeme << "</span>"; break;
+			DumpKeyword(out, token);
+			break;
 		case TokenType::LeftParen:
 		case TokenType::RightParen:
 		case TokenType::LeftBrace:
@@ -207,7 +298,8 @@ void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens)
 		case TokenType::Colon:
 		case TokenType::LeftSquareBracket:
 		case TokenType::RightSquareBracket:
-			out << "<span class=\"single-keyword\">" << token.Lexeme << "</span>"; break;
+			DumpSingleKeyword(out, token);
+			break;
 		case TokenType::PlusEqual:
 		case TokenType::MinusEqual:
 		case TokenType::Minus:
@@ -235,7 +327,6 @@ void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens)
 		case TokenType::BitwiseAndEqual:
 		case TokenType::BitwiseXorEqual:
 		case TokenType::BitwiseOrEqual:
-			out << "<span class=\"keyword2\">" << token.Lexeme << "</span>"; break;
 		case TokenType::Greater:
 		case TokenType::GreaterEqual:
 		case TokenType::LessEqual:
@@ -244,25 +335,23 @@ void DumpTokens(std::ofstream& out, const IPLVector<Token>& tokens)
 		case TokenType::LeftShift:
 		case TokenType::LeftShiftEqual:
 		case TokenType::RightShiftEqual:
-			out << "<span class=\"keyword2\">";
-			DumpCompatibleHTML(out, token.Lexeme);
-			out << "</span>";
+			DumpOperatorKeyword(out, token);
 			break;
 		case TokenType::Eof:
 			return;
 		default:
-			out << "<span class=\"keyword2\">" << token.Lexeme << "</span>"; break;
+			DumpMisc(out, token);
 			break;
 		}
 	}
 }
 
-bool DumpFormattedCode(const IPLVector<Token>& tokens)
+bool DumpFormattedCode(const IPLVector<Token>& tokens, const IPLString& outName)
 {
 	auto dir = GetSolutionDir();
 	if (!dir.empty())
 	{
-		std::ofstream out(dir + OUT_FILE);
+		std::ofstream out(dir + outName);
 		if (out.good())
 		{
 			DumpFileBeginning(out);
@@ -277,10 +366,32 @@ bool DumpFormattedCode(const IPLVector<Token>& tokens)
 	return false;
 }
 
-int main()
+void PreviewFormattedCode(const IPLString& outName)
 {
-	// TODO Path will break on x64
-	IPLString code = GetInputCode();
+	auto dir = GetSolutionDir();
+	if (!dir.empty())
+	{
+		auto res = system((dir + outName).c_str());
+		if (res == -1)
+		{
+			switch (errno)
+			{
+			case ENOENT:
+			case E2BIG:
+			case ENOEXEC:
+			case ENOMEM:
+				std::cerr << "Unable to preview output file.\n";
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void FormatCode(const IPLString& in, const IPLString& out)
+{
+	// TODO: Path will break on x64!
+	IPLString code = GetInputCode(in);
 	if (!code.empty())
 	{
 		IPLVector<Token> tokens;
@@ -288,10 +399,12 @@ int main()
 		if (!res.IsSuccessful)
 		{
 			std::cerr << "Lexer error at row " << res.Error.Row << " column " << res.Error.Column << ": " << res.Error.What;
-			return 0;
+			return;
 		}
 
-		DumpFormattedCode(tokens);
+		if (DumpFormattedCode(tokens, out))
+		{
+			PreviewFormattedCode(out);
+		}
 	}
-	return 0;
 }
