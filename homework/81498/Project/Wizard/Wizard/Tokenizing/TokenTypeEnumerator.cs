@@ -8,62 +8,62 @@ namespace Wizard
 {
     public enum TokenType
     {
-        BitwiseAnd,
-        BitwiseNot,
-        BitwiseOr,
-        BitwiseXor,
+        // Whitespaces
+        Newline,
+        Tab,
+        Whitespace,
+
+        // Symbols
         Colon,
         Comma,
-        Division,
-        Dot,
         LeftBrace,
         LeftParenthesis,
         LeftSquareBracket,
-        Minus,
-        Modulo,
-        Newline,
-        Plus,
-        QuestionMark,
         RightBrace,
         RightParenthesis,
         RightSquareBracket,
         Semicolon,
-        Star,
-        Tab,
-        Whitespace,
+        SingleQuote,
 
-        // One or two character tokens
+        // One chararacter operators
         Bang,
+        BitwiseAnd,
+        BitwiseOr,
+        Division,
+        Dot,
+        DoubleQuotes,
+        Equal,
+        Greater,
+        Less,
+        Minus,
+        Modulo,
+        Plus,
+        QuestionMark,
+        Star,
+
+        // Two character tokens
         BangEqual,
         BitwiseAndEqual,
         BitwiseOrEqual,
-        BitwiseXorEqual,
         DivideEqual,
         DoubleBang,
         DoubleStar,
-        DoubleStarEqual,
-        DoubleQuotes,
-        Equal,
         EqualEqual,
-        Greater,
         GreaterEqual,
         PlusEqual,
         PlusPlus,
-        LeftShift,
-        LeftShiftEqual,
         LogicalAnd,
         LogicalOr,
-        Less,
         LessEqual,
         StarEqual,
-        SingleQuote,
         MinusEqual,
         MinusMinus,
         ModuloEqual,
-        RightShift,
-        RightShiftEqual,
+
+        // Three character tokens
         StrictEqual,
         StrictNotEqual,
+        DoubleStarEqual,
 
         Identifier,
         Number,
@@ -109,9 +109,8 @@ namespace Wizard
         True,
         False,
 
-
         Eof,
-
+        None
     }
 
 }

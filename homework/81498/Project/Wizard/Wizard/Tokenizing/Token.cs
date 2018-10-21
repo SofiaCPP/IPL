@@ -8,7 +8,7 @@ namespace Wizard
 {
     public class Token
     {
-        public Token(TokenType type, uint line, string lexeme, string location, double? number)
+        public Token(TokenType type, int line, string lexeme, string location, decimal? number)
         {
             Type = type;
             Line = line;
@@ -19,9 +19,9 @@ namespace Wizard
         }
 
         public TokenType Type { get; private set; }
-        public uint Line { get; private set; }
+        public int Line { get; private set; }
         public string Lexeme { get; private set; }
-        public double? Number { get; private set; }
+        public decimal? Number { get; private set; }
         public string Location { get; private set; }
 
         public override string ToString()

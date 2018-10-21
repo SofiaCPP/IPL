@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Wizard.Homeworks;
 
 namespace Wizard
 {
@@ -22,10 +23,13 @@ namespace Wizard
                 }
                 Console.WriteLine(programAsText);
             }
-            var tokenizer = new Tokenizer(programAsText, path);
+
+            var tokenizer = new Lexer(programAsText, path);
             var tokens = tokenizer.GenerateTokens();
             var printToPath = "E:\\IPL\\homework\\81498\\Project\\Wizard\\Wizard\\Text files\\simpleFunction.html";
-            tokenizer.PrettyPrint(tokens, printToPath);
+            var tokenHandler = new TokenHandler(tokens, printToPath);
+            tokenHandler.PrintTokens();
+            tokenHandler.PrettyPrint(printToPath);
 
         }
     }

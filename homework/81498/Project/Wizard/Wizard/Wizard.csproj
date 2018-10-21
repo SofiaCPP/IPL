@@ -43,11 +43,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Homeworks\WeekOne\BooleanOperatorsTokenTypes.cs" />
+    <Compile Include="Homeworks\WeekOne\TokenHandler.cs" />
+    <Compile Include="Misc\KeywordsToTokensMap.cs" />
+    <Compile Include="Misc\OperatorsToTokensMap.cs" />
+    <Compile Include="Misc\ExactMatchSymbolsToTokensMap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Token.cs" />
-    <Compile Include="Tokenizer.cs" />
-    <Compile Include="TokenTypeEnumerator.cs" />
+    <Compile Include="Tokenizing\Token.cs" />
+    <Compile Include="Tokenizing\Lexer.cs" />
+    <Compile Include="Tokenizing\TokenTypeEnumerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
