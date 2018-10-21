@@ -44,7 +44,7 @@ inline void DumpComment(std::ofstream& out, const Token& token);
 
 int main()
 {
-	const IPLVector<IPLString> inputs = { "input1.js","input2.js", "input3.js",/* "input4.js", */"input5.js"};
+	const IPLVector<IPLString> inputs = { "input1.js","input2.js", "input3.js", "input4.js"};
 	const IPLString outputFilePrefix = "output";
 
 	for (std::size_t i = 0; i < inputs.size(); ++i)
@@ -65,11 +65,7 @@ IPLString GetSolutionDir()
 		IPLString ret(buffer);
 		delete[] buffer;
 
-		auto dirDelim = ret.rfind("\\Debug");
-		if (dirDelim == IPLString::npos)
-		{
-			dirDelim = ret.rfind("\\Release");
-		}
+		auto dirDelim = ret.rfind("\\bin");
 
 		if (dirDelim != IPLString::npos)
 		{
@@ -390,7 +386,6 @@ void PreviewFormattedCode(const IPLString& outName)
 
 void FormatCode(const IPLString& in, const IPLString& out)
 {
-	// TODO: Path will break on x64!
 	IPLString code = GetInputCode(in);
 	if (!code.empty())
 	{
