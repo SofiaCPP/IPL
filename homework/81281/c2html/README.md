@@ -1,5 +1,15 @@
-# Homework 1
-Create a xxx2html syntax highlighter for a language of your choice.
+# Homework 1 + 2
+## Create a xxx2html syntax highlighter for a language of your choice. 
++ --In this case it is C--
+## Extend the xxx2html tool to:
+
++ --Produce pretty-printed html--
+
+_bonus: support line length limit_
+
++ Produce html where functions have their background colored depending on cyclomatic complexity ranging from light green to light read.
+
++ Produce html where control structures can be collapsed.
 
 ### How to install and use SWI-Prolog
 
