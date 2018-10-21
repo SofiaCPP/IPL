@@ -10,7 +10,6 @@ dependencies:
 - bytestring
 - attoparsec
 - word8
-- lucid
 
 library:
   source-dirs: src
