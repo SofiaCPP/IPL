@@ -3,15 +3,15 @@
 
 prettify(StreamTokens, PrettyStream):-
     removeAllWhites(StreamTokens, Plain),
-     % write(Plain),nl,write("Plain ------------"), nl,
+     write(Plain),nl,write("Plain ------------"), nl,
     addNewLines(Plain, PlainWithNL),
-     % write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
+     write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
     addSpaces(PlainWithNL, PlainWithNLnS),
-     % write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
+     write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
     addTabs(PlainWithNLnS, PlainWithNLnSnT),
-    % write(PlainWithNLnSnT),nl,write("PlainWithNLnSnT ------------"), nl,
-    flattenMine(PlainWithNLnSnT, PrettyStream).
-    % write(PrettyStream), nl.
+    write(PlainWithNLnSnT),nl,write("PlainWithNLnSnT ------------"), nl,
+    flattenMine(PlainWithNLnSnT, PrettyStream),
+    write(PrettyStream), nl.
 
 
 %% Removes all white charachters
@@ -112,21 +112,43 @@ addSpaces([H1|T], Buff, Res):-
     append(NewBuf, [_], Buff),
     append(NewBuf, [H1], NewBuff), !,
     addSpaces(T, NewBuff, Res).
+%% (*i, [*i same &
+addSpaces([H1, H2, H3|T], Buff, Res):-
+    H1 = [H11|_], member(H11, [tleftParen, tleftSqParen]),
+    H2 = [H21|_], member(H21, [tmultiply, tbitwiseAnd]),
+    H3 = [H31|_], member(H31, [tidentifier]),
+    append(Buff, [H1, H2, H3], NewBuff), !,
+    addSpaces(T, NewBuff, Res).
+%%, *i, ; *i
+addSpaces([H1, H2, H3|T], Buff, Res):-
+    H1 = [H11|_], member(H11, [tsemicolon, tcomma]),
+    H2 = [H21|_], member(H21, [tmultiply, tbitwiseAnd]),
+    H3 = [H31|_], member(H31, [tidentifier]),
+    append(Buff, [H1,[tspace, " "], H2, H3], NewBuff), !,
+    addSpaces(T, NewBuff, Res).
 %% i++, i--
 addSpaces([H1, H2|T], Buff, Res):-
     H1 = [H11|_], member(H11, [tidentifier]),
     H2 = [H21|_], member(H21, [tpp, tmm]),
     append(Buff, [H1, H2], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%% ++i, --i, *i, &i
+%% ++i, --i
 addSpaces([H1, H2|T], Buff, Res):-
-    H1 = [H11|_], member(H11, [tmultiply, tbitwiseAnd, tpp, tmm]),
+    H1 = [H11|_], member(H11, [tpp, tmm]),
     H2 = [H21|_], member(H21, [tidentifier]),
-    (Buff == [];
-    (append(_, [[H31|_]], Buff),
-    \+ member(H31, [tidentifier, tnumber, trightParen]))),
     append(Buff, [H1], NewBuff), !,
     addSpaces([H2|T], NewBuff, Res).
+%% *i, &i
+addSpaces([H1, H2|T], [], Res):-
+    H1 = [H11|_], member(H11, [tmultiply, tbitwiseAnd]),
+    H2 = [H21|_], member(H21, [tidentifier]),
+    append([], [H1], NewBuff), !,
+    addSpaces([H2|T], NewBuff, Res).
+%% No space after ( and function name
+addSpaces([H1|T], Buff, Res):-
+    H1 = [H11|_], member(H11, [tleftParen, tfunction]),
+    append(Buff, [H1], NewBuff), !,
+    addSpaces(T, NewBuff, Res).
 %% "majhaaud830204ie1\n"
 addSpaces([H1|T], Buff, Res):-
     H1 = [H11, Lex], member(H11, [tquot, tdoubleQuot]),
@@ -146,15 +168,6 @@ addSpaces([H1, H2|T], Buff, Res):-
     H2 = [H21|_], member(H21, [trightParen, trightBrace, trightSqParen]),
     append(Buff, [H1], NewBuff), !,
     addSpaces([H2|T], NewBuff, Res).
-%% 1 + a, b + 5, 7 + 8, a[i] + m, a,(i) + o
-addSpaces([H1, H2|T], Buff, Res):- H1 = [H11|_],
-    member(H11, [tmultiply, tbitwiseAnd]),
-    H2 = [H21|_], member(H21, [tidentifier]),
-    Buff \= [],
-    append(_, [[H31|_]], Buff),
-    member(H31, [tidentifier, tnumber, trightParen, trightParen]),
-    append(Buff, [H1, [tspace, " "]], NewBuff), !,
-    addSpaces([H2|T], NewBuff, Res).
 % 0], 0}, a], a}, 1), a)
 addSpaces([H|T], Buff, Res):-
     H = [H1|_], member(H1, [tnumber, tidentifier]),
@@ -162,11 +175,37 @@ addSpaces([H|T], Buff, Res):-
     member(H2, [trightSqParen, trightBrace, trightParen]),
     append(Buff, [H], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%%  no spaces before and after '\n', ';', ','
+% [0, {0, [a, {a, (1, (
+addSpaces([H1, H2|T], Buff, Res):-
+    H1 = [H11|_], member(H11, [tleftSqParen, tleftBrace, tleftParen]),
+    H2 = [H21|_], member(H21, [tnumber, tidentifier]),
+    append(Buff, [H1], NewBuff), !,
+    addSpaces([H2|T], NewBuff, Res).
+% a[..
+addSpaces([H1, H2|T], Buff, Res):-
+    H1 = [H11|_], member(H11, [tidentifier]),
+    H2 = [H21|_], member(H21, [tleftSqParen]),
+    append(Buff, [H1], NewBuff), !,
+    addSpaces([H2|T], NewBuff, Res).
+%%  no spaces before and after '\n'
 addSpaces([H|T], Buff, Res):-
-    H = [H1|_], member(H1, [execNL, tsemicolon, tcomma]),
-    append(NewBuf, [[tspace, " "]], Buff),
-    append(NewBuf, [H], NewBuff), !,
+    H = [H1|_], member(H1, [execNL]),
+    ((append(NewBuf, [[tspace, " "]], Buff),
+    append(NewBuf, [H], NewBuff));
+    (\+ append(_, [[tspace, " "]], Buff),
+    append(Buff, [H], NewBuff))), !,
+    addSpaces(T, NewBuff, Res).
+%% Before ',' no space
+addSpaces([H|T], Buff, Res):-
+    H = [H1|_], member(H1, [tcomma, tsemicolon]),
+    ((append(NewBuf, [[tspace, " "]], Buff),
+    append(NewBuf, [H, [tspace, " "]], NewBuff));
+    (\+ append(_, [[tspace, " "]], Buff),
+    append(Buff, [H, [tspace, " "]], NewBuff))), !,
+    addSpaces(T, NewBuff, Res).
+%%  Else
+addSpaces([H|T], Buff, Res):-
+    append(Buff, [H, [tspace, " "]], NewBuff), !,
     addSpaces(T, NewBuff, Res).
 
 %% Main predicate
