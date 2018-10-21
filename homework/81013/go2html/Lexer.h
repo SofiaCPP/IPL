@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "CommonTypes.h"
 
 enum class TokenType
 {
@@ -78,7 +78,7 @@ enum class TokenType
     LeftBrace,
     RightBrace,
 
-    Coma,
+    Comma,
     Dot,
 
     Semicolon,
@@ -90,17 +90,41 @@ enum class TokenType
     // Types
     DecimalInteger,
     Float,
-    ImaginaryNum,
+    // ImaginaryNum,
     String,
     // -> runes(?)
 
-    Nil
+    True,
+    False,
+    Nil,
+
+    Whitespace,
+    Comment,
+
+    Eof,
+    Invalid
 };
 
 struct Token
 {
     TokenType Type;
     unsigned Line;
-    std::string Lexeme;
+    IPLString Lexeme;
     double Number;
 };
+
+struct LexerResult
+{
+    bool IsSuccessful;
+    IPLError Error;
+};
+
+
+struct LexerSettings
+{
+	bool CreateWhitespaceTokens;
+	bool CreateCommentTokens;
+};
+
+LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings);
+LexerResult Tokenize(const char* code, IPLVector<Token>& tokens);
