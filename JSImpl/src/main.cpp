@@ -102,6 +102,22 @@ void TestParseUnaryExpr()
 	expr->Accept(p);
 }
 
+void TestHexNumber()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("0x10", tokens);
+
+	CHECK(res.IsSuccessful && tokens[0].Type == TokenType::Number && tokens[0].Number == 16);
+}
+
+void TestScientificNotationNumber()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("1e2", tokens);
+
+	CHECK(res.IsSuccessful && tokens[0].Type == TokenType::Number && tokens[0].Number == 100);
+}
+
 int main()
 {
 	//EXECUTE_TEST(TestLess);
@@ -113,8 +129,9 @@ int main()
 	//EXECUTE_TEST(TestStringSingleQuotedStrings);
 	//EXECUTE_TEST(TestKeyWord);
 	//EXECUTE_TEST(TestVariableDeclaration);
-
-	TestParseUnaryExpr();
+	EXECUTE_TEST(TestHexNumber);
+	EXECUTE_TEST(TestScientificNotationNumber);
+	// TestParseUnaryExpr();
 #if defined(_WIN32)
 	std::system("pause");
 #endif
