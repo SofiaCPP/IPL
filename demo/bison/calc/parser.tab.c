@@ -92,7 +92,7 @@ int yyerror(const char* error);
 # define YY_YY_PARSER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -1478,6 +1478,10 @@ int yyerror(const char* error)
 
 int main()
 {
+#if YYDEBUG
+    yydebug = 1;
+#endif
+
     yyparse();
     return 0;
 }
