@@ -30,7 +30,7 @@ inline bool IsValidIdentifierChar(char c)
 
 inline bool IsStringBound(char c)
 {
-	return c == '\'' || c == '"';
+	return c == '\'' || c == '"' || c == '`';
 }
 
 inline bool IsWhiteSpace(char c)
@@ -123,7 +123,7 @@ LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSett
 	return tokenizer.Tokenize(tokens);
 }
 
-LexerResult Tokenize(const char * code, IPLVector<Token>& tokens)
+LexerResult Tokenize(const char* code, IPLVector<Token>& tokens)
 {
 	return Tokenize(code, tokens, { false, false });
 }
@@ -291,6 +291,13 @@ inline Token Tokenizer::ProduceToken(TokenType type)
 	case TokenType::Modulo:
 		return ProduceToken(type, "%");
 
+	case TokenType::Assignment:
+		return ProduceToken(type, "=");
+	case TokenType::Less:
+		return ProduceToken(type, "<");
+	case TokenType::Greater:
+		return ProduceToken(type, ">");
+
 	// todo - add rest
 
 	default: // EoF Invalid
@@ -393,7 +400,7 @@ IPLString Tokenizer::ParseString()
 	char bound = m_Code[m_Current];
 	auto start = m_Current;
 
-	// skip first " or '
+	// skip first " or ', or `
 	NextSymbol();
 	while (m_Code[m_Current] != bound && !IsEnd(m_Code[m_Current]) && !IsNewLine(m_Code[m_Current]))
 	{
@@ -406,7 +413,7 @@ IPLString Tokenizer::ParseString()
 		RETURN_ERROR(IPLString());
 	}
 
-	// skip second " or '
+	// skip second " or ', or `
 	NextSymbol();
 
 	RETURN_SUCCESS(IPLString(m_Code + start, m_Code + m_Current));
@@ -444,6 +451,7 @@ Keyword Tokenizer::ParseKeyword()
 
 Identifier Tokenizer::ParseIdentifier()
 {
+	std::printf("%c\n", m_Code[m_Current]);
 	if (!IsValidIdentifierStartingChar(m_Code[m_Current]))
 	{
 		RETURN_FAIL(Identifier());
@@ -523,11 +531,10 @@ Token Tokenizer::NextToken()
 	case '|': NextSymbol(); return Match('|') ? ProduceToken(TokenType::BitwiseOR) : ProduceToken(TokenType::BitwiseOR);
 	case '^': NextSymbol(); return ProduceToken(TokenType::BitwiseXOR);
 
-	// todo:
-	// case '=': NextSymbol(); return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictEqual) : ProduceToken(TokenType::EqualEqual) : ProduceToken(TokenType::Equal);
-	// case '>': NextSymbol(); return Match('=') ? ProduceToken(TokenType::GreaterEqual) : Match('>') ? ProduceToken(TokenType::RightShift) : ProduceToken(TokenType::Greater);
-	// case '<': NextSymbol(); return Match('=') ? ProduceToken(TokenType::LessEqual) : Match('<') ? ProduceToken(TokenType::LeftShift) : ProduceToken(TokenType::Less);
-	// case '!': NextSymbol(); return Match('=') ? Match('=') ? ProduceToken(TokenType::StrictNotEqual) : ProduceToken(TokenType::BangEqual) : ProduceToken(TokenType::Bang);
+	case '=': NextSymbol(); return Match('=') ? ProduceToken(TokenType::EqualEqual) : ProduceToken(TokenType::Equal);
+	case '>': NextSymbol(); return Match('=') ? ProduceToken(TokenType::GreaterEqual) : Match('>') ? ProduceToken(TokenType::ShiftRight) : ProduceToken(TokenType::Greater);
+	case '<': NextSymbol(); return Match('=') ? ProduceToken(TokenType::LessEqual) : Match('<') ? ProduceToken(TokenType::ShiftLeft) : ProduceToken(TokenType::Less);
+	case '!': NextSymbol(); return Match('=') ? ProduceToken(TokenType::NOTEqual) : ProduceToken(TokenType::NOT);
 
 	case '(': NextSymbol(); return ProduceToken(TokenType::LeftParen);
 	case ')': NextSymbol(); return ProduceToken(TokenType::RightParen);

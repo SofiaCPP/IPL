@@ -38,6 +38,7 @@ enum class TokenType
     Division,
     Modulo,
 
+	NOT,
     BitwiseAND,
     BitwiseOR,
     BitwiseXOR,
@@ -62,13 +63,15 @@ enum class TokenType
     Equal,
     Less,
     Greater,
-    Assignment,
-    NOT,
 
-    NotEqual,
+    EqualEqual,
+    NOTEqual,
     LessEqual,
     GreaterEqual,
-    ShortAssignment,
+
+	Assignment,
+	ShortAssignment,
+
     Variadic,
 
     LeftParen,
