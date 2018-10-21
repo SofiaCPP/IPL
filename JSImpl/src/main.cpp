@@ -85,9 +85,106 @@ void TestVariableDeclaration()
 void TestStringError()
 {
 	IPLVector<Token> tokens;
-	const auto& res = Tokenize("\"aaaa", tokens);
+	const auto& res = Tokenize("\" aaaa", tokens);
 
-	CHECK(!res.IsSuccessful && res.Error.Row == 0 && res.Error.Column == 5);
+	CHECK(!res.IsSuccessful && res.Error.Row == 0 && res.Error.Column == 6);
+}
+
+void TestWhiteSpaceTokens()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize(" 1\n2  abc\n \n", tokens, { true, false });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 8
+		&& tokens[0].Type == TokenType::Whitespace
+		&& tokens[0].Lexeme == " "
+		&& tokens[1].Type == TokenType::Number
+		&& tokens[1].Number == 1
+		&& tokens[2].Type == TokenType::Whitespace
+		&& tokens[2].Lexeme == "\n"
+		&& tokens[3].Type == TokenType::Number
+		&& tokens[3].Number == 2
+		&& tokens[4].Type == TokenType::Whitespace
+		&& tokens[4].Lexeme == "  "
+		&& tokens[5].Type == TokenType::Identifier
+		&& tokens[5].Lexeme == "abc"
+		&& tokens[6].Type == TokenType::Whitespace
+		&& tokens[6].Lexeme == "\n \n"
+		&& tokens[7].Type == TokenType::Eof);
+}
+
+void TestSimpleComment()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("//comment", tokens, { false, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 2
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "//comment"
+		&& tokens[1].Type == TokenType::Eof);
+}
+
+void TestSimpleMultiLineComment()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("/*comment\ncomment*/", tokens, { false, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 2
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "/*comment\ncomment*/"
+		&& tokens[1].Type == TokenType::Eof);
+}
+
+void TestConsecutiveMultiLineComment()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("/*comment1\ncomment1*//*comment2\ncomment2*/", tokens, { false, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 3
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "/*comment1\ncomment1*/"
+		&& tokens[1].Type == TokenType::Comment
+		&& tokens[1].Lexeme == "/*comment2\ncomment2*/"
+		&& tokens[2].Type == TokenType::Eof);
+}
+
+void TestConsecutiveMultiLineCommentWithSpace()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("/*comment1\ncomment1*/\n\n\n/*comment2\ncomment2*/", tokens, { false, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 3
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "/*comment1\ncomment1*/"
+		&& tokens[1].Type == TokenType::Comment
+		&& tokens[1].Lexeme == "/*comment2\ncomment2*/"
+		&& tokens[2].Type == TokenType::Eof);
+}
+
+void TestConsecutiveMultiLineCommentWithSpaceWithTokens()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize("//comment1\n/*comment2\ncomment2*/\n\n\n/*comment3\ncomment3*/", tokens, { true, true });
+	CHECK(res.IsSuccessful
+		&& tokens.size() == 6
+		&& tokens[0].Type == TokenType::Comment
+		&& tokens[0].Lexeme == "//comment1"
+		&& tokens[1].Type == TokenType::Whitespace
+		&& tokens[1].Lexeme == "\n"
+		&& tokens[2].Type == TokenType::Comment
+		&& tokens[2].Lexeme == "/*comment2\ncomment2*/"
+		&& tokens[3].Type == TokenType::Whitespace
+		&& tokens[3].Lexeme == "\n\n\n"
+		&& tokens[4].Type == TokenType::Comment
+		&& tokens[4].Lexeme == "/*comment3\ncomment3*/"
+		&& tokens[5].Type == TokenType::Eof);
+}
+
+void TestCommentError()
+{
+	IPLVector<Token> tokens;
+	const auto& res = Tokenize(" aa\n /*", tokens, { false, true });
+	CHECK(!res.IsSuccessful && res.Error.Row == 1 && res.Error.Column == 3);
 }
 
 // Parser Tests
@@ -120,15 +217,22 @@ void TestScientificNotationNumber()
 
 int main()
 {
-	//EXECUTE_TEST(TestLess);
-	//EXECUTE_TEST(TestNumber);
-	//EXECUTE_TEST(TestNumberStartWithNine);
-	//EXECUTE_TEST(TestNumberStartWithZero);
-	//EXECUTE_TEST(TestString);
-	//EXECUTE_TEST(TestSpaceNewLineSpace);
-	//EXECUTE_TEST(TestStringSingleQuotedStrings);
-	//EXECUTE_TEST(TestKeyWord);
-	//EXECUTE_TEST(TestVariableDeclaration);
+	EXECUTE_TEST(TestLess);
+	EXECUTE_TEST(TestNumber);
+	EXECUTE_TEST(TestNumberStartWithNine);
+	EXECUTE_TEST(TestNumberStartWithZero);
+	EXECUTE_TEST(TestString);
+	EXECUTE_TEST(TestSpaceNewLineSpace);
+	EXECUTE_TEST(TestStringSingleQuotedStrings);
+	EXECUTE_TEST(TestKeyWord);
+	EXECUTE_TEST(TestVariableDeclaration);
+	EXECUTE_TEST(TestWhiteSpaceTokens);
+	EXECUTE_TEST(TestSimpleComment);
+	EXECUTE_TEST(TestSimpleMultiLineComment);
+	EXECUTE_TEST(TestConsecutiveMultiLineComment);
+	EXECUTE_TEST(TestConsecutiveMultiLineCommentWithSpace);
+	EXECUTE_TEST(TestConsecutiveMultiLineCommentWithSpaceWithTokens);
+	EXECUTE_TEST(TestCommentError);
 	EXECUTE_TEST(TestHexNumber);
 	EXECUTE_TEST(TestScientificNotationNumber);
 	// TestParseUnaryExpr();
