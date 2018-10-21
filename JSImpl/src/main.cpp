@@ -190,12 +190,13 @@ void TestCommentError()
 void TestParseUnaryExpr()
 {
 	IPLVector<Token> tokens;
-	Tokenize("function pesho() { var a = 0; return a; }", tokens);
+	Tokenize("function pesho() { var a = 0; return a; } var a = \"3\";", tokens);
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
 	ASTPrinter p(std::cout);
 	expr->Accept(p);
+	std::cout << "\n";
 }
 
 void TestHexNumber()
@@ -235,7 +236,7 @@ int main()
 	EXECUTE_TEST(TestHexNumber);
 	EXECUTE_TEST(TestScientificNotationNumber);
 
-	// TestParseUnaryExpr();
+	TestParseUnaryExpr();
 #if defined(_WIN32)
 	std::system("pause");
 #endif
