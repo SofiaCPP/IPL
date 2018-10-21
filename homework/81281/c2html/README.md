@@ -1,15 +1,15 @@
 # Homework 1 + 2
 ## Create a xxx2html syntax highlighter for a language of your choice. 
-+ ~~In this case it is C~~
++ ~~In this case it is C.~~
 ## Extend the xxx2html tool to:
 
-+ ~~Produce pretty-printed html~~
++ ~~Produce pretty-printed html.~~(Still testing, but almoast finished.)
 
-_bonus: support line length limit_
++ **TODO:** bonus: support line length limit
 
-+ Produce html where functions have their background colored depending on cyclomatic complexity ranging from light green to light read.
++ **TODO:** Produce html where functions have their background colored depending on cyclomatic complexity ranging from light green to light read.
 
-+ Produce html where control structures can be collapsed.
++ **TODO:** Produce html where control structures can be collapsed.
 
 ### How to install and use SWI-Prolog
 
@@ -20,7 +20,7 @@ _bonus: support line length limit_
 + [Command line options](http://www.swi-prolog.org/pldoc/man?section=cmdline)
 
 ### Added bash script for executing program after successful installation of SWI-Prolog on a Unix or Unix-like variants
-[Script](./executeProgram.sh)
+[Script](./c2htmlrun.sh)
 
 ### If you are going to install SWI-Prolog on Windows 
 + You can omit lines 8 to 16 from c2html.pl.
