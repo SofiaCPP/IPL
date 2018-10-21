@@ -1,6 +1,8 @@
 #include "ASTPrinter.h"
 #include "Expression.h"
 
+#include <iostream>
+
 ASTPrinter::ASTPrinter(std::ostream& os)
  : os(os)
 {}
@@ -18,7 +20,7 @@ void Print(std::ostream& os, ASTPrinter &printer, const char* name, const Expres
 void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVector<ExpressionPtr>& list, bool isLast)
 {
 	os << "\"" << name << "\" : [ \n";
-	for (auto i = 0; i < list.size(); ++i)
+	for (auto i = 0u; i < list.size(); ++i)
 	{
 		list[i]->Accept(printer);
 		if (i + 1 != list.size())
@@ -34,10 +36,10 @@ void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVec
 	os << "\n";
 }
 
-void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVector<IPLString>& list, bool isLast)
+void Print(std::ostream& os, ASTPrinter & /*printer*/, const char* name, const IPLVector<IPLString>& list, bool isLast)
 {
 	os << "\"" << name << "\" : [";
-	for (auto i = 0; i < list.size(); ++i)
+	for (auto i = 0u; i < list.size(); ++i)
 	{
 		os << "\"" << list[i] << "\"";
 		if (i + 1 != list.size())
@@ -54,7 +56,7 @@ void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVec
 }
 
 template<typename T>
-void Print(std::ostream& os, ASTPrinter &printer, const char* name, T member, bool isLast)
+void Print(std::ostream& os, ASTPrinter &/*printer*/, const char* name, T member, bool isLast)
 {
 	os << "\"" << name << "\" :" << member;
 	if (!isLast)
@@ -65,7 +67,7 @@ void Print(std::ostream& os, ASTPrinter &printer, const char* name, T member, bo
 }
 
 template<>
-void Print<IPLString>(std::ostream& os, ASTPrinter &printer, const char* name, IPLString member, bool isLast)
+void Print<IPLString>(std::ostream& os, ASTPrinter  &/*printer*/, const char* name, IPLString member, bool isLast)
 {
 	os << "\"" << name << "\" : \"" << member << "\"";
 	if (!isLast)
@@ -76,7 +78,7 @@ void Print<IPLString>(std::ostream& os, ASTPrinter &printer, const char* name, I
 }
 
 template<>
-void Print<const IPLString&>(std::ostream& os, ASTPrinter &printer, const char* name, const IPLString& member, bool isLast)
+void Print<const IPLString&>(std::ostream& os, ASTPrinter &/*printer*/, const char* name, const IPLString& member, bool isLast)
 {
 	os << "\"" << name << "\" : \"" << member << "\"";
 	if (!isLast)
@@ -191,6 +193,7 @@ std::ostream& operator<<(std::ostream& os, const TokenType& t)
 	void ASTPrinter::Visit(ClassName* e)                                     \
 	{                                                                        \
 		int membersCount = 0, currentVisitCount = 0;                         \
+		(void)currentVisitCount;(void)e;                               \
 		MEMBERS_ITERATOR(MEMBERS_COUNT);                                     \
 		if(membersCount)                                                     \
 			os << "{\n \"ExpresionType\": \"" << #ClassName "\","<< '\n';    \
