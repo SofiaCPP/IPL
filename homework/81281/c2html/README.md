@@ -1,9 +1,9 @@
 # Homework 1 + 2
 ## Create a xxx2html syntax highlighter for a language of your choice. 
-+ --In this case it is C--
++ ~~In this case it is C~~
 ## Extend the xxx2html tool to:
 
-+ --Produce pretty-printed html--
++ ~~Produce pretty-printed html~~
 
 _bonus: support line length limit_
 
