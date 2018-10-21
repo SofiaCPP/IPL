@@ -13,10 +13,10 @@ Create a xxx2html syntax highlighter for a language of your choice.
 [Script](./executeProgram.sh)
 
 ### If you are going to install SWI-Prolog on Windows 
-+ You can omit lines 4 to 16 from c2html.pl.
++ You can omit lines 8 to 16 from c2html.pl.
 + Afterward in order to execute the program you can call the main predicate and give it a valid string name of file.
 
-For example **main("test.c").**
+For example **mainy("test.c").**
 
 ### For the curious who want to find about DCG Grammar rules :
 
