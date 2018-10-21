@@ -3,15 +3,15 @@
 
 prettify(StreamTokens, PrettyStream):-
     removeAllWhites(StreamTokens, Plain),
-     write(Plain),nl,write("Plain ------------"), nl,
+     % write(Plain),nl,write("Plain ------------"), nl,
     addNewLines(Plain, PlainWithNL),
-     write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
+     % write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
     addSpaces(PlainWithNL, PlainWithNLnS),
-     write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
+     % write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
     addTabs(PlainWithNLnS, PlainWithNLnSnT),
-    write(PlainWithNLnSnT),nl,write("PlainWithNLnSnT ------------"), nl,
-    flattenMine(PlainWithNLnSnT, PrettyStream),
-    write(PrettyStream), nl.
+    % write(PlainWithNLnSnT),nl,write("PlainWithNLnSnT ------------"), nl,
+    flattenMine(PlainWithNLnSnT, PrettyStream).
+    % write(PrettyStream), nl.
 
 
 %% Removes all white charachters
