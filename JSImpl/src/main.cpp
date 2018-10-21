@@ -86,7 +86,6 @@ void TestStringError()
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize("\" aaaa", tokens);
-
 	CHECK(!res.IsSuccessful && res.Error.Row == 0 && res.Error.Column == 6);
 }
 
@@ -183,7 +182,7 @@ void TestConsecutiveMultiLineCommentWithSpaceWithTokens()
 void TestCommentError()
 {
 	IPLVector<Token> tokens;
-	const auto& res = Tokenize(" aa\n /*", tokens, { false, true });
+	const auto& res = Tokenize(" aa\n /*", tokens);
 	CHECK(!res.IsSuccessful && res.Error.Row == 1 && res.Error.Column == 3);
 }
 
@@ -235,6 +234,7 @@ int main()
 	EXECUTE_TEST(TestCommentError);
 	EXECUTE_TEST(TestHexNumber);
 	EXECUTE_TEST(TestScientificNotationNumber);
+
 	// TestParseUnaryExpr();
 #if defined(_WIN32)
 	std::system("pause");

@@ -53,6 +53,7 @@ enum class TokenType
 	BitwiseAndEqual,
 	BitwiseXorEqual,
 	BitwiseOrEqual,
+	Backslash,
 
 	Identifier,
 	String,
