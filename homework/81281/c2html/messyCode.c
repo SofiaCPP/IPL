@@ -19,6 +19,35 @@ char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
 */
 //// mauuu
 
+typedef struct temp
+{
+    int a;
+
+} classTemp;
+
+void classTemp_GetData(classTemp* pThis)
+{
+    printf("Enter value of a : ");
+    scanf("%d", &(pThis->a));
+}
+
+classTemp T;
+
+struct point* biggest_point(size_t size,
+                            struct point* points,
+                            struct point* (*point_compare)(struct point* a,
+                                                           struct point* b))
+{
+    int i;
+    struct point* biggest = NULL;
+
+    for (i = 0; i < size; i++)
+    {
+        biggest = point_compare(biggest, points + i);
+    }
+    return biggest;
+}
+
 void swap(int* i, int* j)
 {
 int t = *i;
