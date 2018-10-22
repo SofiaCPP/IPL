@@ -50,11 +50,19 @@ packTillRightParen([H|T], Buff, Res, Rest, N):-
 
 % Base
 addNewLines([], [], []):- !.
-% if ;  //  /**/, else
+% if ;  //  /**/, else, do
 addNewLines([H|T], Buff, [NewBuff|R]):-
-    H = [H1|_], member(H1, [tsemicolon, tcomment1, tcomment2, telse]),
+    H = [H1|_], member(H1, [tsemicolon, tcomment1, tcomment2, telse, tdo]),
     append(Buff, [H, [execNL, "\n"]], NewBuff), !,
     addNewLines(T, [], R).
+% if } while(..)
+addNewLines([H1, H2|T], Buff, R):-
+    H1 = [H11|_], member(H11, [trightBrace]),
+    H2 = [H21|_], member(H21, [twhile]),
+    packTillsemiColon(T, [], Res, Rest),
+    append(Buff, [H1, H2], NewBuf),
+    append(NewBuf, Res, NewBuff), !,
+    addNewLines(Rest, NewBuff, R).
 % if struct
 addNewLines([H1, H2, H3|T], Buff, [NewBuff|R]):-
     H1 = [H11|_], member(H11, [tstruct]),
