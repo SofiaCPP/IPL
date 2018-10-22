@@ -649,22 +649,23 @@ ExpressionPtr Parser::Expression()
 
 ExpressionPtr Parser::Statement()
 {
-	if (auto result = EmptyStatement()) return result;
-	else if(auto result = VariableDefinition()) return result;
-	else if(auto result = Block()) return result;
-	else if(auto result = LabeledStatement()) return result;
-	else if(auto result = IfStatementfull()) return result;
-	else if(auto result = SwitchStatement()) return result;
-	else if(auto result = DoStatement()) return result;
-	else if(auto result = WhileStatement()) return result;
-	else if(auto result = ForStatement()) return result;
-	else if(auto result = WithStatement()) return result;
-	else if(auto result = ContinueStatement()) return result;
-	else if(auto result = BreakStatement()) return result;
-	else if(auto result = OptionalLabel()) return result;
-	else if(auto result = ReturnStatement()) return result;
-	else if(auto result = TryStatement()) return result;
-	return nullptr;
+	ExpressionPtr result;
+	if (result = EmptyStatement()) return result;
+	else if(result = VariableDefinition()) return result;
+	else if(result = Block()) return result;
+	else if(result = LabeledStatement()) return result;
+	else if(result = IfStatementfull()) return result;
+	else if(result = SwitchStatement()) return result;
+	else if(result = DoStatement()) return result;
+	else if(result = WhileStatement()) return result;
+	else if(result = ForStatement()) return result;
+	else if(result = WithStatement()) return result;
+	else if(result = ContinueStatement()) return result;
+	else if(result = BreakStatement()) return result;
+	else if(result = OptionalLabel()) return result;
+	else if(result = ReturnStatement()) return result;
+	else if(result = TryStatement()) return result;
+	return result;
 }
 
 ExpressionPtr Parser::EmptyStatement()
