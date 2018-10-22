@@ -25,7 +25,7 @@ token([tsizeof, "sizeof" ]) --> "sizeof", !.
 token([tstatic, "static" ]) --> "static", !.
 token([tstruct, "struct" ]) --> "struct", !.
 token([tswitch,  "switch"]) --> "switch", !.
-token([ttypedef, "switch" ]) --> "typedef", !.
+token([ttypedef, "typedef" ]) --> "typedef", !.
 token([tunion, "union" ]) --> "union", !.
 token([tunsigned, "unsigned" ]) --> "unsigned", !.
 token([tvoid, "void" ]) --> "void", !.
@@ -185,6 +185,8 @@ is_unknown([H,_]):- member(H, [tunknown]).
 is_number([H,_]):- member(H, [tnumber, ttypesPrintF]).
 
 is_function([H,_]):- member(H, [tfunction]).
+
+is_functionAndBody([H|_]):- is_list(H).
 
 is_identifier([H,_]):- member(H, [tidentifier, tnl, ttab]).
 
