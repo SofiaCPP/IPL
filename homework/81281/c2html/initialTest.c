@@ -4,16 +4,19 @@
 int N = 0;
 int a[750001] = {0};
 /*Problem Secrect DAA
-*/
+ */
 //// mauuu
 
+int matrix[3][3] = {{0, 0, 0}, {0, 1, 0}, {0, 1, 1}};
+int arr[3] = {0, 0, 0};
+char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
 void swap(int* i, int* j)
 {
     int t = *i;
     *i = *j;
+    (*i)->go();
     *j = t;
 }
-
 int partition(int l, int r)
 {
     int randIdx = l + rand() % (r - l);
@@ -22,8 +25,7 @@ int partition(int l, int r)
 
     swap(&a[l], &a[randIdx]);
     int ind = l;
-
-    for (int i = l + 1; i < r; ++i)
+    for (int i = l + 1; i < r; i++)
     {
         if (a[i] <= pivot)
         {
@@ -33,9 +35,16 @@ int partition(int l, int r)
     }
 
     swap(&a[l], &a[ind]);
+    switch (allala)
+    {
+        case 0:
+            o = 9;
+            break;
+        default:
+            break;
+    }
     return ind;
 }
-
 void quickSort(int l, int r)
 {
     if (l < r)
@@ -45,9 +54,9 @@ void quickSort(int l, int r)
         quickSort(idx + 1, r);
     }
 }
-
 int binarySearch(int k)
 {
+
     int middle, left = 0, right = N - 1;
     if (k < a[left])
         return (-1);
@@ -64,6 +73,8 @@ int binarySearch(int k)
         else
             left = middle;
     }
+    int j = 4 * 5;
+    int k = 6 * j;
     return ((right <= N - 1 && a[right] == k) ? (right + 1) : (-1));
 }
 
