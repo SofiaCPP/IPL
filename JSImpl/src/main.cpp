@@ -203,20 +203,21 @@ void RunParseCalc()
 {
 	IPLVector<Token> tokens;
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
-	Tokenize("123 + 321", tokens);
+	Tokenize("var s = 0; for (var i = 0; i < 10; ++i + --s) { s };", tokens);
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
-	ASTPrinter p(std::cout);
-	expr->Accept(p);
+	//ASTPrinter p(std::cout);
+	//expr->Accept(p);
 	ASTInterpreter i;
-        std::cout << "Running" << std::endl;
+    std::cout << "Running" << std::endl;
 	auto result = i.Run(expr.get());
-        std::cout << "Stack after run, top to bottom:" << std::endl;
-        while (!result.empty()) {
-            std::cout << result.top() << std::endl;
-            result.pop();
-        }
+    std::cout << "Stack after run, top to bottom:" << std::endl;
+    while (!result.empty()) {
+        std::cout << result.top() << std::endl;
+        result.pop();
+    }
+	std::cout << "S = " << i.ModifyVariable("i") << std::endl;
 }
 
 void TestHexNumber()
@@ -257,7 +258,7 @@ int main()
 	EXECUTE_TEST(TestScientificNotationNumber);
 
 	//TestParseUnaryExpr();
-        //RunParseCalc();
+        RunParseCalc();
 #if defined(_WIN32)
 	std::system("pause");
 #endif

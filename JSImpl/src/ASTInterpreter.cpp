@@ -3,8 +3,76 @@
 #include <cassert>
 #include <iostream>
 
+
+#define NOT_IMPLEMENTED (void)e; assert(0 && "not-implemented")
+
+
+struct LValueExtractor : public ExpressionVisitor
+{
+public:
+	LValueExtractor(ASTInterpreter* interpreter)
+		: m_Interpreter(interpreter)
+	{}
+	~LValueExtractor() {}
+
+	ASTInterpreter::value_type* Run(Expression* program)
+	{
+		m_LValue = nullptr;
+		program->Accept(*this);
+		return m_LValue;
+	}
+
+	virtual void Visit(LiteralNull* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(LiteralUndefined* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(LiteralString* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(LiteralNumber* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(LiteralBoolean* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(BinaryExpression* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(UnaryExpression* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(IdentifierExpression* e) override { m_LValue = &m_Interpreter->ModifyVariable(e->GetName()); }
+	virtual void Visit(ListExpression* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(VariableDefinitionExpression* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(BlockStatement* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(LabeledStatement* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(IfStatement* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(SwitchStatement* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(CaseStatement *e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(WhileStatement* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(ForStatement* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(FunctionDeclaration* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(TopStatements* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(EmptyExpression* e) override { NOT_IMPLEMENTED; }
+
+	ASTInterpreter* m_Interpreter;
+	ASTInterpreter::value_type* m_LValue;
+};
+
+
+struct VariableScope
+{
+	VariableScope(ASTInterpreter* interpreter)
+		: m_Interpreter(interpreter)
+	{
+		m_Interpreter->EnterScope();
+	}
+
+	~VariableScope() {
+		m_Interpreter->LeaveScope();
+	}
+
+	VariableScope(VariableScope&) = delete;
+	VariableScope(VariableScope&&) = delete;
+	VariableScope& operator=(VariableScope&) = delete;
+	VariableScope& operator=(VariableScope&&) = delete;
+
+	ASTInterpreter* m_Interpreter;
+};
+
 ASTInterpreter::ASTInterpreter()
-{}
+{
+	// Allow globals
+	EnterScope();
+}
 
 ASTInterpreter::~ASTInterpreter()
 {}
@@ -32,7 +100,36 @@ bool ASTInterpreter::EvalToBool(const ExpressionPtr& e)
     return result != 0.0;
 }
 
-#define NOT_IMPLEMENTED (void)e; assert(0 && "not-implemented")
+void ASTInterpreter::EnterScope()
+{
+	m_Scopes.push(Scope{});
+}
+
+void ASTInterpreter::LeaveScope()
+{
+	const auto& scope = m_Scopes.top();
+	for (auto& var : scope) {
+		auto values = m_Variables.find(var);
+		values->second.pop();
+		if (values->second.empty()) {
+			m_Variables.erase(values);
+		}
+	}
+	m_Scopes.pop();
+}
+
+ASTInterpreter::value_type& ASTInterpreter::ModifyVariable(const IPLString& name)
+{
+	auto values = m_Variables.find(name);
+	if (values != m_Variables.end()) {
+		return values->second.top();
+	}
+	else {
+		assert(0 && "not-defined");
+	}
+	static value_type undefined;
+	return undefined;
+}
 
 void ASTInterpreter::Visit(LiteralNull* e) {
    NOT_IMPLEMENTED; 
@@ -75,23 +172,45 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
         case TokenType::Division:
             m_Evaluation.push(left / right);
             break;
+	    case TokenType::Less:
+			m_Evaluation.push(left < right);
+			break;
+		case TokenType::Comma:
+			m_Evaluation.push(right);
+			break;
         default:
             NOT_IMPLEMENTED;
     }
 }
 
 void ASTInterpreter::Visit(UnaryExpression* e) {
-    NOT_IMPLEMENTED;
+	LValueExtractor extractor(this);
+	auto lvalue = extractor.Run(e->GetExpr().get());
+	if (e->GetSuffix())
+	{
+		m_Evaluation.push(*lvalue);
+	}
+	switch (e->GetOperator())
+	{
+	case TokenType::PlusPlus:
+		++(*lvalue);
+		break;
+	case TokenType::MinusMinus:
+		--(*lvalue);
+		break;
+	default:
+		NOT_IMPLEMENTED;
+	}
+	if (!e->GetSuffix())
+	{
+		m_Evaluation.push(*lvalue);
+	}
 }
 
 void ASTInterpreter::Visit(IdentifierExpression* e) {
-    auto values = m_Variables.find(e->GetName());
-    if (values != m_Variables.end()) {
-        m_Evaluation.push(values->second.top());
-    } else {
-        throw "Not-defined";
-    }
+	m_Evaluation.push(ModifyVariable(e->GetName()));
 }
+
 void ASTInterpreter::Visit(ListExpression* e) {
     for (const auto& stmt: e->GetValues()) {
         stmt->Accept(*this);
@@ -100,7 +219,9 @@ void ASTInterpreter::Visit(ListExpression* e) {
 
 void ASTInterpreter::Visit(VariableDefinitionExpression* e) {
     e->GetValue()->Accept(*this);
-    m_Variables[e->GetName()].push(m_Evaluation.top());
+	auto& name = e->GetName();
+    m_Variables[name].push(m_Evaluation.top());
+	m_Scopes.top().push_back(name);
     m_Evaluation.pop();
 }
 
@@ -115,10 +236,13 @@ void ASTInterpreter::Visit(LabeledStatement* e) {
 }
 
 void ASTInterpreter::Visit(IfStatement* e) {
-    if (EvalToBool(e->GetCondition())) {
-        RunExpression(e->GetIfStatement());
+	VariableScope scope(this);
+	if (EvalToBool(e->GetCondition())) {
+		VariableScope ifScope(this);
+		RunExpression(e->GetIfStatement());
     } else {
-        RunExpression(e->GetElseStatement());
+		VariableScope elseScope(this);
+		RunExpression(e->GetElseStatement());
     }
 }
 
@@ -126,18 +250,24 @@ void ASTInterpreter::Visit(SwitchStatement* e) { NOT_IMPLEMENTED;}
 void ASTInterpreter::Visit(CaseStatement *e) { NOT_IMPLEMENTED;}
 
 void ASTInterpreter::Visit(WhileStatement* e) {
+	VariableScope scope(this);
     if (e->GetDoWhile()) {
+		VariableScope bodyScope(this);
         RunExpression(e->GetBody());
     }
     while (EvalToBool(e->GetCondition())) {
+		VariableScope bodyScope(this);
         RunExpression(e->GetBody());
     }
 }
 
 void ASTInterpreter::Visit(ForStatement* e) {
+	VariableScope scope(this);
+
     for (RunExpression(e->GetInitialization());
             EvalToBool(e->GetCondition());
             RunExpression(e->GetIteration())) {
+		VariableScope bodyScope(this);
         RunExpression(e->GetBody());
     }
 }
