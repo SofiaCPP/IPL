@@ -186,7 +186,7 @@ is_number([H,_]):- member(H, [tnumber, ttypesPrintF]).
 
 is_function([H,_]):- member(H, [tfunction]).
 
-is_functionAndBody([H|_]):- is_list(H).
+is_functionAndBodyOrStructureAndBody([H|_]):- is_list(H).
 
 is_identifier([H,_]):- member(H, [tidentifier, tnl, ttab]).
 
