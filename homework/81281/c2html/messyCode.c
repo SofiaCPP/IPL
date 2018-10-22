@@ -3,7 +3,10 @@
 #include <time.h>
 int N = 0;
 int a[750001] = {0};
-/*Problem Secrect DAA*/
+int matrix[3][3] = {{0, 0, 0}, {0, 1, 0}, {0, 1, 1}};
+/*Problem Secrect DAA
+/// lalalallala
+*/
 //// mauuu
 
 void swap(int* i, int* j)
