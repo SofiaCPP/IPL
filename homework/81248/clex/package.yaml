@@ -1,6 +1,6 @@
 name:                clex
 version:             0.0.0.1
-author:              "Georgi Lyubenovj"
+author:              "Georgi Lyubenov"
 maintainer:          "godzbanebane@gmail.com"
 
 description:         Lex C and keep whitespace so I can print it afterwards.

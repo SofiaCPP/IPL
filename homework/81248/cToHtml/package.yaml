@@ -3,7 +3,7 @@ version:             0.0.0.1
 author:              "Georgi Lyubenov"
 maintainer:          "godzbanebane@gmail.com"
 
-description:         Lex c using clex and then output white coloured C.
+description:         Lex c using clex and then output coloured C.
 
 extra-source-files:
 - README.md
