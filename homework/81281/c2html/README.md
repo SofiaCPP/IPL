@@ -9,7 +9,7 @@
 
 + **TODO:** Produce html where functions have their background colored depending on cyclomatic complexity ranging from light green to light read.
 
-+ ~~Produce html where control structures can be collapsed.~~
++ ~~Produce html where control structures can be collapsed.~~(**TODO:** Cannot collapse method of structures and identify and collapse correctly methods of structures outside its body.)
 
 ### How to install and use SWI-Prolog
 
