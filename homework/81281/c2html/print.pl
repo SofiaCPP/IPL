@@ -1,5 +1,5 @@
 %% Writing to html file the stream of tokens
-tohtmlfile(Stream, []):- !, write(Stream, '</pre></body></html>'), !.
+tohtmlfile(_, []):- !.
 
 tohtmlfile(Stream, [H|T]) :- is_identifier(H), H = [_,Lexem],
     write(Stream, '<span class=\"identifier\">'),
@@ -78,7 +78,21 @@ tohtmlfile(Stream, [H|T]) :- is_comment(H), H = [_,Lexem],
     !,
     tohtmlfile(Stream, T).
 
+tohtmlfile(Stream, [H|T]) :- is_functionAndBody(H),
+    write(Stream, '<button class=\"collapsible\">'),
+    H = [H1|T1],
+    tohtmlfile(Stream, H1),
+    write(Stream, '</span></button>'), nl(Stream),
+    write(Stream, '<div class=\"content\">'),
+    helper(Stream, T1),
+    write(Stream,'</div>'),
+    !,
+    tohtmlfile(Stream, T).
+
 tohtmlfile(Stream, [H|T]) :- is_blank(H), H = [_,Lexem],
     write(Stream, Lexem),
     !,
     tohtmlfile(Stream, T).
+
+helper(_, []).
+helper(Stream, [H|T]):- tohtmlfile(Stream, H), helper(Stream, T).
