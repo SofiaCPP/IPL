@@ -1,28 +1,33 @@
 :- [essentials].
 
-
 prettify(StreamTokens, PrettyStream):-
     removeAllWhites(StreamTokens, Plain),
-    % write(Plain),nl,write("Plain ------------"), nl,
+    %  write(Plain),nl,write("Plain ------------"), nl,
     addNewLines(Plain, PlainWithNL),
     % write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
     addSpaces(PlainWithNL, PlainWithNLnS),
     % write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
     addTabs(PlainWithNLnS, PlainWithNLnSnT),
     % write(PlainWithNLnSnT),nl,write("PlainWithNLnSnT ------------"), nl,
-    flattenMine(PlainWithNLnSnT, PrettyStream).
+    identifyFunctions(PlainWithNLnSnT, IdentifiedFunctions),
+    flattenMine(IdentifiedFunctions, PrettyStream).
+    % write(PrettyStream).
     % write(PrettyStream), nl.
 
-
-%% Removes all white charachters
+% Removes all white charachters
 removeAllWhites([], []):- !.
 removeAllWhites([[H,_]|T], R):- member(H, [execTAB, tspace, execNL]),
     removeAllWhites(T, R), !.
 removeAllWhites([[H, B]|T], [[H, B]|R]):- \+ member(H, [execTAB, tspace, execNL]),
     removeAllWhites(T, R), !.
 
+% Pack Till ; for cases like char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
+packTillsemiColon([[tsemicolon, ";"]|T], Buff, Buff, [[tsemicolon, ";"]|T]).
+packTillsemiColon([H|T], Buff, Res, Rest):-
+    append(Buff, [H], NewBuff), !,
+    packTillsemiColon(T, NewBuff, Res, Rest).
 
-%% Pack for while, if, for and function arguments
+% Pack for while, if, for and function arguments
 packTillRightParen(Rest, Buff, Res, Rest, 0):-
     append(Buff, [[execNL, '\n']], Res).
 packTillRightParen([H|T], Buff, Res, Rest, N):-
@@ -38,14 +43,46 @@ packTillRightParen([H|T], Buff, Res, Rest, N):-
     append(Buff, [H], NewBuff),
     packTillRightParen(T, NewBuff, Res, Rest, N).
 
-%% Base
+
+% Base
 addNewLines([], [], []):- !.
 % if ;  //  /**/, else
 addNewLines([H|T], Buff, [NewBuff|R]):-
     H = [H1|_], member(H1, [tsemicolon, tcomment1, tcomment2, telse]),
     append(Buff, [H, [execNL, "\n"]], NewBuff), !,
     addNewLines(T, [], R).
-%if }EOF
+% if char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
+addNewLines([H1, H2, H3|T], Buff, R):-
+    H1 = [H11|_], member(H11, [tchar, tint, tdouble, tidentifier, tshort, tsigned, tunsigned, tenum, tfloat]),
+    H2 = [H21|_], member(H21, [tidentifier]),
+    H3 = [H31|_], member(H31, [tleftSqParen]),
+    packTillsemiColon(T, [], Res, Rest),
+    append(Buff, [H1, H2, H3], NewBuf),
+    append(NewBuf, Res, NewBuff), !,
+    addNewLines(Rest, NewBuff, R).
+% if const char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
+addNewLines([H1, H2, H3, H4|T], Buff, R):-
+    H1 = [H11|_], member(H11, [tconst]),
+    H2 = [H21|_], member(H21, [tchar, tint, tdouble, tidentifier, tshort, tsigned, tunsigned, tenum, tfloat]),
+    H3 = [H31|_], member(H31, [tidentifier]),
+    H4 = [H41|_], member(H41, [tleftSqParen]),
+    packTillsemiColon(T, [], Res, Rest),
+    append(Buff, [H1, H2, H3, H4], NewBuf),
+    append(NewBuf, Res, NewBuff), !,
+    addNewLines(Rest, NewBuff, R).
+% if case smt:
+addNewLines([H|T], Buff, [NewBuff|R]):-
+    H = [H1|_], member(H1, [tcase]),
+    T = [H2, H3|T1],
+    append(Buff, [H, H2, H3, [execNL, "\n"]], NewBuff), !,
+    addNewLines(T1, [], R).
+% if default :
+addNewLines([H|T], Buff, [NewBuff|R]):-
+    H = [H1|_], member(H1, [tdefault]),
+    T = [[ttwodots, ":"]|T1],
+    append(Buff, [H, [ttwodots, ":"], [execNL, "\n"]], NewBuff), !,
+    addNewLines(T1, [], R).
+% if }EOF
 addNewLines([H|[]], Buff, [NewBuff|R]):-
     H = [H1|_], member(H1, [trightBrace]),
     append(Buff, [H, [execNL, "\n"]], NewBuff), !,
@@ -56,7 +93,7 @@ addNewLines([H1, H2|T], Buff, R):-
     H2 = [H21|_], member(H21, [tnumber, tsemicolon, tcomma]),
     append(Buff, [H1], NewBuff), !,
     addNewLines([H2|T], NewBuff, R).
-%if not {0,{;,{,,}0,};},
+% if not {0,{;,{,,}0,};},
 addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
     H1 = [H11|_], member(H11, [tleftBrace, trightBrace]),
     H2 = [H21|_], \+ member(H21, [tnumber, tsemicolon, tcomma]),
@@ -64,7 +101,7 @@ addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
     addNewLines([H2|T], [], R).
 % if function, while, for, if, else
 addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
-    H1 = [H11|_], member(H11, [tif, twhile, tfor]),
+    H1 = [H11|_], member(H11, [tif, twhile, tfor, tswitch]),
     packTillRightParen(T, [], MyPart, Rest, 1),
     append(Buff, [H1, H2], NewB1),
     append(NewB1, MyPart, NewBuff), !,
@@ -93,7 +130,7 @@ addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
 addNewLines([H|T], Buff, R):-
     H = [H1|_],
     \+ member(H1, [tfunction, tsemicolon, tinclude, tif, telse, twhile,
-                    tfor, tcomment1, tcomment2, tleftBrace, trightBrace]),
+                    tfor, tcomment1, tcomment2, tleftBrace, trightBrace, tswitch]),
     append(Buff, [H], NewBuff), !,
     addNewLines(T, NewBuff, R).
 
@@ -101,9 +138,9 @@ addNewLines([H|T], Buff, R):-
 addNewLines(Tokens, PackedLines):- addNewLines(Tokens, [], PackedLines), !.
 
 
-%% Base
+% Base
 addSpaces([], Buff, Buff):- !.
-%%  no spaces before and after '\n'
+%  no spaces before and after '\n'
 addSpaces([H|T], Buff, Res):-
     H = [H1|_], member(H1, [execNL]),
     ((append(NewBuf, [[tspace, " "]], Buff),
@@ -111,24 +148,24 @@ addSpaces([H|T], Buff, Res):-
     (\+ append(_, [[tspace, " "]], Buff),
     append(Buff, [H], NewBuff))), !,
     addSpaces(T, NewBuff, Res).
-%% Before ',', ';' no space
+% Before ',', ';' no space
 addSpaces([H|T], Buff, Res):-
     H = [H1|_], member(H1, [tcomma, tsemicolon]),
     append(NewBuf, [[tspace, " "]], Buff),
     append(NewBuf, [H, [tspace, " "]], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%% No space after (, [, {, function name
+% No space after (, [, {, function name
 addSpaces([H1|T], Buff, Res):-
     H1 = [H11|_], member(H11, [tleftParen, tfunction, tleftBrace, tleftSqParen]),
     append(Buff, [H1], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%% i->mau();--
+% i->mau();--
 addSpaces([H1|T], Buff, Res):-
     H1 = [H11|_], member(H11, [tptr, execNL]),
     append(NewBuf, [_], Buff),
     append(NewBuf, [H1], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%% some tokens before *i, &i
+% some tokens before *i, &i
 addSpaces([H1, H2|T], Buff, Res):-
     H1 = [H11|_], member(H11, [tmultiply, tbitwiseAnd]),
     H2 = [H21|_], member(H21, [tidentifier]),
@@ -138,7 +175,7 @@ addSpaces([H1, H2|T], Buff, Res):-
     H4 = [H41|_], member(H41, [tspace, tleftParen, tleftBrace, tleftSqParen]),
     append(Buff, [H1, H2], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%%  new line (*i, (&i
+%  new line (*i, (&i
 addSpaces([H1, H2|T], Buff, Res):-
     H1 = [H11|_], member(H11, [tmultiply, tbitwiseAnd]),
     H2 = [H21|_], member(H21, [tidentifier]),
@@ -146,32 +183,32 @@ addSpaces([H1, H2|T], Buff, Res):-
     Buff = [[H31|_]], member(H31, [tleftParen, tleftBrace, tleftSqParen]),
     append(Buff, [H1, H2], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%% none before *i, &i
+% none before *i, &i
 addSpaces([H1, H2|T], [], Res):-
     H1 = [H11|_], member(H11, [tmultiply, tbitwiseAnd]),
     H2 = [H21|_], member(H21, [tidentifier]),
     append([], [H1, H2], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%% i++, i--
+% i++, i--
 addSpaces([H1, H2|T], Buff, Res):-
     H1 = [H11|_], member(H11, [tidentifier]),
     H2 = [H21|_], member(H21, [tpp, tmm]),
     append(Buff, [H1, H2], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%% ++i, --i
+% ++i, --i
 addSpaces([H1, H2|T], Buff, Res):-
     H1 = [H11|_], member(H11, [tpp, tmm]),
     H2 = [H21|_], member(H21, [tidentifier]),
     append(Buff, [H1], NewBuff), !,
     addSpaces([H2|T], NewBuff, Res).
-%%  pack strings line "majhaaud830204ie1\n"
+%  pack strings line "majhaaud830204ie1\n"
 addSpaces([H1|T], Buff, Res):-
     H1 = [H11, Lex], member(H11, [tquot, tdoubleQuot]),
     append(M, [[H11,Lex]|Rest], T),
     append(Buff, [H1|M], NewBuf),
     append(NewBuf, [[H11,Lex]], NewBuff), !,
     addSpaces(Rest, NewBuff, Res).
-%% })]]
+% })]]
 addSpaces([H1, H2|T], Buff, Res):-
     H1 = [H11|_], member(H11, [trightParen, trightBrace, trightSqParen]),
     H2 = [H21|_], member(H21, [trightParen, trightBrace, trightSqParen]),
@@ -193,39 +230,39 @@ addSpaces([H1, H2|T], Buff, Res):-
     H2 = [H21|_], member(H21, [tleftSqParen]),
     append(Buff, [H1], NewBuff), !,
     addSpaces([H2|T], NewBuff, Res).
-%%  Else
+%  Else
 addSpaces([H|T], Buff, Res):-
     append(Buff, [H, [tspace, " "]], NewBuff), !,
     addSpaces(T, NewBuff, Res).
 
-%% Main predicate
+% Main predicate
 addSpaces([], []):- !.
 addSpaces([HT|TT], Res):- addSpaces(HT, [], RHT), !,
     addSpaces(TT, RTT),
     append([RHT], RTT, Res).
 
 
-%% Base
-addTabs([], _, Buff, Buff):- !.
-%% Openning tleftBrace
-addTabs([H|T], Tabs, Buff, Res):-
+% Base
+addTabs([], _, Buff, Buff, _):- !.
+% Openning tleftBrace
+addTabs([H|T], Tabs, Buff, Res, Bit):-
     H = [[H1|_]|_],
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff),
     H1 == tleftBrace,
     append(Tabs, [[execTAB, "\t"]], NewTabs), !,
-    addTabs(T, NewTabs, NewBuff, Res).
-%% Closing trightBrace and a little newline for readability
-addTabs([H|T], Tabs, Buff, Res):-
+    addTabs(T, NewTabs, NewBuff, Res, Bit).
+% Closing trightBrace and a little newline for readability
+addTabs([H|T], Tabs, Buff, Res, Bit):-
     H = [[H1|_]|_],
     H1 == trightBrace,
     append(NewTabs, [[execTAB, "\t"]], Tabs),
     append(NewTabs, H, NewH1),
     append(NewH1, [[execNL, "\n"]], NewH),
     append(Buff,[NewH], NewBuff), !,
-    addTabs(T, NewTabs, NewBuff, Res).
-%% Special case when one line only
-addTabs([H|T], Tabs, Buff, Res):-
+    addTabs(T, NewTabs, NewBuff, Res, Bit).
+% Special case when one line only
+addTabs([H|T], Tabs, Buff, Res, Bit):-
     H = [[H1|_]|_],
     member(H1, [tfor, twhile, tif, telse]),
     T = [[H2|HR]|TR],
@@ -234,24 +271,40 @@ addTabs([H|T], Tabs, Buff, Res):-
     append(Tabs, H, NewH),
     append([[execTAB, "\t"]|Tabs], [H2|HR], AfterH),
     append(Buff,[NewH, AfterH], NewBuff), !,
-    addTabs(TR, Tabs, NewBuff, Res).
-%% Ordinary case
-addTabs([H|T], Tabs, Buff, Res):-
+    addTabs(TR, Tabs, NewBuff, Res, Bit).
+% Ordinary case
+addTabs([H|T], Tabs, Buff, Res, Bit):-
     H = [[H1|_]|_],
-    member(H1, [tfor, twhile, tif, telse]),
+    member(H1, [tfor, twhile, tif, telse, tswitch]),
     T = [[[H2|_]|_]|_],
     H2 == tleftBrace,
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff), !,
-    addTabs(T, Tabs, NewBuff, Res).
-%% All other tokens
-addTabs([H|T], Tabs, Buff, Res):-
+    addTabs(T, Tabs, NewBuff, Res, Bit).
+%  case BIt helpes us to identify where if starts and ends
+addTabs([H|T], Tabs, Buff, Res, 0):-
+    H = [[H1|_]|_],
+    member(H1, [tcase, tdefault]),
+    append(Tabs, H, NewH),
+    append(Buff,[NewH], NewBuff),
+    append(Tabs, [[execTAB, "\t"]], NewTabs), !,
+    addTabs(T, NewTabs, NewBuff, Res, 1).
+% Ordinary case
+addTabs([H|T], Tabs, Buff, Res, 1):-
+    H = [[H1|_]|_],
+    member(H1, [tbreak]),
+    append(Tabs, H, NewH),
+    append(Buff,[NewH], NewBuff),
+    append(NewTabs, [[execTAB, "\t"]], Tabs), !,
+    addTabs(T, NewTabs, NewBuff, Res, 0).
+% All other tokens
+addTabs([H|T], Tabs, Buff, Res, Bit):-
     H = [[H1|_]|_],
     \+ member(H1, [tleftBrace, tfor, twhile, tif, telse, trightBrace]),
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff), !,
-    addTabs(T, Tabs, NewBuff, Res).
+    addTabs(T, Tabs, NewBuff, Res, Bit).
 
-%% Main predicate
+% Main predicate
 addTabs(PackedLinesWithSpaces, PackedLinesWithSpacesAndTabs):-
-    addTabs(PackedLinesWithSpaces, [], [], PackedLinesWithSpacesAndTabs), !.
+    addTabs(PackedLinesWithSpaces, [], [], PackedLinesWithSpacesAndTabs, 0), !.
