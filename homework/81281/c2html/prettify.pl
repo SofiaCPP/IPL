@@ -1,16 +1,12 @@
-:- [essentials].
-
-prettify(StreamTokens, PrettyStream):-
+prettify(StreamTokens, PlainWithNLnSnT):-
     removeAllWhites(StreamTokens, Plain),
     % write(Plain),nl,write("Plain ------------"), nl,
     addNewLines(Plain, PlainWithNL),
      % write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
     addSpaces(PlainWithNL, PlainWithNLnS),
      % write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
-    addTabs(PlainWithNLnS, PlainWithNLnSnT),
+    addTabs(PlainWithNLnS, PlainWithNLnSnT).
     % write(PlainWithNLnSnT),nl,write("PlainWithNLnSnT ------------"), nl,
-    identifyFunctionsAndStructures(PlainWithNLnSnT, IdentifiedFunctions),
-    flattenMine(IdentifiedFunctions, PrettyStream).
     % write(PrettyStream).
     % write(PrettyStream), nl.
 
