@@ -78,7 +78,7 @@ tohtmlfile(Stream, [H|T]) :- is_comment(H), H = [_,Lexem],
     !,
     tohtmlfile(Stream, T).
 
-tohtmlfile(Stream, [H|T]) :- is_functionAndBody(H),
+tohtmlfile(Stream, [H|T]) :- is_functionAndBodyOrStructureAndBody(H),
     write(Stream, '<button class=\"collapsible\">'),
     H = [H1|T1],
     tohtmlfile(Stream, H1),
