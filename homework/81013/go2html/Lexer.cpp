@@ -262,6 +262,65 @@ inline Token Tokenizer::ProduceToken(TokenType type)
 {
 	switch (type)
 	{
+	case TokenType::Plus:
+		return ProduceToken(type, "+");
+	case TokenType::Minus:
+		return ProduceToken(type, "-");
+	case TokenType::Star:
+		return ProduceToken(type, "*");
+	case TokenType::Division:
+		return ProduceToken(type, "/");
+	case TokenType::Modulo:
+		return ProduceToken(type, "%");
+
+	case TokenType::PlusEqual:
+		return ProduceToken(type, "+=");
+	case TokenType::MinusEqual:
+		return ProduceToken(type, "-=");
+	case TokenType::MultEqual:
+		return ProduceToken(type, "*=");
+	case TokenType::DivEqual:
+		return ProduceToken(type, "/=");
+	case TokenType::ModuloEqual:
+		return ProduceToken(type, "%=");
+
+	case TokenType::NOT:
+		return ProduceToken(type, "!");
+	case TokenType::BitwiseAND:
+		return ProduceToken(type, "&");
+	case TokenType::BitwiseOR:
+		return ProduceToken(type, "|");
+	case TokenType::BitwiseXOR:
+		return ProduceToken(type, "^");
+	case TokenType::BitClear:
+		return ProduceToken(type, "^&");
+	case TokenType::ShiftLeft:
+		return ProduceToken(type, "<<");
+	case TokenType::ShiftRight:
+		return ProduceToken(type, ">>");
+
+	case TokenType::Equal:
+		return ProduceToken(type, "==");
+	case TokenType::Less:
+		return ProduceToken(type, "<");
+	case TokenType::Greater:
+		return ProduceToken(type, ">");
+
+	case TokenType::NOTEqual:
+		return ProduceToken(type, "!=");
+	case TokenType::LessEqual:
+		return ProduceToken(type, "<=");
+	case TokenType::GreaterEqual:
+		return ProduceToken(type, ">=");
+
+	case TokenType::Assignment:
+		return ProduceToken(type, "=");
+	case TokenType::ShortAssignment:
+		return ProduceToken(type, ":=");
+
+	case TokenType::Variadic:
+		return ProduceToken(type, "...");
+
 	case TokenType::LeftBrace:
 		return ProduceToken(type, "{");
 	case TokenType::RightBrace:
@@ -279,24 +338,6 @@ inline Token Tokenizer::ProduceToken(TokenType type)
 		return ProduceToken(type, ",");
 	case TokenType::Dot:
 		return ProduceToken(type, ".");
-
-	case TokenType::Plus:
-		return ProduceToken(type, "+");
-	case TokenType::Minus:
-		return ProduceToken(type, "-");
-	case TokenType::Star:
-		return ProduceToken(type, "*");
-	case TokenType::Division:
-		return ProduceToken(type, "/");
-	case TokenType::Modulo:
-		return ProduceToken(type, "%");
-
-	case TokenType::Assignment:
-		return ProduceToken(type, "=");
-	case TokenType::Less:
-		return ProduceToken(type, "<");
-	case TokenType::Greater:
-		return ProduceToken(type, ">");
 
 	// todo - add rest
 
@@ -451,7 +492,6 @@ Keyword Tokenizer::ParseKeyword()
 
 Identifier Tokenizer::ParseIdentifier()
 {
-	std::printf("%c\n", m_Code[m_Current]);
 	if (!IsValidIdentifierStartingChar(m_Code[m_Current]))
 	{
 		RETURN_FAIL(Identifier());
@@ -521,19 +561,41 @@ Token Tokenizer::NextToken()
 	// Single Char
 	switch (m_Code[m_Current])
 	{
-	case '-': NextSymbol(); return Match('-') ? ProduceToken(TokenType::MinusMinus) : ProduceToken(TokenType::Minus);
-	case '+': NextSymbol(); return Match('+') ? ProduceToken(TokenType::PlusPlus) : ProduceToken(TokenType::Plus);
-	case '*': NextSymbol(); return ProduceToken(TokenType::Star);
-	case '/': NextSymbol(); return ProduceToken(TokenType::Division);
-	case '%': NextSymbol(); return ProduceToken(TokenType::Modulo);
+	case '-': NextSymbol(); return Match('-') ? ProduceToken(TokenType::MinusMinus) :
+												Match('=') ? ProduceToken(TokenType::MinusEqual) :
+															 ProduceToken(TokenType::Minus);
+	case '+': NextSymbol(); return Match('+') ? ProduceToken(TokenType::PlusPlus) :
+												Match('=') ? ProduceToken(TokenType::PlusEqual) :
+															 ProduceToken(TokenType::Plus);
 
-	case '&': NextSymbol(); return Match('&') ? ProduceToken(TokenType::BitwiseAND) : ProduceToken(TokenType::BitwiseAND);
-	case '|': NextSymbol(); return Match('|') ? ProduceToken(TokenType::BitwiseOR) : ProduceToken(TokenType::BitwiseOR);
-	case '^': NextSymbol(); return ProduceToken(TokenType::BitwiseXOR);
+	case '*': NextSymbol(); return Match('=') ? ProduceToken(TokenType::MultEqual) :
+												ProduceToken(TokenType::Star);
+	case '/': NextSymbol(); return Match('=') ? ProduceToken(TokenType::DivEqual) :
+								   				ProduceToken(TokenType::Division);
+	case '%': NextSymbol(); return Match('=') ? ProduceToken(TokenType::ModuloEqual) :
+								   				ProduceToken(TokenType::Modulo);
 
-	case '=': NextSymbol(); return Match('=') ? ProduceToken(TokenType::EqualEqual) : ProduceToken(TokenType::Equal);
-	case '>': NextSymbol(); return Match('=') ? ProduceToken(TokenType::GreaterEqual) : Match('>') ? ProduceToken(TokenType::ShiftRight) : ProduceToken(TokenType::Greater);
-	case '<': NextSymbol(); return Match('=') ? ProduceToken(TokenType::LessEqual) : Match('<') ? ProduceToken(TokenType::ShiftLeft) : ProduceToken(TokenType::Less);
+	case '&': NextSymbol(); return Match('&') ? ProduceToken(TokenType::ConditionalAND) :
+												ProduceToken(TokenType::BitwiseAND);
+
+	case '|': NextSymbol(); return Match('|') ? ProduceToken(TokenType::ConditionalOR) :
+												ProduceToken(TokenType::BitwiseOR);
+
+	case '^': NextSymbol(); return Match('&') ? ProduceToken(TokenType::BitClear) :
+												ProduceToken(TokenType::BitwiseXOR);
+
+	case '=': NextSymbol(); return Match('=') ? ProduceToken(TokenType::Equal) :
+												ProduceToken(TokenType::Assignment);
+
+	case '>': NextSymbol(); return Match('=') ? ProduceToken(TokenType::GreaterEqual) :
+												Match('>') ? ProduceToken(TokenType::ShiftRight) :
+															 ProduceToken(TokenType::Greater);
+
+	case '<': NextSymbol(); return Match('=') ? ProduceToken(TokenType::LessEqual) :
+												Match('<') ? ProduceToken(TokenType::ShiftLeft) :
+															 Match('-') ? ProduceToken(TokenType::ReceiveOperator) :
+															 			  ProduceToken(TokenType::Less);
+
 	case '!': NextSymbol(); return Match('=') ? ProduceToken(TokenType::NOTEqual) : ProduceToken(TokenType::NOT);
 
 	case '(': NextSymbol(); return ProduceToken(TokenType::LeftParen);
@@ -544,10 +606,13 @@ Token Tokenizer::NextToken()
 	case '}': NextSymbol(); return ProduceToken(TokenType::RightBrace);
 
 	case ',': NextSymbol(); return ProduceToken(TokenType::Comma);
-	case '.': NextSymbol(); return ProduceToken(TokenType::Dot);
+	case '.': NextSymbol(); return Match('.') ? Match('.') ? ProduceToken(TokenType::Variadic) :
+															 ProduceToken(TokenType::Invalid, "") :
+												ProduceToken(TokenType::Dot);
 
 	case ';': NextSymbol(); return ProduceToken(TokenType::Semicolon);
-	case ':': NextSymbol(); return ProduceToken(TokenType::Colon);
+	case ':': NextSymbol(); return Match('=') ? ProduceToken(TokenType::ShortAssignment) :
+												ProduceToken(TokenType::Colon);
 
 	// todo: see if I've left some go-specific  single chars out
 

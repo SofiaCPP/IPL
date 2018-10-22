@@ -49,7 +49,7 @@ enum class TokenType
     PlusEqual,
     MinusEqual,
     MultEqual,
-    DivisionEqual,
+    DivEqual,
     ModuloEqual,
 
     // -> skipped bitwise + equal stuff
@@ -64,7 +64,6 @@ enum class TokenType
     Less,
     Greater,
 
-    EqualEqual,
     NOTEqual,
     LessEqual,
     GreaterEqual,
