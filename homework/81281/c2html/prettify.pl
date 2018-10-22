@@ -58,11 +58,12 @@ addNewLines([H|T], Buff, [NewBuff|R]):-
     append(Buff, [H, [execNL, "\n"]], NewBuff), !,
     addNewLines(T, [], R).
 % if struct
-addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
+addNewLines([H1, H2, H3|T], Buff, [NewBuff|R]):-
     H1 = [H11|_], member(H11, [tstruct]),
     H2 = [H21|_], member(H21, [tidentifier]),
+    H3 = [H31|_], member(H31, [tleftBrace]),
     append(Buff, [H1, H2, [execNL, "\n"]], NewBuff), !,
-    addNewLines(T, [], R).
+    addNewLines([H3|T], [], R).
 % if struct{ } id;
 addNewLines([H1, H2|T], Buff, R):-
     H1 = [H11|_], member(H11, [trightBrace]),
