@@ -3,50 +3,50 @@
 
 namespace
 {
-inline bool IsUpperCase(char c)
-{
-	return c >= 'A' && c <= 'Z';
-}
+	inline bool IsUpperCase(char c)
+	{
+		return c >= 'A' && c <= 'Z';
+	}
 
-inline bool IsLowerCase(char c)
-{
-	return c >= 'a' && c <= 'z';
-}
+	inline bool IsLowerCase(char c)
+	{
+		return c >= 'a' && c <= 'z';
+	}
 
-inline bool IsDigit(char c)
-{
-	return c >= '0' && c <= '9';
-}
+	inline bool IsDigit(char c)
+	{
+		return c >= '0' && c <= '9';
+	}
 
-inline bool IsValidIdentifierStartingChar(char c)
-{
-	return IsUpperCase(c) || IsLowerCase(c) || c == '_';
-}
+	inline bool IsValidIdentifierStartingChar(char c)
+	{
+		return IsUpperCase(c) || IsLowerCase(c) || c == '_';
+	}
 
-inline bool IsValidIdentifierChar(char c)
-{
-	return IsValidIdentifierStartingChar(c) || IsDigit(c);
-}
+	inline bool IsValidIdentifierChar(char c)
+	{
+		return IsValidIdentifierStartingChar(c) || IsDigit(c);
+	}
 
-inline bool IsStringBound(char c)
-{
-	return c == '\'' || c == '"' || c == '`';
-}
+	inline bool IsStringBound(char c)
+	{
+		return c == '\'' || c == '"' || c == '`';
+	}
 
-inline bool IsWhiteSpace(char c)
-{
-	return c == ' ' || c == '\t';
-}
+	inline bool IsWhiteSpace(char c)
+	{
+		return c == ' ' || c == '\t';
+	}
 
-inline bool IsNewLine(char c)
-{
-	return c == '\n';
-}
+	inline bool IsNewLine(char c)
+	{
+		return c == '\n';
+	}
 
-inline bool IsEnd(char c)
-{
-	return c == '\0';
-}
+	inline bool IsEnd(char c)
+	{
+		return c == '\0';
+	}
 }
 
 struct Keyword
@@ -72,7 +72,7 @@ class Tokenizer
 {
 public:
 	Tokenizer(const char* code, const LexerSettings& settings);
-	LexerResult Tokenize(IPLVector<Token>& tokens);
+	IPLResult Tokenize(IPLVector<Token>& tokens);
 
 private:
 	Token NextToken();
@@ -116,14 +116,14 @@ private:
 	IPLUnorderedMap<IPLString, TokenType> m_KeyWordsTable;
 };
 
-LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings)
+IPLResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings)
 {
 	Tokenizer tokenizer(code, settings);
 
 	return tokenizer.Tokenize(tokens);
 }
 
-LexerResult Tokenize(const char* code, IPLVector<Token>& tokens)
+IPLResult Tokenize(const char* code, IPLVector<Token>& tokens)
 {
 	return Tokenize(code, tokens, { false, false });
 }
@@ -170,7 +170,7 @@ Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 	m_KeyWordsTable["nil"] = TokenType::Nil;
 }
 
-LexerResult Tokenizer::Tokenize(IPLVector<Token>& tokens)
+IPLResult Tokenizer::Tokenize(IPLVector<Token>& tokens)
 {
 	do
 	{
@@ -182,13 +182,13 @@ LexerResult Tokenizer::Tokenize(IPLVector<Token>& tokens)
 
 		if (m_GenerationState == State::Error)
 		{
-			return LexerResult{ false, IPLError(m_Error) };
+			return IPLResult{ false, IPLError(m_Error) };
 		}
 
 		tokens.emplace_back(token);
 	} while (tokens.back().Type != TokenType::Eof);
 
-	return LexerResult{ true, IPLError() };
+	return IPLResult{ true, IPLError() };
 }
 
 bool Tokenizer::SkipWhiteSpaces()
@@ -299,6 +299,19 @@ inline Token Tokenizer::ProduceToken(TokenType type)
 	case TokenType::ShiftRight:
 		return ProduceToken(type, ">>");
 
+	case TokenType::ConditionalAND:
+		return ProduceToken(type, "&&");
+	case TokenType::ConditionalOR:
+		return ProduceToken(type, "||");
+
+	case TokenType::ReceiveOperator:
+		return ProduceToken(type, "<-");
+
+	case TokenType::PlusPlus:
+		return ProduceToken(type, "++");
+	case TokenType::MinusMinus:
+		return ProduceToken(type, "--");
+
 	case TokenType::Equal:
 		return ProduceToken(type, "==");
 	case TokenType::Less:
@@ -338,8 +351,6 @@ inline Token Tokenizer::ProduceToken(TokenType type)
 		return ProduceToken(type, ",");
 	case TokenType::Dot:
 		return ProduceToken(type, ".");
-
-	// todo - add rest
 
 	default: // EoF Invalid
 		break;

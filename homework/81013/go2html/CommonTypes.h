@@ -29,3 +29,9 @@ struct IPLError
 	IPLString File;
 	IPLString What;
 };
+
+struct IPLResult
+{
+	bool IsSuccessful;
+	IPLError Error;
+};

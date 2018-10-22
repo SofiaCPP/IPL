@@ -90,9 +90,9 @@ enum class TokenType
     Identifier,
 
     // Types
-    DecimalInteger,
+    DecimalInteger, // not really supported ATM
     Float,
-    // ImaginaryNum,
+    ImaginaryNum, // not really supported ATM
     String,
     // -> runes(?)
 
@@ -115,18 +115,11 @@ struct Token
     double Number;
 };
 
-struct LexerResult
-{
-    bool IsSuccessful;
-    IPLError Error;
-};
-
-
 struct LexerSettings
 {
 	bool CreateWhitespaceTokens;
 	bool CreateCommentTokens;
 };
 
-LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings);
-LexerResult Tokenize(const char* code, IPLVector<Token>& tokens);
+IPLResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings);
+IPLResult Tokenize(const char* code, IPLVector<Token>& tokens);
