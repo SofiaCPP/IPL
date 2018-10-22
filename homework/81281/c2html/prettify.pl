@@ -3,11 +3,11 @@
 
 prettify(StreamTokens, PrettyStream):-
     removeAllWhites(StreamTokens, Plain),
-     % write(Plain),nl,write("Plain ------------"), nl,
+    % write(Plain),nl,write("Plain ------------"), nl,
     addNewLines(Plain, PlainWithNL),
-     % write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
+    % write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
     addSpaces(PlainWithNL, PlainWithNLnS),
-     % write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
+    % write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
     addTabs(PlainWithNLnS, PlainWithNLnSnT),
     % write(PlainWithNLnSnT),nl,write("PlainWithNLnSnT ------------"), nl,
     flattenMine(PlainWithNLnSnT, PrettyStream).
@@ -50,25 +50,23 @@ addNewLines([H|[]], Buff, [NewBuff|R]):-
     H = [H1|_], member(H1, [trightBrace]),
     append(Buff, [H, [execNL, "\n"]], NewBuff), !,
     addNewLines([], [], R).
-%if not {0,{;,{,,}0,};},
-addNewLines([H|T], Buff, [NewBuff|R]):-
-    H = [H1|_], member(H1, [tleftBrace, trightBrace]),
-    T = [[H2|_]|_],
-    \+ member(H2, [tnumber, tsemicolon, tcomma]),
-    append(Buff, [H, [execNL, "\n"]], NewBuff), !,
-    addNewLines(T, [], R).
 % if {0,{;,{,,}0,};},
-addNewLines([H|T], Buff, [NewBuff|R]):-
-    H = [H1|_], member(H1, [tleftBrace, trightBrace]),
-    T = [[H2|_]|_],
-    member(H2, [tnumber, tsemicolon, tcomma]),
-    append(Buff, [H], NewBuff), !,
-    addNewLines(T, [], R).
+addNewLines([H1, H2|T], Buff, R):-
+    H1 = [H11|_], member(H11, [tleftBrace, trightBrace]),
+    H2 = [H21|_], member(H21, [tnumber, tsemicolon, tcomma]),
+    append(Buff, [H1], NewBuff), !,
+    addNewLines([H2|T], NewBuff, R).
+%if not {0,{;,{,,}0,};},
+addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
+    H1 = [H11|_], member(H11, [tleftBrace, trightBrace]),
+    H2 = [H21|_], \+ member(H21, [tnumber, tsemicolon, tcomma]),
+    append(Buff, [H1, [execNL, "\n"]], NewBuff), !,
+    addNewLines([H2|T], [], R).
 % if function, while, for, if, else
-addNewLines([H, H2|T], Buff, [NewBuff|R]):-
-    H = [H1|_], member(H1, [tif, twhile, tfor]),
+addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
+    H1 = [H11|_], member(H11, [tif, twhile, tfor]),
     packTillRightParen(T, [], MyPart, Rest, 1),
-    append(Buff, [H, H2], NewB1),
+    append(Buff, [H1, H2], NewB1),
     append(NewB1, MyPart, NewBuff), !,
     addNewLines(Rest, [], R).
 % if function void m(){...}
@@ -87,11 +85,10 @@ addNewLines([H, H2|T], Buff, R):-
     append(Buff, [H], NewBuff), !,
     addNewLines([H2|T], NewBuff, R).
 % if #inclide
-addNewLines([H|T], Buff, [NewBuff|R]):-
-    H = [H1|_], member(H1, [tinclude]),
-    T = [H2|T1],
-    append(Buff, [H, H2, [execNL, "\n"]], NewBuff), !,
-    addNewLines(T1, [], R).
+addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
+    H1 = [H11|_], member(H11, [tinclude]),
+    append(Buff, [H1, H2, [execNL, "\n"]], NewBuff), !,
+    addNewLines(T, [], R).
 % if not any above just append them
 addNewLines([H|T], Buff, R):-
     H = [H1|_],
@@ -106,25 +103,54 @@ addNewLines(Tokens, PackedLines):- addNewLines(Tokens, [], PackedLines), !.
 
 %% Base
 addSpaces([], Buff, Buff):- !.
+%%  no spaces before and after '\n'
+addSpaces([H|T], Buff, Res):-
+    H = [H1|_], member(H1, [execNL]),
+    ((append(NewBuf, [[tspace, " "]], Buff),
+    append(NewBuf, [H], NewBuff));
+    (\+ append(_, [[tspace, " "]], Buff),
+    append(Buff, [H], NewBuff))), !,
+    addSpaces(T, NewBuff, Res).
+%% Before ',', ';' no space
+addSpaces([H|T], Buff, Res):-
+    H = [H1|_], member(H1, [tcomma, tsemicolon]),
+    append(NewBuf, [[tspace, " "]], Buff),
+    append(NewBuf, [H, [tspace, " "]], NewBuff), !,
+    addSpaces(T, NewBuff, Res).
+%% No space after (, [, {, function name
+addSpaces([H1|T], Buff, Res):-
+    H1 = [H11|_], member(H11, [tleftParen, tfunction, tleftBrace, tleftSqParen]),
+    append(Buff, [H1], NewBuff), !,
+    addSpaces(T, NewBuff, Res).
 %% i->mau();--
 addSpaces([H1|T], Buff, Res):-
-    H1 = [H11|_], member(H11, [tptr]),
+    H1 = [H11|_], member(H11, [tptr, execNL]),
     append(NewBuf, [_], Buff),
     append(NewBuf, [H1], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%% (*i, [*i same &
-addSpaces([H1, H2, H3|T], Buff, Res):-
-    H1 = [H11|_], member(H11, [tleftParen, tleftSqParen]),
-    H2 = [H21|_], member(H21, [tmultiply, tbitwiseAnd]),
-    H3 = [H31|_], member(H31, [tidentifier]),
-    append(Buff, [H1, H2, H3], NewBuff), !,
+%% some tokens before *i, &i
+addSpaces([H1, H2|T], Buff, Res):-
+    H1 = [H11|_], member(H11, [tmultiply, tbitwiseAnd]),
+    H2 = [H21|_], member(H21, [tidentifier]),
+    length(Buff, N), N >= 2,
+    append(_, [H3, H4], Buff),
+    H3 = [H31|_], \+ member(H31, [tnumber, tidentifier, trightParen, trightSqParen]),
+    H4 = [H41|_], member(H41, [tspace, tleftParen, tleftBrace, tleftSqParen]),
+    append(Buff, [H1, H2], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-%%, *i, ; *i
-addSpaces([H1, H2, H3|T], Buff, Res):-
-    H1 = [H11|_], member(H11, [tsemicolon, tcomma]),
-    H2 = [H21|_], member(H21, [tmultiply, tbitwiseAnd]),
-    H3 = [H31|_], member(H31, [tidentifier]),
-    append(Buff, [H1,[tspace, " "], H2, H3], NewBuff), !,
+%%  new line (*i, (&i
+addSpaces([H1, H2|T], Buff, Res):-
+    H1 = [H11|_], member(H11, [tmultiply, tbitwiseAnd]),
+    H2 = [H21|_], member(H21, [tidentifier]),
+    length(Buff, 1),
+    Buff = [[H31|_]], member(H31, [tleftParen, tleftBrace, tleftSqParen]),
+    append(Buff, [H1, H2], NewBuff), !,
+    addSpaces(T, NewBuff, Res).
+%% none before *i, &i
+addSpaces([H1, H2|T], [], Res):-
+    H1 = [H11|_], member(H11, [tmultiply, tbitwiseAnd]),
+    H2 = [H21|_], member(H21, [tidentifier]),
+    append([], [H1, H2], NewBuff), !,
     addSpaces(T, NewBuff, Res).
 %% i++, i--
 addSpaces([H1, H2|T], Buff, Res):-
@@ -138,71 +164,35 @@ addSpaces([H1, H2|T], Buff, Res):-
     H2 = [H21|_], member(H21, [tidentifier]),
     append(Buff, [H1], NewBuff), !,
     addSpaces([H2|T], NewBuff, Res).
-%% *i, &i
-addSpaces([H1, H2|T], [], Res):-
-    H1 = [H11|_], member(H11, [tmultiply, tbitwiseAnd]),
-    H2 = [H21|_], member(H21, [tidentifier]),
-    append([], [H1], NewBuff), !,
-    addSpaces([H2|T], NewBuff, Res).
-%% No space after ( and function name
-addSpaces([H1|T], Buff, Res):-
-    H1 = [H11|_], member(H11, [tleftParen, tfunction]),
-    append(Buff, [H1], NewBuff), !,
-    addSpaces(T, NewBuff, Res).
-%% "majhaaud830204ie1\n"
+%%  pack strings line "majhaaud830204ie1\n"
 addSpaces([H1|T], Buff, Res):-
     H1 = [H11, Lex], member(H11, [tquot, tdoubleQuot]),
     append(M, [[H11,Lex]|Rest], T),
     append(Buff, [H1|M], NewBuf),
     append(NewBuf, [[H11,Lex]], NewBuff), !,
     addSpaces(Rest, NewBuff, Res).
-%% [[({
-addSpaces([H1, H2|T], Buff, Res):-
-    H1 = [H11|_], member(H11, [tleftParen, tleftBrace, tleftSqParen]),
-    H2 = [H21|_], member(H21, [tleftParen, tleftBrace, tleftSqParen]),
-    append(Buff, [H1], NewBuff), !,
-    addSpaces([H2|T], NewBuff, Res).
 %% })]]
 addSpaces([H1, H2|T], Buff, Res):-
     H1 = [H11|_], member(H11, [trightParen, trightBrace, trightSqParen]),
     H2 = [H21|_], member(H21, [trightParen, trightBrace, trightSqParen]),
     append(Buff, [H1], NewBuff), !,
     addSpaces([H2|T], NewBuff, Res).
-% 0], 0}, a], a}, 1), a)
-addSpaces([H|T], Buff, Res):-
-    H = [H1|_], member(H1, [tnumber, tidentifier]),
-    T = [[H2|_]|_],
-    member(H2, [trightSqParen, trightBrace, trightParen]),
-    append(Buff, [H], NewBuff), !,
-    addSpaces(T, NewBuff, Res).
-% [0, {0, [a, {a, (1, (
-addSpaces([H1, H2|T], Buff, Res):-
-    H1 = [H11|_], member(H11, [tleftSqParen, tleftBrace, tleftParen]),
-    H2 = [H21|_], member(H21, [tnumber, tidentifier]),
-    append(Buff, [H1], NewBuff), !,
-    addSpaces([H2|T], NewBuff, Res).
+% 0], 0}, a], a}, 1), a), a][
+addSpaces([H1, H2, H3|T], Buff, Res):-
+    H1 = [H11|_], member(H11, [tnumber, tidentifier]),
+    H2 = [H21|_], member(H21, [trightParen, trightBrace, trightSqParen]),
+    H3 = [H31|_],
+    ((member(H31, [trightParen, trightBrace, trightSqParen, tleftSqParen]),
+    append(Buff, [H1, H2], NewBuff));
+    (\+ member(H31, [trightParen, trightBrace, trightSqParen]),
+    append(Buff, [H1, H2, [tspace, " "]], NewBuff))), !,
+    addSpaces([H3|T], NewBuff, Res).
 % a[..
 addSpaces([H1, H2|T], Buff, Res):-
     H1 = [H11|_], member(H11, [tidentifier]),
     H2 = [H21|_], member(H21, [tleftSqParen]),
     append(Buff, [H1], NewBuff), !,
     addSpaces([H2|T], NewBuff, Res).
-%%  no spaces before and after '\n'
-addSpaces([H|T], Buff, Res):-
-    H = [H1|_], member(H1, [execNL]),
-    ((append(NewBuf, [[tspace, " "]], Buff),
-    append(NewBuf, [H], NewBuff));
-    (\+ append(_, [[tspace, " "]], Buff),
-    append(Buff, [H], NewBuff))), !,
-    addSpaces(T, NewBuff, Res).
-%% Before ',' no space
-addSpaces([H|T], Buff, Res):-
-    H = [H1|_], member(H1, [tcomma, tsemicolon]),
-    ((append(NewBuf, [[tspace, " "]], Buff),
-    append(NewBuf, [H, [tspace, " "]], NewBuff));
-    (\+ append(_, [[tspace, " "]], Buff),
-    append(Buff, [H, [tspace, " "]], NewBuff))), !,
-    addSpaces(T, NewBuff, Res).
 %%  Else
 addSpaces([H|T], Buff, Res):-
     append(Buff, [H, [tspace, " "]], NewBuff), !,
