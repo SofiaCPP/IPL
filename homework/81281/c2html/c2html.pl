@@ -24,7 +24,7 @@ mainy(File, Number):-
     flattenMine(Tokens, TokenStream),
     ((Number == "0", PrettyCode = TokenStream);
     (Number == "1", prettify(TokenStream, Raw),
-     flattenMine(Raw, PrettyCode)));
+     flattenMine(Raw, PrettyCode));
     (Number == "2", prettify(TokenStream, Raw),
      identifyFunctionsAndStructures(Raw, RawF),
      flattenMine(RawF, PrettyCode))),
