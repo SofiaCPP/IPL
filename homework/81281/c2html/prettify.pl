@@ -29,8 +29,10 @@ packTillsemiColon([H|T], Buff, Res, Rest):-
 
 % Pack Till ; for cases like char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
 packTillsemiColonOnlyIdentifiers([[tsemicolon, ";"]|T], Buff, Buff, [[tsemicolon, ";"]|T]).
-packTillsemiColonOnlyIdentifiers([H|T], Buff, Res, Rest):- H = [H1|_], member(H1, [tidentifier, tcomma]),
-    append(Buff, [H], NewBuff), !,
+packTillsemiColonOnlyIdentifiers([H1, H2|T], Buff, Res, Rest):-
+    H1 = [H11|_], member(H11, [tcomma]),
+    H2 = [H21|_], member(H21, [tidentifier]),
+    append(Buff, [H1, H2], NewBuff), !,
     packTillsemiColonOnlyIdentifiers(T, NewBuff, Res, Rest).
 
 % Pack for while, if, for and function arguments
