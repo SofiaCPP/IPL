@@ -78,7 +78,21 @@
             <pre class="code"><span class="keyword">#include</span> <span class="string">&lt;stdio.h&gt;</span>
 <span class="keyword">#include</span> <span class="string">&lt;stdlib.h&gt;</span>
 <span class="keyword">#include</span> <span class="string">&lt;time.h&gt;</span>
-<span class="keyword">int</span> <span class="identifier">N</span> <span class="operator">=</span> <span class="number">0</span><span class="parenthese">;</span>
+<button class="collapsible"><span class="keyword">struct</span> <span class="identifier">Books</span>
+</span></button>
+<div class="content"><span class="parenthese">{</span>
+	<span class="keyword">char</span> <span class="identifier">title</span><span class="parenthese">[</span><span class="number">50</span><span class="parenthese">]</span><span class="parenthese">;</span>
+	<span class="keyword">char</span> <span class="identifier">author</span><span class="parenthese">[</span><span class="number">50</span><span class="parenthese">]</span><span class="parenthese">;</span>
+	<span class="keyword">char</span> <span class="identifier">subject</span><span class="parenthese">[</span><span class="number">100</span><span class="parenthese">]</span><span class="parenthese">;</span>
+	<span class="keyword">int</span> <span class="identifier">book_id</span><span class="parenthese">;</span>
+	<span class="function">Books</span><span class="parenthese">(</span><span class="parenthese">)</span>
+	<span class="parenthese">{</span>
+		<span class="function">printf</span><span class="parenthese">(</span><span class="quotation">"</span><span class="identifier">Hello</span><span class="identifier">\n</span><span class="quotation">"</span><span class="parenthese">)</span><span class="parenthese">;</span>
+	<span class="parenthese">}</span>
+
+<span class="parenthese">}</span> <span class="identifier">book</span><span class="parenthese">;</span>
+
+</div><span class="keyword">int</span> <span class="identifier">N</span> <span class="operator">=</span> <span class="number">0</span><span class="parenthese">;</span>
 <span class="keyword">int</span> <span class="identifier">a</span><span class="parenthese">[</span><span class="number">750001</span><span class="parenthese">]</span> <span class="operator">=</span> <span class="parenthese">{</span><span class="number">0</span><span class="parenthese">}</span><span class="parenthese">;</span>
 <span class="keyword">int</span> <span class="identifier">matrix</span><span class="parenthese">[</span><span class="number">3</span><span class="parenthese">]</span><span class="parenthese">[</span><span class="number">3</span><span class="parenthese">]</span> <span class="operator">=</span> <span class="parenthese">{</span><span class="parenthese">{</span><span class="number">0</span><span class="quotation">,</span> <span class="number">0</span><span class="quotation">,</span> <span class="number">0</span><span class="parenthese">}</span><span class="quotation">,</span> <span class="parenthese">{</span><span class="number">0</span><span class="quotation">,</span> <span class="number">1</span><span class="quotation">,</span> <span class="number">0</span><span class="parenthese">}</span><span class="quotation">,</span> <span class="parenthese">{</span><span class="number">0</span><span class="quotation">,</span> <span class="number">1</span><span class="quotation">,</span> <span class="number">1</span><span class="parenthese">}</span><span class="parenthese">}</span><span class="parenthese">;</span>
 <span class="keyword">int</span> <span class="identifier">arr</span><span class="parenthese">[</span><span class="number">3</span><span class="parenthese">]</span> <span class="operator">=</span> <span class="parenthese">{</span><span class="number">0</span><span class="quotation">,</span> <span class="number">0</span><span class="quotation">,</span> <span class="number">0</span><span class="parenthese">}</span><span class="parenthese">;</span>
