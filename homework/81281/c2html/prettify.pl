@@ -2,14 +2,14 @@
 
 prettify(StreamTokens, PrettyStream):-
     removeAllWhites(StreamTokens, Plain),
-    %  write(Plain),nl,write("Plain ------------"), nl,
+    % write(Plain),nl,write("Plain ------------"), nl,
     addNewLines(Plain, PlainWithNL),
-    % write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
+     % write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
     addSpaces(PlainWithNL, PlainWithNLnS),
-    % write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
+     % write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
     addTabs(PlainWithNLnS, PlainWithNLnSnT),
     % write(PlainWithNLnSnT),nl,write("PlainWithNLnSnT ------------"), nl,
-    identifyFunctions(PlainWithNLnSnT, IdentifiedFunctions),
+    identifyFunctionsAndStructures(PlainWithNLnSnT, IdentifiedFunctions),
     flattenMine(IdentifiedFunctions, PrettyStream).
     % write(PrettyStream).
     % write(PrettyStream), nl.
@@ -26,6 +26,12 @@ packTillsemiColon([[tsemicolon, ";"]|T], Buff, Buff, [[tsemicolon, ";"]|T]).
 packTillsemiColon([H|T], Buff, Res, Rest):-
     append(Buff, [H], NewBuff), !,
     packTillsemiColon(T, NewBuff, Res, Rest).
+
+% Pack Till ; for cases like char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
+packTillsemiColonOnlyIdentifiers([[tsemicolon, ";"]|T], Buff, Buff, [[tsemicolon, ";"]|T]).
+packTillsemiColonOnlyIdentifiers([H|T], Buff, Res, Rest):- H = [H1|_], member(H1, [tidentifier, tcomma]),
+    append(Buff, [H], NewBuff), !,
+    packTillsemiColonOnlyIdentifiers(T, NewBuff, Res, Rest).
 
 % Pack for while, if, for and function arguments
 packTillRightParen(Rest, Buff, Res, Rest, 0):-
@@ -51,6 +57,26 @@ addNewLines([H|T], Buff, [NewBuff|R]):-
     H = [H1|_], member(H1, [tsemicolon, tcomment1, tcomment2, telse]),
     append(Buff, [H, [execNL, "\n"]], NewBuff), !,
     addNewLines(T, [], R).
+% if struct
+addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
+    H1 = [H11|_], member(H11, [tstruct]),
+    H2 = [H21|_], member(H21, [tidentifier]),
+    append(Buff, [H1, H2, [execNL, "\n"]], NewBuff), !,
+    addNewLines(T, [], R).
+% if struct{ } id;
+addNewLines([H1, H2|T], Buff, R):-
+    H1 = [H11|_], member(H11, [trightBrace]),
+    H2 = [H21|_], member(H21, [tidentifier]),
+    packTillsemiColonOnlyIdentifiers(T, [], Res, Rest),
+    append(Buff, [H1, H2], NewBuf),
+    append(NewBuf, Res, NewBuff), !,
+    addNewLines(Rest, NewBuff, R).
+% if struct{ };
+addNewLines([H1, H2|T], Buff, R):-
+    H1 = [H11|_], member(H11, [trightBrace]),
+    H2 = [H21|_], member(H21, [tsemicolon]),
+    append(Buff, [H1, H2, [execNL, "\n"]], NewBuff), !,
+    addNewLines(T, NewBuff, R).
 % if char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
 addNewLines([H1, H2, H3|T], Buff, R):-
     H1 = [H11|_], member(H11, [tchar, tint, tdouble, tidentifier, tshort, tsigned, tunsigned, tenum, tfloat]),
@@ -128,9 +154,6 @@ addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
     addNewLines(T, [], R).
 % if not any above just append them
 addNewLines([H|T], Buff, R):-
-    H = [H1|_],
-    \+ member(H1, [tfunction, tsemicolon, tinclude, tif, telse, twhile,
-                    tfor, tcomment1, tcomment2, tleftBrace, trightBrace, tswitch]),
     append(Buff, [H], NewBuff), !,
     addNewLines(T, NewBuff, R).
 
@@ -299,8 +322,6 @@ addTabs([H|T], Tabs, Buff, Res, 1):-
     addTabs(T, NewTabs, NewBuff, Res, 0).
 % All other tokens
 addTabs([H|T], Tabs, Buff, Res, Bit):-
-    H = [[H1|_]|_],
-    \+ member(H1, [tleftBrace, tfor, twhile, tif, telse, trightBrace]),
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff), !,
     addTabs(T, Tabs, NewBuff, Res, Bit).
