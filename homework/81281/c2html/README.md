@@ -23,7 +23,7 @@
 [Script](./c2htmlrun.sh)
 
 ### If you are going to install SWI-Prolog on Windows 
-+ You can omit lines 6 to 16 from c2html.pl.
++ You can omit lines 6 to 17 from c2html.pl.
 + Afterward in order to execute the program you can call the main predicate and give it a valid string name of file.
 
 For example **mainy("test.c").**
