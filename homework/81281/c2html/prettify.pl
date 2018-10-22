@@ -1,16 +1,16 @@
 prettify(StreamTokens, PlainWithNLnSnT):-
     removeAllWhites(StreamTokens, Plain),
-    % write(Plain),nl,write("Plain ------------"), nl,
+     %write(Plain),nl,write("Plain ------------"), nl,
     addNewLines(Plain, PlainWithNL),
-     % write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
+    %  write(PlainWithNL),nl,write("PlainWithNL ------------"), nl,
     addSpaces(PlainWithNL, PlainWithNLnS),
-     % write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
+    %  write(PlainWithNLnS),nl,write("PlainWithNLnS ------------"), nl,
     addTabs(PlainWithNLnS, PlainWithNLnSnT).
     % write(PlainWithNLnSnT),nl,write("PlainWithNLnSnT ------------"), nl,
     % write(PrettyStream).
     % write(PrettyStream), nl.
 
-% Removes all white charachters and unknown
+% Removes all white charachters
 removeAllWhites([], []):- !.
 removeAllWhites([[H,_]|T], R):- member(H, [execTAB, tspace, execNL, tunknown]),
     removeAllWhites(T, R), !.
@@ -63,6 +63,13 @@ addNewLines([H1, H2|T], Buff, R):-
     append(Buff, [H1, H2], NewBuf),
     append(NewBuf, Res, NewBuff), !,
     addNewLines(Rest, NewBuff, R).
+% % if typedef ...
+% addNewLines([H1|T], Buff, R):-
+%     H1 = [H11|_], member(H11, [ttypedef]),
+%     packTillsemiColon(T, [], Res, Rest),
+%     append(Buff, [H1], NewBuf),
+%     append(NewBuf, Res, NewBuff), !,
+%     addNewLines(Rest, NewBuff, R).
 % if struct
 addNewLines([H1, H2, H3|T], Buff, [NewBuff|R]):-
     H1 = [H11|_], member(H11, [tstruct]),
