@@ -10,11 +10,11 @@ prettify(StreamTokens, PlainWithNLnSnT):-
     % write(PrettyStream).
     % write(PrettyStream), nl.
 
-% Removes all white charachters
+% Removes all white charachters and unknown
 removeAllWhites([], []):- !.
-removeAllWhites([[H,_]|T], R):- member(H, [execTAB, tspace, execNL]),
+removeAllWhites([[H,_]|T], R):- member(H, [execTAB, tspace, execNL, tunknown]),
     removeAllWhites(T, R), !.
-removeAllWhites([[H, B]|T], [[H, B]|R]):- \+ member(H, [execTAB, tspace, execNL]),
+removeAllWhites([[H, B]|T], [[H, B]|R]):- \+ member(H, [execTAB, tspace, execNL, tunknown]),
     removeAllWhites(T, R), !.
 
 % Pack Till ; for cases like char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
