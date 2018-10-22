@@ -739,13 +739,13 @@ ExpressionPtr Parser::Block()
 
 	if (Match(TokenType::LeftBrace))
 	{
-		if (Match(TokenType::RightBrace))
+		if (!Match(TokenType::RightBrace))
 		{
 			return BlockStatementsPrefix();
 		}
 		else
 		{
-			// TODO log error
+			// TODO log error - empty block?
 			assert(false);
 			return nullptr;
 		}
@@ -847,14 +847,30 @@ ExpressionPtr Parser::ForStatement()
 {
 	if (Match(TokenType::For))
 	{
+		if (!Match(TokenType::LeftParen))
+		{
+			assert(false);
+		}
 		auto initializer = Expression();
 		if (!initializer)
 		{
 			initializer = VariableDefinition();
 		}
+		if (!Match(TokenType::Semicolon))
+		{
+			assert(false);
+		}
 
 		auto cond = Expression();
+		if (!Match(TokenType::Semicolon))
+		{
+			assert(false);
+		}
 		auto iteration = Expression();
+		if (!Match(TokenType::RightParen))
+		{
+			assert(false);
+		}
 		auto body = Statement();
 		return IPLMakeSharePtr<::ForStatement>(initializer, cond, iteration, body);
 	}
