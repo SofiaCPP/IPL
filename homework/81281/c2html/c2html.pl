@@ -23,7 +23,7 @@ mainy(File, Number):-
     phrase(tokens(Tokens), CSource),
     flattenMine(Tokens, TokenStream),
     ((Number == "0", PrettyCode = TokenStream);
-    (Number == "1", prettify(TokenStream, Raw,
+    (Number == "1", prettify(TokenStream, Raw),
      flattenMine(Raw, PrettyCode)));
     (Number == "2", prettify(TokenStream, Raw),
      identifyFunctionsAndStructures(Raw, RawF),
