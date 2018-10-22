@@ -350,9 +350,10 @@ ExpressionPtr Parser::Unary()
 		TokenType::PlusPlus,
 		}))
 	{
+		auto op = Prev().Type;
 		auto ls = LeftSideExpression();
 		auto suffix = false;
-		return IPLMakeSharePtr<UnaryExpression>(ls, Prev().Type, suffix);
+		return IPLMakeSharePtr<UnaryExpression>(ls, op, suffix);
 	}
 	else if (MatchOneOf({
 		TokenType::Void,
