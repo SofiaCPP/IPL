@@ -3,13 +3,13 @@
 + ~~In this case it is C.~~
 ## Extend the xxx2html tool to:
 
-+ ~~Produce pretty-printed html.~~(Still testing, but almoast finished.)
++ ~~Produce pretty-printed html.~~
 
 + **TODO:** bonus: support line length limit
 
 + **TODO:** Produce html where functions have their background colored depending on cyclomatic complexity ranging from light green to light read.
 
-+ **TODO:** Produce html where control structures can be collapsed.
++ ~~Produce html where control structures can be collapsed.~~
 
 ### How to install and use SWI-Prolog
 
