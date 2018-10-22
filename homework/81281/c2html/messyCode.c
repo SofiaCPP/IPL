@@ -3,7 +3,10 @@
 #include <time.h>
 int N = 0;
 int a[750001] = {0};
+
 int matrix[3][3] = {{0, 0, 0}, {0, 1, 0}, {0, 1, 1}};
+int arr[3] = {0, 0, 0};
+char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
 /*Problem Secrect DAA
 /// lalalallala
 */
@@ -23,7 +26,15 @@ int pivot = a[randIdx];
 
 swap(&a[l], &a[randIdx]);
 int ind = l;for (int i = l + 1; i < r; i++)
-{if (a[i] <= pivot){ind++;swap(&a[i], &a[ind]);}
+{if (a[i] <= pivot){ind++;swap(&a[i], &a[ind]);
+                   switch (allala)
+    {
+        case 0:
+            o = 9;
+            break;
+        default:
+            break;
+    }}
 }
 
 swap(&a[l], &a[ind]);
