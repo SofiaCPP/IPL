@@ -9,11 +9,37 @@ struct Books
     char author[50];
     char subject[100];
     int book_id;
-    Books() { printf("Hello\n"); }
+    void dummy() { printf("Hello\n"); }
 } book;
-int matrix[3][3] = {{0, 0, 0}, {0, 1, 0}, {0, 1, 1}};
-int arr[3] = {0, 0, 0};
-char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
+
+typedef struct temp
+{
+    int a;
+
+} classTemp;
+
+void classTemp_GetData(classTemp* pThis)
+{
+    printf("Enter value of a : ");
+    scanf("%d", &(pThis->a));
+}
+
+classTemp T;
+
+struct point* biggest_point(size_t size,
+                            struct point* points,
+                            struct point* (*point_compare)(struct point* a,
+                                                           struct point* b))
+{
+    int i;
+    struct point* biggest = NULL;
+
+    for (i = 0; i < size; i++)
+    {
+        biggest = point_compare(biggest, points + i);
+    }
+    return biggest;
+}
 /*Problem Secrect DAA
 /// lalalallala
 */
