@@ -7,21 +7,27 @@
 
 main :-
     current_prolog_flag(argv, Argv),
-    Argv = [H|_],
-    atom_string(H, File),
-    mainy(File),
+    Argv = [H1, H2|_],
+    atom_string(H1, File),
+    atom_string(H2, Number),
+    mainy(File, Number),
     format('You can see the result in the html file.~n'),
     halt.
 main :-
     halt(1).
 
-mainy(File):-
+mainy(File, Number):-
     open(File, read, RFile),
     read_stream_to_codes(RFile, CSource),
     close(RFile),
     phrase(tokens(Tokens), CSource),
     flattenMine(Tokens, TokenStream),
-    prettify(TokenStream, PrettyStream),
+    ((Number == "0", PrettyCode = TokenStream);
+    (Number == "1", prettify(TokenStream, Raw,
+     flattenMine(Raw, PrettyCode)));
+    (Number == "2", prettify(TokenStream, Raw),
+     identifyFunctionsAndStructures(Raw, RawF),
+     flattenMine(RawF, PrettyCode))),
     open('page.html', write, WFile),
      write(WFile,'<!doctype>
     <html>
@@ -101,7 +107,7 @@ mainy(File):-
 
         <body>
             <pre class=\"code\">'),
-    tohtmlfile(WFile, PrettyStream),
+    tohtmlfile(WFile, PrettyCode),
     write(WFile, ' <script>
                     var coll = document.getElementsByClassName(\"collapsible\");
                     var i;
