@@ -24,7 +24,7 @@ this example, let your golang source be 'hello_world.go'.
 2. Produce the highlighted html output
 
 ```
-./lex hello_world.go > hello_world.html
+./lexer hello_world.go > hello_world.html
 ```
 
 ## Enjoy
