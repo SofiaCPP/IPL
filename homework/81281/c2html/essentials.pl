@@ -10,29 +10,30 @@ flattenElem([H|T], [[H|T]]):- is_list(H), H = [H1|_], is_list(H1), !.
 identifyFunctionsAndStructures([], []):- !.
 identifyFunctionsAndStructures([H|T], [NewH|R]):-
     \+ append(_, [[ttypedef|_]|_], H),
-    append(_, [[tstruct|_]|_], H),
+    append(_, [[Token|_]|_], H),
+    member(Token, [tdo, tfor, twhile, tif, telse, tswitch, tfunction, tstruct]),
+
     T = [T1|T2],
-    T1 == [[tleftBrace, "{"], [execNL, "\n"]],
+    append(T11, [[tleftBrace, "{"], [execNL, "\n"]], T1),
+    \+ ((member(M, T11), M \= [execTAB, "\t"])),
     gatherBody(T2, [], PackedStructBody, Rest, 1),
-    append([H, T1], PackedStructBody, NewH), !,
-    identifyFunctionsAndStructures(Rest, R).
-identifyFunctionsAndStructures([H|T], [NewH|R]):-
-    append(_, [[tfunction|_]|_], H),
-    T = [T1|T2],
-    T1 == [[tleftBrace, "{"], [execNL, "\n"]],
-    gatherBody(T2, [], PackedFunctionBody, Rest, 1),
-    append([H, T1], PackedFunctionBody, NewH), !,
+    identifyFunctionsAndStructures(PackedStructBody, Result),
+    append([H, T1], Result, NewH), !,
     identifyFunctionsAndStructures(Rest, R).
 identifyFunctionsAndStructures([H|T], [H|R]):- !,
     identifyFunctionsAndStructures(T, R).
 
+
+
 gatherBody(Rest, Res, Res, Rest, 0):- !.
 gatherBody([H|T], Buff, Res, Rest, N):-
-    N =\= 0, H = [[H11|_]|_], H11 == tleftBrace, !,
-    append(Buff, [H], NewBuff), N1 is N + 1,
+    N =\= 0, append(H1, [[tleftBrace, "{"]|_], H),
+    \+ ((member(M, H1), M \= [execTAB, "\t"])),
+    append(Buff, [H], NewBuff), N1 is N + 1, !,
     gatherBody(T, NewBuff, Res, Rest, N1).
 gatherBody([H|T], Buff, Res, Rest, N):-
-    N =\= 0, H = [[H11|_]|_], H11 == trightBrace, !,
+    N =\= 0, append(H1, [[trightBrace, "}"]|_], H),
+    \+ ((member(M, H1), M \= [execTAB, "\t"])),
     append(Buff, [H], NewBuff), N1 is N - 1, !,
     gatherBody(T, NewBuff, Res, Rest, N1).
 gatherBody([H|T], Buff, Res, Rest, N):-
