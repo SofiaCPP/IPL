@@ -9,7 +9,14 @@ struct Books
     char author[50];
     char subject[100];
     int book_id;
-    void dummy() { printf("Hello\n"); }
+    void dummy()
+    {
+        printf("Hello\n");
+        for (size_t i = 0; i < count; i++)
+        {
+            /*yes*/
+        }
+    }
 } book;
 
 typedef struct temp
