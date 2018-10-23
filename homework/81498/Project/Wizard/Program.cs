@@ -16,12 +16,12 @@ namespace Wizard
             string path = "E:\\IPL\\homework\\81498\\Project\\Wizard\\Wizard\\Text files\\";
             string fileName = "";
             //string currentDirectory = Directory.Move(); // finish
-            Console.WriteLine(currentDirectory);
+            //Console.WriteLine(currentDirectory);
             Console.WriteLine("Please Enter file name with js extension from the \"Text Files\" folder: \n");
             fileName = Console.ReadLine();
             path += fileName;
 
-            using (var reader = new StreamReader(path))
+            using (var reader = new StreamReader(fileName))
             {
                 while (!reader.EndOfStream)
                 {
