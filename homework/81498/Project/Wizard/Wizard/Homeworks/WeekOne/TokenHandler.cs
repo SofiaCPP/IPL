@@ -12,7 +12,7 @@ namespace Wizard.Homeworks
     public class TokenHandler
     {
         private List<Token> _tokens;
-        private List<TokenType> _booleanOperatorAsTokenTypes;
+        private List<TokenType> _operatorsAsTokenList;
         private List<TokenType> _keywordsAsTokenTypes;
 
         public string FileDestination { get; set; }
@@ -22,7 +22,7 @@ namespace Wizard.Homeworks
             _tokens = tokens;
             FileDestination = fileDestionation;
 
-            _booleanOperatorAsTokenTypes = BooleanOperatorsTokenTypes.AsList();
+            _operatorsAsTokenList = OperatorsToTokens.AsTokenList();
             _keywordsAsTokenTypes = KeywordsToTokens.AsTokenList();
         }
 
@@ -40,22 +40,26 @@ namespace Wizard.Homeworks
             {
                 foreach (var token in _tokens)
                 {
+                    string coloredLexeme = "";
                     if (token.Type is TokenType.True ||
                        token.Type is TokenType.False)
                     {
-                        writer.Write("<span><font color=\"#FF0000\">" + token.Lexeme + "</font></span>"); // red
+                        coloredLexeme = "<span><font color=\"" + Color.ForBoolean + "\">" + token.Lexeme + "</font></span>";
+                        writer.Write(coloredLexeme);
                         continue;
                     }
 
-                    if (_booleanOperatorAsTokenTypes.Contains(token.Type))
+                    if (_operatorsAsTokenList.Contains(token.Type))
                     {
-                        writer.Write("<span><font color=\"#444444\"><b>" + token.Lexeme + "</b></font></span>"); // more
+                        coloredLexeme = "<span><font color=\"" + Color.ForBooleanOperator + "\"><b>" + token.Lexeme + "</b></font></span>";
+                        writer.Write(coloredLexeme); // more
                         continue;
                     }
 
                     if (_keywordsAsTokenTypes.Contains(token.Type))
                     {
-                        writer.Write("<span><font color=\"#6062AC\">" + token.Lexeme + "</font></span>"); // more
+                        coloredLexeme = "<span><font color=\"" + Color.ForKeyword + "\">" + token.Lexeme + "</font></span>";
+                        writer.Write(coloredLexeme); // more
                         continue;
                     }
 
@@ -66,16 +70,20 @@ namespace Wizard.Homeworks
                             break;
                         case TokenType.Newline: writer.Write("<br>"); break;
                         case TokenType.String: // more
-                            writer.Write("<span><font color=\"#4E409A\">\"" + token.Lexeme + "\"</font></span>");
+                            coloredLexeme = "<span><font color=\"" + Color.ForString + "\">\"" + token.Lexeme + "\"</font></span>";
+                            writer.Write(coloredLexeme);
                             break;
                         case TokenType.Number:
-                            writer.Write("<span><font color=\"#FEC051\">" + token.Lexeme + "</font></span>");
+                            coloredLexeme = "<span><font color=\"" + Color.ForNumber + "\">" + token.Lexeme + "</font></span>";
+                            writer.Write(coloredLexeme);
                             break;
                         case TokenType.Identifier:
-                            writer.Write("<span><font color=\"#8BBCDA\">" + token.Lexeme + "</font></span>");
+                            coloredLexeme = "<span><font color=\"" + Color.ForIdentifier + "\">" + token.Lexeme + "</font></span>";
+                            writer.Write(coloredLexeme);
                             break;
                         default:
-                            writer.Write("<span><font color=\"#000000\">" + token.Lexeme + "</font></span>");
+                            coloredLexeme = "<span><font color=\"" + Color.ForDefault + "\">" + token.Lexeme + "</font></span>";
+                            writer.Write(coloredLexeme);
                             break;
                     }
                 }

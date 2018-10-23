@@ -52,43 +52,7 @@ namespace Wizard.Misc
         }
         public static List<TokenType> AsTokenList()
         {
-            return new List<TokenType>()
-            {
-                TokenType.Break,
-                TokenType.Case,
-                TokenType.Catch,
-                TokenType.Class,
-                TokenType.Const,
-                TokenType.Continue,
-                TokenType.Debugger,
-                TokenType.Default,
-                TokenType.Delete,
-                TokenType.Do,
-                TokenType.Else,
-                TokenType.Export,
-                TokenType.Extends,
-                TokenType.Finally,
-                TokenType.For,
-                TokenType.Function,
-                TokenType.If,
-                TokenType.Import,
-                TokenType.In,
-                TokenType.Instanceof,
-                TokenType.Let,
-                TokenType.New,
-                TokenType.Return,
-                TokenType.Super,
-                TokenType.Switch,
-                TokenType.This,
-                TokenType.Throw,
-                TokenType.Try,
-                TokenType.Typeof,
-                TokenType.Var,
-                TokenType.Void,
-                TokenType.While,
-                TokenType.With,
-                TokenType.Yield
-            };
+            return AsMap().Values.ToList();
         }
     }
 }

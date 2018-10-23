@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Homeworks\WeekOne\BooleanOperatorsTokenTypes.cs" />
+    <Compile Include="Homeworks\WeekOne\Colour.cs" />
     <Compile Include="Homeworks\WeekOne\TokenHandler.cs" />
     <Compile Include="Misc\KeywordsToTokensMap.cs" />
     <Compile Include="Misc\OperatorsToTokensMap.cs" />

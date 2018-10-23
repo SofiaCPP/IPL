@@ -12,6 +12,18 @@ namespace Wizard.Misc
         {
             return new Dictionary<string, TokenType>()
             {
+                {"!" ,TokenType.Bang},
+                {"=" ,TokenType.Equal},
+                {"|" ,TokenType.BitwiseOr},
+                {"&" ,TokenType.BitwiseAnd},
+                {">" ,TokenType.Greater},
+                {"<" ,TokenType.Less},
+                {"+" ,TokenType.Plus},
+                {"-" ,TokenType.Minus},
+                {"*" ,TokenType.Star},
+                {"/" ,TokenType.Division},
+                {"%" ,TokenType.Modulo},
+
                 {"!=" ,TokenType.BangEqual},
                 {"/=" ,TokenType.DivideEqual},
                 {"!!" ,TokenType.DoubleBang},
@@ -32,6 +44,11 @@ namespace Wizard.Misc
                 {"!==" ,TokenType.StrictNotEqual},
                 {"**=" ,TokenType.DoubleStarEqual},
             };
+        }
+
+        public static List<TokenType> AsTokenList()
+        {
+            return AsMap().Values.ToList();
         }
     }
 }
