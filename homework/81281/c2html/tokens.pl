@@ -34,7 +34,7 @@ token([twhile, "while" ]) --> "while", !.
 token([tinclude, "#include" ]) --> "#include", !.
 
 token([tcomment1, IA]) --> comment1(I), !,
-    {atom_chars(IA,I)}.
+    { append(_, [_], I), atom_chars(IA,I)}.
 
 %% Handling windows written files with "\r\n"
 token([[tcomment2, IA], [execNL, '\n']]) --> comment2(I), !,
@@ -145,11 +145,10 @@ prFT([C|Cs]) --> [C], {char_code('%', C)}, !,
 pr([C]) --> [C], {char_type(C, csym)}.
 
 comment1([C1,C2|Cs]) --> [C1,C2], {char_code('/', C1), char_code('*', C2)}, !,
-    anything(Cs),
-    {append(_,[C3,C4],Cs), char_code('*', C3), char_code('/', C4)}.
+    anythingButStarSlash(Cs).
 
 comment2([C1,C2|Cs]) --> [C1,C2], {char_code('/', C1), char_code('/', C2)}, !,
-    anytingButNL(Cs).
+    anythingButNL(Cs).
 
 anything([C|Cs]) --> [C], anything(Cs).
 anything([]) --> [].
@@ -158,11 +157,19 @@ allThatIsNotAToken([C|Cs]) --> [C|Cs], \+ tokens(C), \+ tokens([C|Cs]),
     allThatIsNotAToken(Cs).
 allThatIsNotAToken([]) --> [].
 
-anytingButNL([C|Cs]) --> [C],
-    {\+ char_code('\r', C), \+ char_code('\n', C)}, anytingButNL(Cs).
-anytingButNL([C1,C2|_]) --> [C1,C2],
+anythingButNL([C|Cs]) --> [C],
+    {\+ char_code('\r', C), \+ char_code('\n', C)},
+    anythingButNL(Cs).
+anythingButNL([C1,C2|_]) --> [C1,C2],
     {(char_code('\r', C1),  char_code('\n', C2));
     (\+ char_code('\r', C1),  char_code('\n', C2))}.
+
+
+anythingButStarSlash([C1,C2|_]) --> [C1, C2],
+    {char_code('*', C1),  char_code('/', C2)}.
+anythingButStarSlash([C|Cs]) --> [C],
+    anythingButStarSlash(Cs).
+
 
 
 %% Definitions of lists of different types of tokens
@@ -186,7 +193,9 @@ is_number([H,_]):- member(H, [tnumber, ttypesPrintF]).
 
 is_function([H,_]):- member(H, [tfunction]).
 
-is_functionAndBodyOrStructureAndBody([H|_]):- is_list(H).
+is_controlStructureBody([H|_]):-
+    member(Token, [tdo, tfor, twhile, tif, telse, tswitch, tfunction, tstruct]),
+    append(_, [[Token|_]|_], H).
 
 is_identifier([H,_]):- member(H, [tidentifier, tnl, ttab]).
 
