@@ -13,13 +13,12 @@ namespace Wizard
         static void Main(string[] args)
         {
             string programAsText = "";
-            string path = "E:\\IPL\\homework\\81498\\Project\\Wizard\\Wizard\\Text files\\";
             string fileName = "";
-            //string currentDirectory = Directory.Move(); // finish
-            //Console.WriteLine(currentDirectory);
-            Console.WriteLine("Please Enter file name with js extension from the \"Text Files\" folder: \n");
+
+            Console.WriteLine("Please Enter absolute path for the text file(sorry): \n");
             fileName = Console.ReadLine();
-            path += fileName;
+
+            Console.WriteLine("The html will be generated with name semi_pretty.html");
 
             using (var reader = new StreamReader(fileName))
             {
@@ -30,14 +29,12 @@ namespace Wizard
                 }
             }
 
-            var tokenizer = new Lexer(programAsText, path);
+            var tokenizer = new Lexer(programAsText, fileName);
             var tokens = tokenizer.GenerateTokens();
 
-            var printToPath = "E:\\IPL\\homework\\81498\\Project\\Wizard\\Wizard\\Text files\\" +
-                fileName.Remove(fileName.Length - 2, 2) + "html";
-
+            var printToPath = "semi_pretty.html";
             var tokenHandler = new TokenHandler(tokens, printToPath);
-            tokenHandler.PrintTokens();
+            //tokenHandler.PrintTokens();
             tokenHandler.PrettyPrint(printToPath);
 
         }
