@@ -15,7 +15,7 @@ identifyControlStructures([H|T], [NewH|R]):-
 
     T = [T1|T2],
     append(T11, [[tleftBrace, "{"], [execNL, "\n"]], T1),
-    \+ ((member(M, T11), M \= [execTAB, "\t"])),
+    \+ ((member(M, T11), M \= [execTAB, "\s\s\s\s"])),
     gatherBody(T2, [], PackedStructBody, Rest, 1),
     identifyControlStructures(PackedStructBody, Result),
     append([H, T1], Result, NewH), !,
@@ -28,12 +28,12 @@ identifyControlStructures([H|T], [H|R]):- !,
 gatherBody(Rest, Res, Res, Rest, 0):- !.
 gatherBody([H|T], Buff, Res, Rest, N):-
     N =\= 0, append(H1, [[tleftBrace, "{"]|_], H),
-    \+ ((member(M, H1), M \= [execTAB, "\t"])),
+    \+ ((member(M, H1), M \= [execTAB, "\s\s\s\s"])),
     append(Buff, [H], NewBuff), N1 is N + 1, !,
     gatherBody(T, NewBuff, Res, Rest, N1).
 gatherBody([H|T], Buff, Res, Rest, N):-
     N =\= 0, append(H1, [[trightBrace, "}"]|_], H),
-    \+ ((member(M, H1), M \= [execTAB, "\t"])),
+    \+ ((member(M, H1), M \= [execTAB, "\s\s\s\s"])),
     append(Buff, [H], NewBuff), N1 is N - 1, !,
     gatherBody(T, NewBuff, Res, Rest, N1).
 gatherBody([H|T], Buff, Res, Rest, N):-
