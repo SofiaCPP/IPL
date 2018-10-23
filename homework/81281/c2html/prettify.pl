@@ -287,13 +287,13 @@ addTabs([H|T], Tabs, Buff, Res, Bit):-
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff),
     H1 == tleftBrace,
-    append(Tabs, [[execTAB, "\t"]], NewTabs), !,
+    append(Tabs, [[execTAB, "\s\s\s\s"]], NewTabs), !,
     addTabs(T, NewTabs, NewBuff, Res, Bit).
 % Closing trightBrace and a little newline for readability
 addTabs([H|T], Tabs, Buff, Res, Bit):-
     H = [[H1|_]|_],
     H1 == trightBrace,
-    append(NewTabs, [[execTAB, "\t"]], Tabs),
+    append(NewTabs, [[execTAB, "\s\s\s\s"]], Tabs),
     append(NewTabs, H, NewH1),
     append(NewH1, [[execNL, "\n"]], NewH),
     append(Buff,[NewH], NewBuff), !,
@@ -306,7 +306,7 @@ addTabs([H|T], Tabs, Buff, Res, Bit):-
     H2 = [H21|_],
     H21 \= tleftBrace,
     append(Tabs, H, NewH),
-    append([[execTAB, "\t"]|Tabs], [H2|HR], AfterH),
+    append([[execTAB, "\s\s\s\s"]|Tabs], [H2|HR], AfterH),
     append(Buff,[NewH, AfterH], NewBuff), !,
     addTabs(TR, Tabs, NewBuff, Res, Bit).
 % Ordinary case
@@ -324,7 +324,7 @@ addTabs([H|T], Tabs, Buff, Res, 0):-
     member(H1, [tcase, tdefault]),
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff),
-    append(Tabs, [[execTAB, "\t"]], NewTabs), !,
+    append(Tabs, [[execTAB, "\s\s\s\s"]], NewTabs), !,
     addTabs(T, NewTabs, NewBuff, Res, 1).
 % Ordinary case
 addTabs([H|T], Tabs, Buff, Res, 1):-
@@ -332,7 +332,7 @@ addTabs([H|T], Tabs, Buff, Res, 1):-
     member(H1, [tbreak]),
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff),
-    append(NewTabs, [[execTAB, "\t"]], Tabs), !,
+    append(NewTabs, [[execTAB, "\s\s\s\s"]], Tabs), !,
     addTabs(T, NewTabs, NewBuff, Res, 0).
 % All other tokens
 addTabs([H|T], Tabs, Buff, Res, Bit):-
