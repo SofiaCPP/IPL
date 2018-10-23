@@ -7,8 +7,8 @@ flattenElem([H|T], [[H|T]]):- \+ is_list(H), !.
 flattenElem([H|T], [H|T]):- is_list(H), H = [H1|_], \+ is_list(H1), !.
 flattenElem([H|T], [[H|T]]):- is_list(H), H = [H1|_], is_list(H1), !.
 
-identifyFunctionsAndStructures([], []):- !.
-identifyFunctionsAndStructures([H|T], [NewH|R]):-
+identifyControlStructures([], []):- !.
+identifyControlStructures([H|T], [NewH|R]):-
     \+ append(_, [[ttypedef|_]|_], H),
     append(_, [[Token|_]|_], H),
     member(Token, [tdo, tfor, twhile, tif, telse, tswitch, tfunction, tstruct]),
@@ -17,11 +17,11 @@ identifyFunctionsAndStructures([H|T], [NewH|R]):-
     append(T11, [[tleftBrace, "{"], [execNL, "\n"]], T1),
     \+ ((member(M, T11), M \= [execTAB, "\t"])),
     gatherBody(T2, [], PackedStructBody, Rest, 1),
-    identifyFunctionsAndStructures(PackedStructBody, Result),
+    identifyControlStructures(PackedStructBody, Result),
     append([H, T1], Result, NewH), !,
-    identifyFunctionsAndStructures(Rest, R).
-identifyFunctionsAndStructures([H|T], [H|R]):- !,
-    identifyFunctionsAndStructures(T, R).
+    identifyControlStructures(Rest, R).
+identifyControlStructures([H|T], [H|R]):- !,
+    identifyControlStructures(T, R).
 
 
 
