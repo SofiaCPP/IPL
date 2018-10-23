@@ -78,7 +78,7 @@ tohtmlfile(Stream, [H|T]) :- is_comment(H), H = [_,Lexem],
     !,
     tohtmlfile(Stream, T).
 
-tohtmlfile(Stream, [H|T]) :- is_functionAndBodyOrStructureAndBody(H),
+tohtmlfile(Stream, [H|T]) :- is_controlStructureBody(H),
     write(Stream, '<button class=\"collapsible\">'),
     H = [H1|T1],
     tohtmlfile(Stream, H1),
@@ -89,10 +89,15 @@ tohtmlfile(Stream, [H|T]) :- is_functionAndBodyOrStructureAndBody(H),
     !,
     tohtmlfile(Stream, T).
 
+
 tohtmlfile(Stream, [H|T]) :- is_blank(H), H = [_,Lexem],
     write(Stream, Lexem),
     !,
     tohtmlfile(Stream, T).
 
+
+
 helper(_, []).
+helper(Stream, L):- append(A, [H|B], L), is_controlStructureBody(H),
+    helper(Stream,A), tohtmlfile(Stream, [H]), helper(Stream,B).
 helper(Stream, [H|T]):- tohtmlfile(Stream, H), helper(Stream, T).
