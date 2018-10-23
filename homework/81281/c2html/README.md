@@ -9,9 +9,7 @@
 
 + **TODO:** Produce html where functions have their background colored depending on cyclomatic complexity ranging from light green to light read.
 
-+ Produce html where control structures can be collapsed. 
-**DONE:** functions and structures. 
-**TODO:** loops (while, for, do-while), if-else, switch and methods of structures.
++ ~~Produce html where control structures can be collapsed.~~
 
 ### How to install and use SWI-Prolog
 
