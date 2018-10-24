@@ -96,5 +96,15 @@ The FSA has for each (state, next token) -> (action, next state)
 https://github.com/SofiaCPP/IPL/blob/master/demo/bison/calc/parser.y
 
 ---
+### Understanding the parser
+
+https://www.gnu.org/software/bison/manual/html_node/Debugging.html#Debugging
+
+---
+###
+
+[bison output for the expression grammar](parser)
+
+---
 # ?
 
