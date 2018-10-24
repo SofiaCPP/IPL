@@ -10,6 +10,7 @@
 #define OPERATOR_COLOR "#f49541"
 #define NUMBER_COLOR "#bab103"
 #define STRING_COLOR "#ff11bf"
+#define RUNE_COLOR "#5abc00"
 #define CONST_COLOR "#f94040"
 #define	COMMENT_COLOR "#0b8700"
 
@@ -60,6 +61,10 @@ IPLResult Highlight(std::ifstream& infile, std::ostream& out)
 		"\n"
 		".string {\n"
   			"color: " << STRING_COLOR << ";\n"
+		"}\n"
+		"\n"
+		".rune {\n"
+			"color: " << RUNE_COLOR << ";\n"
 		"}\n"
 		"\n"
 		".const {\n"
@@ -190,10 +195,6 @@ IPLResult Highlight(std::ifstream& infile, std::ostream& out)
 
 					PrintToken(token, "const", out);
 					break;
-
-				case TokenType::Whitespace:
-
-					PrintToken(token, "", out);
 
 				case TokenType::Comment:
 

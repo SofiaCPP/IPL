@@ -641,7 +641,11 @@ Token Tokenizer::NextToken()
 	const auto& string = ParseString();
 	if (IsStateSuccess())
 	{
-		return ProduceToken(TokenType::String, string);
+		if (string.length() != 1)
+		{
+			return ProduceToken(TokenType::String, string);
+		}
+		return ProduceToken(TokenType::Rune, string);
 	}
 	else if (IsStateError())
 	{

@@ -94,7 +94,7 @@ enum class TokenType
     Float,
     ImaginaryNum, // not really supported ATM
     String,
-    // -> runes(?)
+    Rune,
 
     True,
     False,
