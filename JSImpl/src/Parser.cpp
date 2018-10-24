@@ -350,9 +350,10 @@ ExpressionPtr Parser::Unary()
 		TokenType::PlusPlus,
 		}))
 	{
+		auto op = Prev().Type;
 		auto ls = LeftSideExpression();
 		auto suffix = false;
-		return IPLMakeSharePtr<UnaryExpression>(ls, Prev().Type, suffix);
+		return IPLMakeSharePtr<UnaryExpression>(ls, op, suffix);
 	}
 	else if (MatchOneOf({
 		TokenType::Void,
@@ -649,22 +650,23 @@ ExpressionPtr Parser::Expression()
 
 ExpressionPtr Parser::Statement()
 {
-	if (auto result = EmptyStatement()) return result;
-	else if(auto result = VariableDefinition()) return result;
-	else if(auto result = Block()) return result;
-	else if(auto result = LabeledStatement()) return result;
-	else if(auto result = IfStatementfull()) return result;
-	else if(auto result = SwitchStatement()) return result;
-	else if(auto result = DoStatement()) return result;
-	else if(auto result = WhileStatement()) return result;
-	else if(auto result = ForStatement()) return result;
-	else if(auto result = WithStatement()) return result;
-	else if(auto result = ContinueStatement()) return result;
-	else if(auto result = BreakStatement()) return result;
-	else if(auto result = OptionalLabel()) return result;
-	else if(auto result = ReturnStatement()) return result;
-	else if(auto result = TryStatement()) return result;
-	return nullptr;
+	ExpressionPtr result;
+	if (result = EmptyStatement()) return result;
+	else if(result = VariableDefinition()) return result;
+	else if(result = Block()) return result;
+	else if(result = LabeledStatement()) return result;
+	else if(result = IfStatementfull()) return result;
+	else if(result = SwitchStatement()) return result;
+	else if(result = DoStatement()) return result;
+	else if(result = WhileStatement()) return result;
+	else if(result = ForStatement()) return result;
+	else if(result = WithStatement()) return result;
+	else if(result = ContinueStatement()) return result;
+	else if(result = BreakStatement()) return result;
+	else if(result = OptionalLabel()) return result;
+	else if(result = ReturnStatement()) return result;
+	else if(result = TryStatement()) return result;
+	return result;
 }
 
 ExpressionPtr Parser::EmptyStatement()
@@ -738,13 +740,13 @@ ExpressionPtr Parser::Block()
 
 	if (Match(TokenType::LeftBrace))
 	{
-		if (Match(TokenType::RightBrace))
+		if (!Match(TokenType::RightBrace))
 		{
 			return BlockStatementsPrefix();
 		}
 		else
 		{
-			// TODO log error
+			// TODO log error - empty block?
 			assert(false);
 			return nullptr;
 		}
@@ -846,14 +848,30 @@ ExpressionPtr Parser::ForStatement()
 {
 	if (Match(TokenType::For))
 	{
+		if (!Match(TokenType::LeftParen))
+		{
+			assert(false);
+		}
 		auto initializer = Expression();
 		if (!initializer)
 		{
 			initializer = VariableDefinition();
 		}
+		if (!Match(TokenType::Semicolon))
+		{
+			assert(false);
+		}
 
 		auto cond = Expression();
+		if (!Match(TokenType::Semicolon))
+		{
+			assert(false);
+		}
 		auto iteration = Expression();
+		if (!Match(TokenType::RightParen))
+		{
+			assert(false);
+		}
 		auto body = Statement();
 		return IPLMakeSharePtr<::ForStatement>(initializer, cond, iteration, body);
 	}
