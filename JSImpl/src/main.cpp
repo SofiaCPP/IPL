@@ -217,7 +217,7 @@ void RunParseCalc()
         std::cout << result.top() << std::endl;
         result.pop();
     }
-	std::cout << "S = " << i.ModifyVariable("i") << std::endl;
+	std::cout << "S = " << i.ModifyVariable("s") << std::endl;
 }
 
 void TestHexNumber()
