@@ -5,12 +5,15 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSImpl", "JSImpl.vcxproj", "{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JS.Common", "..\JS.Common\JS.Common.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JS.Common", "..\projects\JS.Common\JS.Common.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestApp", "..\projects\TestApp\TestApp.vcxproj", "{05DB0989-2720-45CC-8689-2FF047B4FD74}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\JS.Common\JS.Common.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
-		..\JS.Common\JS.Common.vcxitems*{ee0f8c6f-3619-4a46-bc19-faead4167ee4}*SharedItemsImports = 4
+		..\projects\JS.Common\JS.Common.vcxitems*{05db0989-2720-45cc-8689-2ff047b4fd74}*SharedItemsImports = 4
+		..\projects\JS.Common\JS.Common.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
+		..\projects\JS.Common\JS.Common.vcxitems*{ee0f8c6f-3619-4a46-bc19-faead4167ee4}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,6 +30,14 @@ Global
 		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Release|x64.Build.0 = Release|x64
 		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Release|x86.ActiveCfg = Release|Win32
 		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Release|x86.Build.0 = Release|Win32
+		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Debug|x64.ActiveCfg = Debug|x64
+		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Debug|x64.Build.0 = Debug|x64
+		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Debug|x86.ActiveCfg = Debug|Win32
+		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Debug|x86.Build.0 = Debug|Win32
+		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Release|x64.ActiveCfg = Release|x64
+		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Release|x64.Build.0 = Release|x64
+		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Release|x86.ActiveCfg = Release|Win32
+		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

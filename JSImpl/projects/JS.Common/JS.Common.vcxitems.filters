@@ -15,47 +15,47 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\src\Expression.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\Expression.cpp">
       <Filter>Expressions</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\src\Lexer.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\Lexer.cpp">
       <Filter>Lexer</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\src\Parser.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\Parser.cpp">
       <Filter>Parser</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\src\ASTInterpreter.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\ASTInterpreter.cpp">
       <Filter>Visitors</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\src\ASTPrinter.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\src\ASTPrinter.cpp">
       <Filter>Visitors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\src\Expression.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\Expression.h">
       <Filter>Expressions</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\src\ExpressionDefinitions.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\ExpressionDefinitions.h">
       <Filter>Expressions</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\src\ExpressionsFwd.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\ExpressionsFwd.h">
       <Filter>Expressions</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\src\Lexer.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\ExpressionVisitor.h">
+      <Filter>Expressions</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\Lexer.h">
       <Filter>Lexer</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\src\Parser.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\Parser.h">
       <Filter>Parser</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\src\ASTInterpreter.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\ASTInterpreter.h">
       <Filter>Visitors</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\src\ASTPrinter.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\ASTPrinter.h">
       <Filter>Visitors</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\src\ExpressionVisitor.h">
-      <Filter>Visitors</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\src\CommonTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\src\CommonTypes.h" />
   </ItemGroup>
 </Project>
