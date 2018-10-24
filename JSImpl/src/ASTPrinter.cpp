@@ -4,88 +4,108 @@
 #include <iostream>
 
 ASTPrinter::ASTPrinter(std::ostream& os)
- : os(os)
+	: os(os)
+	, nest_level(0)
+	, indent_next_accept(true)
 {}
 
-void Print(std::ostream& os, ASTPrinter &printer, const char* name, const ExpressionPtr& expr, bool isLast)
+void PrepNextElem(std::ostream& os, bool isLast)
 {
-	os << "\"" << name << "\" : ";
-	expr->Accept(printer);
 	if (!isLast)
 	{
 		os << ",";
 	}
+	os << "\n";
+}
+
+void Print(std::ostream& os, ASTPrinter &printer, const char* name, const ExpressionPtr& expr, bool isLast)
+{
+	printer.InsertIndent();
+	os << "\"" << name << "\": ";
+	printer.NoIndentNextAccept();
+	expr->Accept(printer);
+	PrepNextElem(os, isLast);
 }
 
 void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVector<ExpressionPtr>& list, bool isLast)
 {
-	os << "\"" << name << "\" : [ \n";
+	printer.InsertIndent();
+	os << "\"" << name << "\": [";
+	if (list.empty())
+	{
+		os << "]";
+		PrepNextElem(os, isLast);
+		return;
+	}
+
+	printer.Enter();
 	for (auto i = 0u; i < list.size(); ++i)
 	{
+		printer.IndentNextAccept();
 		list[i]->Accept(printer);
 		if (i + 1 != list.size())
 		{
-			os << ",";
+			os << ",\n";
 		}
 	}
-	os << "]";
-	if (!isLast)
-	{
-		os << ",";
-	}
+	printer.Exit();
 	os << "\n";
+	printer.InsertIndent();
+	os << "]";
+	PrepNextElem(os, isLast);
 }
 
-void Print(std::ostream& os, ASTPrinter & /*printer*/, const char* name, const IPLVector<IPLString>& list, bool isLast)
+void Print(std::ostream& os, ASTPrinter& printer, const char* name, const IPLVector<IPLString>& list, bool isLast)
 {
-	os << "\"" << name << "\" : [";
+	printer.InsertIndent();
+	os << "\"" << name << "\": [";
+	if (list.empty())
+	{
+		os << "]";
+		PrepNextElem(os, isLast);
+		return;
+	}
+
+	printer.Enter();
 	for (auto i = 0u; i < list.size(); ++i)
 	{
+		printer.InsertIndent();
 		os << "\"" << list[i] << "\"";
 		if (i + 1 != list.size())
 		{
-			os << ",";
+			os << ",\n";
 		}
 	}
-	os << "]";
-	if (!isLast)
-	{
-		os << ",";
-	}
+	printer.Exit();
 	os << "\n";
+	printer.InsertIndent();
+	os << "]";
+	PrepNextElem(os, isLast);
 }
 
 template<typename T>
-void Print(std::ostream& os, ASTPrinter &/*printer*/, const char* name, T member, bool isLast)
+void Print(std::ostream& os, ASTPrinter& printer, const char* name, T member, bool isLast)
 {
-	os << "\"" << name << "\" :" << member;
-	if (!isLast)
+	printer.InsertIndent();
+	os << "\"" << name << "\": " << member;
+	PrepNextElem(os, isLast);
+}
+
+IPLString StripString(const IPLString& str)
+{
+	if (str.front() == '\"')
 	{
-		os << ",";
+		return str.substr(1, str.length() - 2);
 	}
-	os << "\n";
+	return str;
 }
 
 template<>
-void Print<IPLString>(std::ostream& os, ASTPrinter  &/*printer*/, const char* name, IPLString member, bool isLast)
+void Print<IPLString>(std::ostream& os, ASTPrinter& printer, const char* name, IPLString member, bool isLast)
 {
-	os << "\"" << name << "\" : \"" << member << "\"";
-	if (!isLast)
-	{
-		os << ",";
-	}
-	os << "\n";
-}
-
-template<>
-void Print<const IPLString&>(std::ostream& os, ASTPrinter &/*printer*/, const char* name, const IPLString& member, bool isLast)
-{
-	os << "\"" << name << "\" : \"" << member << "\"";
-	if (!isLast)
-	{
-		os << ",";
-	}
-	os << "\n";
+	printer.InsertIndent();
+	os << "\"" << name << "\": \"" << StripString(member) << "\"";
+	PrepNextElem(os, isLast);
 }
 
 std::ostream& operator<<(std::ostream& os, const TokenType& t)
@@ -187,21 +207,60 @@ std::ostream& operator<<(std::ostream& os, const TokenType& t)
 }
 
 #define MEMBERS_COUNT(type, name, def) ++membersCount;
-#define VISIT_MEMBER(type, name, def) ++currentVisitCount; Print(os, *this, #name, e->Get##name(), currentVisitCount == membersCount);;
+#define VISIT_MEMBER(type, name, def) ++currentVisitCount; Print(os, *this, #name, e->Get##name(), currentVisitCount == membersCount);
 
-#define GENERATE_AST_PRINTER_FUNCTION(ClassName, Base, MEMBERS_ITERATOR)\
+#define GENERATE_AST_PRINTER_FUNCTION(ClassName, Base, MEMBERS_ITERATOR)     \
 	void ASTPrinter::Visit(ClassName* e)                                     \
 	{                                                                        \
 		int membersCount = 0, currentVisitCount = 0;                         \
-		(void)currentVisitCount;(void)e;                               \
+		(void)currentVisitCount;(void)e;                                     \
 		MEMBERS_ITERATOR(MEMBERS_COUNT);                                     \
-		if(membersCount)                                                     \
-			os << "{\n \"ExpresionType\": \"" << #ClassName "\","<< '\n';    \
-		else                                                                 \
-			os << "{\n \"ExpresionType\": \"" << #ClassName "\"" << '\n';    \
+		if (indent_next_accept)                                              \
+		{                                                                    \
+			InsertIndent();                                                  \
+		}                                                                    \
+		os << "{";                                                           \
+		Enter();                                                             \
+		InsertIndent();                                                      \
+		os << "\"ExpresionType\": \"" << #ClassName "\"";                    \
+		if (membersCount)                                                    \
+		{                                                                    \
+			os << ",";                                                       \
+		}                                                                    \
+		os << "\n";                                                          \
 		MEMBERS_ITERATOR(VISIT_MEMBER);                                      \
-		os << "}\n";                                                         \
+		Exit();                                                              \
+		InsertIndent();                                                      \
+		os << "}";                                                           \
 	}
 
-
 EXPRESSION_DEFINITION_ITERATOR(GENERATE_AST_PRINTER_FUNCTION);
+
+void ASTPrinter::Enter()
+{
+	os << "\n";
+	++nest_level;
+}
+
+void ASTPrinter::Exit()
+{
+	--nest_level;
+}
+
+void ASTPrinter::IndentNextAccept()
+{
+	indent_next_accept = true;
+}
+
+void ASTPrinter::InsertIndent()
+{
+	for (unsigned i = 0; i < nest_level; ++i)
+	{
+		os << "  ";
+	}
+}
+
+void ASTPrinter::NoIndentNextAccept()
+{
+	indent_next_accept = false;
+}

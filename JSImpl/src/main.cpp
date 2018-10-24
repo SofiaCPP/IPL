@@ -191,12 +191,13 @@ void TestCommentError()
 void TestParseUnaryExpr()
 {
 	IPLVector<Token> tokens;
-	Tokenize("function pesho() { var a = 0; return a; }", tokens);
+	Tokenize("function pesho() { var a = 0; return a; } var a = \"3\";", tokens);
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
 	ASTPrinter p(std::cout);
 	expr->Accept(p);
+	std::cout << "\n";
 }
 
 void RunParseCalc()
@@ -258,7 +259,8 @@ int main()
 	EXECUTE_TEST(TestScientificNotationNumber);
 
 	//TestParseUnaryExpr();
-        RunParseCalc();
+  RunParseCalc();
+
 #if defined(_WIN32)
 	std::system("pause");
 #endif
