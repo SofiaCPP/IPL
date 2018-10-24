@@ -27,7 +27,6 @@ void RunParseCalc()
 
 int main()
 {
-
 	RunParseCalc();
 
 #if defined(_WIN32)
