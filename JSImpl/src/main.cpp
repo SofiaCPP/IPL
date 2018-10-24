@@ -259,7 +259,7 @@ int main()
 	EXECUTE_TEST(TestScientificNotationNumber);
 
 	//TestParseUnaryExpr();
-  RunParseCalc();
+	RunParseCalc();
 
 #if defined(_WIN32)
 	std::system("pause");
