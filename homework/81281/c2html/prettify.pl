@@ -12,9 +12,9 @@ prettify(StreamTokens, PlainWithNLnSnT):-
 
 % Removes all white charachters
 removeAllWhites([], []):- !.
-removeAllWhites([[H,_]|T], R):- member(H, [execTAB, tspace, execNL, tunknown]),
+removeAllWhites([[H,_]|T], R):- member(H, [execTAB, execSpace, execNL, tunknown]),
     removeAllWhites(T, R), !.
-removeAllWhites([[H, B]|T], [[H, B]|R]):- \+ member(H, [execTAB, tspace, execNL, tunknown]),
+removeAllWhites([[H, B]|T], [[H, B]|R]):- \+ member(H, [execTAB, execSpace, execNL, tunknown]),
     removeAllWhites(T, R), !.
 
 % Pack Till ; for cases like char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
@@ -177,23 +177,24 @@ addNewLines(Tokens, PackedLines):- addNewLines(Tokens, [], PackedLines), !.
 
 % Base
 addSpaces([], Buff, Buff):- !.
-%  no spaces before and after '\n'
+%  no spaces before and after '\n' or ')'
 addSpaces([H|T], Buff, Res):-
-    H = [H1|_], member(H1, [execNL]),
-    ((append(NewBuf, [[tspace, " "]], Buff),
+    H = [H1|_], member(H1, [execNL, trightParen]),
+    ((append(NewBuf, [[execSpace, "\s"]], Buff),
     append(NewBuf, [H], NewBuff));
-    (\+ append(_, [[tspace, " "]], Buff),
+    (\+ append(_, [[execSpace, "\s"]], Buff),
     append(Buff, [H], NewBuff))), !,
     addSpaces(T, NewBuff, Res).
 % Before ',', ';' no space
 addSpaces([H|T], Buff, Res):-
     H = [H1|_], member(H1, [tcomma, tsemicolon]),
-    append(NewBuf, [[tspace, " "]], Buff),
-    append(NewBuf, [H, [tspace, " "]], NewBuff), !,
+    append(NewBuf, [[execSpace, "\s"]], Buff),
+    append(NewBuf, [H, [execSpace, "\s"]], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-% No space after (, [, {, function name
+% No space after (, [, {, function name, tsizeOf
 addSpaces([H1|T], Buff, Res):-
-    H1 = [H11|_], member(H11, [tleftParen, tfunction, tleftBrace, tleftSqParen]),
+    H1 = [H11|_], member(H11, [tleftParen, tfunction, tleftBrace, tleftSqParen,
+    tsizeof]),
     append(Buff, [H1], NewBuff), !,
     addSpaces(T, NewBuff, Res).
 % i->mau();--
@@ -209,7 +210,7 @@ addSpaces([H1, H2|T], Buff, Res):-
     length(Buff, N), N >= 2,
     append(_, [H3, H4], Buff),
     H3 = [H31|_], \+ member(H31, [tnumber, tidentifier, trightParen, trightSqParen]),
-    H4 = [H41|_], member(H41, [tspace, tleftParen, tleftBrace, tleftSqParen]),
+    H4 = [H41|_], member(H41, [execSpace, tleftParen, tleftBrace, tleftSqParen]),
     append(Buff, [H1, H2], NewBuff), !,
     addSpaces(T, NewBuff, Res).
 %  new line (*i, (&i
@@ -259,7 +260,7 @@ addSpaces([H1, H2, H3|T], Buff, Res):-
     ((member(H31, [trightParen, trightBrace, trightSqParen, tleftSqParen]),
     append(Buff, [H1, H2], NewBuff));
     (\+ member(H31, [trightParen, trightBrace, trightSqParen]),
-    append(Buff, [H1, H2, [tspace, " "]], NewBuff))), !,
+    append(Buff, [H1, H2, [execSpace, "\s"]], NewBuff))), !,
     addSpaces([H3|T], NewBuff, Res).
 % a[..
 addSpaces([H1, H2|T], Buff, Res):-
@@ -269,7 +270,7 @@ addSpaces([H1, H2|T], Buff, Res):-
     addSpaces([H2|T], NewBuff, Res).
 %  Else
 addSpaces([H|T], Buff, Res):-
-    append(Buff, [H, [tspace, " "]], NewBuff), !,
+    append(Buff, [H, [execSpace, "\s"]], NewBuff), !,
     addSpaces(T, NewBuff, Res).
 
 % Main predicate
