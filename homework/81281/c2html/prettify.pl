@@ -50,26 +50,17 @@ packTillRightParen([H|T], Buff, Res, Rest, N):-
 
 % Base
 addNewLines([], [], []):- !.
-% if ;  //  /**/, else, do
+% if ;  //  /**/, do
 addNewLines([H|T], Buff, [NewBuff|R]):-
-    H = [H1|_], member(H1, [tsemicolon, tcomment1, tcomment2, telse, tdo]),
+    H = [H1|_], member(H1, [tsemicolon, tcomment1, tcomment2, tdo]),
     append(Buff, [H, [execNL, "\n"]], NewBuff), !,
     addNewLines(T, [], R).
-% if } while(..)
-addNewLines([H1, H2|T], Buff, R):-
-    H1 = [H11|_], member(H11, [trightBrace]),
-    H2 = [H21|_], member(H21, [twhile]),
-    packTillsemiColon(T, [], Res, Rest),
-    append(Buff, [H1, H2], NewBuf),
-    append(NewBuf, Res, NewBuff), !,
-    addNewLines(Rest, NewBuff, R).
-% % if typedef ...
-% addNewLines([H1|T], Buff, R):-
-%     H1 = [H11|_], member(H11, [ttypedef]),
-%     packTillsemiColon(T, [], Res, Rest),
-%     append(Buff, [H1], NewBuf),
-%     append(NewBuf, Res, NewBuff), !,
-%     addNewLines(Rest, NewBuff, R).
+% if else and no following if
+addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
+    H1 = [H11|_], member(H11, [telse]),
+    H2 = [H21|_], \+ member(H21, [tif]),
+    append(Buff, [H1, [execNL, "\n"]], NewBuff), !,
+    addNewLines([H2|T], [], R).
 % if struct
 addNewLines([H1, H2, H3|T], Buff, [NewBuff|R]):-
     H1 = [H11|_], member(H11, [tstruct]),
