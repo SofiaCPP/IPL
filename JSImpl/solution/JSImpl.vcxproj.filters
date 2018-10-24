@@ -37,6 +37,9 @@
       <Filter>Visitors</Filter>
     </ClInclude>
     <ClInclude Include="..\src\CommonTypes.h" />
+    <ClInclude Include="..\src\ASTInterpreter.h">
+      <Filter>Visitors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Expression.cpp">
@@ -52,5 +55,8 @@
       <Filter>Visitors</Filter>
     </ClCompile>
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\ASTInterpreter.cpp">
+      <Filter>Visitors</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

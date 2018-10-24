@@ -3,10 +3,14 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <stack>
 
 template<typename T>
 using IPLVector = std::vector<T>;
 using IPLString = std::string;
+
+template <typename T>
+using IPLStack = std::stack<T>;
 
 template <typename Key, typename T>
 using IPLUnorderedMap = std::unordered_map<Key, T>;
