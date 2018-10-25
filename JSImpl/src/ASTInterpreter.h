@@ -1,13 +1,21 @@
 #pragma once
 
 #include "ExpressionVisitor.h"
+#include <stack>
+#include <string>
+#include <unordered_map>
 
-#include <iosfwd>
-class ASTPrinter : public ExpressionVisitor
+class ASTInterpreter : public ExpressionVisitor
 {
 public:
-	ASTPrinter(std::ostream& os);
-	~ASTPrinter() {}
+	ASTInterpreter();
+	~ASTInterpreter();
+
+    typedef double value_type;
+    typedef IPLStack<value_type> ValueStack;
+
+    ValueStack Run(Expression* program);
+
 	virtual void Visit(LiteralNull* e) override;
 	virtual void Visit(LiteralUndefined* e) override;
 	virtual void Visit(LiteralString* e) override;
@@ -29,13 +37,18 @@ public:
 	virtual void Visit(TopStatements* e) override;
 	virtual void Visit(EmptyExpression* e) override;
 
-	inline void Enter();
-	inline void Exit();
-	inline void NoIndentNextAccept();
-	inline void IndentNextAccept();
-	inline void InsertIndent();
+	value_type& ModifyVariable(const IPLString& name);
 private:
-	std::ostream& os;
-	unsigned nest_level;
-	bool indent_next_accept;
+    void RunExpression(const ExpressionPtr& e);
+    bool EvalToBool(const ExpressionPtr& e);
+
+	void EnterScope();
+	void LeaveScope();
+	friend struct VariableScope;
+
+    ValueStack m_Evaluation;
+	IPLUnorderedMap<IPLString, ValueStack> m_Variables;
+
+	typedef IPLVector<IPLString> Scope;
+	IPLStack<Scope> m_Scopes;
 };
