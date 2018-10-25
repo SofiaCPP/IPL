@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ostream>
+#include <fstream>
 
 #include "CommonTypes.h"
 #include "Lexer.h"
 
-IPLResult Highlight(std::ifstream& in, std::ostream& out);
+IPLResult Highlight(std::ifstream& in, std::ofstream& out);

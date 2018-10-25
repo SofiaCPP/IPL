@@ -37,7 +37,7 @@ namespace
 	}
 }
 
-IPLResult Highlight(std::ifstream& infile, std::ostream& out)
+IPLResult Highlight(std::ifstream& infile, std::ofstream& out)
 {
 	out <<
 	"<html>\n"
