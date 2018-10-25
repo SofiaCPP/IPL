@@ -209,14 +209,14 @@ is_number([H,_]):- member(H, [tnumber]).
 is_function([H,_]):- member(H, [tfunction]).
 
 is_controlStructureBody([H|_]):-
-    member(Token, [tdo, tfor, twhile, tif, telse, tswitch, tstruct]),
+    member(Token, [tdo, tfor, twhile, tif, telse, tswitch, tfunction, tstruct]),
     append(_, [[Token|_]|_], H).
 
 is_packedFunction([H|_]):- append(_, [[tfunction|_]|_], H).
 
 is_packedStructure([H|_]):- append(_, [[tstruct|_]|_], H).
 
-is_functionWithCC([H|_]):- H = [[tCC]|_].
+% experimental is_functionWithCC([H|_]):- H = [[tCC]|_].
 
 is_identifier([H,_]):- member(H, [tidentifier, tnl, ttab, tspace]).
 
