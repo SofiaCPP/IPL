@@ -162,7 +162,7 @@ addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
     H2 = [H21|_], \+ member(H21, [tnumber, tsemicolon, tcomma]),
     append(Buff, [H1, [execNL, "\n"]], NewBuff), !,
     addNewLines([H2|T], [], R).
-% if function, while, for, if, else
+% if function, while, for, if
 addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
     H1 = [H11|_], member(H11, [tif, twhile, tfor, tswitch]),
     packTillRightParen(T, [], MyPart, Rest, 1),
@@ -267,7 +267,7 @@ addSpaces([H1|T], Buff, Res):-
     H1 = [H11, Lex], member(H11, [tquot]),
     append(M, [[H11,Lex]|Rest], T),
     append(Buff, [H1|M], NewBuf),
-    append(NewBuf, [[H11,Lex]], NewBuff), !,
+    append(NewBuf, [[H11,Lex], [execSpace, "\s"]], NewBuff), !,
     addSpaces(Rest, NewBuff, Res).
 % })]]
 addSpaces([H1, H2|T], Buff, Res):-
