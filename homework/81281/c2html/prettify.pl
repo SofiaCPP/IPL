@@ -10,7 +10,7 @@ prettify(StreamTokens, PlainWithNLnSnT):-
     % write(PrettyStream).
     % write(PrettyStream), nl.
 
-% Removes all white charachters
+% Removes all white characters
 removeAllWhites([], []):- !.
 removeAllWhites([[H,_]|T], R):- member(H, [execTAB, execSpace, execNL, tunknown]),
     removeAllWhites(T, R), !.
@@ -22,6 +22,12 @@ packTillsemiColon([[tsemicolon, ";"]|T], Buff, Buff, [[tsemicolon, ";"]|T]).
 packTillsemiColon([H|T], Buff, Res, Rest):-
     append(Buff, [H], NewBuff), !,
     packTillsemiColon(T, NewBuff, Res, Rest).
+
+% Pack Till : and include them in result too. For case smt: where smt if more than 1 character
+packTillTwoDots([[ttwodots, ":"]|T], Buff, NBuff, T):- append(Buff, [[ttwodots, ":"]], NBuff).
+packTillTwoDots([H|T], Buff, Res, Rest):-
+    append(Buff, [H], NewBuff), !,
+    packTillTwoDots(T, NewBuff, Res, Rest).
 
 % Pack Till ; for cases like char matrix[3][3] = {{'0', '0', '0'}, {'0', '1', '0'}, {'0', '1', '1'}};
 packTillsemiColonOnlyIdentifiers([[tsemicolon, ";"]|T], Buff, Buff, [[tsemicolon, ";"]|T]).
@@ -136,9 +142,10 @@ addNewLines([H1, H2|T], Buff, R):-
 % if case smt:
 addNewLines([H|T], Buff, [NewBuff|R]):-
     H = [H1|_], member(H1, [tcase]),
-    T = [H2, H3|T1],
-    append(Buff, [H, H2, H3, [execNL, "\n"]], NewBuff), !,
-    addNewLines(T1, [], R).
+    packTillTwoDots([H|T], [], Res, Rest),
+    append(Buff, Res, NewBuf),
+    append(NewBuf, [[execNL, "\n"]], NewBuff), !,
+    addNewLines(Rest, [], R).
 % if default :
 addNewLines([H|T], Buff, [NewBuff|R]):-
     H = [H1|_], member(H1, [tdefault]),
