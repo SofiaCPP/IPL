@@ -8,7 +8,7 @@ namespace javascript_syntax_highlighter
 {
     class WordToken : Token, IEquatable<WordToken>
     {
-        public WordToken(string lexeme) : base(TokenType.String)
+        public WordToken(string lexeme, TokenType type = TokenType.String) : base(type)
         {
             Lexeme = lexeme;
         }
