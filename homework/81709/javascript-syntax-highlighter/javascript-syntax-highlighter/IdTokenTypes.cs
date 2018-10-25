@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace javascript_syntax_highlighter
 {
-    static class StringTable
+    static class IdTokenTypes
     {
         public static Dictionary<string, TokenType> AsMap()
         {
@@ -50,39 +50,6 @@ namespace javascript_syntax_highlighter
                 {"undefine", TokenType.Undefined },
                 {"true", TokenType.True },
                 { "false", TokenType.False }
-
-/*"debugger"] = TokenType::Debugger;
-	m_KeyWordsTable["default"] = TokenType::Default;
-	m_KeyWordsTable["delete"] = TokenType::Delete;
-	m_KeyWordsTable["do"] = TokenType::Do;
-	m_KeyWordsTable["else"] = TokenType::Else;
-	m_KeyWordsTable["export"] = TokenType::Export;
-	m_KeyWordsTable["extends"] = TokenType::Extends;
-	m_KeyWordsTable["finally"] = TokenType::Finally;
-	m_KeyWordsTable["for"] = TokenType::For;
-	m_KeyWordsTable["function"] = TokenType::Function;
-	m_KeyWordsTable["if"] = TokenType::If;
-	m_KeyWordsTable["import"] = TokenType::Import;
-	m_KeyWordsTable["in"] = TokenType::In;
-	m_KeyWordsTable["instanceof"] = TokenType::Instanceof;
-	m_KeyWordsTable["new"] = TokenType::New;
-	m_KeyWordsTable["return"] = TokenType::Return;
-	m_KeyWordsTable["super"] = TokenType::Super;
-	m_KeyWordsTable["switch"] = TokenType::Switch;
-	m_KeyWordsTable["this"] = TokenType::This;
-	m_KeyWordsTable["throw"] = TokenType::Throw;
-	m_KeyWordsTable["try"] = TokenType::Try;
-	m_KeyWordsTable["typeof"] = TokenType::Typeof;
-	m_KeyWordsTable["var"] = TokenType::Var;
-	m_KeyWordsTable["let"] = TokenType::Let;
-	m_KeyWordsTable["void"] = TokenType::Void;
-	m_KeyWordsTable["while"] = TokenType::While;
-	m_KeyWordsTable["with"] = TokenType::With;
-	m_KeyWordsTable["yield"] = TokenType::Yield;
-	m_KeyWordsTable["null"] = TokenType::Null;
-	m_KeyWordsTable["undefined"] = TokenType::Undefined;
-	m_KeyWordsTable["true"] = TokenType::True;
-	m_KeyWordsTable["false"] = TokenType::False;*/
             };
         }
 
