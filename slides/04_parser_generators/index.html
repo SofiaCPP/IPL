@@ -1,0 +1,165 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><title>Parser Generators</title><meta name=description content="Course on implementing programming languages"><meta name=author content><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css id=theme><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css><script>var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=window.location.search.match(/print-pdf/gi)?'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/pdf.css':'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/paper.css';document.getElementsByTagName('head')[0].appendChild(link);</script></head><body><div class=reveal><div class=slides><section><h1 id=parser-generators>Parser Generators</h1><p>Contents:</p><ul><li>LR Parsers</li><li>Bison</li></ul></section><section><h1 id=lr-parsers>LR Parsers</h1><ul><li>L - the parsers reads the text only once, without backing up</li><li>R - rightmost derivation</li><li>bottom-up parser</li><li>LR(1) - 1 - the number of look-ahead symbols necessary to parse the grammar</li></ul></section><section><h3 id=rightmost-derivation>Rightmost derivation</h3><ul><li>The tree created for an expression would replace the rightmost non-terminal at
+each step</li></ul></section><section><h3 id=bottom-up>Bottom-up</h3><p>The tree is constructed from the bottom - from the leaves to the root.</p></section><section><h2 id=algorithm>Algorithm</h2><p>The parser:</p><ul><li>keeps a stack of the parsed sub-trees so far</li><li><p>runs in a loop over the input and on each iteration it does either
+a <em>shift</em> or a <em>reduce</em> action.</p><ul><li>shift - push the token on the stack</li><li>reduce - pop N subtrees from the stack, make a new tree that has them as
+children and push it to the stack</li></ul></li></ul></section><section><h4 id=ring-any-bells>Ring any bells?</h4></section><section><h4 id=ring-any-bells-1>Ring any bells?</h4><p>Same as the shunting yard algorithm, but:
+- without the operator precedence
+- it replaced by the grammar structure
+- There all the rules had just two children</p></section><section><h3 id=to-shift-or-to-reduce>To shift or to reduce?</h3><ul><li>Depends on the grammar rules.</li><li>The algorithm uses a Finite State Automaton (FSA)</li></ul></section><section><h3 id=to-shift-or-to-reduce-1>To shift or to reduce?</h3><p>The FSA has for each (state, next token) -&gt; (action, next state)</p><ul><li>action - whether to shift or reduce</li></ul></section><section><h1 id=bison>Bison</h1><ul><li>Bison generates LR(1) and GLR parsers<ul><li>GLR parsers can have arbitrary lookahead and be ambigous</li></ul></li><li>You don&rsquo;t always have to convert the grammar in an LR form<ul><li>operator precedence and assiociativity are handled for your</li></ul></li></ul></section><section><h3 id=input>Input</h3><pre><code>%{
+/* verbatim copy */
+%}
+
+/* definitions */
+
+%%
+/* rules */
+%%
+/* verbatim copy */
+</code></pre></section><section><h3 id=parsing-expressions>Parsing expressions</h3><p><a href=https://github.com/SofiaCPP/IPL/blob/master/demo/bison/calc/parser.y>https://github.com/SofiaCPP/IPL/blob/master/demo/bison/calc/parser.y</a></p></section><section><h3 id=understanding-the-parser>Understanding the parser</h3><p><a href=https://www.gnu.org/software/bison/manual/html_node/Debugging.html#Debugging>https://www.gnu.org/software/bison/manual/html_node/Debugging.html#Debugging</a></p></section><section><p>###</p><p><a href=parser>bison output for the expression grammar</a></p></section><section><h1 id=toc_13>?</h1></section><section><!doctype html><html xmlns=http://www.w3.org/1999/xhtml xmlns:bison=http://www.gnu.org/software/bison/><head><meta charset=utf-8><title>parser.y - GNU Bison XML Automaton Report</title><style>body{font-family:nimbus sans l,Arial,sans-serif;font-size:9pt}a:link{color:#1f00ff;text-decoration:none}a:visited{color:#1f00ff;text-decoration:none}a:hover{color:red}#menu a{text-decoration:underline}.i{font-style:italic}.pre{font-family:monospace;white-space:pre}ol.decimal{list-style-type:decimal}ol.lower-alpha{list-style-type:lower-alpha}.point{color:#c00}#footer{margin-top:3.5em;font-size:7pt}</style></head><body><h1>GNU Bison XML Automaton Report</h1><p>input grammar: <span class=i>parser.y</span></p><h3>Table of Contents</h3><ul id=menu><li><a href=#reductions>Reductions</a><ul class=lower-alpha><li><a href=#nonterminals_useless_in_grammar>Nonterminals useless in grammar</a></li><li><a href=#terminals_unused_in_grammar>Terminals unused in grammar</a></li><li><a href=#rules_useless_in_grammar>Rules useless in grammar</a></li></ul></li><li><a href=#conflicts>Conflicts</a></li><li><a href=#grammar>Grammar</a><ul class=lower-alpha><li><a href=#grammar>Itemset</a></li><li><a href=#terminals>Terminal symbols</a></li><li><a href=#nonterminals>Nonterminal symbols</a></li></ul></li><li><a href=#automaton>Automaton</a></li></ul><h2><a id=reductions></a>Reductions</h2><h3><a id=nonterminals_useless_in_grammar></a>Nonterminals useless in grammar</h3><h3><a id=terminals_unused_in_grammar></a>Terminals unused in grammar</h3><h3><a id=rules_useless_in_grammar></a>Rules useless in grammar</h3><h2><a id=conflicts></a>Conflicts</h2><h2><a id=grammar></a>Grammar</h2><p class=pre><a id=rule_0></a>0 <span class=i>$accept</span> → <span class=i>input</span> <b>$end</b>
+<a id=rule_1></a>1 <span class=i>input</span> → %empty
+<a id=rule_2></a>2 | <span class=i>expr</span>
+<a id=rule_3></a>3 <span class=i>expr</span> → <b>NUMBER</b>
+<a id=rule_4></a>4 | <b>'('</b> <span class=i>expr</span> <b>')'</b>
+<a id=rule_5></a>5 | <span class=i>expr</span> <b>PLUS</b> <span class=i>expr</span>
+<a id=rule_6></a>6 | <span class=i>expr</span> <b>MINUS</b> <span class=i>expr</span>
+<a id=rule_7></a>7 | <span class=i>expr</span> <b>MULT</b> <span class=i>expr</span>
+<a id=rule_8></a>8 | <span class=i>expr</span> <b>DIV</b> <span class=i>expr</span></p><h3><a id=terminals></a>Terminals, with rules where they appear</h3><p class=pre><b>$end</b> (0) <a href=#rule_0>0</a>
+<b>'('</b> (40) <a href=#rule_4>4</a>
+<b>')'</b> (41) <a href=#rule_4>4</a>
+<b>error</b> (256)
+<b>NUMBER</b> (258) <a href=#rule_3>3</a>
+<b>PLUS</b> (259) <a href=#rule_5>5</a>
+<b>MINUS</b> (260) <a href=#rule_6>6</a>
+<b>MULT</b> (261) <a href=#rule_7>7</a>
+<b>DIV</b> (262) <a href=#rule_8>8</a></p><h3><a id=nonterminals></a>Nonterminals, with rules where they appear</h3><p class=pre><b>$accept</b> (10)
+on left: <a href=#rule_0>0</a>
+<b>input</b> (11)
+on left: <a href=#rule_1>1</a> <a href=#rule_2>2</a>
+on right: <a href=#rule_0>0</a>
+<b>expr</b> (12)
+on left: <a href=#rule_3>3</a> <a href=#rule_4>4</a> <a href=#rule_5>5</a> <a href=#rule_6>6</a> <a href=#rule_7>7</a> <a href=#rule_8>8</a>
+on right: <a href=#rule_2>2</a> <a href=#rule_4>4</a> <a href=#rule_5>5</a> <a href=#rule_6>6</a> <a href=#rule_7>7</a> <a href=#rule_8>8</a></p><h2><a id=automaton></a>Automaton</h2><h3><a id=state_0></a>state 0</h3><p class=pre><a href=#rule_0>0</a> <span class=i>$accept</span> → <span class=point>.</span> <span class=i>input</span> <b>$end</b>
+<a href=#rule_1>1</a> <span class=i>input</span> → <span class=point>.</span> %empty [$end]
+<a href=#rule_2>2</a> | <span class=point>.</span> <span class=i>expr</span>
+<a href=#rule_3>3</a> <span class=i>expr</span> → <span class=point>.</span> <b>NUMBER</b>
+<a href=#rule_4>4</a> | <span class=point>.</span> <b>'('</b> <span class=i>expr</span> <b>')'</b>
+<a href=#rule_5>5</a> | <span class=point>.</span> <span class=i>expr</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=point>.</span> <span class=i>expr</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=point>.</span> <span class=i>expr</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=point>.</span> <span class=i>expr</span> <b>DIV</b> <span class=i>expr</span>
+NUMBER <a href=#state_1>shift, and go to state 1</a>
+'(' <a href=#state_2>shift, and go to state 2</a>
+$default <a href=#rule_1>reduce using rule 1</a> (input)
+input <a href=#state_3>go to state 3</a>
+expr <a href=#state_4>go to state 4</a></p><h3><a id=state_1></a>state 1</h3><p class=pre><a href=#rule_3>3</a> <span class=i>expr</span> → <b>NUMBER</b> <span class=point>.</span>
+$default <a href=#rule_3>reduce using rule 3</a> (expr)</p><h3><a id=state_2></a>state 2</h3><p class=pre><a href=#rule_3>3</a> <span class=i>expr</span> → <span class=point>.</span> <b>NUMBER</b>
+<a href=#rule_4>4</a> | <span class=point>.</span> <b>'('</b> <span class=i>expr</span> <b>')'</b>
+<a href=#rule_4>4</a> | <b>'('</b> <span class=point>.</span> <span class=i>expr</span> <b>')'</b>
+<a href=#rule_5>5</a> | <span class=point>.</span> <span class=i>expr</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=point>.</span> <span class=i>expr</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=point>.</span> <span class=i>expr</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=point>.</span> <span class=i>expr</span> <b>DIV</b> <span class=i>expr</span>
+NUMBER <a href=#state_1>shift, and go to state 1</a>
+'(' <a href=#state_2>shift, and go to state 2</a>
+expr <a href=#state_5>go to state 5</a></p><h3><a id=state_3></a>state 3</h3><p class=pre><a href=#rule_0>0</a> <span class=i>$accept</span> → <span class=i>input</span> <span class=point>.</span> <b>$end</b>
+$end <a href=#state_6>shift, and go to state 6</a></p><h3><a id=state_4></a>state 4</h3><p class=pre><a href=#rule_2>2</a> <span class=i>input</span> → <span class=i>expr</span> <span class=point>.</span> [$end]
+<a href=#rule_5>5</a> <span class=i>expr</span> → <span class=i>expr</span> <span class=point>.</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=i>expr</span> <span class=point>.</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=i>expr</span> <span class=point>.</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=i>expr</span> <span class=point>.</span> <b>DIV</b> <span class=i>expr</span>
+PLUS <a href=#state_7>shift, and go to state 7</a>
+MINUS <a href=#state_8>shift, and go to state 8</a>
+MULT <a href=#state_9>shift, and go to state 9</a>
+DIV <a href=#state_10>shift, and go to state 10</a>
+$default <a href=#rule_2>reduce using rule 2</a> (input)</p><h3><a id=state_5></a>state 5</h3><p class=pre><a href=#rule_4>4</a> <span class=i>expr</span> → <b>'('</b> <span class=i>expr</span> <span class=point>.</span> <b>')'</b>
+<a href=#rule_5>5</a> | <span class=i>expr</span> <span class=point>.</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=i>expr</span> <span class=point>.</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=i>expr</span> <span class=point>.</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=i>expr</span> <span class=point>.</span> <b>DIV</b> <span class=i>expr</span>
+PLUS <a href=#state_7>shift, and go to state 7</a>
+MINUS <a href=#state_8>shift, and go to state 8</a>
+MULT <a href=#state_9>shift, and go to state 9</a>
+DIV <a href=#state_10>shift, and go to state 10</a>
+')' <a href=#state_11>shift, and go to state 11</a></p><h3><a id=state_6></a>state 6</h3><p class=pre><a href=#rule_0>0</a> <span class=i>$accept</span> → <span class=i>input</span> <b>$end</b> <span class=point>.</span>
+$default accept</p><h3><a id=state_7></a>state 7</h3><p class=pre><a href=#rule_3>3</a> <span class=i>expr</span> → <span class=point>.</span> <b>NUMBER</b>
+<a href=#rule_4>4</a> | <span class=point>.</span> <b>'('</b> <span class=i>expr</span> <b>')'</b>
+<a href=#rule_5>5</a> | <span class=point>.</span> <span class=i>expr</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_5>5</a> | <span class=i>expr</span> <b>PLUS</b> <span class=point>.</span> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=point>.</span> <span class=i>expr</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=point>.</span> <span class=i>expr</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=point>.</span> <span class=i>expr</span> <b>DIV</b> <span class=i>expr</span>
+NUMBER <a href=#state_1>shift, and go to state 1</a>
+'(' <a href=#state_2>shift, and go to state 2</a>
+expr <a href=#state_12>go to state 12</a></p><h3><a id=state_8></a>state 8</h3><p class=pre><a href=#rule_3>3</a> <span class=i>expr</span> → <span class=point>.</span> <b>NUMBER</b>
+<a href=#rule_4>4</a> | <span class=point>.</span> <b>'('</b> <span class=i>expr</span> <b>')'</b>
+<a href=#rule_5>5</a> | <span class=point>.</span> <span class=i>expr</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=point>.</span> <span class=i>expr</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=i>expr</span> <b>MINUS</b> <span class=point>.</span> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=point>.</span> <span class=i>expr</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=point>.</span> <span class=i>expr</span> <b>DIV</b> <span class=i>expr</span>
+NUMBER <a href=#state_1>shift, and go to state 1</a>
+'(' <a href=#state_2>shift, and go to state 2</a>
+expr <a href=#state_13>go to state 13</a></p><h3><a id=state_9></a>state 9</h3><p class=pre><a href=#rule_3>3</a> <span class=i>expr</span> → <span class=point>.</span> <b>NUMBER</b>
+<a href=#rule_4>4</a> | <span class=point>.</span> <b>'('</b> <span class=i>expr</span> <b>')'</b>
+<a href=#rule_5>5</a> | <span class=point>.</span> <span class=i>expr</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=point>.</span> <span class=i>expr</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=point>.</span> <span class=i>expr</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=i>expr</span> <b>MULT</b> <span class=point>.</span> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=point>.</span> <span class=i>expr</span> <b>DIV</b> <span class=i>expr</span>
+NUMBER <a href=#state_1>shift, and go to state 1</a>
+'(' <a href=#state_2>shift, and go to state 2</a>
+expr <a href=#state_14>go to state 14</a></p><h3><a id=state_10></a>state 10</h3><p class=pre><a href=#rule_3>3</a> <span class=i>expr</span> → <span class=point>.</span> <b>NUMBER</b>
+<a href=#rule_4>4</a> | <span class=point>.</span> <b>'('</b> <span class=i>expr</span> <b>')'</b>
+<a href=#rule_5>5</a> | <span class=point>.</span> <span class=i>expr</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=point>.</span> <span class=i>expr</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=point>.</span> <span class=i>expr</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=point>.</span> <span class=i>expr</span> <b>DIV</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=i>expr</span> <b>DIV</b> <span class=point>.</span> <span class=i>expr</span>
+NUMBER <a href=#state_1>shift, and go to state 1</a>
+'(' <a href=#state_2>shift, and go to state 2</a>
+expr <a href=#state_15>go to state 15</a></p><h3><a id=state_11></a>state 11</h3><p class=pre><a href=#rule_4>4</a> <span class=i>expr</span> → <b>'('</b> <span class=i>expr</span> <b>')'</b> <span class=point>.</span>
+$default <a href=#rule_4>reduce using rule 4</a> (expr)</p><h3><a id=state_12></a>state 12</h3><p class=pre><a href=#rule_5>5</a> <span class=i>expr</span> → <span class=i>expr</span> <span class=point>.</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_5>5</a> | <span class=i>expr</span> <b>PLUS</b> <span class=i>expr</span> <span class=point>.</span> [$end, PLUS, MINUS, ')']
+<a href=#rule_6>6</a> | <span class=i>expr</span> <span class=point>.</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=i>expr</span> <span class=point>.</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=i>expr</span> <span class=point>.</span> <b>DIV</b> <span class=i>expr</span>
+MULT <a href=#state_9>shift, and go to state 9</a>
+DIV <a href=#state_10>shift, and go to state 10</a>
+$default <a href=#rule_5>reduce using rule 5</a> (expr)
+Conflict between <a href=#rule_5>rule 5</a> and token PLUS resolved as reduce (%left PLUS).
+Conflict between <a href=#rule_5>rule 5</a> and token MINUS resolved as reduce (%left MINUS).
+Conflict between <a href=#rule_5>rule 5</a> and token MULT resolved as shift (PLUS &lt; MULT).
+Conflict between <a href=#rule_5>rule 5</a> and token DIV resolved as shift (PLUS &lt; DIV).</p><h3><a id=state_13></a>state 13</h3><p class=pre><a href=#rule_5>5</a> <span class=i>expr</span> → <span class=i>expr</span> <span class=point>.</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=i>expr</span> <span class=point>.</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=i>expr</span> <b>MINUS</b> <span class=i>expr</span> <span class=point>.</span> [$end, PLUS, MINUS, ')']
+<a href=#rule_7>7</a> | <span class=i>expr</span> <span class=point>.</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=i>expr</span> <span class=point>.</span> <b>DIV</b> <span class=i>expr</span>
+MULT <a href=#state_9>shift, and go to state 9</a>
+DIV <a href=#state_10>shift, and go to state 10</a>
+$default <a href=#rule_6>reduce using rule 6</a> (expr)
+Conflict between <a href=#rule_6>rule 6</a> and token PLUS resolved as reduce (%left PLUS).
+Conflict between <a href=#rule_6>rule 6</a> and token MINUS resolved as reduce (%left MINUS).
+Conflict between <a href=#rule_6>rule 6</a> and token MULT resolved as shift (MINUS &lt; MULT).
+Conflict between <a href=#rule_6>rule 6</a> and token DIV resolved as shift (MINUS &lt; DIV).</p><h3><a id=state_14></a>state 14</h3><p class=pre><a href=#rule_5>5</a> <span class=i>expr</span> → <span class=i>expr</span> <span class=point>.</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=i>expr</span> <span class=point>.</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=i>expr</span> <span class=point>.</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=i>expr</span> <b>MULT</b> <span class=i>expr</span> <span class=point>.</span> [$end, PLUS, MINUS, MULT, DIV, ')']
+<a href=#rule_8>8</a> | <span class=i>expr</span> <span class=point>.</span> <b>DIV</b> <span class=i>expr</span>
+$default <a href=#rule_7>reduce using rule 7</a> (expr)
+Conflict between <a href=#rule_7>rule 7</a> and token PLUS resolved as reduce (PLUS &lt; MULT).
+Conflict between <a href=#rule_7>rule 7</a> and token MINUS resolved as reduce (MINUS &lt; MULT).
+Conflict between <a href=#rule_7>rule 7</a> and token MULT resolved as reduce (%left MULT).
+Conflict between <a href=#rule_7>rule 7</a> and token DIV resolved as reduce (%left DIV).</p><h3><a id=state_15></a>state 15</h3><p class=pre><a href=#rule_5>5</a> <span class=i>expr</span> → <span class=i>expr</span> <span class=point>.</span> <b>PLUS</b> <span class=i>expr</span>
+<a href=#rule_6>6</a> | <span class=i>expr</span> <span class=point>.</span> <b>MINUS</b> <span class=i>expr</span>
+<a href=#rule_7>7</a> | <span class=i>expr</span> <span class=point>.</span> <b>MULT</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=i>expr</span> <span class=point>.</span> <b>DIV</b> <span class=i>expr</span>
+<a href=#rule_8>8</a> | <span class=i>expr</span> <b>DIV</b> <span class=i>expr</span> <span class=point>.</span> [$end, PLUS, MINUS, MULT, DIV, ')']
+$default <a href=#rule_8>reduce using rule 8</a> (expr)
+Conflict between <a href=#rule_8>rule 8</a> and token PLUS resolved as reduce (PLUS &lt; DIV).
+Conflict between <a href=#rule_8>rule 8</a> and token MINUS resolved as reduce (MINUS &lt; DIV).
+Conflict between <a href=#rule_8>rule 8</a> and token MULT resolved as reduce (%left MULT).
+Conflict between <a href=#rule_8>rule 8</a> and token DIV resolved as reduce (%left DIV).</p><div id=footer></section><section>This document was generated using
+<a href=http://www.gnu.org/software/bison/ title="GNU Bison">GNU Bison 3.0.4</a>
+XML Automaton Report.<br>Verbatim copying and distribution of this entire page is
+permitted in any medium, provided this notice is preserved.</div></body></html></section></div></div><script type=application/json id=reveal-hugo-page-params>null</script><script type=application/json id=reveal-hugo-site-params>{"highlight_theme":"monokai","slide_number":true,"transition":"none"}</script><script type=application/json id=reveal-hugo-defaults>{"center":true,"controls":true,"highlight_theme":"default","history":true,"progress":true,"theme":"black","transition":"slide"}</script><script>window.revealHugoDependencies={dependencies:[{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/lib/js/classList.js',condition:function(){return!document.body.classList;}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/marked.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/markdown.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/highlight/highlight.js',async:true,callback:function(){hljs.initHighlightingOnLoad();}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/zoom-js/zoom.js',async:true},{src:'\/IPL\/reveal-hugo\/plugin\/notes\/notes.js',async:true}]};</script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/js/head.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.js></script><script>function camelize(map){if(map){Object.keys(map).forEach(function(k){newK=k.replace(/(\_\w)/g,function(m){return m[1].toUpperCase()});if(newK!=k){map[newK]=map[k];delete map[k];}});}
+return map;}
+var revealHugoPageParams=JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);var revealHugoSiteParams=JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);var revealHugoDefaults=JSON.parse(document.getElementById('reveal-hugo-defaults').innerHTML);var options=Object.assign({},camelize(revealHugoDefaults),camelize(revealHugoSiteParams),camelize(revealHugoPageParams),revealHugoDependencies);Reveal.initialize(options);</script></body></html>
