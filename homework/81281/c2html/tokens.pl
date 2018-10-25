@@ -43,8 +43,6 @@ token([[tcomment2, IA], [execNL, '\n']]) --> comment2(I), !,
     (\+ char_code('\r', C1), char_code('\n', C2),
     append(I1, [C1], I2), atom_chars(IA,I2)))}.
 
-token([ttypesPrintF, IA]) --> prFT(I), !,
-    {atom_chars(IA,I)}.
 token([tstring, IA]) --> stringy(I), !,
     {atom_chars(IA,I)}.
 token([theader, IA]) --> header(I), !,
@@ -144,22 +142,21 @@ funkHelper([C]) --> [C], {char_code("(", C)}, !.
 stringy([C|Cs]) --> [C], {char_code('\"', C)}, !,
     stringyHelper(Cs).
 
-stringyHelper([C|Cs]) --> [C], {char_type(C, csymf); char_code('.', C)},
+stringyHelper([C]) --> [C], { char_code('\n', C), fail}, !.
+stringyHelper([C1, C2]) --> [C1, C2], { char_code('\\', C1), char_code('\s', C2), fail}, !.
+stringyHelper([C1, C2|Cs]) --> [C1, C2], { char_code('\\', C1), char_code('\"', C2)}, !,
     stringyHelper(Cs).
-stringyHelper([C]) --> [C], {char_code('\"', C)}.
+stringyHelper([C]) --> [C], { char_code('\"', C)}.
+stringyHelper([C|Cs]) --> [C], stringyHelper(Cs).
 
 header([C|Cs]) --> [C], {char_code('<', C)}, !,
-    hederHelper(Cs).
+    headerHelper(Cs).
 
-hederHelper([C|Cs]) --> [C],
+headerHelper([C|Cs]) --> [C],
     {char_type(C, csymf); char_code('.', C); char_code('/', C); char_code('+', C)},
-    hederHelper(Cs).
-hederHelper([C]) --> [C], {char_code('>', C)}.
+    headerHelper(Cs).
+headerHelper([C]) --> [C], {char_code('>', C)}.
 
-prFT([C|Cs]) --> [C], {char_code('%', C)}, !,
-    pr(Cs).
-
-pr([C]) --> [C], {char_type(C, csym)}.
 
 comment1([C1,C2|Cs]) --> [C1,C2], {char_code('/', C1), char_code('*', C2)}, !,
     anythingButStarSlash(Cs).
@@ -180,7 +177,6 @@ anythingButNL([C|Cs]) --> [C],
 anythingButNL([C1,C2]) --> [C1,C2],
     {(char_code('\r', C1),  char_code('\n', C2));
     (\+ char_code('\r', C1),  char_code('\n', C2))}.
-
 
 anythingButStarSlash([C1,C2]) --> [C1, C2],
     {char_code('*', C1),  char_code('/', C2)}.
@@ -208,13 +204,19 @@ is_quotation([H,_]):- member(H, [tquot, tdoubleQuot, tcomma, tdot, tquestion]).
 
 is_unknown([H,_]):- member(H, [tunknown]).
 
-is_number([H,_]):- member(H, [tnumber, ttypesPrintF]).
+is_number([H,_]):- member(H, [tnumber]).
 
 is_function([H,_]):- member(H, [tfunction]).
 
 is_controlStructureBody([H|_]):-
-    member(Token, [tdo, tfor, twhile, tif, telse, tswitch, tfunction, tstruct]),
+    member(Token, [tdo, tfor, twhile, tif, telse, tswitch, tstruct]),
     append(_, [[Token|_]|_], H).
+
+is_packedFunction([H|_]):- append(_, [[tfunction|_]|_], H).
+
+is_packedStructure([H|_]):- append(_, [[tstruct|_]|_], H).
+
+is_functionWithCC([H|_]):- H = [[tCC]|_].
 
 is_identifier([H,_]):- member(H, [tidentifier, tnl, ttab, tspace]).
 
