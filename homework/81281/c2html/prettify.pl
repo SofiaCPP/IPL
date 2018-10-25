@@ -61,6 +61,21 @@ addNewLines([H1, H2|T], Buff, [NewBuff|R]):-
     H2 = [H21|_], \+ member(H21, [tif]),
     append(Buff, [H1, [execNL, "\n"]], NewBuff), !,
     addNewLines([H2|T], [], R).
+% if } while(..)
+addNewLines([H1, H2|T], Buff, R):-
+    H1 = [H11|_], member(H11, [trightBrace]),
+    H2 = [H21|_], member(H21, [twhile]),
+    packTillsemiColon(T, [], Res, Rest),
+    append(Buff, [H1, H2], NewBuf),
+    append(NewBuf, Res, NewBuff), !,
+    addNewLines(Rest, NewBuff, R).
+% % if typedef ...
+% addNewLines([H1|T], Buff, R):-
+%     H1 = [H11|_], member(H11, [ttypedef]),
+%     packTillsemiColon(T, [], Res, Rest),
+%     append(Buff, [H1], NewBuf),
+%     append(NewBuf, Res, NewBuff), !,
+%     addNewLines(Rest, NewBuff, R).
 % if struct
 addNewLines([H1, H2, H3|T], Buff, [NewBuff|R]):-
     H1 = [H11|_], member(H11, [tstruct]),
@@ -99,6 +114,23 @@ addNewLines([H1, H2, H3, H4|T], Buff, R):-
     H4 = [H41|_], member(H41, [tleftSqParen]),
     packTillsemiColon(T, [], Res, Rest),
     append(Buff, [H1, H2, H3, H4], NewBuf),
+    append(NewBuf, Res, NewBuff), !,
+    addNewLines(Rest, NewBuff, R).
+% if const tenum {};
+addNewLines([H1, H2, H3|T], Buff, R):-
+    H1 = [H11|_], member(H11, [tconst]),
+    H2 = [H21|_], member(H21, [tenum]),
+    H3 = [H31|_], member(H31, [tidentifier]),
+    packTillsemiColon(T, [], Res, Rest),
+    append(Buff, [H1, H2, H3], NewBuf),
+    append(NewBuf, Res, NewBuff), !,
+    addNewLines(Rest, NewBuff, R).
+% if const tenum {};
+addNewLines([H1, H2|T], Buff, R):-
+    H1 = [H11|_], member(H11, [tenum]),
+    H2 = [H21|_], member(H21, [tidentifier]),
+    packTillsemiColon(T, [], Res, Rest),
+    append(Buff, [H1, H2], NewBuf),
     append(NewBuf, Res, NewBuff), !,
     addNewLines(Rest, NewBuff, R).
 % if case smt:
@@ -182,7 +214,7 @@ addSpaces([H|T], Buff, Res):-
     append(NewBuf, [[execSpace, "\s"]], Buff),
     append(NewBuf, [H, [execSpace, "\s"]], NewBuff), !,
     addSpaces(T, NewBuff, Res).
-% No space after (, [, {, function name, tsizeOf
+% No space after (, [, {, function name, tsizeof
 addSpaces([H1|T], Buff, Res):-
     H1 = [H11|_], member(H11, [tleftParen, tfunction, tleftBrace, tleftSqParen,
     tsizeof]),
@@ -230,9 +262,9 @@ addSpaces([H1, H2|T], Buff, Res):-
     H2 = [H21|_], member(H21, [tidentifier]),
     append(Buff, [H1], NewBuff), !,
     addSpaces([H2|T], NewBuff, Res).
-%  pack strings line "majhaaud830204ie1\n"
+%  pack strings line '0'
 addSpaces([H1|T], Buff, Res):-
-    H1 = [H11, Lex], member(H11, [tquot, tdoubleQuot]),
+    H1 = [H11, Lex], member(H11, [tquot]),
     append(M, [[H11,Lex]|Rest], T),
     append(Buff, [H1|M], NewBuf),
     append(NewBuf, [[H11,Lex]], NewBuff), !,
