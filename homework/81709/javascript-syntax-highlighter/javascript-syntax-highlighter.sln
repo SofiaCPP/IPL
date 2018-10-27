@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27703.2026
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "javascript-syntax-highlighter", "javascript-syntax-highlighter\javascript-syntax-highlighter.csproj", "{D555ADB4-0161-4DF9-8098-1A72C03C1576}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JS.Common", "..\..\..\JSImpl\projects\JS.Common\JS.Common.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "C:\Users\Georgi\source\repos\TestApp\TestApp\TestApp.csproj", "{DF47E3E3-5751-4016-9036-B02CEE8589BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,11 +31,23 @@ Global
 		{D555ADB4-0161-4DF9-8098-1A72C03C1576}.Release|x64.Build.0 = Release|Any CPU
 		{D555ADB4-0161-4DF9-8098-1A72C03C1576}.Release|x86.ActiveCfg = Release|Any CPU
 		{D555ADB4-0161-4DF9-8098-1A72C03C1576}.Release|x86.Build.0 = Release|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Debug|x64.Build.0 = Debug|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Debug|x86.Build.0 = Debug|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Release|x64.ActiveCfg = Release|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Release|x64.Build.0 = Release|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Release|x86.ActiveCfg = Release|Any CPU
+		{DF47E3E3-5751-4016-9036-B02CEE8589BD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {CD3B8391-3657-40DE-BA8F-7D54A1F2BC3D}
+		SolutionGuid = {4D495C27-7CDB-4B11-9A8B-0919861303BC}
 	EndGlobalSection
 EndGlobal
