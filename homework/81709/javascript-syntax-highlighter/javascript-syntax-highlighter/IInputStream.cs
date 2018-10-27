@@ -9,8 +9,11 @@ namespace javascript_syntax_highlighter
     interface IInputStream
     {
         char Peek();
+
         char Next();
+
         int Line();
-        
+
+        bool IsEOF();
     }
 }
