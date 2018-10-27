@@ -7,35 +7,39 @@ using System.Threading.Tasks;
 
 namespace javascript_syntax_highlighter
 {
-    class FileInputStream : IInputStream
+    class FileInputStream : InputStream
     {
-        private StreamReader fileStr;
-        private int line;
+        private StreamReader reader;
+        private int index;
 
         public FileInputStream(string path)
         {
-            fileStr = new StreamReader(path, Encoding.ASCII);
-
+            reader = new StreamReader(path, Encoding.ASCII);
+            index = 0;
         }
 
-        public bool IsEOF()
+        public override void Close()
         {
-            throw new NotImplementedException();
+            reader.Close();
         }
 
-        public int Line()
+        public override bool IsEndOfStream()
         {
-            return this.line;
+            return reader.EndOfStream;
         }
 
-        public char Next()
+        protected override int ReadStream(char[] buffer, int length)
         {
-            throw new NotImplementedException();
-        }
+            int bytesRead = reader.Read(buffer, index, length);
 
-        public char Peek()
-        {
-            throw new NotImplementedException();
+            if (bytesRead == 0)
+            {
+                this.Close();
+            }
+
+            index += length;
+
+            return bytesRead;
         }
     }
 }
