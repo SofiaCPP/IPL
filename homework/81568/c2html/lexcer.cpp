@@ -445,7 +445,6 @@ std::string LexCer::getOutputFileName(const std::string &name) {
 
 void LexCer::lexCit(FILE *in, FILE *out) {
   Highlighter hl {in, out};
-  printf("okay initiating\n");
   hl.outputHighlighted();
 }
 

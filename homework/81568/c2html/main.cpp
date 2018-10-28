@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
         fpOut
         );
   LexCer::lexCit(fpIn, fpOut);
-  fputs("</pre></body></html>", fpOut);
+  fputs("</pre></body></html>\n", fpOut);
 
   printf("Highlighted text written in %s!\n", outputName.c_str());
   
