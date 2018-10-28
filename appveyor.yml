@@ -18,6 +18,7 @@ configuration:
   - Release
 
 build:
+  project: JSImpl/solution/JSImpl.sln
   verbosity: minimal
 
 skip_commits:
