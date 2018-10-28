@@ -18,6 +18,9 @@ enum class TokenClass : short {
   String,
   Comment,
   Number,
+  LeftParen,
+  RightParen,
+  
   Skip,
   Eof,
   Invalid
@@ -30,6 +33,49 @@ struct Token {
   double number;
 };
 
+
+class Tokenizer {
+private:
+  enum num_t {
+              BIN = 2,
+              OCT = 8,
+              DEC = 10,
+              HEX = 16
+  };
+
+public:
+  Tokenizer(FILE *in, FILE *out);
+
+  unsigned lineNumber() const { return line; }
+  Token currentToken() const { return token; }
+  
+  TokenClass nextToken(std::string *lexeme, double *number);
+  void makeToken(TokenClass type, unsigned line,
+                 std::string lexeme = std::string(), double number = 0.0);
+  bool writeToOutput();
+  
+private:
+  std::string escapeHTML(const std::string &lexeme);
+  bool readNextDirective(std::string *lexeme);
+  bool readNextString(std::string *lexeme, char oldc);
+  bool readNextIdentifier(std::string *lexeme);
+  bool readNextNumber(char beg, double *number, std::string *numberRepr);
+  bool isValidDigit(char c, num_t numType) const ;
+  bool readLineComment(std::string *lexeme);
+  bool readMultilineComment(std::string *lexeme);
+  bool readInclude(std::string *lexeme);
+  bool readUntilBlank(std::string *lexeme);
+
+  double atod(const std::string &number) const { return 0.0; }
+private:              
+  FILE *in;
+  FILE *out;
+  Token token; // current token
+  unsigned line = 1;
+  std::unordered_set<std::string> typenames;
+};
+
+  
 std::string getOutputFileName(const std::string &name);
 void lexCit(FILE *in, FILE *out);
 

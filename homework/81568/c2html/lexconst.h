@@ -23,7 +23,9 @@ static const std::unordered_map<TokenClass, std::string> tokenToClass
     {TokenClass::String, "string"},
     {TokenClass::Comment, "comment"},
     {TokenClass::Number, "number"},
-    {TokenClass::Invalid, "invalid"}
+    {TokenClass::Invalid, "invalid"},
+    {TokenClass::LeftParen, "identifier"},
+    {TokenClass::RightParen, "identifier"}
    }
   };
 

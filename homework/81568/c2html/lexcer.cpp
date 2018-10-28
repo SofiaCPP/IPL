@@ -4,85 +4,33 @@
 #include <cctype>
 #include <cstdlib>
 
-using LexCer::TokenClass;
-using LexCer::Token;
-using LexCer::keywords;
-using LexCer::preprocessor;
-using LexCer::tokenToClass;
-using LexCer::spanBegin;
-using LexCer::spanEnd;
+// using LexCer::TokenClass;
+// using LexCer::Token;
+// using LexCer::keywords;
+// using LexCer::preprocessor;
+// using LexCer::tokenToClass;
+// using LexCer::spanBegin;
+// using LexCer::spanEnd;
 
-class Highlighter {
-private:
-  enum num_t {
-              BIN = 2,
-              OCT = 8,
-              DEC = 10,
-              HEX = 16
-  };
+//const char* Tokenizer::spanBegin = "<span class=\"";
+//const char* Tokenizer::spanEnd = "</span>";
 
-public:
-  Highlighter(FILE *in, FILE *out);
+namespace LexCer {
 
-  void outputHighlighted();
-
-private:
-  std::string escapeHTML(const std::string &lexeme);
-  TokenClass nextToken(std::string *lexeme, double *number);
-  void makeToken(TokenClass type, unsigned line,
-                 std::string lexeme = std::string(), double number = 0.0);
-  bool readNextDirective(std::string *lexeme);
-  bool readNextString(std::string *lexeme, char oldc);
-  bool readNextIdentifier(std::string *lexeme);
-  bool readNextNumber(char beg, double *number, std::string *numberRepr);
-  bool isValidDigit(char c, num_t numType) const ;
-  bool readLineComment(std::string *lexeme);
-  bool readMultilineComment(std::string *lexeme);
-  bool readInclude(std::string *lexeme);
-  bool readUntilBlank(std::string *lexeme);
-  bool writeToOutput();
-
-  double atod(const std::string &number) const { return 0.0; }
-private:              
-  FILE *in;
-  FILE *out;
-  Token token; // current token
-  unsigned line = 1;
-  std::unordered_set<std::string> typenames;
-};
-
-//const char* Highlighter::spanBegin = "<span class=\"";
-//const char* Highlighter::spanEnd = "</span>";
-
-Highlighter::Highlighter(FILE *in, FILE *out)
+Tokenizer::Tokenizer(FILE *in, FILE *out)
   : in(in), out(out) {
   token.type = TokenClass::Invalid;
   typenames = {"void", "char", "short", "int", "long", "float", "double", "signed", "unsigned"};
 }
 
-void Highlighter::outputHighlighted() {
-  std::string lexeme;
-  double number;
-  TokenClass type;
-  do {
-    type = nextToken(&lexeme, &number);
-    
-    makeToken(type, line, lexeme, number);
-    if (!writeToOutput())
-      break;
-    lexeme = "";
-    number = 0.0;
-  } while(token.type != TokenClass::Eof || token.type != TokenClass::Invalid);
-}
-
-void Highlighter::makeToken(TokenClass type, unsigned line, std::string lexeme, double number) {
+void Tokenizer::makeToken(TokenClass type, unsigned line, std::string lexeme, double number) {
   token.type = type;
   token.line = line;
   token.lexeme = lexeme;
   token.number = number;
 }
 
-bool Highlighter::readNextDirective(std::string *lexeme) {
+bool Tokenizer::readNextDirective(std::string *lexeme) {
   char c;
   while (isalpha((c = fgetc(in))))
     lexeme->push_back(c);
@@ -97,7 +45,7 @@ bool Highlighter::readNextDirective(std::string *lexeme) {
   return true;
 }
 
-bool Highlighter::readNextString(std::string *lexeme, char oldc) {
+bool Tokenizer::readNextString(std::string *lexeme, char oldc) {
   char c, prevc = oldc;
   while (((c = fgetc(in)) != '"' || prevc == '\\') && c != '\n' && c != EOF) {
     lexeme->push_back(c);
@@ -112,7 +60,7 @@ bool Highlighter::readNextString(std::string *lexeme, char oldc) {
   return true;
 }
 
-bool Highlighter::readNextIdentifier(std::string *lexeme) {
+bool Tokenizer::readNextIdentifier(std::string *lexeme) {
   char c;
   bool valid = true;
   while (isalnum(c = fgetc(in)) || c == '_') {
@@ -122,7 +70,7 @@ bool Highlighter::readNextIdentifier(std::string *lexeme) {
   return valid;
 }
 
-bool Highlighter::readNextNumber(char beg, double *number, std::string *numberRepr) {
+bool Tokenizer::readNextNumber(char beg, double *number, std::string *numberRepr) {
   bool valid = true;
   num_t base = DEC;
   char c;
@@ -175,7 +123,7 @@ bool Highlighter::readNextNumber(char beg, double *number, std::string *numberRe
   return true;
 }
 
-bool Highlighter::isValidDigit(char c, num_t numType) const {
+bool Tokenizer::isValidDigit(char c, num_t numType) const {
   bool valid;
   switch (numType) {
   case DEC:
@@ -191,7 +139,7 @@ bool Highlighter::isValidDigit(char c, num_t numType) const {
   }
 }
 
-bool Highlighter::readLineComment(std::string *lexeme) {
+bool Tokenizer::readLineComment(std::string *lexeme) {
   char c;
   while ((c = fgetc(in)) != '\n' && c != EOF)
     lexeme->push_back(c);
@@ -199,7 +147,7 @@ bool Highlighter::readLineComment(std::string *lexeme) {
   return true; // for consistency
 }
 
-bool Highlighter::readMultilineComment(std::string *lexeme) {
+bool Tokenizer::readMultilineComment(std::string *lexeme) {
   char c, prevc = (char) -1;
   while (((c = fgetc(in)) != '/' && prevc != '*') && c != EOF)
     lexeme->push_back(c);
@@ -211,7 +159,7 @@ bool Highlighter::readMultilineComment(std::string *lexeme) {
   return true;
 }
 
-bool Highlighter::readInclude(std::string *lexeme) {
+bool Tokenizer::readInclude(std::string *lexeme) {
   char c;
   bool valid = true;
   while ((c = fgetc(in)) != '>') {
@@ -223,14 +171,14 @@ bool Highlighter::readInclude(std::string *lexeme) {
   return valid;
 }
 
-bool Highlighter::readUntilBlank(std::string *lexeme) {
+bool Tokenizer::readUntilBlank(std::string *lexeme) {
   char c;
   while (!isblank(c = fgetc(in)) && c != EOF) ;
   ungetc((unsigned) c, in);
   return true;
 }
 
-bool Highlighter::writeToOutput() {
+bool Tokenizer::writeToOutput() {
   if (token.type == TokenClass::Eof) {
     printf("End of file!\n");
     fputc('\n', out);
@@ -263,7 +211,7 @@ bool Highlighter::writeToOutput() {
   return true;
 }
 
-std::string Highlighter::escapeHTML(const std::string &lexeme) {
+std::string Tokenizer::escapeHTML(const std::string &lexeme) {
   std::string result;
   for (auto c : lexeme) {
     switch(c) {
@@ -284,7 +232,7 @@ std::string Highlighter::escapeHTML(const std::string &lexeme) {
   return result;
 }
 
-TokenClass Highlighter::nextToken(std::string *lexeme, double *number) {
+TokenClass Tokenizer::nextToken(std::string *lexeme, double *number) {
   if (token.type == TokenClass::Eof) {
     return TokenClass::Invalid;
   }
@@ -303,11 +251,13 @@ TokenClass Highlighter::nextToken(std::string *lexeme, double *number) {
   case ' ':
   case ';':
   case ',':
-  case '(':
-  case ')':
   case '{':
   case '}':
     return TokenClass::Skip;
+  case '(':
+    return TokenClass::LeftParen;
+  case ')':
+    return TokenClass::RightParen;
   case '[':
   case ']':
   case '?':
@@ -434,7 +384,7 @@ TokenClass Highlighter::nextToken(std::string *lexeme, double *number) {
 }
 
 
-std::string LexCer::getOutputFileName(const std::string &name) {
+std::string getOutputFileName(const std::string &name) {
   auto pos = name.find_last_of('.');
   if (pos == std::string::npos) {
     return name + ".html";
@@ -443,8 +393,21 @@ std::string LexCer::getOutputFileName(const std::string &name) {
   return name.substr(0, pos) + ".html";
 }
 
-void LexCer::lexCit(FILE *in, FILE *out) {
-  Highlighter hl {in, out};
-  hl.outputHighlighted();
+void lexCit(FILE *in, FILE *out) {
+  Tokenizer hl {in, out};
+ 
+  std::string lexeme;
+  double number;
+  TokenClass type;
+  do {
+    type = hl.nextToken(&lexeme, &number);
+    
+    hl.makeToken(type, hl.lineNumber(), lexeme, number);
+    if (!hl.writeToOutput())
+      break;
+    lexeme = "";
+    number = 0.0;
+  } while(hl.currentToken().type != TokenClass::Eof || hl.currentToken().type != TokenClass::Invalid);
 }
 
+} /* Namespace Lexcer */
