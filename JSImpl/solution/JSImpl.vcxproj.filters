@@ -1,56 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Expressions">
-      <UniqueIdentifier>{9e65384d-2e18-4a3f-9b02-4abf632f9f06}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Lexer">
-      <UniqueIdentifier>{177dbff8-a919-4a03-89ba-cb0a96e9e21e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Visitors">
-      <UniqueIdentifier>{948e229c-5a7a-4b3c-a75a-4b1b299c9e38}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Parser">
-      <UniqueIdentifier>{cf3787a3-5a0e-49f9-9a9f-99e14b57f391}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\Expression.h">
-      <Filter>Expressions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ExpressionDefinitions.h">
-      <Filter>Expressions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ExpressionsFwd.h">
-      <Filter>Expressions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Lexer.h">
-      <Filter>Lexer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Parser.h">
-      <Filter>Parser</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ASTPrinter.h">
-      <Filter>Visitors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ExpressionVisitor.h">
-      <Filter>Visitors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\CommonTypes.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\Expression.cpp">
-      <Filter>Expressions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Lexer.cpp">
-      <Filter>Lexer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Parser.cpp">
-      <Filter>Parser</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ASTPrinter.cpp">
-      <Filter>Visitors</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\main.cpp" />
   </ItemGroup>
 </Project>

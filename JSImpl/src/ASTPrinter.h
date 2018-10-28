@@ -28,7 +28,14 @@ public:
 	virtual void Visit(FunctionDeclaration* e) override;
 	virtual void Visit(TopStatements* e) override;
 	virtual void Visit(EmptyExpression* e) override;
+
+	inline void Enter();
+	inline void Exit();
+	inline void NoIndentNextAccept();
+	inline void IndentNextAccept();
+	inline void InsertIndent();
 private:
 	std::ostream& os;
-
+	unsigned nest_level;
+	bool indent_next_accept;
 };

@@ -15,6 +15,7 @@ outputs: ["Reveal"]
 3. Visitor pattern
 4. Hand-crafted parsers
 
+---
 ### Parser
 
 > Recognizes the rules from stream of tokens and builds the Abstract Syntax Tree
@@ -34,11 +35,11 @@ Context Free Grammars are:
 1. formal grammars - they describe all the strings in a formal language
 2. context free - there is only one non-terminal on left hand side of each rule
 
-    <expr> ::= <expr> <op> <expr> | (<expr>) | <term>
-    <op>   ::= + | - | * | /
-    <term> ::= [0-9]+
+        <expr> ::= <expr> <op> <expr> | (<expr>) | <term>
+        <op>   ::= + | - | * | /
+        <term> ::= [0-9]+
 
-> Does this grammar allow for operator precedence?
+> Does this grammar allow for operator precedence? (No, more later)
 
 ---
 ##### Terminals and Non-terminals
@@ -78,10 +79,10 @@ specifications for EBNF, but they have the same power, just different syntax.
 - https://www.w3.org/TR/REC-xml/#sec-notation
 
 
-    expr  = expr , op , expr | "(" , expr ,  ")" | term
-    op    = "+" | "-" | "*" | "/"
-    term  = { digit }
-    digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+        expr  = expr , op , expr | "(" , expr ,  ")" | term
+        op    = "+" | "-" | "*" | "/"
+        term  = { digit }
+        digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 
 
 ---
@@ -375,7 +376,7 @@ Where `XXX` is a token (aka *terminal*).
     AST parse_sum() {
         AST left = parse_prod();
         auto token = next_token();
-        while (token != '+' || token != '-') {
+        while (token == '+' || token == '-') {
             AST right = parse_prod();
             left = make_op(token, left, right);
         }
@@ -390,7 +391,7 @@ Where `XXX` is a token (aka *terminal*).
     AST parse_prod() {
         AST left = parse_value();
         auto token = next_token();
-        while (token != '*' || token != '/') {
+        while (token == '*' || token == '/') {
             AST right = parse_value();
             left = make_op(token, left, right);
         }
@@ -452,15 +453,10 @@ Where `XXX` is a token (aka *terminal*).
 ---
 
     void handle_token(token, output, operators) {
-        switch (token) {
-            case NUMBER:
-                output.push(make_number(token));
-                break;
-            case OPERATOR:
-            case ')':
-            case '(':
-                handle_operator(token, output, operators);
-                break;
+        if (token == NUMBER) {
+            output.push(make_number(token));
+        } else {
+            handle_operator(token, output, operators);
         }
     }
 
