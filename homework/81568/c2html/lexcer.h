@@ -9,7 +9,7 @@
 
 namespace LexCer {
   
-enum class TokenType : short {
+enum class TokenClass : short {
   Operator,
   Keyword,
   PreprocessorDirective,
@@ -24,7 +24,7 @@ enum class TokenType : short {
 };
 
 struct Token {
-  TokenType type;
+  TokenClass type;
   unsigned line;
   std::string lexeme;
   double number;

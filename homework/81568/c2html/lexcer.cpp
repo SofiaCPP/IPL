@@ -375,7 +375,6 @@ TokenClass Highlighter::nextToken(std::string *lexeme, double *number) {
     lexeme->push_back(c = fgetc(in)); // the closing mark
     if (c != '\'')
       return TokenClass::Invalid;
-    lexeme->push_back(c);
     return TokenClass::String;
   case '"':
     if (readNextString(lexeme, c))

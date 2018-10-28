@@ -12,18 +12,18 @@ static const std::unordered_set<std::string> preprocessor =
   {"include", "define", "undef", "if", "ifdef", "ifndef", "else", "elif", "endif",
    "line", "error", "pragma"};
 
-static const std::unordered_map<TokenType, std::string> tokenToClass
+static const std::unordered_map<TokenClass, std::string> tokenToClass
   {
    {
-    {TokenType::Operator, "operator"},
-    {TokenType::Keyword, "keyword"},
-    {TokenType::Typename, "typename"},
-    {TokenType::PreprocessorDirective, "preproc"},
-    {TokenType::Identifier, "identifier"},
-    {TokenType::String, "string"},
-    {TokenType::Comment, "comment"},
-    {TokenType::Number, "number"},
-    {TokenType::Invalid, "invalid"}
+    {TokenClass::Operator, "operator"},
+    {TokenClass::Keyword, "keyword"},
+    {TokenClass::Typename, "typename"},
+    {TokenClass::PreprocessorDirective, "preproc"},
+    {TokenClass::Identifier, "identifier"},
+    {TokenClass::String, "string"},
+    {TokenClass::Comment, "comment"},
+    {TokenClass::Number, "number"},
+    {TokenClass::Invalid, "invalid"}
    }
   };
 
