@@ -19,8 +19,8 @@ void RunParseCalc()
 	auto result = i.Run(expr.get());
     std::cout << "Stack after run, top to bottom:" << std::endl;
     while (!result.empty()) {
-        std::cout << result.top() << std::endl;
-        result.pop();
+        std::cout << result.back() << std::endl;
+        result.pop_back();
     }
 	std::cout << "S = " << i.ModifyVariable("s") << std::endl;
 }

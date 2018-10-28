@@ -68,6 +68,27 @@ struct VariableScope
 	ASTInterpreter* m_Interpreter;
 };
 
+struct StackScope
+{
+	StackScope(ASTInterpreter* interpreter)
+		: m_Interpreter(interpreter)
+                , m_StackSize(m_Interpreter->m_Evaluation.size())
+	{
+	}
+
+	~StackScope() {
+		m_Interpreter->m_Evaluation.resize(m_StackSize);
+	}
+
+	StackScope(StackScope&) = delete;
+	StackScope(StackScope&&) = delete;
+	StackScope& operator=(StackScope&) = delete;
+	StackScope& operator=(StackScope&&) = delete;
+
+	ASTInterpreter* m_Interpreter;
+        size_t m_StackSize;
+};
+
 ASTInterpreter::ASTInterpreter()
 {
 	// Allow globals
@@ -95,8 +116,8 @@ void ASTInterpreter::RunExpression(const ExpressionPtr& e)
 bool ASTInterpreter::EvalToBool(const ExpressionPtr& e)
 {
     e->Accept(*this);
-    auto result = m_Evaluation.top();
-    m_Evaluation.pop();
+    auto result = m_Evaluation.back();
+    m_Evaluation.pop_back();
     return result != 0.0;
 }
 
@@ -110,7 +131,7 @@ void ASTInterpreter::LeaveScope()
 	const auto& scope = m_Scopes.top();
 	for (auto& var : scope) {
 		auto values = m_Variables.find(var);
-		values->second.pop();
+		values->second.pop_back();
 		if (values->second.empty()) {
 			m_Variables.erase(values);
 		}
@@ -122,7 +143,7 @@ ASTInterpreter::value_type& ASTInterpreter::ModifyVariable(const IPLString& name
 {
 	auto values = m_Variables.find(name);
 	if (values != m_Variables.end()) {
-		return values->second.top();
+		return values->second.back();
 	}
 	else {
 		assert(0 && "not-defined");
@@ -143,40 +164,39 @@ void ASTInterpreter::Visit(LiteralString* e) {
 }
 
 void ASTInterpreter::Visit(LiteralNumber* e) {
-    m_Evaluation.push(e->GetValue());
+    m_Evaluation.push_back(e->GetValue());
 }
 void ASTInterpreter::Visit(LiteralBoolean* e) {
-    m_Evaluation.push(e->GetValue());
+    m_Evaluation.push_back(e->GetValue());
 }
 
 void ASTInterpreter::Visit(BinaryExpression* e) {
     e->GetLeft()->Accept(*this);
     e->GetRight()->Accept(*this);
-    auto right = m_Evaluation.top();
-    m_Evaluation.pop();
+    auto right = m_Evaluation.back();
+    m_Evaluation.pop_back();
 
-    auto left = m_Evaluation.top();
-    m_Evaluation.pop();
+    auto left = m_Evaluation.back();
+    m_Evaluation.pop_back();
 
     switch (e->GetOperator()) {
         case TokenType::Plus:
-            std::cout << "PLUS:" << left << ':' << right << std::endl;
-            m_Evaluation.push(left + right);
+            m_Evaluation.push_back(left + right);
             break;
         case TokenType::Minus:
-            m_Evaluation.push(left - right);
+            m_Evaluation.push_back(left - right);
             break;
         case TokenType::Star:
-            m_Evaluation.push(left * right);
+            m_Evaluation.push_back(left * right);
             break;
         case TokenType::Division:
-            m_Evaluation.push(left / right);
+            m_Evaluation.push_back(left / right);
             break;
 	    case TokenType::Less:
-			m_Evaluation.push(left < right);
+			m_Evaluation.push_back(left < right);
 			break;
 		case TokenType::Comma:
-			m_Evaluation.push(right);
+			m_Evaluation.push_back(right);
 			break;
         default:
             NOT_IMPLEMENTED;
@@ -188,7 +208,7 @@ void ASTInterpreter::Visit(UnaryExpression* e) {
 	auto lvalue = extractor.Run(e->GetExpr().get());
 	if (e->GetSuffix())
 	{
-		m_Evaluation.push(*lvalue);
+		m_Evaluation.push_back(*lvalue);
 	}
 	switch (e->GetOperator())
 	{
@@ -203,12 +223,12 @@ void ASTInterpreter::Visit(UnaryExpression* e) {
 	}
 	if (!e->GetSuffix())
 	{
-		m_Evaluation.push(*lvalue);
+		m_Evaluation.push_back(*lvalue);
 	}
 }
 
 void ASTInterpreter::Visit(IdentifierExpression* e) {
-	m_Evaluation.push(ModifyVariable(e->GetName()));
+	m_Evaluation.push_back(ModifyVariable(e->GetName()));
 }
 
 void ASTInterpreter::Visit(ListExpression* e) {
@@ -220,9 +240,9 @@ void ASTInterpreter::Visit(ListExpression* e) {
 void ASTInterpreter::Visit(VariableDefinitionExpression* e) {
     e->GetValue()->Accept(*this);
 	auto& name = e->GetName();
-    m_Variables[name].push(m_Evaluation.top());
+    m_Variables[name].push_back(m_Evaluation.back());
 	m_Scopes.top().push_back(name);
-    m_Evaluation.pop();
+    m_Evaluation.pop_back();
 }
 
 void ASTInterpreter::Visit(BlockStatement* e) {
@@ -264,11 +284,20 @@ void ASTInterpreter::Visit(WhileStatement* e) {
 void ASTInterpreter::Visit(ForStatement* e) {
 	VariableScope scope(this);
 
-    for (RunExpression(e->GetInitialization());
-            EvalToBool(e->GetCondition());
-            RunExpression(e->GetIteration())) {
-		VariableScope bodyScope(this);
-        RunExpression(e->GetBody());
+    {
+        StackScope stackScope(this);
+        RunExpression(e->GetInitialization());
+    }
+    while (EvalToBool(e->GetCondition()))
+    {
+        {
+            VariableScope bodyScope(this);
+            RunExpression(e->GetBody());
+        }
+        {
+            StackScope stackScope(this);
+            RunExpression(e->GetIteration());
+        }
     }
 }
 
