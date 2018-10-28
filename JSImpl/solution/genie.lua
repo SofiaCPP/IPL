@@ -23,3 +23,5 @@ solution 'IPL'
         uuid(os.uuid('JSImpl'))
         files '../src/*.cpp'
         files '../src/*.h'
+
+    include '../test'
