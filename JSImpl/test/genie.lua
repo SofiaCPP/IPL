@@ -8,9 +8,10 @@ project 'Test'
     includedirs {
         'googletest/googletest/include',
         'googletest/googlemock/include',
-        '../JSImpl/googlemock/include',
+        '..',
     }
     links {
+        'JSLib',
         'gtest',
         'gmock',
         'gtest_main',

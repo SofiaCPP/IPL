@@ -17,11 +17,19 @@ solution 'IPL'
         objdir(root .. 'obj/release')
     configuration '*'
 
+    project 'JSLib'
+        kind 'StaticLib'
+        language 'C++'
+        uuid(os.uuid('JSLib'))
+        files '../src/*.cpp'
+        removefiles '../src/main.cpp'
+        files '../src/*.h'
+
     project 'JSImpl'
         kind 'ConsoleApp'
         language 'C++'
         uuid(os.uuid('JSImpl'))
-        files '../src/*.cpp'
-        files '../src/*.h'
+        files '../src/main.cpp'
+        links 'JSLib'
 
     include '../test'
