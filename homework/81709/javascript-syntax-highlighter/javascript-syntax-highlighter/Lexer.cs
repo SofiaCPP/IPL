@@ -32,6 +32,7 @@ namespace javascript_syntax_highlighter
         public Token NextToken()
         {
             //TODO Parse Comments
+            //TODO Add Error checking and link error line with Invalid token
 
             char cur = stream.Next();
 
@@ -119,6 +120,8 @@ namespace javascript_syntax_highlighter
             return false;
         }
 
+        //TODO String bounds are also '' in javascript
+        //TODO Stop on new line
         private Token ParseString(char ch)
         {
             string lexeme = "" + ch;
