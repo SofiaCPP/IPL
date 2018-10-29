@@ -5,10 +5,6 @@ os: Visual Studio 2015
 environment:
   matrix:
     - compiler: msvc-15-seh
-      generator: "Visual Studio 15 2017"
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-
-    - compiler: msvc-15-seh
       generator: "Visual Studio 15 2017 Win64"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       enabled_on_pr: yes
@@ -20,6 +16,18 @@ configuration:
 build:
   project: JSImpl/solution/JSImpl.sln
   verbosity: minimal
+
+before_test:
+  - appveyor AddMessage "Running Tests"
+  - appveyor SetVariable -Name "GTEST_OUTPUT" -Value "xml"
+
+test_script:
+  - '%APPVEYOR_BUILD_FOLDER%/JSImpl/build/bin/%CONFIGURATION%/Test.exe'
+
+after_test:
+  - curl -F 'file=test_detail.xml' "https://ci.appveyor.com/api/testresults/junit/%APPVEYOR_JOB_ID%"
+
+clone_depth: 1
 
 skip_commits:
   files:

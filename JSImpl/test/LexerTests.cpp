@@ -1,100 +1,125 @@
-#include "Lexer.h"
-#include "Parser.h"
-#include "ASTPrinter.h"
-#include "ASTInterpreter.h"
-#include <iostream>
-#define LOG(msg) std::cout << msg << std::endl
-#define EXECUTE_TEST(test) std::cout << #test << " "; test();
+#include <src/Lexer.h>
+#include <src/CommonTypes.h>
 
-#define CHECK(cond)	if (cond) {LOG("PASS");} else {LOG(#cond " FAIL");}
+#include <gtest/gtest.h>
 
-// Lexer Tests
-void TestLess()
+TEST(Lexer, Less)
 {
 	IPLVector<Token> tokens;
 	Tokenize("<", tokens);
 
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Less);
+	ASSERT_EQ(tokens.size(), 2u);
+        ASSERT_EQ(tokens[0].Type, TokenType::Less);
 }
 
-void TestNumber()
+TEST(Lexer, Number)
 {
 	IPLVector<Token> tokens;
 	Tokenize("213434.24", tokens);
 
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 213434.24);
+	ASSERT_EQ(tokens.size(), 2u);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 213434.24);
 }
 
-void TestNumberStartWithNine()
+
+TEST(Lexer, HexNumber)
+{
+	IPLVector<Token> tokens;
+	auto result = Tokenize("0x10", tokens);
+
+	ASSERT_TRUE(result.IsSuccessful);
+	ASSERT_EQ(tokens.size(), 2u);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 16);
+}
+
+TEST(Lexer, ScientificNotationNumber)
+{
+	IPLVector<Token> tokens;
+	auto result = Tokenize("1e2", tokens);
+
+	ASSERT_TRUE(result.IsSuccessful);
+	ASSERT_EQ(tokens.size(), 2u);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 100);
+}
+
+TEST(Lexer, NumberStartWithNine)
 {
 	IPLVector<Token> tokens;
 	Tokenize("999", tokens);
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999);
+	ASSERT_EQ(tokens.size(), 2u);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 999);
 }
 
-void TestNumberStartWithZero()
+TEST(Lexer, NumberStartWithZero)
 {
 	IPLVector<Token> tokens;
 	Tokenize("0999", tokens);
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::Number && tokens[0].Number == 999);
+	ASSERT_EQ(tokens.size(), 2u);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 999);
 }
 
-void TestSpaceNewLineSpace()
+TEST(Lexer, SpaceNewLineSpace)
 {
 	IPLVector<Token> tokens;
 	Tokenize(" \n var a = 4; ", tokens);
-	CHECK(tokens.size() == 6 && tokens[0].Type == TokenType::Var &&
-		tokens[1].Type == TokenType::Identifier &&
+	ASSERT_TRUE(tokens.size() == 6 && tokens[0].Type == TokenType::Var &&
+                tokens[1].Type == TokenType::Identifier &&
 		tokens[2].Type == TokenType::Equal &&
 		tokens[3].Type == TokenType::Number &&
 		tokens[4].Type == TokenType::Semicolon);
 }
 
-void TestString()
+TEST(Lexer, String)
 {
 	IPLVector<Token> tokens;
 	Tokenize("\"alabala\"", tokens);
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "\"alabala\"");
+	ASSERT_TRUE(tokens.size() == 2 && tokens[0].Type == TokenType::String 
+                && tokens[0].Lexeme == "\"alabala\"");
 }
 
-void TestStringSingleQuotedStrings()
+TEST(Lexer, StringSingleQuotedStrings)
 {
 	IPLVector<Token> tokens;
 	Tokenize("'alabala'", tokens);
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "'alabala'");
+	ASSERT_TRUE(tokens.size() == 2 && tokens[0].Type == TokenType::String && tokens[0].Lexeme == "'alabala'");
 }
 
-void TestKeyWord()
+TEST(Lexer, KeyWord)
 {
 	IPLVector<Token> tokens;
 	Tokenize("for", tokens);
-	CHECK(tokens.size() == 2 && tokens[0].Type == TokenType::For);
+	ASSERT_TRUE(tokens.size() == 2 && tokens[0].Type == TokenType::For);
 }
 
-void TestVariableDeclaration()
+TEST(Lexer, VariableDeclaration)
 {
 	IPLVector<Token> tokens;
 	Tokenize("var pesho = 10", tokens);
 
-	CHECK(tokens.size() == 5 && tokens[0].Type == TokenType::Var
+	ASSERT_TRUE(tokens.size() == 5 && tokens[0].Type == TokenType::Var
 		&& tokens[1].Type == TokenType::Identifier
 		&& tokens[2].Type == TokenType::Equal
 		&& tokens[3].Type == TokenType::Number
 		&& tokens[4].Type == TokenType::Eof);
 }
 
-void TestStringError()
+TEST(Lexer, StringError)
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize("\" aaaa", tokens);
-	CHECK(!res.IsSuccessful && res.Error.Row == 0 && res.Error.Column == 6);
+	ASSERT_TRUE(!res.IsSuccessful && res.Error.Row == 0 && res.Error.Column == 6);
 }
 
-void TestWhiteSpaceTokens()
+TEST(Lexer, TestWhiteSpaceTokens)
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize(" 1\n2  abc\n \n", tokens, { true, false });
-	CHECK(res.IsSuccessful
+	ASSERT_TRUE(res.IsSuccessful
 		&& tokens.size() == 8
 		&& tokens[0].Type == TokenType::Whitespace
 		&& tokens[0].Lexeme == " "
@@ -113,33 +138,33 @@ void TestWhiteSpaceTokens()
 		&& tokens[7].Type == TokenType::Eof);
 }
 
-void TestSimpleComment()
+TEST(Lexer, SimpleComment)
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize("//comment", tokens, { false, true });
-	CHECK(res.IsSuccessful
+	ASSERT_TRUE(res.IsSuccessful
 		&& tokens.size() == 2
 		&& tokens[0].Type == TokenType::Comment
 		&& tokens[0].Lexeme == "//comment"
 		&& tokens[1].Type == TokenType::Eof);
 }
 
-void TestSimpleMultiLineComment()
+TEST(Lexer, SimpleMultiLineComment)
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize("/*comment\ncomment*/", tokens, { false, true });
-	CHECK(res.IsSuccessful
+	ASSERT_TRUE(res.IsSuccessful
 		&& tokens.size() == 2
 		&& tokens[0].Type == TokenType::Comment
 		&& tokens[0].Lexeme == "/*comment\ncomment*/"
 		&& tokens[1].Type == TokenType::Eof);
 }
 
-void TestConsecutiveMultiLineComment()
+TEST(Lexer, ConsecutiveMultiLineComment)
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize("/*comment1\ncomment1*//*comment2\ncomment2*/", tokens, { false, true });
-	CHECK(res.IsSuccessful
+	ASSERT_TRUE(res.IsSuccessful
 		&& tokens.size() == 3
 		&& tokens[0].Type == TokenType::Comment
 		&& tokens[0].Lexeme == "/*comment1\ncomment1*/"
@@ -148,11 +173,11 @@ void TestConsecutiveMultiLineComment()
 		&& tokens[2].Type == TokenType::Eof);
 }
 
-void TestConsecutiveMultiLineCommentWithSpace()
+TEST(Lexer, ConsecutiveMultiLineCommentWithSpace)
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize("/*comment1\ncomment1*/\n\n\n/*comment2\ncomment2*/", tokens, { false, true });
-	CHECK(res.IsSuccessful
+	ASSERT_TRUE(res.IsSuccessful
 		&& tokens.size() == 3
 		&& tokens[0].Type == TokenType::Comment
 		&& tokens[0].Lexeme == "/*comment1\ncomment1*/"
@@ -161,11 +186,11 @@ void TestConsecutiveMultiLineCommentWithSpace()
 		&& tokens[2].Type == TokenType::Eof);
 }
 
-void TestConsecutiveMultiLineCommentWithSpaceWithTokens()
+TEST(Lexer, ConsecutiveMultiLineCommentWithSpaceWithTokens)
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize("//comment1\n/*comment2\ncomment2*/\n\n\n/*comment3\ncomment3*/", tokens, { true, true });
-	CHECK(res.IsSuccessful
+	ASSERT_TRUE(res.IsSuccessful
 		&& tokens.size() == 6
 		&& tokens[0].Type == TokenType::Comment
 		&& tokens[0].Lexeme == "//comment1"
@@ -180,65 +205,11 @@ void TestConsecutiveMultiLineCommentWithSpaceWithTokens()
 		&& tokens[5].Type == TokenType::Eof);
 }
 
-void TestCommentError()
+TEST(Lexer, CommentError)
 {
 	IPLVector<Token> tokens;
 	const auto& res = Tokenize(" aa\n /*", tokens);
-	CHECK(!res.IsSuccessful && res.Error.Row == 1 && res.Error.Column == 3);
+	ASSERT_TRUE(!res.IsSuccessful && res.Error.Row == 1 &&
+                res.Error.Column == 3);
 }
 
-// Parser Tests
-void TestParseUnaryExpr()
-{
-	IPLVector<Token> tokens;
-	Tokenize("function pesho() { var a = 0; return a; } var a = \"3\";", tokens);
-
-	// TODO make actual test :D
-	auto expr = Parse(tokens);
-	ASTPrinter p(std::cout);
-	expr->Accept(p);
-	std::cout << "\n";
-}
-
-void TestHexNumber()
-{
-	IPLVector<Token> tokens;
-	const auto& res = Tokenize("0x10", tokens);
-
-	CHECK(res.IsSuccessful && tokens[0].Type == TokenType::Number && tokens[0].Number == 16);
-}
-
-void TestScientificNotationNumber()
-{
-	IPLVector<Token> tokens;
-	const auto& res = Tokenize("1e2", tokens);
-
-	CHECK(res.IsSuccessful && tokens[0].Type == TokenType::Number && tokens[0].Number == 100);
-}
-
-int main()
-{
-	EXECUTE_TEST(TestLess);
-	EXECUTE_TEST(TestNumber);
-	EXECUTE_TEST(TestNumberStartWithNine);
-	EXECUTE_TEST(TestNumberStartWithZero);
-	EXECUTE_TEST(TestString);
-	EXECUTE_TEST(TestSpaceNewLineSpace);
-	EXECUTE_TEST(TestStringSingleQuotedStrings);
-	EXECUTE_TEST(TestKeyWord);
-	EXECUTE_TEST(TestVariableDeclaration);
-	EXECUTE_TEST(TestWhiteSpaceTokens);
-	EXECUTE_TEST(TestSimpleComment);
-	EXECUTE_TEST(TestSimpleMultiLineComment);
-	EXECUTE_TEST(TestConsecutiveMultiLineComment);
-	EXECUTE_TEST(TestConsecutiveMultiLineCommentWithSpace);
-	EXECUTE_TEST(TestConsecutiveMultiLineCommentWithSpaceWithTokens);
-	EXECUTE_TEST(TestCommentError);
-	EXECUTE_TEST(TestHexNumber);
-	EXECUTE_TEST(TestScientificNotationNumber);
-
-#if defined(_WIN32)
-	std::system("pause");
-#endif
-	return 0;
-}
