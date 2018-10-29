@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace javascript_syntax_highlighter
 {
-    class NumToken : Token, IEquatable<NumToken>
+    public class NumToken : Token, IEquatable<NumToken>
     {
-        public NumToken(int num) : base(TokenType.Number)
+        public NumToken(long num) : base(TokenType.Number)
         {
             Num = num;
         }
 
-        public int Num { get; private set; }
+        public long Num { get; private set; }
 
         public bool Equals(NumToken other)
         {

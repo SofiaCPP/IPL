@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace javascript_syntax_highlighter
 {
-    enum TokenType
+    public enum TokenType
     {
         // Single-character token types mapped to ASCII codes
         LeftParen = 40, // (
@@ -33,14 +33,14 @@ namespace javascript_syntax_highlighter
         Equal = 61, // =
         Greater = 62, // >
         Less = 60, // <
+        Backslash = 92, // \
 
         Whitespace = 32,
-        Tab = 9,
 
         Invalid = 127,
         Eof,
         
-        BangEqual, // !=
+        NotEqual, // !=
         EqualEqual, // ==
         StrictEqual, // ===
         StrictNotEqual, // !==
@@ -62,7 +62,6 @@ namespace javascript_syntax_highlighter
         BitwiseAndEqual, // &=
         BitwiseXorEqual, // ^=
         BitwiseOrEqual, // |=
-        Backslash, // \\
 
         Identifier,
         String,

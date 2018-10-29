@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace javascript_syntax_highlighter
 {
-    class WordToken : Token, IEquatable<WordToken>
+    public class WordToken : Token, IEquatable<WordToken>
     {
-        public WordToken(string lexeme, TokenType type = TokenType.String) : base(type)
+        public WordToken(string lexeme, TokenType type) : base(type)
         {
             Lexeme = lexeme;
         }

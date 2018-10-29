@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace javascript_syntax_highlighter
 {
-    class Token : IEquatable<Token>
+    public class Token : IEquatable<Token>
     {
         public Token(TokenType type)
         {
