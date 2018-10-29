@@ -38,7 +38,9 @@ namespace javascript_syntax_highlighter
         Whitespace = 32,
 
         Invalid = 127,
-        Eof,
+        Comment,
+        MultilineComment,
+        EOF,
         
         NotEqual, // !=
         EqualEqual, // ==

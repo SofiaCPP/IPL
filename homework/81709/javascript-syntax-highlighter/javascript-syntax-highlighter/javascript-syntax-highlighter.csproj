@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorToken.cs" />
     <Compile Include="InputStream.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="NumToken.cs" />
