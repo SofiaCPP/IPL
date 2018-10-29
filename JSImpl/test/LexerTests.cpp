@@ -18,29 +18,31 @@ TEST(Lexer, Number)
 	Tokenize("213434.24", tokens);
 
 	ASSERT_EQ(tokens.size(), 2u);
-        ASSERT_EQ(tokens[0].Type, TokenType::Number);
-        ASSERT_EQ(tokens[0].Number, 213434.24);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 213434.24);
 }
 
 
 TEST(Lexer, HexNumber)
 {
 	IPLVector<Token> tokens;
-	const auto& res = Tokenize("0x10", tokens);
+	auto result = Tokenize("0x10", tokens);
 
+	ASSERT_TRUE(result.IsSuccessful);
 	ASSERT_EQ(tokens.size(), 2u);
-        ASSERT_EQ(tokens[0].Type, TokenType::Number);
-        ASSERT_EQ(tokens[0].Number, 16);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 16);
 }
 
 TEST(Lexer, ScientificNotationNumber)
 {
 	IPLVector<Token> tokens;
-	const auto& res = Tokenize("1e2", tokens);
+	auto result = Tokenize("1e2", tokens);
 
+	ASSERT_TRUE(result.IsSuccessful);
 	ASSERT_EQ(tokens.size(), 2u);
-        ASSERT_EQ(tokens[0].Type, TokenType::Number);
-        ASSERT_EQ(tokens[0].Number, 100);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 100);
 }
 
 TEST(Lexer, NumberStartWithNine)
@@ -48,8 +50,8 @@ TEST(Lexer, NumberStartWithNine)
 	IPLVector<Token> tokens;
 	Tokenize("999", tokens);
 	ASSERT_EQ(tokens.size(), 2u);
-        ASSERT_EQ(tokens[0].Type, TokenType::Number);
-        ASSERT_EQ(tokens[0].Number, 999);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 999);
 }
 
 TEST(Lexer, NumberStartWithZero)
@@ -57,8 +59,8 @@ TEST(Lexer, NumberStartWithZero)
 	IPLVector<Token> tokens;
 	Tokenize("0999", tokens);
 	ASSERT_EQ(tokens.size(), 2u);
-        ASSERT_EQ(tokens[0].Type, TokenType::Number);
-        ASSERT_EQ(tokens[0].Number, 999);
+    ASSERT_EQ(tokens[0].Type, TokenType::Number);
+    ASSERT_EQ(tokens[0].Number, 999);
 }
 
 TEST(Lexer, SpaceNewLineSpace)
