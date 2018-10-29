@@ -15,8 +15,10 @@ project 'Test'
         'gtest',
         'gmock',
         'gtest_main',
-        'pthread',
     }
+    configuration 'Linux'
+        links 'pthread'
+    configuration '*'
 
 project 'gtest'
     kind 'StaticLib'
