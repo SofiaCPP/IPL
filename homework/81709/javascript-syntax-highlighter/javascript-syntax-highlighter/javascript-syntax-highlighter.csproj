@@ -42,7 +42,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileInputStream.cs" />
     <Compile Include="InputStream.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="NumToken.cs" />
@@ -51,6 +50,7 @@
     <Compile Include="IdTokenTypes.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="TokenType.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="WordToken.cs" />
   </ItemGroup>
   <ItemGroup>

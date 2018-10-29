@@ -10,8 +10,9 @@ namespace javascript_syntax_highlighter
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            Console.ReadKey();
+            InputStream stream = new InputStream("test.js");
+            Lexer lex = new Lexer(stream);
+            List<Token> tokens = lex.Tokenize();            
         }
     }
 }
