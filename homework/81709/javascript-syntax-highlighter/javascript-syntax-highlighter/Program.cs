@@ -12,7 +12,9 @@ namespace javascript_syntax_highlighter
         {
             InputStream stream = new InputStream("test.js");
             Lexer lex = new Lexer(stream);
-            List<Token> tokens = lex.Tokenize();            
+            List<Token> tokens = lex.Tokenize();
+            //TODO Create syntax highlighter
+
         }
     }
 }
