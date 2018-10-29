@@ -25,7 +25,7 @@ test_script:
   - '%APPVEYOR_BUILD_FOLDER%/JSImpl/build/bin/%CONFIGURATION%/Test.exe'
 
 after_test:
-  - curl -F 'file=test_detail.xml' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+  - curl -F 'file=test_detail.xml' "https://ci.appveyor.com/api/testresults/junit/%APPVEYOR_JOB_ID%"
 
 clone_depth: 1
 
