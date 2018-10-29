@@ -46,45 +46,47 @@ namespace javascript_syntax_highlighter
             {
                 case '=':
                     return Match('=') ? Match('=') ? new WordToken("===", TokenType.StrictEqual)
-                           : new WordToken("==", TokenType.EqualEqual)
-                           : new Token(TokenType.Equal);
+                        : new WordToken("==", TokenType.EqualEqual)
+                        : new Token(TokenType.Equal);
                 case '!':
                     return Match('=') ? Match('=') ? new WordToken("!==", TokenType.StrictNotEqual)
-                           : new WordToken("!=", TokenType.NotEqual)
-                           : new Token(TokenType.Bang);
+                        : new WordToken("!=", TokenType.NotEqual)
+                        : new Token(TokenType.Bang);
                 case '>':
                     return Match('=') ? new WordToken(">=", TokenType.GreaterEqual)
-                           : Match('>') ? Match('=') ? new WordToken(">>=", TokenType.RightShiftEqual)
-                           : new WordToken(">>", TokenType.RightShift)
-                           : new Token(TokenType.Greater);
+                        : Match('>') ? Match('=') ? new WordToken(">>=", TokenType.RightShiftEqual)
+                        : new WordToken(">>", TokenType.RightShift)
+                        : new Token(TokenType.Greater);
                 case '<':
                     return Match('=') ? new WordToken("<=", TokenType.LessEqual)
-                           : Match('<') ? Match('=') ? new WordToken("<<=", TokenType.LeftShiftEqual)
-                           : new WordToken("<<", TokenType.LeftShift)
-                           : new Token(TokenType.Less);
+                        : Match('<') ? Match('=') ? new WordToken("<<=", TokenType.LeftShiftEqual)
+                        : new WordToken("<<", TokenType.LeftShift)
+                        : new Token(TokenType.Less);
                 case '+':
                     return Match('+') ? new WordToken("++", TokenType.PlusPlus)
-                           : Match('=') ? new WordToken("+=", TokenType.PlusEqual)
-                           : new Token(TokenType.Plus);
+                        : Match('=') ? new WordToken("+=", TokenType.PlusEqual)
+                        : new Token(TokenType.Plus);
                 case '-':
                     return Match('-') ? new WordToken("--", TokenType.MinusMinus)
-                           : Match('=') ? new WordToken("-=", TokenType.MinusEqual)
-                           : new Token(TokenType.Minus);
+                         : Match('=') ? new WordToken("-=", TokenType.MinusEqual)
+                         : new Token(TokenType.Minus);
                 case '/':
-                    return Match('=') ? new WordToken("/=", TokenType.DivideEqual)
-                           : new Token(TokenType.Division);
+                    return Match('/') ? ParseOneLineComment(stream.Peek())
+                        : Match('*') ? ParseMultilineToken(stream.Peek())
+                        : Match('=') ? new WordToken("/=", TokenType.DivideEqual)
+                        : new Token(TokenType.Division);
                 case '%':
                     return Match('=') ? new WordToken("%=", TokenType.ModuloEqual)
-                           : new Token(TokenType.Modulo);
+                        : new Token(TokenType.Modulo);
                 case '^':
                     return Match('=') ? new WordToken("^=", TokenType.BitwiseXorEqual)
-                            : new Token(TokenType.BitwiseXor);
+                        : new Token(TokenType.BitwiseXor);
                 case '|':
                     return Match('=') ? new WordToken("|=", TokenType.BitwiseOrEqual)
-                            : new Token(TokenType.BitwiseOr);
+                        : new Token(TokenType.BitwiseOr);
                 case '&':
                     return Match('=') ? new WordToken("&=", TokenType.BitwiseAndEqual)
-                            : new Token(TokenType.BitwiseAnd);
+                        : new Token(TokenType.BitwiseAnd);
                 default:
                     break;
             }
@@ -92,7 +94,7 @@ namespace javascript_syntax_highlighter
             if (cur < 127 && Enum.IsDefined(typeof(TokenType), (int)cur))
                 return new Token((TokenType)cur);
 
-            if(cur == '"')
+            if(Utils.IsStringBound(cur))
             {
                 return ParseString(cur);
             }
@@ -107,7 +109,7 @@ namespace javascript_syntax_highlighter
                 return ParseKeywordOrIdentifier(cur);
             }
 
-            return new Token(TokenType.Invalid);
+            return new ErrorToken(stream.Line, $"Unresolved symbol at line: {stream.Line} \n");
         }
 
         private bool Match(char ch)
@@ -120,18 +122,46 @@ namespace javascript_syntax_highlighter
             return false;
         }
 
-        //TODO String bounds are also '' in javascript
-        //TODO Stop on new line
+        private Token ParseOneLineComment(char ch)
+        {
+            string lexeme = "" + ch;
+            while(!Utils.IsNewLine(stream.Peek()) && !stream.IsEndOfStream())
+            {
+                lexeme += stream.Next();
+            }
+
+            return new WordToken(lexeme, TokenType.Comment);
+        }
+
+        private Token ParseMultilineToken(char ch)
+        {
+            string lexeme = "" + ch;
+            
+            //TODO Parse multiline token
+
+            return new WordToken(lexeme, TokenType.Comment);
+        }
+
+        //TODO Fix parsing of string combinations of ' and ".
+        //Example: Fix "My name is 'Josh'. He is cool."
         private Token ParseString(char ch)
         {
             string lexeme = "" + ch;
-            while (stream.Peek() != '"')
+            int startLine = stream.Line;
+            char peek = stream.Peek();
+            while (!Utils.IsStringBound(peek))
             {
+                if (Utils.IsNewLine(peek))
+                {
+                    return new ErrorToken(stream.Line, $"String literal contains an unescaped line break at line: {stream.Line}");
+                }
+
                 lexeme += stream.Next();
                 if (stream.IsEndOfStream())
                 {
-                    return new WordToken(lexeme, TokenType.Invalid);
+                    return new ErrorToken(startLine, $"Unclosed string literal at line: {startLine}");
                 }
+                peek = stream.Peek();
             }
             lexeme += stream.Next();
             return new WordToken(lexeme, TokenType.String);
@@ -141,14 +171,9 @@ namespace javascript_syntax_highlighter
         {
             long num = cur - '0';
             char peek = stream.Peek();
-            while (char.IsDigit(peek))
+            while (char.IsDigit(peek) && !stream.IsEndOfStream())
             {
                 num = num * 10 + (stream.Next() - '0');
-
-                if (stream.IsEndOfStream())
-                {
-                    return new WordToken(num.ToString(), TokenType.Invalid);
-                }
                 peek = stream.Peek();
             }
             return new NumToken(num);
@@ -160,7 +185,7 @@ namespace javascript_syntax_highlighter
             bool chanceToBeIdentifier = char.IsLower(ch);
 
             char peek = stream.Peek();
-            while (char.IsLetterOrDigit(peek))
+            while (char.IsLetterOrDigit(peek) && !stream.IsEndOfStream())
             {
                 if (chanceToBeIdentifier && (char.IsUpper(peek) || char.IsDigit(peek)))
                 {
@@ -168,10 +193,6 @@ namespace javascript_syntax_highlighter
                 }
 
                 lexeme += stream.Next();
-                if (stream.IsEndOfStream())
-                {
-                    return new WordToken(lexeme, TokenType.Invalid);
-                }
                 peek = stream.Peek();
             }
 
@@ -183,42 +204,6 @@ namespace javascript_syntax_highlighter
                     return new WordToken(lexeme, keywordType);
             }
 
-            return new WordToken(lexeme, TokenType.Identifier);
-        }
-
-        private Token ParseKeyword(char cur)
-        {
-            string lexeme = "" + cur;
-            char peek = stream.Peek();
-            while (char.IsLetter(peek) && char.IsLower(peek))
-            {
-                lexeme += stream.Next();
-                if (stream.IsEndOfStream())
-                {
-                    return new WordToken(lexeme, TokenType.Invalid);
-                }
-                peek = stream.Peek();
-            }
-
-            TokenType keywordType;
-            idsMap.TryGetValue(lexeme, out keywordType);
-
-            return keywordType == 0 ? null : new WordToken(lexeme, keywordType);
-        }
-
-        private Token ParseIdentifier(char cur)
-        {
-            string lexeme = "" + cur;
-            char peek = stream.Peek();
-            while (char.IsLetterOrDigit(peek))
-            {
-                lexeme += stream.Next();
-                if (stream.IsEndOfStream())
-                {
-                    return new WordToken(lexeme, TokenType.Invalid);
-                }
-                peek = stream.Peek();
-            }
             return new WordToken(lexeme, TokenType.Identifier);
         }
     }

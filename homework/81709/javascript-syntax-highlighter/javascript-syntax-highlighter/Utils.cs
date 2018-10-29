@@ -27,5 +27,10 @@ namespace javascript_syntax_highlighter
         {
             return ch == '\t';
         }
+
+        public static bool IsStringBound(char ch)
+        {
+            return ch == '"' || ch == '\'';
+        }
     }
 }
