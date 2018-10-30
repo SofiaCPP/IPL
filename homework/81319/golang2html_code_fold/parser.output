@@ -1,0 +1,282 @@
+State 14 conflicts: 8 shift/reduce
+
+
+Grammar
+
+    0 $accept: input $end
+
+    1 input: /* empty */
+    2      | expr_list
+
+    3 expr_list: expr
+    4          | expr expr_list
+
+    5 expr: token_sequence
+    6     | right_curly_expr RCURLY
+
+    7 right_curly_expr: LCURLY expr_list
+    8                 | LCURLY
+
+    9 token_sequence: token
+   10               | token_sequence token
+
+   11 token: NUMBER
+   12      | KEYWORD
+   13      | STRING
+   14      | STRING_DQ
+   15      | IDENTIFIER
+   16      | OPERATOR
+   17      | MISC
+   18      | UNRECOGNIZED
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+NUMBER (258) 11
+KEYWORD (259) 12
+STRING (260) 13
+STRING_DQ (261) 14
+IDENTIFIER (262) 15
+OPERATOR (263) 16
+MISC (264) 17
+UNRECOGNIZED (265) 18
+LCURLY (266) 7 8
+RCURLY (267) 6
+
+
+Nonterminals, with rules where they appear
+
+$accept (13)
+    on left: 0
+input (14)
+    on left: 1 2, on right: 0
+expr_list (15)
+    on left: 3 4, on right: 2 4 7
+expr (16)
+    on left: 5 6, on right: 3 4
+right_curly_expr (17)
+    on left: 7 8, on right: 6
+token_sequence (18)
+    on left: 9 10, on right: 5 10
+token (19)
+    on left: 11 12 13 14 15 16 17 18, on right: 9 10
+
+
+state 0
+
+    0 $accept: . input $end
+
+    NUMBER        shift, and go to state 1
+    KEYWORD       shift, and go to state 2
+    STRING        shift, and go to state 3
+    STRING_DQ     shift, and go to state 4
+    IDENTIFIER    shift, and go to state 5
+    OPERATOR      shift, and go to state 6
+    MISC          shift, and go to state 7
+    UNRECOGNIZED  shift, and go to state 8
+    LCURLY        shift, and go to state 9
+
+    $default  reduce using rule 1 (input)
+
+    input             go to state 10
+    expr_list         go to state 11
+    expr              go to state 12
+    right_curly_expr  go to state 13
+    token_sequence    go to state 14
+    token             go to state 15
+
+
+state 1
+
+   11 token: NUMBER .
+
+    $default  reduce using rule 11 (token)
+
+
+state 2
+
+   12 token: KEYWORD .
+
+    $default  reduce using rule 12 (token)
+
+
+state 3
+
+   13 token: STRING .
+
+    $default  reduce using rule 13 (token)
+
+
+state 4
+
+   14 token: STRING_DQ .
+
+    $default  reduce using rule 14 (token)
+
+
+state 5
+
+   15 token: IDENTIFIER .
+
+    $default  reduce using rule 15 (token)
+
+
+state 6
+
+   16 token: OPERATOR .
+
+    $default  reduce using rule 16 (token)
+
+
+state 7
+
+   17 token: MISC .
+
+    $default  reduce using rule 17 (token)
+
+
+state 8
+
+   18 token: UNRECOGNIZED .
+
+    $default  reduce using rule 18 (token)
+
+
+state 9
+
+    7 right_curly_expr: LCURLY . expr_list
+    8                 | LCURLY .
+
+    NUMBER        shift, and go to state 1
+    KEYWORD       shift, and go to state 2
+    STRING        shift, and go to state 3
+    STRING_DQ     shift, and go to state 4
+    IDENTIFIER    shift, and go to state 5
+    OPERATOR      shift, and go to state 6
+    MISC          shift, and go to state 7
+    UNRECOGNIZED  shift, and go to state 8
+    LCURLY        shift, and go to state 9
+
+    $default  reduce using rule 8 (right_curly_expr)
+
+    expr_list         go to state 16
+    expr              go to state 12
+    right_curly_expr  go to state 13
+    token_sequence    go to state 14
+    token             go to state 15
+
+
+state 10
+
+    0 $accept: input . $end
+
+    $end  shift, and go to state 17
+
+
+state 11
+
+    2 input: expr_list .
+
+    $default  reduce using rule 2 (input)
+
+
+state 12
+
+    3 expr_list: expr .
+    4          | expr . expr_list
+
+    NUMBER        shift, and go to state 1
+    KEYWORD       shift, and go to state 2
+    STRING        shift, and go to state 3
+    STRING_DQ     shift, and go to state 4
+    IDENTIFIER    shift, and go to state 5
+    OPERATOR      shift, and go to state 6
+    MISC          shift, and go to state 7
+    UNRECOGNIZED  shift, and go to state 8
+    LCURLY        shift, and go to state 9
+
+    $default  reduce using rule 3 (expr_list)
+
+    expr_list         go to state 18
+    expr              go to state 12
+    right_curly_expr  go to state 13
+    token_sequence    go to state 14
+    token             go to state 15
+
+
+state 13
+
+    6 expr: right_curly_expr . RCURLY
+
+    RCURLY  shift, and go to state 19
+
+
+state 14
+
+    5 expr: token_sequence .
+   10 token_sequence: token_sequence . token
+
+    NUMBER        shift, and go to state 1
+    KEYWORD       shift, and go to state 2
+    STRING        shift, and go to state 3
+    STRING_DQ     shift, and go to state 4
+    IDENTIFIER    shift, and go to state 5
+    OPERATOR      shift, and go to state 6
+    MISC          shift, and go to state 7
+    UNRECOGNIZED  shift, and go to state 8
+
+    NUMBER        [reduce using rule 5 (expr)]
+    KEYWORD       [reduce using rule 5 (expr)]
+    STRING        [reduce using rule 5 (expr)]
+    STRING_DQ     [reduce using rule 5 (expr)]
+    IDENTIFIER    [reduce using rule 5 (expr)]
+    OPERATOR      [reduce using rule 5 (expr)]
+    MISC          [reduce using rule 5 (expr)]
+    UNRECOGNIZED  [reduce using rule 5 (expr)]
+    $default      reduce using rule 5 (expr)
+
+    token  go to state 20
+
+
+state 15
+
+    9 token_sequence: token .
+
+    $default  reduce using rule 9 (token_sequence)
+
+
+state 16
+
+    7 right_curly_expr: LCURLY expr_list .
+
+    $default  reduce using rule 7 (right_curly_expr)
+
+
+state 17
+
+    0 $accept: input $end .
+
+    $default  accept
+
+
+state 18
+
+    4 expr_list: expr expr_list .
+
+    $default  reduce using rule 4 (expr_list)
+
+
+state 19
+
+    6 expr: right_curly_expr RCURLY .
+
+    $default  reduce using rule 6 (expr)
+
+
+state 20
+
+   10 token_sequence: token_sequence token .
+
+    $default  reduce using rule 10 (token_sequence)
