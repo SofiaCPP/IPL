@@ -71,8 +71,8 @@ namespace javascript_syntax_highlighter
                          : Match('=') ? new WordToken("-=", TokenType.MinusEqual)
                          : new Token(TokenType.Minus);
                 case '/':
-                    return Match('/') ? ParseOneLineComment(stream.Peek())
-                        : Match('*') ? ParseMultilineToken(stream.Peek())
+                    return Match('/') ? ParseOneLineComment()
+                        : Match('*') ? ParseMultilineToken()
                         : Match('=') ? new WordToken("/=", TokenType.DivideEqual)
                         : new Token(TokenType.Division);
                 case '%':
@@ -96,7 +96,7 @@ namespace javascript_syntax_highlighter
 
             if(Utils.IsStringBound(cur))
             {
-                return ParseString(cur);
+                return ParseString();
             }
 
             if(char.IsDigit(cur))
@@ -122,36 +122,51 @@ namespace javascript_syntax_highlighter
             return false;
         }
 
-        private Token ParseOneLineComment(char ch)
+        private Token ParseOneLineComment()
         {
-            string lexeme = "" + ch;
-            while(!Utils.IsNewLine(stream.Peek()) && !stream.IsEndOfStream())
+            string lexeme = "";
+            char peek = stream.Peek();
+            while(!Utils.IsNewLine(peek) && !Utils.IsCarriageReturn(peek) && !stream.IsEndOfStream())
             {
                 lexeme += stream.Next();
+                peek = stream.Peek();
             }
 
             return new WordToken(lexeme, TokenType.Comment);
         }
 
-        private Token ParseMultilineToken(char ch)
+        private Token ParseMultilineToken()
         {
-            string lexeme = "" + ch;
-            
-            //TODO Parse multiline token
+            string lexeme = "";
+            int lineBeg = stream.Line + 1;
+            while (!stream.IsEndOfStream())
+            {
+                while (stream.Peek() != '*' && !stream.IsEndOfStream())
+                {
+                    lexeme += stream.Next();
+                };
+                stream.Next();
+                if (stream.Peek() == '/')
+                {
+                    stream.Next();
+                    return new WordToken(lexeme, TokenType.MultilineComment);
+                }
+                lexeme += "*" + stream.Next();
+            }
 
-            return new WordToken(lexeme, TokenType.Comment);
+            return new ErrorToken(lineBeg, $"Comment at line: {lineBeg} is unclosed.");
         }
 
         //TODO Fix parsing of string combinations of ' and ".
         //Example: Fix "My name is 'Josh'. He is cool."
-        private Token ParseString(char ch)
+        private Token ParseString()
         {
-            string lexeme = "" + ch;
-            int startLine = stream.Line;
+            string lexeme = "";
+            int startLine = stream.Line + 1;
             char peek = stream.Peek();
             while (!Utils.IsStringBound(peek))
             {
-                if (Utils.IsNewLine(peek))
+                if (Utils.IsNewLine(peek) || Utils.IsCarriageReturn(peek))
                 {
                     return new ErrorToken(stream.Line, $"String literal contains an unescaped line break at line: {stream.Line}");
                 }
@@ -163,7 +178,7 @@ namespace javascript_syntax_highlighter
                 }
                 peek = stream.Peek();
             }
-            lexeme += stream.Next();
+            stream.Next();
             return new WordToken(lexeme, TokenType.String);
         }
 
