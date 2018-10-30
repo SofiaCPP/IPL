@@ -79,41 +79,32 @@ int main(int argc, char *argv[]) {
         "        }\n"
         "    </style>\n"
         "</head>\n"
-        "<body>\n"
-        "<button style=\"font-size:100px;\" type=\"button\" onclick=\"toggleComplexity()\">"
-        "Toggle Complexity</button>\n"
+        "<body onload=\"toggleComplexity()\">\n"
         "<pre class=\"code\">\n",
         fpOut
         );
-  unsigned numOfFunctions = ParCer::outputWithCyclomaticComplexity(fpIn, fpOut);
-  fputs("</pre>\n", fpOut);
-  // the script to toggle complexity of functions needs numOfFunctions to know how long to go
-  // switching it on/off could be done with a little bit more hacking but that's enough I think
-  fputs("<script>"
+  ParCer::outputWithCyclomaticComplexity(fpIn, fpOut);
+  fputs("</pre>\n"
+        "<script>\n"
         "function toggleComplexity() {\n"
-        "alert(\"yey\");\n"
-        "if (document.getElementsByClassName(\"a1\").length == 0) return;\n"
-        "for (var i = 1; i <= ",
-        fpOut);
-  char num[100];
-  sprintf(num, "%u", numOfFunctions);
-  fputs(num, fpOut);
-  fputs("; ++i) {\n"
-        "var class_name = \"a\" + i;\n"
-        "var d = document.getElementsByClassName(class_name)[0];\n"
-        "var complexity = d.innerHTML.match(\"(<!-- )([0-9]+)( -->)\")[2];\n"
-        "if (complexity < 3)\n"
-        "    d.className = \"complexity-level-one\";\n"
-        "else if (complexity < 7)\n"
-        "    d.className = \"complexity-level-two\";\n"
-        "else if (complexity < 15)\n"
-        "    d.className = \"complexity-level-three\";\n"
-        "else if (complexity < 20)\n"
-        "    d.className = \"complexity-level-four\";\n"
-        "else\n"
-        "    d.className = \"complexity-level-five\";\n"
-        "}\n" // for
-        "}\n", // toogleComplexity
+        "  var funcs = document.getElementsByClassName(\"func\");"
+        "  if (funcs.length == 0) return;\n"
+        "  var len = funcs.length;\n"
+        "  for (var i = 0; i < len; ++i) {\n"
+        "    var f = document.getElementsByClassName(\"func\")[0];\n"
+        "    var complexity = f.innerHTML.match(\"(<!-- )([0-9]+)( -->)\")[2];\n"
+        "    if (complexity < 3)\n"
+        "        f.className = \"complexity-level-one\";\n"
+        "    else if (complexity < 7)\n"
+        "        f.className = \"complexity-level-two\";\n"
+        "    else if (complexity < 15)\n"
+        "        f.className = \"complexity-level-three\";\n"
+        "    else if (complexity < 20)\n"
+        "        f.className = \"complexity-level-four\";\n"
+        "    else\n"
+        "        f.className = \"complexity-level-five\";\n"
+        "  }\n"
+        "}\n",
         fpOut);
   fputs("</script></body></html>\n", fpOut);
 

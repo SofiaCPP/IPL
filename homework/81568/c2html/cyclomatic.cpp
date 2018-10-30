@@ -8,12 +8,6 @@ using HTMLUtils::writeToOutput;
 using LexCer::TokenClass;
 using LexCer::Tokenizer;
 
-void setNextClassName(std::string *name, unsigned counter) {
-  while (name->back() != 'a')
-    name->pop_back();
-  name->append(std::to_string(counter));
-}
-
 // Writing a full parser would give us the change of
 // making the cyclomatic graph of the function.
 // #courseproject
@@ -41,7 +35,7 @@ unsigned ParCer::outputWithCyclomaticComplexity(FILE *in, FILE *out) {
       history.push(type);
     } else {
       if (type == TokenClass::RightCurly) {
-        if (openedBlocks.empty()) { // end of function. What one does to avoid parsing 'C'
+        if (openedBlocks.empty()) { // end of a function. What one does to avoid parsing 'C'
           inFunction = false;
           fputs("<!-- ", out);
           char closingDiv[100];
@@ -83,9 +77,7 @@ unsigned ParCer::outputWithCyclomaticComplexity(FILE *in, FILE *out) {
 
         if (!history.empty() && history.top() == TokenClass::Identifier) { // We are in a function
           char openingDiv[100];
-          setNextClassName(&className, counter);
-          ++counter;
-          sprintf(openingDiv, "<div class=\"%s\">", className.c_str()); // this has the side effect of displaying the 
+          sprintf(openingDiv, "<div class=\"func\">", className.c_str());
           fputs(openingDiv, out);
           inFunction = true;
           history = std::stack<short>{};
