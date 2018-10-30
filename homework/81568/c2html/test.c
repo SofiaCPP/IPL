@@ -69,6 +69,12 @@ void switch_why_not(void) {
     break;
   case 'X':
     printf("why break stuff\n");
+  case 1:
+  case 2:
+  case 3:
+  case 4:
+  case 5:
+  case 6:    
   default:
     break;
   }
