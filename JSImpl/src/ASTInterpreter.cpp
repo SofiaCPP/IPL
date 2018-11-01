@@ -1,11 +1,9 @@
 #include "ASTInterpreter.h"
 #include "Expression.h"
-#include <cassert>
 #include <iostream>
 
-
+#undef NOT_IMPLEMENTED
 #define NOT_IMPLEMENTED (void)e; assert(0 && "not-implemented")
-
 
 struct LValueExtractor : public ExpressionVisitor
 {
@@ -27,6 +25,7 @@ public:
 	virtual void Visit(LiteralString* e) override { NOT_IMPLEMENTED; }
 	virtual void Visit(LiteralNumber* e) override { NOT_IMPLEMENTED; }
 	virtual void Visit(LiteralBoolean* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(LiteralObject* e) override { NOT_IMPLEMENTED; }
 	virtual void Visit(BinaryExpression* e) override { NOT_IMPLEMENTED; }
 	virtual void Visit(UnaryExpression* e) override { NOT_IMPLEMENTED; }
 	virtual void Visit(IdentifierExpression* e) override { m_LValue = &m_Interpreter->ModifyVariable(e->GetName()); }
@@ -42,6 +41,7 @@ public:
 	virtual void Visit(FunctionDeclaration* e) override { NOT_IMPLEMENTED; }
 	virtual void Visit(TopStatements* e) override { NOT_IMPLEMENTED; }
 	virtual void Visit(EmptyExpression* e) override { NOT_IMPLEMENTED; }
+	virtual void Visit(CallExpression* e) override { NOT_IMPLEMENTED; }
 
 	ASTInterpreter* m_Interpreter;
 	ASTInterpreter::value_type* m_LValue;
@@ -152,6 +152,11 @@ ASTInterpreter::value_type& ASTInterpreter::ModifyVariable(const IPLString& name
 	return undefined;
 }
 
+bool ASTInterpreter::HasVariable(const IPLString& name)
+{
+	return m_Variables.find(name) != m_Variables.end();
+}
+
 void ASTInterpreter::Visit(LiteralNull* e) {
    NOT_IMPLEMENTED; 
 }
@@ -161,6 +166,11 @@ void ASTInterpreter::Visit(LiteralUndefined* e) {
 }
 void ASTInterpreter::Visit(LiteralString* e) {
    NOT_IMPLEMENTED; 
+}
+
+void ASTInterpreter::Visit(LiteralObject* e)
+{
+   NOT_IMPLEMENTED;
 }
 
 void ASTInterpreter::Visit(LiteralNumber* e) {
@@ -197,6 +207,9 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
 			break;
 		case TokenType::Comma:
 			m_Evaluation.push_back(right);
+			break;
+		case TokenType::EqualEqual:
+			m_Evaluation.push_back(fabs(left - right) < 0.0001);
 			break;
         default:
             NOT_IMPLEMENTED;
@@ -310,4 +323,9 @@ void ASTInterpreter::Visit(TopStatements* e) {
 
 void ASTInterpreter::Visit(EmptyExpression* e) {
     NOT_IMPLEMENTED;
+}
+
+void ASTInterpreter::Visit(CallExpression* e)
+{
+	NOT_IMPLEMENTED;
 }
