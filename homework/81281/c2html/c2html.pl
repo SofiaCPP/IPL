@@ -1,6 +1,6 @@
 :- use_module(library(dcg/basics)).
 :- use_module(library(readutil)).
-:- [tokens, prettify, print, essentials].
+:- [tokens, prettify, print, essentials, controlStructures].
 :- set_prolog_flag(verbose, silent).
 
 :- initialization(main, main).
@@ -27,7 +27,6 @@ mainy(File, Number):-
      flattenMine(Raw, PrettyCode));
     (Number == "2", prettify(TokenStream, Raw),
      identifyControlStructures(Raw, RawF),
-    % write(RawF),
      flattenMine(RawF, PrettyCode))),
     open('page.html', write, WFile),
      write(WFile,'<!doctype>
