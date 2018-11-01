@@ -1,4 +1,3 @@
-/* Expression calculator */
 
 %{
 #include "parser.tab.h"

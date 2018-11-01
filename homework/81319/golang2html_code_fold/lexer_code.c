@@ -549,13 +549,12 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "lexer.lex"
-/* Expression calculator */
-#line 4 "lexer.lex"
+#line 3 "lexer.lex"
 #include "parser.tab.h"
 #include <stdlib.h>
 int current_line = 0;
 #define YY_NO_UNISTD_H
-#line 559 "lexer_code.c"
+#line 558 "lexer_code.c"
 
 #define INITIAL 0
 
@@ -737,11 +736,11 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 19 "lexer.lex"
+#line 18 "lexer.lex"
 
 
 
-#line 745 "lexer_code.c"
+#line 744 "lexer_code.c"
 
 	if ( !(yy_init) )
 		{
@@ -826,7 +825,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 22 "lexer.lex"
+#line 21 "lexer.lex"
 {
     yylval.strval = yytext;
     return NUMBER;
@@ -834,7 +833,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 27 "lexer.lex"
+#line 26 "lexer.lex"
 {
         yylval.strval = yytext;
         return KEYWORD;
@@ -842,7 +841,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 32 "lexer.lex"
+#line 31 "lexer.lex"
 {
         yylval.strval = yytext;
         return KEYWORD;
@@ -850,7 +849,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 37 "lexer.lex"
+#line 36 "lexer.lex"
 {
     yylval.strval = yytext;
     return IDENTIFIER;
@@ -859,7 +858,7 @@ YY_RULE_SETUP
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 42 "lexer.lex"
+#line 41 "lexer.lex"
 {
      yylval.strval = yytext;
      return STRING;
@@ -868,7 +867,7 @@ YY_RULE_SETUP
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 47 "lexer.lex"
+#line 46 "lexer.lex"
 {
     yylval.strval = yytext;
     return STRING_DQ;
@@ -876,7 +875,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 53 "lexer.lex"
+#line 52 "lexer.lex"
 {
     yylval.strval = yytext;
     return OPERATOR;
@@ -884,7 +883,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 58 "lexer.lex"
+#line 57 "lexer.lex"
 {
     yylval.strval = yytext;
     return OPERATOR;
@@ -892,7 +891,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 63 "lexer.lex"
+#line 62 "lexer.lex"
 {
     yylval.strval = yytext;
     return OPERATOR;
@@ -900,7 +899,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 68 "lexer.lex"
+#line 67 "lexer.lex"
 {
     yylval.strval = yytext;
     return MISC;
@@ -908,7 +907,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 73 "lexer.lex"
+#line 72 "lexer.lex"
 {
     yylval.strval = yytext;
     return LCURLY;
@@ -916,7 +915,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 78 "lexer.lex"
+#line 77 "lexer.lex"
 {
     yylval.strval = yytext;
     return RCURLY;
@@ -925,7 +924,7 @@ YY_RULE_SETUP
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-#line 83 "lexer.lex"
+#line 82 "lexer.lex"
 {
     ++current_line;
     yylval.strval = yytext;
@@ -934,7 +933,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 89 "lexer.lex"
+#line 88 "lexer.lex"
 {
     yylval.strval = yytext;
     return UNRECOGNIZED;
@@ -942,10 +941,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 95 "lexer.lex"
+#line 94 "lexer.lex"
 ECHO;
 	YY_BREAK
-#line 949 "lexer_code.c"
+#line 948 "lexer_code.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1942,7 +1941,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 95 "lexer.lex"
+#line 94 "lexer.lex"
 
 
 

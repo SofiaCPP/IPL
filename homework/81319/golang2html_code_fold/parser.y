@@ -1,8 +1,21 @@
 %{
+#include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 int yylex();
 int yyerror(const char* error);
 #define YYDEBUG 1
+
+char* concatenate(char* first, char* second) {
+    int firstlen = strlen(first);
+    int secondlen = strlen(second);
+    char* result;
+    result = malloc(firstlen + secondlen + 1);
+    strcpy(result, first);
+    strcat(result, second);
+
+    return result;
+}
 
 void printStyles() {
     puts(
@@ -27,25 +40,39 @@ void printStyles() {
     );
 }
 
+char* stylize(char* text, char* style) {
+    char* result = concatenate("<span class=\"", style);
+    result = concatenate(result, "\">");
+    result = concatenate(result, text);
+    result = concatenate(result, "</span>");
 
-void printNumber(char* text) {
-   printf("<span class=\"number\">%s</span>", text);
+    return result;
 }
 
+void printNumber(char* text) {
+   char* style = stylize(text, "number");
+   printf("%s", style);
+}
+
+
 void printIdentifier(char* text) {
-    printf("<span class=\"identifier\">%s</span>", text);
+   char* style = stylize(text, "identifier");
+   printf("%s", style);
 }
 
 void printKeyword(char* text) {
-    printf("<span class=\"keyword\">%s</span>", text);
+   char* style = stylize(text, "keyword");
+   printf("%s", style);
 }
 
 void printString(char* text) {
-     printf("<span class=\"string\">%s</span>", text);
+   char* style = stylize(text, "string");
+   printf("%s", style);
 }
 
 void printOperator(char* text) {
-  printf("<span class=\"operator\">%s</span>", text);
+     char* style = stylize(text, "operator");
+     printf("%s", style);
 }
 
 void printMisc(char* text) {
@@ -79,13 +106,14 @@ void printBraces(char* text) {
 %union {
     char* strval;
 }
+
 %type <strval> input expr_list expr token_sequence token NUMBER KEYWORD STRING STRING_DQ IDENTIFIER OPERATOR MISC UNRECOGNIZED
 
 
 %%
 
 input:  /* empty */ { printf("empty\n"); }
-    | expr_list
+    | expr_list 
     ;
 
 expr_list: expr
@@ -93,19 +121,16 @@ expr_list: expr
         ;
 
 expr: token_sequence
-
-        | LCURLY right_curly_expr { printf("OPENING BRACE\n"); }
+        | LCURLY expr_list RCURLY { printf("{"); printf("%s", $2); printf("}");}
+        | LCURLY RCURLY { printf("{"); printf("}"); }
         ;
-
-right_curly_expr: expr_list RCURLY { printf("CLOSING BRACE\n"); }
-        | RCURLY {printf("CLOSING BRACE\n");}
 
 
 token_sequence: token
         | token_sequence token
         ;
 
-token: NUMBER { printNumber($1); }
+token: NUMBER { $$ = $1; printNumber($1); }
     | KEYWORD { printKeyword($1); }
     | STRING { printString($1); }
     | STRING_DQ { printString($1); }
