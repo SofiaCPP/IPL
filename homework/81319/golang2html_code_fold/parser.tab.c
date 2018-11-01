@@ -1496,7 +1496,7 @@ yyreduce:
   case 7:
 #line 172 "parser.y"
     {
-                        char* collapsable = collapsableBlock((yyval.strval));
+                        char* collapsable = collapsableBlock((yyvsp[(2) - (3)].strval));
                         (yyval.strval) = concatenate("{", collapsable);
                         (yyval.strval) = concatenate((yyval.strval), "}");
                   ;}

@@ -170,7 +170,7 @@ expr_list: expr expr_list { $$ = concatenate($1, $2); }
 
 expr: token_sequence
         | LCURLY expr_list RCURLY {
-                        char* collapsable = collapsableBlock($$);
+                        char* collapsable = collapsableBlock($2);
                         $$ = concatenate("{", collapsable);
                         $$ = concatenate($$, "}");
                   }
