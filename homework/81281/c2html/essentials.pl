@@ -7,36 +7,8 @@ flattenElem([H|T], [[H|T]]):- \+ is_list(H), !.
 flattenElem([H|T], [H|T]):- is_list(H), H = [H1|_], \+ is_list(H1), !.
 flattenElem([H|T], [[H|T]]):- is_list(H), H = [H1|_], is_list(H1), !.
 
-identifyControlStructures([], []):- !.
-identifyControlStructures([H|T], [NewH|R]):-
-    \+ append(_, [[ttypedef|_]|_], H),
-    append(_, [[Token|_]|_], H),
-    member(Token, [tdo, tfor, twhile, tif, telse, tswitch, tfunction, tstruct]),
+getPrefixTabsLength(L, N):- append(A, B, L),
+    \+((member(AA, A), AA \= [execTAB, "\s\s\s\s"])), \+((member(BB, B), BB == [execTAB, "\s\s\s\s"])), length(A, N).
 
-    T = [T1|T2],
-    append(T11, [[tleftBrace, "{"], [execNL, "\n"]], T1),
-    \+ ((member(M, T11), M \= [execTAB, "\s\s\s\s"])),
-    gatherBody(T2, [], PackedStructBody, Rest, 1),
-    identifyControlStructures(PackedStructBody, Result),
-    append([H, T1], Result, NewH), !,
-    identifyControlStructures(Rest, R).
-identifyControlStructures([H|T], [H|R]):- !,
-    identifyControlStructures(T, R).
-
-
-
-gatherBody(Rest, Res, Res, Rest, 0):- !.
-gatherBody([H|T], Buff, Res, Rest, N):-
-    N =\= 0, append(H1, [[tleftBrace, "{"]|_], H),
-    \+ ((member(M, H1), M \= [execTAB, "\s\s\s\s"])),
-    append(Buff, [H], NewBuff), N1 is N + 1, !,
-    gatherBody(T, NewBuff, Res, Rest, N1).
-gatherBody([H|T], Buff, Res, Rest, N):-
-    N =\= 0, append(H1, [[trightBrace, "}"]|_], H),
-    \+ ((member(M, H1), M \= [execTAB, "\s\s\s\s"])),
-    append(Buff, [H], NewBuff), N1 is N - 1, !,
-    gatherBody(T, NewBuff, Res, Rest, N1).
-gatherBody([H|T], Buff, Res, Rest, N):-
-    N =\= 0,
-    append(Buff, [H], NewBuff), !,
-    gatherBody(T, NewBuff, Res, Rest, N).
+removeNTabs(L, 0, L):- !.
+removeNTabs([_|T], N, R):- N > 0, N1 is N - 1, !, removeNTabs(T, N1, R).
