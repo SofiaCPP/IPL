@@ -311,66 +311,74 @@ addSpaces([HT|TT], Res):- addSpaces(HT, [], RHT), !,
 
 
 % Base
-addTabs([], _, Buff, Buff, _):- !.
+addTabs([], _, Buff, Buff, _, _):- !.
 % Openning tleftBrace
-addTabs([H|T], Tabs, Buff, Res, Bit):-
+addTabs([H|T], Tabs, Buff, Res, Bit1, Bit2):-
     H = [[H1|_]|_],
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff),
     H1 == tleftBrace,
     append(Tabs, [[execTAB, "\s\s\s\s"]], NewTabs), !,
-    addTabs(T, NewTabs, NewBuff, Res, Bit).
+    addTabs(T, NewTabs, NewBuff, Res, Bit1, Bit2).
 % Closing trightBrace and a little newline for readability
-addTabs([H|T], Tabs, Buff, Res, Bit):-
+addTabs([H|T], Tabs, Buff, Res, Bit1, Bit2):-
     H = [[H1|_]|_],
     H1 == trightBrace,
     append(NewTabs, [[execTAB, "\s\s\s\s"]], Tabs),
     append(NewTabs, H, NewH1),
     append(NewH1, [[execNL, "\n"]], NewH),
     append(Buff,[NewH], NewBuff), !,
-    addTabs(T, NewTabs, NewBuff, Res, Bit).
-% Special case when one line only
-addTabs([H|T], Tabs, Buff, Res, Bit):-
+    addTabs(T, NewTabs, NewBuff, Res, Bit1, Bit2).
+% Special case when one line only and maybe nested ifs, fors, etc
+addTabs([H|T], Tabs, Buff, Res, Bit1, Bit2):-
     H = [[H1|_]|_],
     member(H1, [tfor, twhile, tif, telse]),
-    T = [[H2|HR]|TR],
+    T = [[H2|_]|_],
     H2 = [H21|_],
     H21 \= tleftBrace,
     append(Tabs, H, NewH),
-    append([[execTAB, "\s\s\s\s"]|Tabs], [H2|HR], AfterH),
-    append(Buff,[NewH, AfterH], NewBuff), !,
-    addTabs(TR, Tabs, NewBuff, Res, Bit).
+    append(Tabs, [[execTAB, "\s\s\s\s"]], NewTabs),
+    append(Buff,[NewH], NewBuff), !,
+    NewBit2 is Bit2 + 1,
+    addTabs(T, NewTabs, NewBuff, Res, Bit1, NewBit2).
 % Ordinary case
-addTabs([H|T], Tabs, Buff, Res, Bit):-
+addTabs([H|T], Tabs, Buff, Res, Bit1, Bit2):-
     H = [[H1|_]|_],
     member(H1, [tfor, twhile, tif, telse, tswitch]),
     T = [[[H2|_]|_]|_],
     H2 == tleftBrace,
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff), !,
-    addTabs(T, Tabs, NewBuff, Res, Bit).
-%  case BIt helpes us to identify where if starts and ends
-addTabs([H|T], Tabs, Buff, Res, 0):-
+    addTabs(T, Tabs, NewBuff, Res, Bit1, Bit2).
+%  case Bit1 helpes us to identify where if starts and ends
+addTabs([H|T], Tabs, Buff, Res, 0, Bit2):-
     H = [[H1|_]|_],
     member(H1, [tcase, tdefault]),
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff),
     append(Tabs, [[execTAB, "\s\s\s\s"]], NewTabs), !,
-    addTabs(T, NewTabs, NewBuff, Res, 1).
+    addTabs(T, NewTabs, NewBuff, Res, 1, Bit2).
 % Ordinary case
-addTabs([H|T], Tabs, Buff, Res, 1):-
+addTabs([H|T], Tabs, Buff, Res, 1, Bit2):-
     H = [[H1|_]|_],
     member(H1, [tbreak]),
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff),
     append(NewTabs, [[execTAB, "\s\s\s\s"]], Tabs), !,
-    addTabs(T, NewTabs, NewBuff, Res, 0).
-% All other tokens
-addTabs([H|T], Tabs, Buff, Res, Bit):-
+    addTabs(T, NewTabs, NewBuff, Res, 0, Bit2).
+% All other tokens and Bit2 isn't 0
+addTabs([H|T], Tabs, Buff, Res, Bit1, Bit2):-
+    Bit2 \= 0,
+    removeNTabs(Tabs, Bit2, NewTabs),
     append(Tabs, H, NewH),
     append(Buff,[NewH], NewBuff), !,
-    addTabs(T, Tabs, NewBuff, Res, Bit).
+    addTabs(T, NewTabs, NewBuff, Res, Bit1, 0).
+% All other tokens
+addTabs([H|T], Tabs, Buff, Res, Bit1, Bit2):-
+    append(Tabs, H, NewH),
+    append(Buff,[NewH], NewBuff), !,
+    addTabs(T, Tabs, NewBuff, Res, Bit1, Bit2).
 
 % Main predicate
 addTabs(PackedLinesWithSpaces, PackedLinesWithSpacesAndTabs):-
-    addTabs(PackedLinesWithSpaces, [], [], PackedLinesWithSpacesAndTabs, 0), !.
+    addTabs(PackedLinesWithSpaces, [], [], PackedLinesWithSpacesAndTabs, 0, 0), !.
