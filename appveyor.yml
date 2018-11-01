@@ -16,6 +16,7 @@ configuration:
 build:
   project: JSImpl/solution/JSImpl.sln
   verbosity: minimal
+  parallel: true
 
 for:
 -
@@ -33,6 +34,8 @@ for:
 before_test:
   - appveyor AddMessage "Running Tests"
   - appveyor SetVariable -Name "GTEST_OUTPUT" -Value "xml"
+  - echo Running tests for %APPVEYOR_JOB_ID%
+  - sh: echo Running tests for $APPVEYOR_JOB_ID
 
 test_script:
   - '%APPVEYOR_BUILD_FOLDER%/JSImpl/build/bin/%CONFIGURATION%/Test.exe'
