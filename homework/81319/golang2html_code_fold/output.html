@@ -9,23 +9,37 @@
 	<span class="string">"fmt"</span>
 )
 
-<span class="keyword">type</span> <span class="identifier">HelloWorlder</span> <span class="keyword">struct</span> {<button class="collapsible">+</button><div class="content"><p>
+<span class="keyword">type</span> <span class="identifier">HelloWorlder</span> <span class="keyword">struct</span> {<button class="collapsible">+</button><div class="content">
 		<span class="identifier">message</span> <span class="identifier">string</span>
-</p></div>}
+</div>}
 
 
-<span class="keyword">func</span> (<span class="identifier">hw</span> <span class="operator">*</span><span class="identifier">HelloWorlder</span>) <span class="identifier">greet</span>() {<button class="collapsible">+</button><div class="content"><p>
+<span class="keyword">func</span> (<span class="identifier">hw</span> <span class="operator">*</span><span class="identifier">HelloWorlder</span>) <span class="identifier">greet</span>() {<button class="collapsible">+</button><div class="content">
 		<span class="identifier">fmt</span><span class="operator">.</span><span class="identifier">Println</span>(<span class="identifier">hw</span><span class="operator">.</span><span class="identifier">message</span>)
-</p></div>}
+</div>}
 
 
-<span class="keyword">func</span> <span class="identifier">main</span>() {<button class="collapsible">+</button><div class="content"><p>
-		<span class="identifier">helloWorlder</span> <span class="operator">:=</span> <span class="operator">&</span><span class="identifier">HelloWorlder</span>{<button class="collapsible">+</button><div class="content"><p>
+<span class="keyword">func</span> <span class="identifier">main</span>() {<button class="collapsible">+</button><div class="content">
+		<span class="identifier">helloWorlder</span> <span class="operator">:=</span> <span class="operator">&</span><span class="identifier">HelloWorlder</span>{<button class="collapsible">+</button><div class="content">
 				<span class="identifier">message</span><span class="operator">:</span> <span class="string">"Hello, world!"</span><span class="operator">,</span>
-	</p></div>}
+	</div>}
 
 
 	<span class="identifier">helloWorlder</span><span class="operator">.</span><span class="identifier">greet</span>()
-</p></div>}</pre></body>
-<script>var coll = document.getElementsByClassName("collapsible");var i;for (i = 0; i < coll.length; i++) {coll[i].addEventListener("click", function() {this.classList.toggle("active");var content = this.nextElementSibling;if (content.style.display === "block") {content.style.display = "none";} else {content.style.display = "block";}});}</script>
+</div>}</pre></body>
+<script>var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+coll[i].addEventListener("click", function() {
+this.classList.toggle("active");
+var content = this.nextElementSibling;
+if (content.style.display === "block") {
+content.style.display = "none";
+this.innerHTML="-"} else {
+content.style.display = "block";
+this.innerHTML="+"}
+});
+}
+</script>
 </html>

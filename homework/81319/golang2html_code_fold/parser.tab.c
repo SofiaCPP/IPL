@@ -157,20 +157,22 @@ void printStyles() {
 void printCollapsableScript() {
         puts(
                 "<script>"
-                "var coll = document.getElementsByClassName(\"collapsible\");"
-                "var i;"
-                ""
-                "for (i = 0; i < coll.length; i++) {"
-                  "coll[i].addEventListener(\"click\", function() {"
-                    "this.classList.toggle(\"active\");"
-                    "var content = this.nextElementSibling;"
-                    "if (content.style.display === \"block\") {"
-                      "content.style.display = \"none\";"
-                    "} else {"
-                      "content.style.display = \"block\";"
-                    "}"
-                  "});"
-                "}"
+                "var coll = document.getElementsByClassName(\"collapsible\");\n"
+                "var i;\n"
+                "\n"
+                "for (i = 0; i < coll.length; i++) {\n"
+                  "coll[i].addEventListener(\"click\", function() {\n"
+                    "this.classList.toggle(\"active\");\n"
+                    "var content = this.nextElementSibling;\n"
+                    "if (content.style.display === \"block\") {\n"
+                      "content.style.display = \"none\";\n"
+                      "this.innerHTML=\"-\""
+                    "} else {\n"
+                      "content.style.display = \"block\";\n"
+                      "this.innerHTML=\"+\""
+                    "}\n"
+                  "});\n"
+                "}\n"
                 "</script>"
         );
 }
@@ -186,9 +188,7 @@ char* stylize(char* text, char* style) {
 
 char* collapsableBlock(char* text) {
         char* result = concatenate("<button class=\"collapsible\">+</button>", "<div class=\"content\">");
-        result = concatenate(result, "<p>");
         result = concatenate(result, text);
-        result = concatenate(result, "</p>");
         result = concatenate(result, "</div>");
 
         return result;
