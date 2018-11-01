@@ -8,15 +8,15 @@ Grammar
     1 input: /* empty */
     2      | expr_list
 
-    3 expr_list: expr
-    4          | expr expr_list
+    3 expr_list: expr expr_list
+    4          | expr
 
     5 expr: token_sequence
     6     | LCURLY expr_list RCURLY
     7     | LCURLY RCURLY
 
-    8 token_sequence: token
-    9               | token_sequence token
+    8 token_sequence: token_sequence token
+    9               | token
 
    10 token: NUMBER
    11      | KEYWORD
@@ -51,11 +51,11 @@ $accept (13)
 input (14)
     on left: 1 2, on right: 0
 expr_list (15)
-    on left: 3 4, on right: 2 4 6
+    on left: 3 4, on right: 2 3 6
 expr (16)
     on left: 5 6 7, on right: 3 4
 token_sequence (17)
-    on left: 8 9, on right: 5 9
+    on left: 8 9, on right: 5 8
 token (18)
     on left: 10 11 12 13 14 15 16 17, on right: 8 9
 
@@ -177,8 +177,8 @@ state 11
 
 state 12
 
-    3 expr_list: expr .
-    4          | expr . expr_list
+    3 expr_list: expr . expr_list
+    4          | expr .
 
     NUMBER        shift, and go to state 1
     KEYWORD       shift, and go to state 2
@@ -190,7 +190,7 @@ state 12
     UNRECOGNIZED  shift, and go to state 8
     LCURLY        shift, and go to state 9
 
-    $default  reduce using rule 3 (expr_list)
+    $default  reduce using rule 4 (expr_list)
 
     expr_list       go to state 18
     expr            go to state 12
@@ -201,7 +201,7 @@ state 12
 state 13
 
     5 expr: token_sequence .
-    9 token_sequence: token_sequence . token
+    8 token_sequence: token_sequence . token
 
     NUMBER        shift, and go to state 1
     KEYWORD       shift, and go to state 2
@@ -227,9 +227,9 @@ state 13
 
 state 14
 
-    8 token_sequence: token .
+    9 token_sequence: token .
 
-    $default  reduce using rule 8 (token_sequence)
+    $default  reduce using rule 9 (token_sequence)
 
 
 state 15
@@ -255,16 +255,16 @@ state 17
 
 state 18
 
-    4 expr_list: expr expr_list .
+    3 expr_list: expr expr_list .
 
-    $default  reduce using rule 4 (expr_list)
+    $default  reduce using rule 3 (expr_list)
 
 
 state 19
 
-    9 token_sequence: token_sequence token .
+    8 token_sequence: token_sequence token .
 
-    $default  reduce using rule 9 (token_sequence)
+    $default  reduce using rule 8 (token_sequence)
 
 
 state 20

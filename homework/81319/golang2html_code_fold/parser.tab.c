@@ -133,8 +133,46 @@ void printStyles() {
             "            color: #db184c;"
             "            font-style: bold;"
             "        }"
-            "    </style>"
+            "        .collapsible {"
+            "            background-color: #777;"
+            "            color: white;"
+            "            cursor: pointer;"
+            "            padding: 2px;"
+            "            width: 2%;"
+            "            border: none;"
+            "            text-align: center;"
+            "            outline: none;"
+            "            font-size: 15px;"
+            "        }"
+
+            "        .active, .collapsible:hover {"
+            "            background-color: #555;"
+            "        }"
+
+
+            "     </style>"
     );
+}
+
+void printCollapsableScript() {
+        puts(
+                "<script>"
+                "var coll = document.getElementsByClassName(\"collapsible\");"
+                "var i;"
+                ""
+                "for (i = 0; i < coll.length; i++) {"
+                  "coll[i].addEventListener(\"click\", function() {"
+                    "this.classList.toggle(\"active\");"
+                    "var content = this.nextElementSibling;"
+                    "if (content.style.display === \"block\") {"
+                      "content.style.display = \"none\";"
+                    "} else {"
+                      "content.style.display = \"block\";"
+                    "}"
+                  "});"
+                "}"
+                "</script>"
+        );
 }
 
 char* stylize(char* text, char* style) {
@@ -144,6 +182,16 @@ char* stylize(char* text, char* style) {
     result = concatenate(result, "</span>");
 
     return result;
+}
+
+char* collapsableBlock(char* text) {
+        char* result = concatenate("<button class=\"collapsible\">+</button>", "<div class=\"content\">");
+        result = concatenate(result, "<p>");
+        result = concatenate(result, text);
+        result = concatenate(result, "</p>");
+        result = concatenate(result, "</div>");
+
+        return result;
 }
 
 void printNumber(char* text) {
@@ -206,12 +254,12 @@ void printBraces(char* text) {
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 106 "parser.y"
+#line 154 "parser.y"
 {
     char* strval;
 }
 /* Line 193 of yacc.c.  */
-#line 215 "parser.tab.c"
+#line 263 "parser.tab.c"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -224,7 +272,7 @@ typedef union YYSTYPE
 
 
 /* Line 216 of yacc.c.  */
-#line 228 "parser.tab.c"
+#line 276 "parser.tab.c"
 
 #ifdef short
 # undef short
@@ -494,16 +542,16 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     4,     6,     8,    11,    13,    17,    20,
-      22,    25,    27,    29,    31,    33,    35,    37,    39
+       0,     0,     3,     4,     6,     9,    11,    13,    17,    20,
+      23,    25,    27,    29,    31,    33,    35,    37,    39
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      14,     0,    -1,    -1,    15,    -1,    16,    -1,    16,    15,
+      14,     0,    -1,    -1,    15,    -1,    16,    15,    -1,    16,
       -1,    17,    -1,    11,    15,    12,    -1,    11,    12,    -1,
-      18,    -1,    17,    18,    -1,     3,    -1,     4,    -1,     5,
+      17,    18,    -1,    18,    -1,     3,    -1,     4,    -1,     5,
       -1,     6,    -1,     7,    -1,     8,    -1,     9,    -1,    10,
       -1
 };
@@ -511,8 +559,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   115,   115,   116,   119,   120,   123,   124,   125,   129,
-     130,   133,   134,   135,   136,   137,   138,   139,   140
+       0,   163,   163,   164,   167,   168,   171,   172,   177,   181,
+     182,   185,   186,   187,   188,   189,   190,   191,   192
 };
 #endif
 
@@ -548,8 +596,8 @@ static const yytype_uint8 yyr1[] =
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     0,     1,     1,     2,     1,     3,     2,     1,
-       2,     1,     1,     1,     1,     1,     1,     1,     1
+       0,     2,     0,     1,     2,     1,     1,     3,     2,     2,
+       1,     1,     1,     1,     1,     1,     1,     1,     1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -558,7 +606,7 @@ static const yytype_uint8 yyr2[] =
 static const yytype_uint8 yydefact[] =
 {
        2,    11,    12,    13,    14,    15,    16,    17,    18,     0,
-       0,     3,     4,     6,     9,     8,     0,     1,     5,    10,
+       0,     3,     5,     6,    10,     8,     0,     1,     4,     9,
        7
 };
 
@@ -1426,63 +1474,92 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 115 "parser.y"
+#line 163 "parser.y"
     { printf("empty\n"); ;}
     break;
 
+  case 3:
+#line 164 "parser.y"
+    { printf("%s", (yyval.strval)); ;}
+    break;
+
+  case 4:
+#line 167 "parser.y"
+    { (yyval.strval) = concatenate((yyvsp[(1) - (2)].strval), (yyvsp[(2) - (2)].strval)); ;}
+    break;
+
+  case 5:
+#line 168 "parser.y"
+    { (yyval.strval) = (yyvsp[(1) - (1)].strval); ;}
+    break;
+
   case 7:
-#line 124 "parser.y"
-    { printf("{"); printf("%s", (yyvsp[(2) - (3)].strval)); printf("}");;}
+#line 172 "parser.y"
+    {
+                        char* collapsable = collapsableBlock((yyval.strval));
+                        (yyval.strval) = concatenate("{", collapsable);
+                        (yyval.strval) = concatenate((yyval.strval), "}");
+                  ;}
     break;
 
   case 8:
-#line 125 "parser.y"
-    { printf("{"); printf("}"); ;}
+#line 177 "parser.y"
+    { (yyval.strval) = concatenate("{", "}"); ;}
+    break;
+
+  case 9:
+#line 181 "parser.y"
+    { (yyval.strval) = concatenate((yyvsp[(1) - (2)].strval), (yyvsp[(2) - (2)].strval)); ;}
+    break;
+
+  case 10:
+#line 182 "parser.y"
+    { (yyval.strval) = (yyvsp[(1) - (1)].strval); ;}
     break;
 
   case 11:
-#line 133 "parser.y"
-    { (yyval.strval) = (yyvsp[(1) - (1)].strval); printNumber((yyvsp[(1) - (1)].strval)); ;}
+#line 185 "parser.y"
+    { (yyval.strval) = stylize((yyvsp[(1) - (1)].strval), "number"); ;}
     break;
 
   case 12:
-#line 134 "parser.y"
-    { printKeyword((yyvsp[(1) - (1)].strval)); ;}
+#line 186 "parser.y"
+    { (yyval.strval) = stylize((yyvsp[(1) - (1)].strval), "keyword"); ;}
     break;
 
   case 13:
-#line 135 "parser.y"
-    { printString((yyvsp[(1) - (1)].strval)); ;}
+#line 187 "parser.y"
+    { (yyval.strval) = stylize((yyvsp[(1) - (1)].strval), "string"); ;}
     break;
 
   case 14:
-#line 136 "parser.y"
-    { printString((yyvsp[(1) - (1)].strval)); ;}
+#line 188 "parser.y"
+    { (yyval.strval) = stylize((yyvsp[(1) - (1)].strval), "string"); ;}
     break;
 
   case 15:
-#line 137 "parser.y"
-    { printIdentifier((yyvsp[(1) - (1)].strval)); ;}
+#line 189 "parser.y"
+    { (yyval.strval) = stylize((yyvsp[(1) - (1)].strval), "identifier"); ;}
     break;
 
   case 16:
-#line 138 "parser.y"
-    { printOperator((yyvsp[(1) - (1)].strval)); ;}
+#line 190 "parser.y"
+    { (yyval.strval) = stylize((yyvsp[(1) - (1)].strval), "operator"); ;}
     break;
 
   case 17:
-#line 139 "parser.y"
-    { printMisc((yyvsp[(1) - (1)].strval)); ;}
+#line 191 "parser.y"
+    { (yyval.strval) = (yyvsp[(1) - (1)].strval); ;}
     break;
 
   case 18:
-#line 140 "parser.y"
-    { printUnrecognized((yyvsp[(1) - (1)].strval)); ;}
+#line 192 "parser.y"
+    { (yyval.strval) = (yyvsp[(1) - (1)].strval) ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1486 "parser.tab.c"
+#line 1563 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1696,7 +1773,7 @@ yyreturn:
 }
 
 
-#line 143 "parser.y"
+#line 195 "parser.y"
 
 
 int yyerror(const char* error)
@@ -1718,6 +1795,8 @@ void printHtmlHeader() {
        );
 }
 
+
+
 void printBody() {
     puts(
       "<body bgcolor=\"#e2cdb7\">"
@@ -1734,6 +1813,7 @@ void printHTML() {
     );
     printHtmlHeader();
     printBody();
+    printCollapsableScript();
     puts("</html>");
 }
 

@@ -36,8 +36,46 @@ void printStyles() {
             "            color: #db184c;"
             "            font-style: bold;"
             "        }"
-            "    </style>"
+            "        .collapsible {"
+            "            background-color: #777;"
+            "            color: white;"
+            "            cursor: pointer;"
+            "            padding: 2px;"
+            "            width: 2%;"
+            "            border: none;"
+            "            text-align: center;"
+            "            outline: none;"
+            "            font-size: 15px;"
+            "        }"
+
+            "        .active, .collapsible:hover {"
+            "            background-color: #555;"
+            "        }"
+
+
+            "     </style>"
     );
+}
+
+void printCollapsableScript() {
+        puts(
+                "<script>"
+                "var coll = document.getElementsByClassName(\"collapsible\");"
+                "var i;"
+                ""
+                "for (i = 0; i < coll.length; i++) {"
+                  "coll[i].addEventListener(\"click\", function() {"
+                    "this.classList.toggle(\"active\");"
+                    "var content = this.nextElementSibling;"
+                    "if (content.style.display === \"block\") {"
+                      "content.style.display = \"none\";"
+                    "} else {"
+                      "content.style.display = \"block\";"
+                    "}"
+                  "});"
+                "}"
+                "</script>"
+        );
 }
 
 char* stylize(char* text, char* style) {
@@ -47,6 +85,16 @@ char* stylize(char* text, char* style) {
     result = concatenate(result, "</span>");
 
     return result;
+}
+
+char* collapsableBlock(char* text) {
+        char* result = concatenate("<button class=\"collapsible\">+</button>", "<div class=\"content\">");
+        result = concatenate(result, "<p>");
+        result = concatenate(result, text);
+        result = concatenate(result, "</p>");
+        result = concatenate(result, "</div>");
+
+        return result;
 }
 
 void printNumber(char* text) {
@@ -107,37 +155,41 @@ void printBraces(char* text) {
     char* strval;
 }
 
-%type <strval> input expr_list expr token_sequence token NUMBER KEYWORD STRING STRING_DQ IDENTIFIER OPERATOR MISC UNRECOGNIZED
+%type <strval> input expr_list expr token_sequence token NUMBER KEYWORD STRING STRING_DQ IDENTIFIER OPERATOR MISC UNRECOGNIZED LCURLY RCURLY
 
 
 %%
 
 input:  /* empty */ { printf("empty\n"); }
-    | expr_list 
+    | expr_list { printf("%s", $$); }
     ;
 
-expr_list: expr
-        | expr expr_list
+expr_list: expr expr_list { $$ = concatenate($1, $2); }
+        | expr { $$ = $1; }
         ;
 
 expr: token_sequence
-        | LCURLY expr_list RCURLY { printf("{"); printf("%s", $2); printf("}");}
-        | LCURLY RCURLY { printf("{"); printf("}"); }
+        | LCURLY expr_list RCURLY {
+                        char* collapsable = collapsableBlock($$);
+                        $$ = concatenate("{", collapsable);
+                        $$ = concatenate($$, "}");
+                  }
+        | LCURLY RCURLY { $$ = concatenate("{", "}"); }
         ;
 
 
-token_sequence: token
-        | token_sequence token
+token_sequence: token_sequence token { $$ = concatenate($1, $2); }
+        | token { $$ = $1; }
         ;
 
-token: NUMBER { $$ = $1; printNumber($1); }
-    | KEYWORD { printKeyword($1); }
-    | STRING { printString($1); }
-    | STRING_DQ { printString($1); }
-    | IDENTIFIER { printIdentifier($1); }
-    | OPERATOR { printOperator($1); }
-    | MISC { printMisc($1); }
-    | UNRECOGNIZED { printUnrecognized($1); }
+token: NUMBER { $$ = stylize($1, "number"); }
+    | KEYWORD { $$ = stylize($1, "keyword"); }
+    | STRING { $$ = stylize($1, "string"); }
+    | STRING_DQ { $$ = stylize($1, "string"); }
+    | IDENTIFIER { $$ = stylize($1, "identifier"); }
+    | OPERATOR { $$ = stylize($1, "operator"); }
+    | MISC { $$ = $1; }
+    | UNRECOGNIZED { $$ = $1 }
     ;
 
 %%
@@ -161,6 +213,8 @@ void printHtmlHeader() {
        );
 }
 
+
+
 void printBody() {
     puts(
       "<body bgcolor=\"#e2cdb7\">"
@@ -177,6 +231,7 @@ void printHTML() {
     );
     printHtmlHeader();
     printBody();
+    printCollapsableScript();
     puts("</html>");
 }
 
