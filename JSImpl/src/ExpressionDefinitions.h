@@ -79,25 +79,25 @@
 		MACRO(ExpressionPtr, Arguments, ExpressionPtr())
 
 #define EXPRESSION_DEFINITION_ITERATOR(MACRO)\
-		MACRO(LiteralNull, Expression, NO_MEMBERS)\
-		MACRO(LiteralUndefined, Expression, NO_MEMBERS)\
-		MACRO(LiteralBoolean, Expression, LITERAL_BOOLEAN_MEMBERS)\
-		MACRO(LiteralNumber, Expression, LITERAL_NUMBER_MEMBERS)\
-		MACRO(LiteralString, Expression, LITERAL_STRING_MEMBERS)\
-		MACRO(LiteralObject, Expression, LITERAL_OBJECT_MEMBERS)\
-		MACRO(BinaryExpression, Expression, BINARY_EXPRESSION_MEMBERS)\
-		MACRO(UnaryExpression, Expression, UNARY_EXPRESSION_MEMBERS)\
-		MACRO(IdentifierExpression, Expression, IDENTIFIER_EXPRESSION_MEMBERS)\
-		MACRO(VariableDefinitionExpression, Expression, VARIABLEDEFINITION_EXPRESSION_MEMBERS)\
-		MACRO(ListExpression, Expression, LIST_EXPRESSION_MEMBERS)\
-		MACRO(BlockStatement, Expression, BLOCK_EXPRESSION_MEMBERS)\
-		MACRO(LabeledStatement, Expression, LABELED_EXPRESSION_MEMBERS)\
-		MACRO(IfStatement, Expression, IF_EXPRESSION_MEMBERS)\
-		MACRO(SwitchStatement, Expression, SWITCH_EXPRESSION_MEMBERS)\
-		MACRO(CaseStatement, Expression, CASE_EXPRESSION_MEMBERS)\
-		MACRO(WhileStatement, Expression, WHILE_EXPRESSION_MEMBERS)\
-		MACRO(ForStatement, Expression, FOR_EXPRESSION_MEMBERS)\
-		MACRO(FunctionDeclaration, Expression, FUNCTION_EXPRESSION_MEMBERS)\
-		MACRO(TopStatements, Expression, TOP_EXPRESSION_MEMBERS)\
-		MACRO(EmptyExpression, Expression, NO_MEMBERS)\
-		MACRO(CallExpression, Expression, CALL_EXPRESSION_MEMBERS)
+		MACRO(LiteralNull, NO_MEMBERS)\
+		MACRO(LiteralUndefined, NO_MEMBERS)\
+		MACRO(LiteralBoolean, LITERAL_BOOLEAN_MEMBERS)\
+		MACRO(LiteralNumber, LITERAL_NUMBER_MEMBERS)\
+		MACRO(LiteralString, LITERAL_STRING_MEMBERS)\
+		MACRO(LiteralObject, LITERAL_OBJECT_MEMBERS)\
+		MACRO(BinaryExpression, BINARY_EXPRESSION_MEMBERS)\
+		MACRO(UnaryExpression, UNARY_EXPRESSION_MEMBERS)\
+		MACRO(IdentifierExpression, IDENTIFIER_EXPRESSION_MEMBERS)\
+		MACRO(VariableDefinitionExpression, VARIABLEDEFINITION_EXPRESSION_MEMBERS)\
+		MACRO(ListExpression, LIST_EXPRESSION_MEMBERS)\
+		MACRO(BlockStatement, BLOCK_EXPRESSION_MEMBERS)\
+		MACRO(LabeledStatement, LABELED_EXPRESSION_MEMBERS)\
+		MACRO(IfStatement, IF_EXPRESSION_MEMBERS)\
+		MACRO(SwitchStatement, SWITCH_EXPRESSION_MEMBERS)\
+		MACRO(CaseStatement, CASE_EXPRESSION_MEMBERS)\
+		MACRO(WhileStatement, WHILE_EXPRESSION_MEMBERS)\
+		MACRO(ForStatement, FOR_EXPRESSION_MEMBERS)\
+		MACRO(FunctionDeclaration, FUNCTION_EXPRESSION_MEMBERS)\
+		MACRO(TopStatements, TOP_EXPRESSION_MEMBERS)\
+		MACRO(EmptyExpression, NO_MEMBERS)\
+		MACRO(CallExpression, CALL_EXPRESSION_MEMBERS)
