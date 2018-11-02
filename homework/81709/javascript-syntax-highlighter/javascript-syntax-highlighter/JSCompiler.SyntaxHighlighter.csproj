@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>javascript_syntax_highlighter</RootNamespace>
     <AssemblyName>javascript-syntax-highlighter</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -42,20 +43,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InputStream.cs" />
-    <Compile Include="Lexer.cs" />
-    <Compile Include="NumToken.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReservedStrings.cs" />
     <Compile Include="SyntaxHighlighter.cs" />
-    <Compile Include="Token.cs" />
-    <Compile Include="TokenType.cs" />
-    <Compile Include="Utils.cs" />
-    <Compile Include="WordToken.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JS.Core\JSCompiler.Core.csproj">
+      <Project>{c8dd3d07-6ae9-444b-8ba0-22dc633a9432}</Project>
+      <Name>JSCompiler.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

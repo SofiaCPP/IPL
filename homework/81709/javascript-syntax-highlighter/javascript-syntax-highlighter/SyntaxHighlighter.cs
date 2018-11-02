@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using JSCompiler.Core;
 
-namespace javascript_syntax_highlighter
+namespace JSCompiler.SyntaxHighlighter
 {
     public static class SyntaxHighlighter
     {
