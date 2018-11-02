@@ -53,7 +53,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JS.Core\JSCompiler.Core.csproj">
+    <ProjectReference Include="..\JSCompiler.Core\JSCompiler.Core.csproj">
       <Project>{c8dd3d07-6ae9-444b-8ba0-22dc633a9432}</Project>
       <Name>JSCompiler.Core</Name>
     </ProjectReference>

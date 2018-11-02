@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{86EEEA6F-B900-4BEE-8E62-9425D2BFD36B}</ProjectGuid>
+    <ProjectGuid>{F2211B16-C27C-40D6-A856-8A6B5A3787EF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JSCompiler.Core.Tests</RootNamespace>
@@ -49,15 +49,15 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InputStreamTests.cs" />
+    <Compile Include="LexerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\JS.Core\JSCompiler.Core.csproj">
-      <Project>{c8dd3d07-6ae9-444b-8ba0-22dc633a9432}</Project>
+    <ProjectReference Include="..\JSCompiler.Core\JSCompiler.Core.csproj">
+      <Project>{C8DD3D07-6AE9-444B-8BA0-22DC633A9432}</Project>
       <Name>JSCompiler.Core</Name>
     </ProjectReference>
   </ItemGroup>

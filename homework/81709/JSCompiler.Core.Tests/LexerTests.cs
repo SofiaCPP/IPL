@@ -9,40 +9,22 @@ using System.Threading.Tasks;
 namespace JSCompiler.Core.Tests
 {
     [TestClass()]
-    public class InputStreamTests
+    public class LexerTests
     {
         [TestMethod()]
-        public void InputStreamTest()
-        { 
-            Assert.Fail();
-        }
-
-        [TestMethod()]
-        public void InputStreamTest1()
+        public void LexerTest()
         {
             Assert.Fail();
         }
 
         [TestMethod()]
-        public void CloseTest()
+        public void TokenizeTest()
         {
             Assert.Fail();
         }
 
         [TestMethod()]
-        public void IsEndOfStreamTest()
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod()]
-        public void NextTest()
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod()]
-        public void PeekTest()
+        public void NextTokenTest()
         {
             Assert.Fail();
         }
