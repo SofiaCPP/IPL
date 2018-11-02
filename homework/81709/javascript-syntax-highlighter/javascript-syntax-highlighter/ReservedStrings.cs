@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace javascript_syntax_highlighter
 {
-    static class IdTokenTypes
+    static class ReservedStrings
     {
-        public static Dictionary<string, TokenType> AsMap()
+        public static Dictionary<string, TokenType> KeywordsAsMap()
         {
             return new Dictionary<string, TokenType>
             {
@@ -47,9 +47,34 @@ namespace javascript_syntax_highlighter
                 {"with", TokenType.With },
                 {"yield", TokenType.Yield },
                 {"null", TokenType.Null },
-                {"undefine", TokenType.Undefined },
                 {"true", TokenType.True },
                 { "false", TokenType.False }
+            };
+        }
+
+        public static Dictionary<string, TokenType> OthersAsMap()
+        {
+            return new Dictionary<string, TokenType>
+            {
+                {"Array", TokenType.Array },
+                {"Date", TokenType.Date },
+                {"eval", TokenType.Eval },
+                {"hasOwnProperty", TokenType.HasOwnProperty },
+                {"Infinity", TokenType.Infinity },
+                {"isFinite", TokenType.IsFinite },
+                {"isNaN", TokenType.IsNaN },
+                {"isPrototypeOf", TokenType.IsPrototypeOf },
+                {"length", TokenType.Length },
+                {"Math" , TokenType.Math },
+                {"NaN", TokenType.NaN },
+                {"name", TokenType.Name },
+                {"String", TokenType.StringObj },
+                {"Number", TokenType.NumberObj },
+                {"toString", TokenType.ToString },
+                {"Object", TokenType.Object },
+                {"undefined", TokenType.Undefined },
+                {"prototype", TokenType.Prototype },
+                {"valueOf", TokenType.ValueOf }
             };
         }
 

@@ -10,11 +10,10 @@ namespace javascript_syntax_highlighter
     {
         static void Main(string[] args)
         {
-            InputStream stream = new InputStream("test.js");
+            InputStream stream = new InputStream("../../test/test.js");
             Lexer lex = new Lexer(stream);
             List<Token> tokens = lex.Tokenize();
-            //TODO Create syntax highlighter
-
+            SyntaxHighlighter.GenerateHtml(tokens, "../../test/testout.html");
         }
     }
 }
