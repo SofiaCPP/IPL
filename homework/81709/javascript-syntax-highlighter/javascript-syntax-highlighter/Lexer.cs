@@ -8,14 +8,17 @@ namespace javascript_syntax_highlighter
 {
     public class Lexer
     {
-        private Dictionary<string, TokenType> idsMap;
+        private Dictionary<string, TokenType> keywords;
+
+        private Dictionary<string, TokenType> otherReserved;
 
         private InputStream stream;
 
         public Lexer(InputStream stream)
         {
             this.stream = stream;
-            this.idsMap = IdTokenTypes.AsMap();
+            this.keywords = ReservedStrings.KeywordsAsMap();
+            this.otherReserved = ReservedStrings.OthersAsMap();
         }
 
         public List<Token> Tokenize()
@@ -31,16 +34,19 @@ namespace javascript_syntax_highlighter
 
         public Token NextToken()
         {
-            //TODO Parse Comments
-            //TODO Add Error checking and link error line with Invalid token
-
             char cur = stream.Next();
 
             if (Utils.IsCarriageReturn(cur))
                 cur = stream.Next();
 
-            if (Utils.IsWhiteSpace(cur) || Utils.IsTab(cur) || Utils.IsNewLine(cur))
-                return new WordToken(cur.ToString(), TokenType.Whitespace);
+            if (Utils.IsWhiteSpace(cur))
+                return new Token(TokenType.Whitespace);
+
+            if (Utils.IsTab(cur))
+                return new Token(TokenType.Tab);
+
+            if (Utils.IsNewLine(cur))
+                return new Token(TokenType.NewLine);
 
             switch (cur)
             {
@@ -96,7 +102,7 @@ namespace javascript_syntax_highlighter
 
             if(Utils.IsStringBound(cur))
             {
-                return ParseString();
+                return ParseString(cur);
             }
 
             if(char.IsDigit(cur))
@@ -106,10 +112,10 @@ namespace javascript_syntax_highlighter
 
             if (char.IsLetter(cur))
             {
-                return ParseKeywordOrIdentifier(cur);
+                return ParseReservedOrIdentifier(cur);
             }
 
-            return new ErrorToken(stream.Line, $"Unresolved symbol at line: {stream.Line} \n");
+            return new WordToken(cur.ToString(), TokenType.Error);
         }
 
         private bool Match(char ch)
@@ -124,7 +130,7 @@ namespace javascript_syntax_highlighter
 
         private Token ParseOneLineComment()
         {
-            string lexeme = "";
+            string lexeme = "//";
             char peek = stream.Peek();
             while(!Utils.IsNewLine(peek) && !Utils.IsCarriageReturn(peek) && !stream.IsEndOfStream())
             {
@@ -137,7 +143,7 @@ namespace javascript_syntax_highlighter
 
         private Token ParseMultilineToken()
         {
-            string lexeme = "";
+            string lexeme = "/*";
             int lineBeg = stream.Line + 1;
             while (!stream.IsEndOfStream())
             {
@@ -145,40 +151,38 @@ namespace javascript_syntax_highlighter
                 {
                     lexeme += stream.Next();
                 };
-                stream.Next();
+                lexeme += stream.Next();
                 if (stream.Peek() == '/')
                 {
-                    stream.Next();
-                    return new WordToken(lexeme, TokenType.MultilineComment);
+                    lexeme += stream.Next();
+                    return new WordToken(lexeme, TokenType.Comment);
                 }
-                lexeme += "*" + stream.Next();
             }
-
-            return new ErrorToken(lineBeg, $"Comment at line: {lineBeg} is unclosed.");
+            return new WordToken(lexeme, TokenType.Comment);
         }
 
         //TODO Fix parsing of string combinations of ' and ".
         //Example: Fix "My name is 'Josh'. He is cool."
-        private Token ParseString()
+        private Token ParseString(char c)
         {
-            string lexeme = "";
+            string lexeme = c.ToString();
             int startLine = stream.Line + 1;
             char peek = stream.Peek();
             while (!Utils.IsStringBound(peek))
             {
                 if (Utils.IsNewLine(peek) || Utils.IsCarriageReturn(peek))
                 {
-                    return new ErrorToken(stream.Line, $"String literal contains an unescaped line break at line: {stream.Line}");
+                    return new WordToken(lexeme, TokenType.Error);
                 }
 
                 lexeme += stream.Next();
                 if (stream.IsEndOfStream())
                 {
-                    return new ErrorToken(startLine, $"Unclosed string literal at line: {startLine}");
+                    return new WordToken(lexeme, TokenType.Error);
                 }
                 peek = stream.Peek();
             }
-            stream.Next();
+            lexeme += stream.Next();
             return new WordToken(lexeme, TokenType.String);
         }
 
@@ -194,30 +198,24 @@ namespace javascript_syntax_highlighter
             return new NumToken(num);
         }
 
-        private Token ParseKeywordOrIdentifier(char ch)
+        private Token ParseReservedOrIdentifier(char ch)
         {
             string lexeme = "" + ch;
-            bool chanceToBeIdentifier = char.IsLower(ch);
 
-            char peek = stream.Peek();
-            while (char.IsLetterOrDigit(peek) && !stream.IsEndOfStream())
+            while (char.IsLetterOrDigit(stream.Peek()) && !stream.IsEndOfStream())
             {
-                if (chanceToBeIdentifier && (char.IsUpper(peek) || char.IsDigit(peek)))
-                {
-                    chanceToBeIdentifier = false;
-                }
-
                 lexeme += stream.Next();
-                peek = stream.Peek();
             }
 
-            if (chanceToBeIdentifier)
-            {
-                TokenType keywordType;
-                idsMap.TryGetValue(lexeme, out keywordType);
-                if(keywordType != 0)
-                    return new WordToken(lexeme, keywordType);
-            }
+            TokenType reservedType;
+
+            keywords.TryGetValue(lexeme, out reservedType);
+            if(reservedType != 0)
+                return new WordToken(lexeme, reservedType);
+
+            otherReserved.TryGetValue(lexeme, out reservedType);
+            if(reservedType != 0)
+                return new WordToken(lexeme, reservedType);
 
             return new WordToken(lexeme, TokenType.Identifier);
         }

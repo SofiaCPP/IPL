@@ -35,11 +35,11 @@ namespace javascript_syntax_highlighter
         Less = 60, // <
         Backslash = 92, // \
 
-        Whitespace = 32,
-
         Invalid = 127,
+        NewLine,
+        Tab,
+        Whitespace,
         Comment,
-        MultilineComment,
         EOF,
         
         NotEqual, // !=
@@ -68,6 +68,7 @@ namespace javascript_syntax_highlighter
         Identifier,
         String,
         Number,
+        Error,
 
         // Keywords. ECMAScript 2015
         Break,
@@ -104,9 +105,29 @@ namespace javascript_syntax_highlighter
         While,
         With,
         Yield,
-        Null,
-        Undefined,
+        Null,        
         True,
         False,
+
+        //Objects and other
+        Array,
+        Date,
+        Eval,
+        HasOwnProperty,
+        Infinity,
+        IsFinite,
+        IsNaN,
+        IsPrototypeOf,
+        Length,
+        Math,
+        NaN,
+        Name,
+        NumberObj,
+        Object,
+        Prototype,
+        StringObj,
+        ToString,
+        Undefined,
+        ValueOf
     }
 }
