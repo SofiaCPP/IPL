@@ -1,6 +1,7 @@
 #include "ASTInterpreter.h"
 #include "Expression.h"
 #include <iostream>
+#include <math.h>
 
 #undef NOT_IMPLEMENTED
 #define NOT_IMPLEMENTED (void)e; assert(0 && "not-implemented")
