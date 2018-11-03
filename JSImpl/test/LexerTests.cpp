@@ -78,7 +78,7 @@ TEST(Lexer, String)
 {
 	IPLVector<Token> tokens;
 	Tokenize("\"alabala\"", tokens);
-	ASSERT_TRUE(tokens.size() == 2 && tokens[0].Type == TokenType::String 
+	ASSERT_TRUE(tokens.size() == 2 && tokens[0].Type == TokenType::String
                 && tokens[0].Lexeme == "\"alabala\"");
 }
 
@@ -213,3 +213,40 @@ TEST(Lexer, CommentError)
                 res.Error.Column == 3);
 }
 
+TEST(Lexer, LexFile)
+{
+	IPLVector<Token> tokens;
+	const auto& res = TokenizeFile("LexTestFile.js", tokens);
+
+	ASSERT_TRUE(res.IsSuccessful);
+	ASSERT_EQ(tokens.size(), 5);
+	ASSERT_EQ(tokens[0].Type, TokenType::Var);
+	ASSERT_EQ(tokens[1].Type, TokenType::Identifier);
+	ASSERT_EQ(tokens[2].Type, TokenType::Equal);
+	ASSERT_EQ(tokens[3].Type, TokenType::Number);
+	ASSERT_EQ(tokens[4].Type, TokenType::Eof);
+}
+
+TEST(Lexer, LexBadFilePath)
+{
+	IPLVector<Token> tokens;
+	const auto& res = TokenizeFile("BadPath.js", tokens);
+
+	ASSERT_FALSE(res.IsSuccessful);
+	ASSERT_EQ(res.Error.Row, 0u);
+	ASSERT_EQ(res.Error.Column, 0u);
+	ASSERT_EQ(res.Error.File, IPLString("BadPath.js"));
+	ASSERT_EQ(res.Error.What, IPLString("Bad file path."));
+}
+
+TEST(Lexer, LexNotAJavaScriptFile)
+{
+	IPLVector<Token> tokens;
+	const auto& res = TokenizeFile("NotJS.txt", tokens);
+
+	ASSERT_FALSE(res.IsSuccessful);
+	ASSERT_EQ(res.Error.Row, 0u);
+	ASSERT_EQ(res.Error.Column, 0u);
+	ASSERT_EQ(res.Error.File, IPLString("NotJS.txt"));
+	ASSERT_EQ(res.Error.What, IPLString("Not a JavaScript file."));
+}

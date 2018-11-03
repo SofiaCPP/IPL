@@ -124,7 +124,11 @@ struct LexerSettings
 {
 	bool CreateWhitespaceTokens;
 	bool CreateCommentTokens;
+
+	LexerSettings(bool whitespaces = false, bool comments = false);
 };
 
 LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings);
 LexerResult Tokenize(const char* code, IPLVector<Token>& tokens);
+LexerResult TokenizeFile(const IPLString& path, IPLVector<Token>& tokens, const LexerSettings& settings);
+LexerResult TokenizeFile(const IPLString& path, IPLVector<Token>& tokens);

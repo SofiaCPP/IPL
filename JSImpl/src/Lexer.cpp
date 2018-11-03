@@ -1,5 +1,6 @@
 #include "Lexer.h"
 #include <utility>
+#include <fstream>
 
 namespace
 {
@@ -125,7 +126,41 @@ LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSett
 
 LexerResult Tokenize(const char * code, IPLVector<Token>& tokens)
 {
-	return Tokenize(code, tokens, { false, false });
+	return Tokenize(code, tokens, LexerSettings());
+}
+
+LexerResult TokenizeFile(const IPLString& path, IPLVector<Token>& tokens, const LexerSettings& settings)
+{
+	if (path.size() < 3)
+	{
+		return { false, { 0, 0, path, "Bad file path." } };
+	}
+
+	if (path[path.size() - 1] != 's' || path[path.size() - 2] != 'j' || path[path.size() - 3] != '.')
+	{
+		return { false, { 0, 0, path, "Not a JavaScript file." } };
+	}
+
+	std::ifstream file(path);
+
+	if (!file.good())
+	{
+		return { false,{ 0, 0, path, "Bad file path." } };
+	}
+
+	IPLString code;
+	file.seekg(std::ios::end);
+	code.resize(file.tellg());
+	file.seekg(std::ios::beg);
+	std::getline(file, code, '\0');
+	file.close();
+
+	return Tokenize(code.c_str(), tokens, settings);
+}
+
+LexerResult TokenizeFile(const IPLString& path, IPLVector<Token>& tokens)
+{
+	return TokenizeFile(path, tokens, LexerSettings());
 }
 
 Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
@@ -621,4 +656,10 @@ Token Tokenizer::NextToken()
 	}
 
 	return ProduceErrorToken();
+}
+
+LexerSettings::LexerSettings(bool whitespaces, bool comments)
+	: CreateWhitespaceTokens(whitespaces)
+	, CreateCommentTokens(comments)
+{
 }
