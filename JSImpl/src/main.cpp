@@ -25,9 +25,46 @@ void RunParseCalc()
 	std::cout << "S = " << i.ModifyVariable("a") << std::endl;
 }
 
+class InterpreterPrinter : public ASTInterpreter::Printer
+{
+public:
+	virtual void PrintVariable(const char* name, double value) override
+	{
+		std::cout << name << ": " << value << std::endl;
+	}
+};
+
+void InteractiveInterpreter()
+{
+	char command[1000];
+	ASTInterpreter i;
+	InterpreterPrinter p;
+	do
+	{
+		std::cin.getline(command, 1000);
+		if (strcmp(command, "exit") == 0)
+		{
+			break;
+		}
+		if (strcmp(command, "print") == 0)
+		{
+			i.Print(p);
+			continue;
+		}
+		IPLVector<Token> tokens;
+		Tokenize(command, tokens);
+		auto result = i.Run(Parse(tokens).get());
+		while (!result.empty()) {
+			std::cout << result.back() << std::endl;
+			result.pop_back();
+		}
+	} while (true);
+}
+
 int main()
 {
-	RunParseCalc();
+	//RunParseCalc();
+	InteractiveInterpreter();
 
 #if defined(_WIN32)
 	std::system("pause");
