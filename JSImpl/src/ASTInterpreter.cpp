@@ -212,6 +212,9 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
         case TokenType::EqualEqual:
             m_Evaluation.push_back(fabs(left - right) < 0.0001);
             break;
+        case TokenType::BangEqual:
+            m_Evaluation.push_back(fabs(left - right) > 0.0001);
+            break;
         case TokenType::Equal:
         {
             LValueExtractor extractor(this);
