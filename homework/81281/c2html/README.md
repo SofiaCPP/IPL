@@ -11,6 +11,7 @@
 
 + ~~Produce html where control structures can be collapsed.~~
 
+
 ### How to install and use SWI-Prolog
 
 + [How to install SWI-Prolog](https://wwu-pi.github.io/tutorials/lectures/lsp/010_install_swi_prolog.html)
@@ -20,6 +21,7 @@
 + [Command line options](http://www.swi-prolog.org/pldoc/man?section=cmdline)
 
 ### Added bash script for executing program after successful installation of SWI-Prolog on a Unix or Unix-like variants
+
 [Script](./c2htmlrun.sh)
 
 ### If you are going to install SWI-Prolog on Windows 
@@ -27,6 +29,7 @@
 + Afterward in order to execute the program you can call the main predicate and give it a valid string name of file.
 
 For example **mainy("test.c").**
+
 
 ### For the curious who want to find about DCG Grammar rules :
 

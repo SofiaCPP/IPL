@@ -13,6 +13,7 @@ public:
 	virtual void Visit(LiteralString* e) override;
 	virtual void Visit(LiteralNumber* e) override;
 	virtual void Visit(LiteralBoolean* e) override;
+	virtual void Visit(LiteralObject* e) override;
 	virtual void Visit(BinaryExpression* e) override;
 	virtual void Visit(UnaryExpression* e) override;
 	virtual void Visit(IdentifierExpression* e) override;
@@ -28,7 +29,15 @@ public:
 	virtual void Visit(FunctionDeclaration* e) override;
 	virtual void Visit(TopStatements* e) override;
 	virtual void Visit(EmptyExpression* e) override;
+	virtual void Visit(CallExpression* e) override;
+
+	inline void Enter();
+	inline void Exit();
+	inline void NoIndentNextAccept();
+	inline void IndentNextAccept();
+	inline void InsertIndent();
 private:
 	std::ostream& os;
-
+	unsigned nest_level;
+	bool indent_next_accept;
 };

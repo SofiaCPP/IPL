@@ -3,10 +3,15 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <stack>
+#include <cassert>
 
 template<typename T>
 using IPLVector = std::vector<T>;
 using IPLString = std::string;
+
+template <typename T>
+using IPLStack = std::stack<T>;
 
 template <typename Key, typename T>
 using IPLUnorderedMap = std::unordered_map<Key, T>;
@@ -29,3 +34,5 @@ struct IPLError
 	IPLString File;
 	IPLString What;
 };
+
+#define NOT_IMPLEMENTED assert(0 && "not-implemented")

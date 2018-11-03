@@ -17,6 +17,7 @@ main :-
     halt(1).
 
 mainy(File, Number):-
+
     open(File, read, RFile),
     read_stream_to_codes(RFile, CSource),
     close(RFile),
