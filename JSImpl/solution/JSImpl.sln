@@ -1,45 +1,61 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSImpl", "JSImpl.vcxproj", "{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "..\test\Test.vcxproj", "{45DC8C7C-3113-8E0D-DAFF-7310C6150A0F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{19EA680D-85FE-90BE-4E80-341EBA538DEF} = {19EA680D-85FE-90BE-4E80-341EBA538DEF}
+		{EC34880F-5849-B0C0-21CB-53208D9EACF1} = {EC34880F-5849-B0C0-21CB-53208D9EACF1}
+		{B686840F-229B-ACC0-EB1C-502057F0A8F1} = {B686840F-229B-ACC0-EB1C-502057F0A8F1}
+		{30B03E7E-1C68-80CB-856F-592771461BBC} = {30B03E7E-1C68-80CB-856F-592771461BBC}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JS.Common", "..\projects\JS.Common\JS.Common.vcxitems", "{45D41ACC-2C3C-43D2-BC10-02AA73FFC7C7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSLib", "JSLib.vcxproj", "{19EA680D-85FE-90BE-4E80-341EBA538DEF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestApp", "..\projects\TestApp\TestApp.vcxproj", "{05DB0989-2720-45CC-8689-2FF047B4FD74}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSImpl", "JSImpl.vcxproj", "{549B84BA-403D-AF90-29F8-C2E4153936E1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{19EA680D-85FE-90BE-4E80-341EBA538DEF} = {19EA680D-85FE-90BE-4E80-341EBA538DEF}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest", "..\test\gtest.vcxproj", "{EC34880F-5849-B0C0-21CB-53208D9EACF1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gmock", "..\test\gmock.vcxproj", "{B686840F-229B-ACC0-EB1C-502057F0A8F1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest_main", "..\test\gtest_main.vcxproj", "{30B03E7E-1C68-80CB-856F-592771461BBC}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\projects\JS.Common\JS.Common.vcxitems*{05db0989-2720-45cc-8689-2ff047b4fd74}*SharedItemsImports = 4
-		..\projects\JS.Common\JS.Common.vcxitems*{45d41acc-2c3c-43d2-bc10-02aa73ffc7c7}*SharedItemsImports = 9
-		..\projects\JS.Common\JS.Common.vcxitems*{ee0f8c6f-3619-4a46-bc19-faead4167ee4}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Debug|x64.ActiveCfg = Debug|x64
-		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Debug|x64.Build.0 = Debug|x64
-		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Debug|x86.ActiveCfg = Debug|Win32
-		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Debug|x86.Build.0 = Debug|Win32
-		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Release|x64.ActiveCfg = Release|x64
-		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Release|x64.Build.0 = Release|x64
-		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Release|x86.ActiveCfg = Release|Win32
-		{EE0F8C6F-3619-4A46-BC19-FAEAD4167EE4}.Release|x86.Build.0 = Release|Win32
-		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Debug|x64.ActiveCfg = Debug|x64
-		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Debug|x64.Build.0 = Debug|x64
-		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Debug|x86.ActiveCfg = Debug|Win32
-		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Debug|x86.Build.0 = Debug|Win32
-		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Release|x64.ActiveCfg = Release|x64
-		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Release|x64.Build.0 = Release|x64
-		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Release|x86.ActiveCfg = Release|Win32
-		{05DB0989-2720-45CC-8689-2FF047B4FD74}.Release|x86.Build.0 = Release|Win32
+		{45DC8C7C-3113-8E0D-DAFF-7310C6150A0F}.Debug|x64.ActiveCfg = Debug|x64
+		{45DC8C7C-3113-8E0D-DAFF-7310C6150A0F}.Debug|x64.Build.0 = Debug|x64
+		{45DC8C7C-3113-8E0D-DAFF-7310C6150A0F}.Release|x64.ActiveCfg = Release|x64
+		{45DC8C7C-3113-8E0D-DAFF-7310C6150A0F}.Release|x64.Build.0 = Release|x64
+		{19EA680D-85FE-90BE-4E80-341EBA538DEF}.Debug|x64.ActiveCfg = Debug|x64
+		{19EA680D-85FE-90BE-4E80-341EBA538DEF}.Debug|x64.Build.0 = Debug|x64
+		{19EA680D-85FE-90BE-4E80-341EBA538DEF}.Release|x64.ActiveCfg = Release|x64
+		{19EA680D-85FE-90BE-4E80-341EBA538DEF}.Release|x64.Build.0 = Release|x64
+		{549B84BA-403D-AF90-29F8-C2E4153936E1}.Debug|x64.ActiveCfg = Debug|x64
+		{549B84BA-403D-AF90-29F8-C2E4153936E1}.Debug|x64.Build.0 = Debug|x64
+		{549B84BA-403D-AF90-29F8-C2E4153936E1}.Release|x64.ActiveCfg = Release|x64
+		{549B84BA-403D-AF90-29F8-C2E4153936E1}.Release|x64.Build.0 = Release|x64
+		{EC34880F-5849-B0C0-21CB-53208D9EACF1}.Debug|x64.ActiveCfg = Debug|x64
+		{EC34880F-5849-B0C0-21CB-53208D9EACF1}.Debug|x64.Build.0 = Debug|x64
+		{EC34880F-5849-B0C0-21CB-53208D9EACF1}.Release|x64.ActiveCfg = Release|x64
+		{EC34880F-5849-B0C0-21CB-53208D9EACF1}.Release|x64.Build.0 = Release|x64
+		{B686840F-229B-ACC0-EB1C-502057F0A8F1}.Debug|x64.ActiveCfg = Debug|x64
+		{B686840F-229B-ACC0-EB1C-502057F0A8F1}.Debug|x64.Build.0 = Debug|x64
+		{B686840F-229B-ACC0-EB1C-502057F0A8F1}.Release|x64.ActiveCfg = Release|x64
+		{B686840F-229B-ACC0-EB1C-502057F0A8F1}.Release|x64.Build.0 = Release|x64
+		{30B03E7E-1C68-80CB-856F-592771461BBC}.Debug|x64.ActiveCfg = Debug|x64
+		{30B03E7E-1C68-80CB-856F-592771461BBC}.Debug|x64.Build.0 = Debug|x64
+		{30B03E7E-1C68-80CB-856F-592771461BBC}.Release|x64.ActiveCfg = Release|x64
+		{30B03E7E-1C68-80CB-856F-592771461BBC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal

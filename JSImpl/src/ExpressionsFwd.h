@@ -6,6 +6,7 @@ class LiteralUndefined;
 class LiteralNumber;
 class LiteralString;
 class LiteralBoolean;
+class LiteralObject;
 class Expression;
 class BinaryExpression;
 class UnaryExpression;
@@ -23,5 +24,6 @@ class ForStatement;
 class FunctionDeclaration;
 class TopStatements;
 class EmptyExpression;
+class CallExpression;
 
 using ExpressionPtr = IPLSharedPtr<Expression>;

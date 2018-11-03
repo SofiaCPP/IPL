@@ -27,7 +27,8 @@ static const std::unordered_map<TokenClass, std::string> tokenToClass
     {TokenClass::LeftParen, "identifier"},
     {TokenClass::LeftCurly, "identifier"},
     {TokenClass::RightParen, "identifier"},
-    {TokenClass::RightCurly, "identifier"}
+    {TokenClass::RightCurly, "identifier"},
+    {TokenClass::RightParen, "identifier"}
    }
   };
 

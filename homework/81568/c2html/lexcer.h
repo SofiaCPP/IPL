@@ -70,7 +70,7 @@ private:
   unsigned line = 1;
   std::unordered_set<std::string> typenames;
 };
-  
+
 } /* Namespace LexCer */
 
 #endif

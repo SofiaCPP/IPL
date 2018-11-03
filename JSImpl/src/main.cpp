@@ -8,7 +8,7 @@ void RunParseCalc()
 {
 	IPLVector<Token> tokens;
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
-	Tokenize("var s = 0; for (var i = 0; i < 10; ++i + --s) { s };", tokens);
+	Tokenize("var a = 5; if(a == 5){a++;}", tokens);
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
@@ -19,10 +19,10 @@ void RunParseCalc()
 	auto result = i.Run(expr.get());
     std::cout << "Stack after run, top to bottom:" << std::endl;
     while (!result.empty()) {
-        std::cout << result.top() << std::endl;
-        result.pop();
+        std::cout << result.back() << std::endl;
+        result.pop_back();
     }
-	std::cout << "S = " << i.ModifyVariable("s") << std::endl;
+	std::cout << "S = " << i.ModifyVariable("a") << std::endl;
 }
 
 int main()
