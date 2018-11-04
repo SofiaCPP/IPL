@@ -41,6 +41,7 @@ namespace JSCompiler.Core
         Whitespace,
         Comment,
         EOF,
+        Skip,
         
         NotEqual, // !=
         EqualEqual, // ==

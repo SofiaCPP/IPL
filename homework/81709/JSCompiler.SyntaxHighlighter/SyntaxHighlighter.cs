@@ -30,6 +30,7 @@ body {
 }
 .string {
   color: Gray;
+  white-space: pre-wrap;
 }
 .keyword {
   color: Blue;
@@ -133,47 +134,47 @@ body {
                         code += "<br>";
                         break;
                     case TokenType.Number:
-                        code += "<span class=\"number\">" + ((NumToken)cur).Num + "</span>" + Environment.NewLine;
+                        code += "<span class=\"number\">" + ((NumToken)cur).Num + "</span>";
                         break;
                     case TokenType.String:
-                        code += "<span class=\"string\">" + ((WordToken)cur).Lexeme + "</span>" + Environment.NewLine;
+                        code += "<span class=\"string\">" + ((WordToken)cur).Lexeme + "</span>";
                         break;
                     case TokenType.Identifier:
-                        code += "<span class=\"identifier\">" + ((WordToken)cur).Lexeme + "</span>" + Environment.NewLine;
+                        code += "<span class=\"identifier\">" + ((WordToken)cur).Lexeme + "</span>";
                         break;
                     case TokenType.Comment:
-                        code += "<span class=\"comment\">" + ((WordToken)cur).Lexeme + "</span>" + Environment.NewLine;
+                        code += "<span class=\"comment\">" + ((WordToken)cur).Lexeme + "</span>";
                         break;
                     case TokenType.Error:
-                        code += "<span class=\"undefined\">" + ((WordToken)cur).Lexeme + "</span>" + Environment.NewLine;
+                        code += "<span class=\"undefined\">" + ((WordToken)cur).Lexeme + "</span>";
                         break;
 
                     default:
                         if (KEYWORDS.Contains(type))
                         {
-                            code += "<span class=\"keyword\">" + ((WordToken)cur).Lexeme + "</span>" + Environment.NewLine;
+                            code += "<span class=\"keyword\">" + ((WordToken)cur).Lexeme + "</span>";
                         }
                         else if(OTHER_RESERVED.Contains(type))
                         {
-                            code += "<span class=\"reserved\">" + ((WordToken)cur).Lexeme + "</span>" + Environment.NewLine;
+                            code += "<span class=\"reserved\">" + ((WordToken)cur).Lexeme + "</span>";
                         }
                         else if (ONE_SYMBOL_OPERATORS.Contains(type))
                         {
-                            code += "<span class=\"operator\">" + cur.ToString() + "</span>" + Environment.NewLine;
+                            code += "<span class=\"operator\">" + cur.ToString() + "</span>";
                         }
                         else if (MULT_SYMBOL_OPERATORS.Contains(type))
                         {
-                            code += "<span class=\"operator\">" + ((WordToken)cur).Lexeme + "</span>" + Environment.NewLine;
+                            code += "<span class=\"operator\">" + ((WordToken)cur).Lexeme + "</span>";
                         }
                         else
                         {
-                            code += "<span class=\"default\">" + cur.ToString() + "</span>" + Environment.NewLine;
+                            code += "<span class=\"default\">" + cur.ToString() + "</span>";
                             break;
                         }
                         break;
                 }
             }
-            while (tokenEnum.MoveNext() && cur.Type != TokenType.EOF);
+            while (tokenEnum.MoveNext() && tokenEnum.Current.Type != TokenType.EOF);
 
             string shouldWrite = string.Format(HTML, css, fileName, code);
 

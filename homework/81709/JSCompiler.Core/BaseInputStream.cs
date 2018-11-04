@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace JSCompiler.Core
 {
-    public class InputStream
+    public class BaseInputStream : IInputStream
     {
         private char[][] buffs;
 
@@ -15,7 +15,7 @@ namespace JSCompiler.Core
 
         private StreamReader reader;
 
-        public InputStream(Stream stream, int buffLength = 4096)
+        public BaseInputStream(Stream stream, int buffLength = 4096)
         {
             this.Line = 0;
             this.index = 0;
@@ -28,7 +28,7 @@ namespace JSCompiler.Core
             ReadStream(buffs[0], buffLength);
         }
 
-        public InputStream(string path, int buffLength = 4096)
+        public BaseInputStream(string path, int buffLength = 4096)
             : this(new FileStream(path, FileMode.Open), buffLength) { }
 
         public int Line { get; private set; }
@@ -45,6 +45,8 @@ namespace JSCompiler.Core
 
         public char Next()
         {
+            if (IsEndOfStream()) throw new EndOfStreamException();
+
             char cur = Peek();
 
             if (cur == '\n')

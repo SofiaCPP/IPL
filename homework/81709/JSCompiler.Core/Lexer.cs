@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JSCompiler.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,36 +9,49 @@ namespace JSCompiler.Core
 {
     public class Lexer
     {
+        public static readonly string UNCLOSED_MULTILINE_COMMENT = "Unclosed mulitline comment";
+
+        public static readonly string UNCLOSED_STRING = "Unclosed string";
+
+        public static readonly string UNCLOSED_STRING_NEWLINE = "Unclosed string newline";
+
+        public static readonly string UNIDENTIFIED_SYMBOL = "Unidentified symbol";
+
+
         private Dictionary<string, TokenType> keywords;
 
         private Dictionary<string, TokenType> otherReserved;
 
-        private InputStream stream;
+        private IInputStream stream;
 
-        public Lexer(InputStream stream)
+        public Lexer(IInputStream stream)
         {
             this.stream = stream;
             this.keywords = ReservedStrings.KeywordsAsMap();
             this.otherReserved = ReservedStrings.OthersAsMap();
         }
 
-        public List<Token> Tokenize()
+        public List<Token> Tokenize(Action<int, string> onError)
         {
             List<Token> tokens = new List<Token>();
             do
             {
-                tokens.Add(NextToken());
+                Token next = NextToken(onError);
+                if(next.Type != TokenType.Skip)
+                {
+                    tokens.Add(next);
+                }
             } while (!stream.IsEndOfStream());
-
+            tokens.Add(new Token(TokenType.EOF));
             return tokens;
         }
 
-        public Token NextToken()
+        public Token NextToken(Action<int, string> onError)
         {
             char cur = stream.Next();
 
             if (Utils.IsCarriageReturn(cur))
-                cur = stream.Next();
+                return new Token(TokenType.Skip);
 
             if (Utils.IsWhiteSpace(cur))
                 return new Token(TokenType.Whitespace);
@@ -76,9 +90,12 @@ namespace JSCompiler.Core
                     return Match('-') ? new WordToken("--", TokenType.MinusMinus)
                          : Match('=') ? new WordToken("-=", TokenType.MinusEqual)
                          : new Token(TokenType.Minus);
+                case '*':
+                    return Match('=') ? new WordToken("*=", TokenType.StarEqual)
+                        : new Token(TokenType.Star);
                 case '/':
                     return Match('/') ? ParseOneLineComment()
-                        : Match('*') ? ParseMultilineToken()
+                        : Match('*') ? ParseMultilineToken(onError)
                         : Match('=') ? new WordToken("/=", TokenType.DivideEqual)
                         : new Token(TokenType.Division);
                 case '%':
@@ -89,9 +106,11 @@ namespace JSCompiler.Core
                         : new Token(TokenType.BitwiseXor);
                 case '|':
                     return Match('=') ? new WordToken("|=", TokenType.BitwiseOrEqual)
+                        : Match('|') ? new WordToken("||", TokenType.LogicalOr)
                         : new Token(TokenType.BitwiseOr);
                 case '&':
                     return Match('=') ? new WordToken("&=", TokenType.BitwiseAndEqual)
+                        : Match('&') ? new WordToken("&&", TokenType.LogicalAnd)
                         : new Token(TokenType.BitwiseAnd);
                 default:
                     break;
@@ -100,12 +119,12 @@ namespace JSCompiler.Core
             if (cur < 127 && Enum.IsDefined(typeof(TokenType), (int)cur))
                 return new Token((TokenType)cur);
 
-            if(Utils.IsStringBound(cur))
+            if(Utils.IsStringSingleQuote(cur) || Utils.IsStringDoubleQuote(cur))
             {
-                return ParseString(cur);
+                return ParseSingleQuoteString(cur, onError);
             }
 
-            if(char.IsDigit(cur))
+            if (char.IsDigit(cur))
             {
                 return ParseNumber(cur);
             }
@@ -115,6 +134,7 @@ namespace JSCompiler.Core
                 return ParseReservedOrIdentifier(cur);
             }
 
+            onError(stream.Line, UNIDENTIFIED_SYMBOL);
             return new WordToken(cur.ToString(), TokenType.Error);
         }
 
@@ -137,18 +157,23 @@ namespace JSCompiler.Core
                 lexeme += stream.Next();
                 peek = stream.Peek();
             }
-
             return new WordToken(lexeme, TokenType.Comment);
         }
 
-        private Token ParseMultilineToken()
+        private Token ParseMultilineToken(Action<int, string> onError)
         {
             string lexeme = "/*";
             int lineBeg = stream.Line + 1;
             while (!stream.IsEndOfStream())
             {
-                while (stream.Peek() != '*' && !stream.IsEndOfStream())
+                while (stream.Peek() != '*')
                 {
+                    if (stream.IsEndOfStream())
+                    {
+                        onError(lineBeg, UNCLOSED_MULTILINE_COMMENT);
+                        return new WordToken(lexeme, TokenType.Comment);
+                    }
+
                     lexeme += stream.Next();
                 };
                 lexeme += stream.Next();
@@ -158,30 +183,58 @@ namespace JSCompiler.Core
                     return new WordToken(lexeme, TokenType.Comment);
                 }
             }
+            onError(lineBeg, UNCLOSED_MULTILINE_COMMENT);
             return new WordToken(lexeme, TokenType.Comment);
         }
-
-        //TODO Fix parsing of string combinations of ' and ".
-        //Example: Fix "My name is 'Josh'. He is cool."
-        private Token ParseString(char c)
+       
+        private Token ParseSingleQuoteString(char quote, Action<int, string> onError)
         {
-            string lexeme = c.ToString();
+            string lexeme = "" + quote;
             int startLine = stream.Line + 1;
             char peek = stream.Peek();
-            while (!Utils.IsStringBound(peek))
+            while(peek != quote)
             {
                 if (Utils.IsNewLine(peek) || Utils.IsCarriageReturn(peek))
                 {
+                    onError(startLine, UNCLOSED_STRING_NEWLINE);
                     return new WordToken(lexeme, TokenType.Error);
                 }
 
-                lexeme += stream.Next();
                 if (stream.IsEndOfStream())
                 {
+                    onError(startLine, UNCLOSED_STRING);
                     return new WordToken(lexeme, TokenType.Error);
                 }
+
+                lexeme += peek;
+                stream.Next();
+
+                if(peek == '\\')
+                {
+                    char next = stream.Peek();
+
+                    if (next == quote || next == '\\')
+                    {
+                        lexeme += next;
+                        stream.Next();
+                    }
+                    else
+                    {
+                        if (Utils.IsCarriageReturn(next)) //Skip Carriage return
+                        {
+                            lexeme += stream.Next();
+                            next = stream.Peek();
+                        }
+                        if (Utils.IsNewLine(next))
+                        {
+                            lexeme += stream.Next();
+                        }
+                    }
+                }
+
                 peek = stream.Peek();
             }
+
             lexeme += stream.Next();
             return new WordToken(lexeme, TokenType.String);
         }

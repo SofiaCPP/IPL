@@ -28,9 +28,14 @@ namespace JSCompiler.Core
             return ch == '\t';
         }
 
-        public static bool IsStringBound(char ch)
+        public static bool IsStringSingleQuote(char ch)
         {
-            return ch == '"' || ch == '\'';
+            return ch == '\'';
+        }
+
+        public static bool IsStringDoubleQuote(char ch)
+        {
+            return ch == '"';
         }
     }
 }
