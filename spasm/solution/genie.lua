@@ -1,4 +1,5 @@
-solution 'spasm'
+if not solution() then
+    solution 'spasm'
     configurations {'Debug', 'Release'}
     platforms { 'x64' }
     flags {
@@ -8,9 +9,9 @@ solution 'spasm'
         'Symbols',
     }
 
-	defines {
-		'_SCL_SECURE_NO_WARNINGS',
-	}
+    defines {
+            '_SCL_SECURE_NO_WARNINGS',
+    }
 
     local root = '../build/'
 
@@ -23,6 +24,7 @@ solution 'spasm'
         targetdir(root .. 'bin/Release')
         objdir(root .. 'obj/Release')
     configuration '*'
+end
 
     project 'sprt'
         kind 'StaticLib'
