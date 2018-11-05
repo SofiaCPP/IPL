@@ -43,8 +43,8 @@ endif
 MAKEFILE = spasm.make
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../build/obj/Debug/x64/Debug/spasm
-  TARGETDIR           = ../build/bin/Debug
+  OBJDIR              = ../../JSImpl/build/obj/Debug/x64/Debug/spasm
+  TARGETDIR           = ../../JSImpl/build/bin/Debug
   TARGET              = $(TARGETDIR)/spasm
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -78,8 +78,8 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../build/obj/Release/x64/Release/spasm
-  TARGETDIR           = ../build/bin/Release
+  OBJDIR              = ../../JSImpl/build/obj/Release/x64/Release/spasm
+  TARGETDIR           = ../../JSImpl/build/bin/Release
   TARGET              = $(TARGETDIR)/spasm
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)

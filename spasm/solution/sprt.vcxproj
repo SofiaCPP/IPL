@@ -21,13 +21,11 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -40,14 +38,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\build\bin\Debug\</OutDir>
-    <IntDir>..\build\obj\Debug\x64\Debug\sprt\</IntDir>
+    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
+    <IntDir>..\..\JSImpl\build\obj\Debug\x64\Debug\sprt\</IntDir>
     <TargetName>sprt</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\build\bin\Release\</OutDir>
-    <IntDir>..\build\obj\Release\x64\Release\sprt\</IntDir>
+    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
+    <IntDir>..\..\JSImpl\build\obj\Release\x64\Release\sprt\</IntDir>
     <TargetName>sprt</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -114,9 +112,9 @@
   <ItemGroup>
     <ClCompile Include="..\src\dstack.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\frames.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\spasm.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\frames.cpp">
     </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -43,8 +43,8 @@ endif
 MAKEFILE = sprt.make
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../build/obj/Debug/x64/Debug/sprt
-  TARGETDIR           = ../build/bin/Debug
+  OBJDIR              = ../../JSImpl/build/obj/Debug/x64/Debug/sprt
+  TARGETDIR           = ../../JSImpl/build/bin/Debug
   TARGET              = $(TARGETDIR)/libsprt.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -74,8 +74,8 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../build/obj/Release/x64/Release/sprt
-  TARGETDIR           = ../build/bin/Release
+  OBJDIR              = ../../JSImpl/build/obj/Release/x64/Release/sprt
+  TARGETDIR           = ../../JSImpl/build/bin/Release
   TARGET              = $(TARGETDIR)/libsprt.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)

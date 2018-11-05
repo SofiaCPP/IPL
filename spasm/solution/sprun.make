@@ -43,8 +43,8 @@ endif
 MAKEFILE = sprun.make
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../build/obj/Debug/x64/Debug/sprun
-  TARGETDIR           = ../build/bin/Debug
+  OBJDIR              = ../../JSImpl/build/obj/Debug/x64/Debug/sprun
+  TARGETDIR           = ../../JSImpl/build/bin/Debug
   TARGET              = $(TARGETDIR)/sprun
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -54,8 +54,8 @@ ifeq ($(config),debug64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64 -std=c++14
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Debug" -m64
-  LDDEPS             += ../build/bin/Debug/libsprt.a
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Debug" -m64
+  LDDEPS             += ../../JSImpl/build/bin/Debug/libsprt.a
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
@@ -72,8 +72,8 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../build/obj/Release/x64/Release/sprun
-  TARGETDIR           = ../build/bin/Release
+  OBJDIR              = ../../JSImpl/build/obj/Release/x64/Release/sprun
+  TARGETDIR           = ../../JSImpl/build/bin/Release
   TARGET              = $(TARGETDIR)/sprun
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -83,8 +83,8 @@ ifeq ($(config),release64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64 -std=c++14
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Release" -m64
-  LDDEPS             += ../build/bin/Release/libsprt.a
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Release" -m64
+  LDDEPS             += ../../JSImpl/build/bin/Release/libsprt.a
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)

@@ -21,13 +21,11 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -40,15 +38,15 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\build\bin\Debug\</OutDir>
-    <IntDir>..\build\obj\Debug\x64\Debug\spasm\</IntDir>
+    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
+    <IntDir>..\..\JSImpl\build\obj\Debug\x64\Debug\spasm\</IntDir>
     <TargetName>spasm</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\build\bin\Release\</OutDir>
-    <IntDir>..\build\obj\Release\x64\Release\spasm\</IntDir>
+    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
+    <IntDir>..\..\JSImpl\build\obj\Release\x64\Release\spasm\</IntDir>
     <TargetName>spasm</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>false</LinkIncremental>
@@ -112,19 +110,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\asm\assembler.cpp">
+    <ClCompile Include="..\src\asm\tokenizer.cpp">
     </ClCompile>
     <ClCompile Include="..\src\asm\bytecode.cpp">
     </ClCompile>
+    <ClCompile Include="..\src\asm\assembler.cpp">
+    </ClCompile>
     <ClCompile Include="..\src\asm\lexer.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\asm\token.cpp">
     </ClCompile>
     <ClCompile Include="..\src\asm\main.cpp">
     </ClCompile>
     <ClCompile Include="..\src\asm\symbol.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\asm\token.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\asm\tokenizer.cpp">
     </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
