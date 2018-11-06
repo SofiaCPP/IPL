@@ -7,6 +7,9 @@ solution 'JSImpl'
         'Cpp14',
         'Symbols',
     }
+    defines {
+        '_SCL_SECURE_NO_WARNINGS',
+    }
 
 
     local root = '../build/'
@@ -37,4 +40,5 @@ solution 'JSImpl'
         links 'JSLib'
 
     include '../test'
+    include '../../spasm/solution/'
     startproject 'Test'
