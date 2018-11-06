@@ -46,7 +46,7 @@ ifeq ($(config),debug64)
   OBJDIR              = ../build/obj/Debug/x64/Debug/JSImpl
   TARGETDIR           = ../build/bin/Debug
   TARGET              = $(TARGETDIR)/JSImpl
-  DEFINES            +=
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
@@ -75,7 +75,7 @@ ifeq ($(config),release64)
   OBJDIR              = ../build/obj/Release/x64/Release/JSImpl
   TARGETDIR           = ../build/bin/Release
   TARGET              = $(TARGETDIR)/JSImpl
-  DEFINES            +=
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64

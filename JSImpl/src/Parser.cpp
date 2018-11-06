@@ -470,9 +470,10 @@ ExpressionPtr Parser::Unary()
 		TokenType::Bang,
 	}))
 	{
+		auto type = Prev().Type;
 		auto ls = Unary();
 		auto suffix = false;
-		return IPLMakeSharePtr<UnaryExpression>(ls, Prev().Type, suffix);
+		return IPLMakeSharePtr<UnaryExpression>(ls, type, suffix);
 	}
 	else
 	{
@@ -662,8 +663,9 @@ ExpressionPtr Parser::AssignmentExpression()
 		TokenType::BitwiseXorEqual,
 		TokenType::BitwiseOrEqual }))
 	{
+		auto type = Prev().Type;
 		auto right = AssignmentExpression();
-		return IPLMakeSharePtr<BinaryExpression>(left, right, Prev().Type);
+		return IPLMakeSharePtr<BinaryExpression>(left, right, type);
 	}
 	// revert state;
 	m_Current = snapShot;
@@ -675,10 +677,11 @@ ExpressionPtr Parser::Expression()
 	auto ae = AssignmentExpression();
 	while (Match(TokenType::Comma))
 	{
+		auto type = Prev().Type;
 		auto next = AssignmentExpression();
 		if (next)
 		{
-			ae = IPLMakeSharePtr<BinaryExpression>(ae, next, Prev().Type);
+			ae = IPLMakeSharePtr<BinaryExpression>(ae, next, type);
 		}
 		else
 		{
