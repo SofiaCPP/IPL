@@ -4,30 +4,22 @@
 #include <cctype>
 #include <cstdlib>
 
-// using LexCer::TokenClass;
-// using LexCer::Token;
-// using LexCer::keywords;
-// using LexCer::preprocessor;
-// using LexCer::tokenToClass;
-// using LexCer::spanBegin;
-// using LexCer::spanEnd;
-
-//const char* Tokenizer::spanBegin = "<span class=\"";
-//const char* Tokenizer::spanEnd = "</span>";
-
 namespace LexCer {
 
 Tokenizer::Tokenizer(FILE *in, FILE *out)
   : in(in), out(out) {
   token.type = TokenClass::Invalid;
-  typenames = {"void", "char", "short", "int", "long", "float", "double", "signed", "unsigned"};
+  // The idea behind having modifiable typenames structure was to read #defines, but 
+  // maybe it is better if a whole preproccessor is written. 
+  typenames = {"void", "char", "short", "int", "long", "float", "double", "signed", "unsigned", "FILE"};
 }
 
-void Tokenizer::makeToken(TokenClass type, unsigned line, std::string lexeme, double number) {
+Token Tokenizer::makeToken(TokenClass type, std::string lexeme, double number) {
   token.type = type;
   token.line = line;
   token.lexeme = lexeme;
   token.number = number;
+  return token;
 }
 
 bool Tokenizer::readNextDirective(std::string *lexeme) {
@@ -178,68 +170,15 @@ bool Tokenizer::readUntilBlank(std::string *lexeme) {
   return true;
 }
 
-bool Tokenizer::writeToOutput() {
+Token Tokenizer::nextToken(std::string *lexeme, double *number) {
+  TokenClass type;
   if (token.type == TokenClass::Eof) {
-    printf("End of file!\n");
-    fputc('\n', out);
-    return false;
-  }
-
-  if (token.type == TokenClass::Skip) {
-    if (fputs(token.lexeme.c_str(), out) == EOF) {
-      printf("Error while writing to output");
-      return false;
-    }
-    return true;
-  }
-  
-  printf("Token of type %s at line %d: ", tokenToClass.at(token.type).c_str(), token.line);
-  if (token.type == TokenClass::Number)
-    printf("%f\n", token.number);
-  else
-    printf("%s\n", token.lexeme.c_str());
-
-  auto lexeme = escapeHTML(token.lexeme);
-  
-  std::string output;
-  output.append(spanBegin).append(tokenToClass.at(token.type)).append("\">").append(lexeme).append(spanEnd);
-  
-  if (fputs(output.c_str(), out) == EOF) {
-    printf("Error while writing to output");
-    return false;
-  }
-  return true;
-}
-
-std::string Tokenizer::escapeHTML(const std::string &lexeme) {
-  std::string result;
-  for (auto c : lexeme) {
-    switch(c) {
-    case '<':
-      result.append("&lt");
-      break;
-    case '>':
-      result.append("&gt");
-      break;
-    case '&':
-      result.append("&amp");
-      break;
-    default:
-      result.push_back(c);
-      break;
-    }
-  }
-  return result;
-}
-
-TokenClass Tokenizer::nextToken(std::string *lexeme, double *number) {
-  if (token.type == TokenClass::Eof) {
-    return TokenClass::Invalid;
+    return makeToken(TokenClass::Invalid, *lexeme, *number);
   }
   
   char c = fgetc(in);
   if (c == EOF) {
-    return TokenClass::Eof;
+    return makeToken(TokenClass::Eof, *lexeme, *number);
   }
   lexeme->push_back(c);
   // operator || symbol || string || preprocessor directive
@@ -251,22 +190,24 @@ TokenClass Tokenizer::nextToken(std::string *lexeme, double *number) {
   case ' ':
   case ';':
   case ',':
-  case '{':
-  case '}':
-    return TokenClass::Skip;
+    return makeToken(TokenClass::Skip, *lexeme, *number);
   case '(':
-    return TokenClass::LeftParen;
+    return makeToken(TokenClass::LeftParen, *lexeme, *number);
   case ')':
-    return TokenClass::RightParen;
+    return makeToken(TokenClass::RightParen, *lexeme, *number);
+  case '{':
+    return makeToken(TokenClass::LeftCurly, *lexeme, *number);
+  case '}':
+    return makeToken(TokenClass::RightCurly, *lexeme, *number);
   case '[':
   case ']':
   case '?':
   case ':':
-    return TokenClass::Operator;
+    return makeToken(TokenClass::Operator, *lexeme, *number);
   case '*':
     c = fgetc(in);
     if (c == '/') {
-      return TokenClass::Invalid;
+      return makeToken(TokenClass::Invalid, *lexeme, *number);
     }
     ungetc((unsigned) c, in);
     c = '*';
@@ -278,7 +219,7 @@ TokenClass Tokenizer::nextToken(std::string *lexeme, double *number) {
     c = fgetc(in);
     if (c != '=') ungetc((unsigned) c, in);
     else lexeme->push_back(c);
-    return TokenClass::Operator;
+    return makeToken(TokenClass::Operator, *lexeme, *number);
   case '<':
   case '>':
     c = fgetc(in);
@@ -292,11 +233,11 @@ TokenClass Tokenizer::nextToken(std::string *lexeme, double *number) {
     } else if (lexeme->at(lexeme->size() - 1) == '<' && isalpha(c)) {
       lexeme->push_back(c);
       if (!readInclude(lexeme))
-        return TokenClass::Invalid;
-      return TokenClass::String;
+        return makeToken(TokenClass::Invalid, *lexeme, *number);
+      return makeToken(TokenClass::String, *lexeme, *number);
     } else
       ungetc((unsigned) c, in);
-    return TokenClass::Operator;
+    return makeToken(TokenClass::Operator, *lexeme, *number);
   case '&':
   case '|':
   case '+':
@@ -305,18 +246,18 @@ TokenClass Tokenizer::nextToken(std::string *lexeme, double *number) {
       lexeme->push_back(c);
     else
       ungetc((unsigned) c, in);
-    return TokenClass::Operator;
+    return makeToken(TokenClass::Operator, *lexeme, *number);
   case '-':
     c = fgetc(in);
     if (c == '-' || c == '=' || c == '>')
       lexeme->push_back(c);
     else
       ungetc((unsigned) c, in);
-    return TokenClass::Operator;
+    return makeToken(TokenClass::Operator, *lexeme, *number);
   case '#':
     if (readNextDirective(lexeme))
-      return TokenClass::PreprocessorDirective;
-    return TokenClass::Invalid;
+      return makeToken(TokenClass::PreprocessorDirective, *lexeme, *number);
+    return makeToken(TokenClass::Invalid, *lexeme, *number);
   case '\'':
     lexeme->push_back(c = fgetc(in));
     if (c == '\\') {
@@ -324,90 +265,63 @@ TokenClass Tokenizer::nextToken(std::string *lexeme, double *number) {
     }
     lexeme->push_back(c = fgetc(in)); // the closing mark
     if (c != '\'')
-      return TokenClass::Invalid;
-    return TokenClass::String;
+      return makeToken(TokenClass::Invalid, *lexeme, *number);
+    return makeToken(TokenClass::String, *lexeme, *number);
   case '"':
     if (readNextString(lexeme, c))
-      return TokenClass::String;
-    return TokenClass::Invalid;
+      return makeToken(TokenClass::String, *lexeme, *number);
+    return makeToken(TokenClass::Invalid, *lexeme, *number);
   case '/':
     c = fgetc(in);
     lexeme->push_back(c);
     switch (c) {
     case '=':
-      return TokenClass::Operator;
+      return makeToken(TokenClass::Operator, *lexeme, *number);
     case '/':
       if (!readLineComment(lexeme))
-        return TokenClass::Invalid;
-      return TokenClass::Comment;
+        return makeToken(TokenClass::Invalid, *lexeme, *number);
+      return makeToken(TokenClass::Comment, *lexeme, *number);
     case '*':
       if (!readMultilineComment(lexeme))
-        return TokenClass::Invalid;
-      return TokenClass::Comment;
+        return makeToken(TokenClass::Invalid, *lexeme, *number);
+      return makeToken(TokenClass::Comment, *lexeme, *number);
     default:
       if (!isblank(c) || !isdigit(c)) {
         ungetc((unsigned) c, in);
         lexeme->pop_back();
-        return TokenClass::Invalid;
+        return makeToken(TokenClass::Invalid, *lexeme, *number);
       }
-      return TokenClass::Operator;
+      return makeToken(TokenClass::Operator, *lexeme, *number);
     }
   case '\\':
     c = fgetc(in);
     ungetc((unsigned) c, in);
     if (c != '\n')
-      return TokenClass::Invalid; // stray '\'
-    return TokenClass::Operator;
+      return makeToken(TokenClass::Invalid, *lexeme, *number); // stray '\'
+    return makeToken(TokenClass::Operator, *lexeme, *number);
   }
   
   // identifier || keyword || typename
   if (isalpha(c) || c == '_') {
     if (readNextIdentifier(lexeme)) {
       if (keywords.count(*lexeme) != 0)
-        return TokenClass::Keyword;
+        return makeToken(TokenClass::Keyword, *lexeme, *number);
       else if (typenames.count(*lexeme) != 0)
-        return TokenClass::Typename;
-      return TokenClass::Identifier;
+        return makeToken(TokenClass::Typename, *lexeme, *number);
+      return makeToken(TokenClass::Identifier, *lexeme, *number);
     } else {
-      return TokenClass::Invalid;
+      return makeToken(TokenClass::Invalid, *lexeme, *number);
     }
   }
   
   if (!isdigit(c)) {
-    return TokenClass::Invalid;
+    return makeToken(TokenClass::Invalid, *lexeme, *number);
   }
   
   // number
   if (readNextNumber(c, number, lexeme))
-    return TokenClass::Number;
-  return TokenClass::Invalid;
+    return makeToken(TokenClass::Number, *lexeme, *number);
+  return makeToken(TokenClass::Invalid, *lexeme, *number);
 }
-
-
-std::string getOutputFileName(const std::string &name) {
-  auto pos = name.find_last_of('.');
-  if (pos == std::string::npos) {
-    return name + ".html";
-  }
   
-  return name.substr(0, pos) + ".html";
-}
-
-void lexCit(FILE *in, FILE *out) {
-  Tokenizer hl {in, out};
- 
-  std::string lexeme;
-  double number;
-  TokenClass type;
-  do {
-    type = hl.nextToken(&lexeme, &number);
-    
-    hl.makeToken(type, hl.lineNumber(), lexeme, number);
-    if (!hl.writeToOutput())
-      break;
-    lexeme = "";
-    number = 0.0;
-  } while(hl.currentToken().type != TokenClass::Eof || hl.currentToken().type != TokenClass::Invalid);
-}
-
 } /* Namespace Lexcer */

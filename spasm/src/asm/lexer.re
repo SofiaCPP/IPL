@@ -141,21 +141,21 @@ XINTEGER	{
 				continue;
 			}
 
-"gotrue"	{
+"jmpt"	{
 				ts.push_token (Token (Token::gotrue, lineno));
 				token_start = cursor;
 
 				continue;
 			}
 
-"gofalse"	{
+"jmpf"	{
 				ts.push_token (Token (Token::gofalse, lineno));
 				token_start = cursor;
 
 				continue;
 			}
 
-"go"		{
+"jmp"		{
 				ts.push_token (Token (Token::go, lineno));
 				token_start = cursor;
 

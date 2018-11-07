@@ -9,7 +9,7 @@
 
 namespace LexCer {
   
-enum class TokenClass : short {
+enum TokenClass : short {
   Operator,
   Keyword,
   PreprocessorDirective,
@@ -20,6 +20,8 @@ enum class TokenClass : short {
   Number,
   LeftParen,
   RightParen,
+  LeftCurly,
+  RightCurly,
   
   Skip,
   Eof,
@@ -46,16 +48,10 @@ private:
 public:
   Tokenizer(FILE *in, FILE *out);
 
-  unsigned lineNumber() const { return line; }
-  Token currentToken() const { return token; }
-  
-  TokenClass nextToken(std::string *lexeme, double *number);
-  void makeToken(TokenClass type, unsigned line,
-                 std::string lexeme = std::string(), double number = 0.0);
-  bool writeToOutput();
+  Token nextToken(std::string *lexeme, double *number);
   
 private:
-  std::string escapeHTML(const std::string &lexeme);
+  Token makeToken(TokenClass type, std::string lexeme = std::string(), double number = 0.0);
   bool readNextDirective(std::string *lexeme);
   bool readNextString(std::string *lexeme, char oldc);
   bool readNextIdentifier(std::string *lexeme);
@@ -74,10 +70,6 @@ private:
   unsigned line = 1;
   std::unordered_set<std::string> typenames;
 };
-
-  
-std::string getOutputFileName(const std::string &name);
-void lexCit(FILE *in, FILE *out);
 
 } /* Namespace LexCer */
 
