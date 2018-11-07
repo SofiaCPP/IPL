@@ -25,8 +25,8 @@ class Expression : public IPLEnableShared<Expression>
 #define GENERATE_MEMBER_DEFINITIONS(type, name, def)\
 		type m_##name;
 
-#define GENERATE_EXPRESSION(ClassName, Base, MEMBERS_ITERATOR)                 \
-	class ClassName : public Base                                              \
+#define GENERATE_EXPRESSION(ClassName, MEMBERS_ITERATOR)                       \
+	class ClassName : public Expression                                        \
 	{                                                                          \
 		public:                                                                \
 		ClassName(MEMBERS_ITERATOR(EXPAND_ARGUMENT) bool __dummy = 0)          \
