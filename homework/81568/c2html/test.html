@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LexCed</title>
+    <style>
+        .keyword {
+            color: purple;
+        }
+        .number {
+            color: darkblue;
+        }
+        .string {
+            color: green;
+        }
+        .operator {
+            font-style: bold;
+        }
+        .invalid {
+            text-decoration:       underline;
+            text-decoration-color: red;
+            text-decoration-style: wavy;
+        }
+        .typename {
+            color: blue;
+        }
+        .preproc {
+            color: purple;
+        }
+        .identifier {
+            color: black;
+        }
+        .string {
+            color: brown;
+        }
+        .comment {
+            color: green;
+        }
+        .complexity-level-one {
+            background-color: PaleGreen;
+        }
+        .complexity-level-two {
+            background-color: DarkGreen;
+        }
+        .complexity-level-three {
+            background-color: SaddleBrown;
+        }
+        .complexity-level-four {
+            background-color: Brown;
+        }
+        .complexity-level-five {
+            background-color: Maroon;
+        }
+    </style>
+</head>
+<body onload="toggleComplexity()">
+<pre class="code">
+<span class="preproc">#ifndef</span> <span class="identifier">SAMPLE_CODE_C</span>
+<span class="preproc">#define</span> <span class="identifier">SAMPLE_CODE_C</span>
+
+<span class="preproc">#define</span> <span class="identifier">ONE_LINE_MACRO</span> <span class="number">5</span>
+
+<span class="preproc">#include</span> <span class="string">&ltstdio.h&gt</span>
+
+<span class="typename">int</span> <span class="identifier">bitcount</span><span class="identifier">(</span><span class="typename">long</span> <span class="typename">long</span> <span class="identifier">x</span><span class="identifier">)</span> <div class="func"><span class="identifier">{</span>
+  <span class="typename">int</span> <span class="identifier">cnt</span> <span class="operator">=</span> <span class="number">0;</span>;
+  <span class="keyword">while</span> <span class="identifier">(</span><span class="identifier">x</span><span class="identifier">)</span> <span class="identifier">{</span>
+    <span class="operator">++</span><span class="identifier">cnt</span>;
+    <span class="identifier">x</span> <span class="operator">&amp=</span> <span class="identifier">(</span><span class="identifier">x</span><span class="operator">-</span><span class="number">1</span><span class="identifier">)</span>;
+  <span class="identifier">}</span>
+  <span class="keyword">return</span> <span class="identifier">cnt</span>;
+<!-- 2 --></div><span class="identifier">}</span>
+
+<span class="typename">void</span> <span class="identifier">shift_to_pos</span><span class="identifier">(</span><span class="typename">int</span> <span class="operator">*</span><span class="identifier">num</span>, <span class="typename">int</span> <span class="identifier">p</span>, <span class="typename">int</span> <span class="identifier">n</span><span class="identifier">)</span> <div class="func"><span class="identifier">{</span>
+  <span class="operator">*</span><span class="identifier">num</span> <span class="operator">=</span> <span class="identifier">p</span> <span class="operator">&gt</span> <span class="identifier">n</span> <span class="operator">?</span> <span class="operator">*</span><span class="identifier">num</span> <span class="operator">&lt&lt</span> <span class="identifier">(</span><span class="identifier">p</span> <span class="operator">-</span> <span class="identifier">n</span> <span class="operator">+</span> <span class="number">1</span><span class="identifier">)</span> <span class="operator">:</span> <span class="operator">*</span><span class="identifier">num</span> <span class="operator">&gt&gt</span> <span class="identifier">(</span><span class="identifier">n</span> <span class="operator">-</span> <span class="identifier">p</span> <span class="operator">+</span> <span class="number">1</span><span class="identifier">)</span>;
+<!-- 1 --></div><span class="identifier">}</span>
+
+<span class="typename">int</span> <span class="identifier">setbits</span><span class="identifier">(</span><span class="identifier">x</span>, <span class="identifier">p</span>, <span class="identifier">n</span>, <span class="identifier">y</span><span class="identifier">)</span> <div class="func"><span class="identifier">{</span>
+  <span class="typename">int</span> <span class="identifier">mask</span> <span class="operator">=</span> <span class="identifier">(</span><span class="number">1</span> <span class="operator">&lt&lt</span> <span class="identifier">n</span><span class="identifier">)</span> <span class="operator">-</span> <span class="number">1</span>;
+  <span class="typename">int</span> <span class="identifier">to_set</span> <span class="operator">=</span> <span class="identifier">y</span> <span class="operator">&amp</span> <span class="identifier">mask</span>;
+  <span class="identifier">shift_to_pos</span><span class="identifier">(</span><span class="operator">&amp</span><span class="identifier">mask</span>, <span class="identifier">p</span>, <span class="identifier">n</span><span class="identifier">)</span>;
+  <span class="identifier">shift_to_pos</span><span class="identifier">(</span><span class="operator">&amp</span><span class="identifier">to_set</span>, <span class="identifier">p</span>, <span class="identifier">n</span><span class="identifier">)</span>;
+  <span class="keyword">return</span> <span class="identifier">(</span><span class="identifier">x</span> <span class="operator">&amp</span> <span class="operator">~</span><span class="identifier">mask</span><span class="identifier">)</span> <span class="operator">|</span> <span class="identifier">to_set</span>;
+<!-- 1 --></div><span class="identifier">}</span>
+
+<span class="typename">unsigned</span> <span class="identifier">invert</span><span class="identifier">(</span><span class="typename">unsigned</span> <span class="identifier">x</span>, <span class="typename">unsigned</span> <span class="identifier">p</span>, <span class="typename">unsigned</span> <span class="identifier">n</span><span class="identifier">)</span> <div class="func"><span class="identifier">{</span>
+  <span class="operator">++</span><span class="identifier">p</span>; <span class="comment">// in case p &lt n</span>
+  <span class="keyword">while</span><span class="identifier">(</span><span class="identifier">n</span><span class="operator">--</span> <span class="operator">&amp&amp</span> <span class="identifier">p</span><span class="operator">--</span><span class="identifier">)</span> <span class="identifier">{</span>
+    <span class="keyword">if</span> <span class="identifier">(</span><span class="operator">!</span><span class="identifier">(</span><span class="identifier">x</span> <span class="operator">&amp</span> <span class="identifier">(</span><span class="number">1</span> <span class="operator">&lt&lt</span> <span class="identifier">n</span><span class="identifier">)</span><span class="identifier">)</span><span class="identifier">)</span> <span class="identifier">{</span>
+      <span class="identifier">x</span> <span class="operator">|=</span> <span class="identifier">(</span><span class="number">1</span> <span class="operator">&lt&lt</span> <span class="identifier">n</span><span class="identifier">)</span>;
+    <span class="identifier">}</span> <span class="keyword">else</span> <span class="identifier">{</span>
+      <span class="identifier">x</span> <span class="operator">^=</span> <span class="identifier">(</span><span class="number">1</span> <span class="operator">&lt&lt</span> <span class="identifier">n</span><span class="identifier">)</span>;
+    <span class="identifier">}</span>
+  <span class="identifier">}</span>
+  <span class="keyword">return</span> <span class="identifier">x</span>;
+<!-- 3 --></div><span class="identifier">}</span>
+
+<span class="typename">int</span> <span class="identifier">rightrot</span><span class="identifier">(</span><span class="typename">long</span> <span class="typename">long</span> <span class="identifier">x</span>, <span class="typename">int</span> <span class="identifier">n</span><span class="identifier">)</span> <div class="func"><span class="identifier">{</span>
+  <span class="typename">int</span> <span class="identifier">bitcnt</span> <span class="operator">=</span> <span class="identifier">bitcount</span><span class="identifier">(</span><span class="identifier">x</span><span class="identifier">)</span>;
+  <span class="identifier">x</span> <span class="operator">&lt&lt=</span> <span class="identifier">n</span>;
+  <span class="keyword">return</span> <span class="identifier">(</span><span class="identifier">x</span> <span class="operator">&amp</span> <span class="identifier">(</span> <span class="identifier">(</span><span class="number">1</span> <span class="operator">&lt&lt</span> <span class="identifier">(</span><span class="identifier">bitcnt</span><span class="identifier">)</span><span class="identifier">)</span> <span class="operator">-</span> <span class="number">1</span><span class="identifier">)</span> <span class="identifier">)</span> <span class="operator">|</span> <span class="identifier">(</span><span class="identifier">x</span> <span class="operator">&amp</span> <span class="operator">~</span><span class="identifier">(</span> <span class="identifier">(</span><span class="number">1</span> <span class="operator">&lt&lt</span> <span class="identifier">bitcnt</span><span class="identifier">)</span> <span class="operator">-</span> <span class="number">1</span> <span class="identifier">)</span><span class="identifier">)</span> <span class="operator">&gt&gt</span> <span class="identifier">bitcnt</span>;     
+<!-- 1 --></div><span class="identifier">}</span>
+
+<span class="typename">char</span> <span class="identifier">num</span><span class="operator">[</span><span class="number">32</span><span class="operator">]</span>;
+
+<span class="typename">void</span> <span class="identifier">to_binary</span><span class="identifier">(</span><span class="typename">unsigned</span> <span class="identifier">x</span><span class="identifier">)</span> <div class="func"><span class="identifier">{</span>
+  <span class="typename">int</span> <span class="identifier">i</span> <span class="operator">=</span> <span class="number">31</span>;
+  <span class="identifier">num</span><span class="operator">[</span><span class="number">32</span><span class="operator">]</span> <span class="operator">=</span> <span class="string">'\0'</span>;
+  <span class="keyword">while</span> <span class="identifier">(</span><span class="identifier">x</span><span class="identifier">)</span> <span class="identifier">{</span>
+    <span class="keyword">if</span> <span class="identifier">(</span><span class="identifier">x</span> <span class="operator">&amp</span> <span class="number">1</span><span class="identifier">)</span> <span class="identifier">num</span><span class="operator">[</span><span class="identifier">i</span><span class="operator">]</span> <span class="operator">=</span> <span class="string">'1'</span>;
+    <span class="keyword">else</span> <span class="identifier">num</span><span class="operator">[</span><span class="identifier">i</span><span class="operator">]</span> <span class="operator">=</span> <span class="string">'0'</span>;
+    <span class="operator">--</span><span class="identifier">i</span>;
+    <span class="identifier">x</span> <span class="operator">&gt&gt=</span> <span class="number">1</span>;
+  <span class="identifier">}</span>
+  <span class="keyword">for</span> <span class="identifier">(</span>; <span class="identifier">i</span> <span class="operator">&gt</span><span class="operator">=</span> <span class="number">0;</span>; <span class="operator">--</span><span class="identifier">i</span><span class="identifier">)</span> <span class="identifier">num</span><span class="operator">[</span><span class="identifier">i</span><span class="operator">]</span> <span class="operator">=</span> <span class="string">'0'</span>;
+  <span class="keyword">for</span> <span class="identifier">(</span>; <span class="identifier">i</span> <span class="operator">&lt</span> <span class="number">32</span>; <span class="operator">++</span><span class="identifier">i</span><span class="identifier">)</span> <span class="identifier">{</span>
+    <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"%c%s"</span>, <span class="identifier">num</span><span class="operator">[</span><span class="identifier">i</span><span class="operator">]</span>, <span class="operator">!</span><span class="identifier">(</span><span class="identifier">(</span><span class="identifier">i</span><span class="operator">+</span><span class="number">1</span><span class="identifier">)</span> <span class="operator">%</span> <span class="number">4</span><span class="identifier">)</span> <span class="operator">?</span> <span class="string">" "</span> <span class="operator">:</span> <span class="string">""</span><span class="identifier">)</span>;
+  <span class="identifier">}</span>
+<!-- 5 --></div><span class="identifier">}</span>
+
+<span class="typename">void</span> <span class="identifier">switch_why_not</span><span class="identifier">(</span><span class="typename">void</span><span class="identifier">)</span> <div class="func"><span class="identifier">{</span>
+  <span class="typename">char</span> <span class="identifier">c</span> <span class="operator">=</span> <span class="string">'X'</span>;
+  <span class="keyword">switch</span><span class="identifier">(</span><span class="identifier">c</span><span class="identifier">)</span> <span class="identifier">{</span>
+  <span class="keyword">case</span> <span class="string">'x'</span><span class="operator">:</span>
+    <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"hex\n"</span><span class="identifier">)</span>;
+    <span class="keyword">break</span>;
+  <span class="keyword">case</span> <span class="string">'X'</span><span class="operator">:</span>
+    <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"why break stuff\n"</span><span class="identifier">)</span>;
+  <span class="keyword">case</span> <span class="number">1</span><span class="operator">:</span>
+  <span class="keyword">case</span> <span class="number">2</span><span class="operator">:</span>
+  <span class="keyword">case</span> <span class="number">3</span><span class="operator">:</span>
+  <span class="keyword">case</span> <span class="number">4</span><span class="operator">:</span>
+  <span class="keyword">case</span> <span class="number">5</span><span class="operator">:</span>
+  <span class="keyword">case</span> <span class="number">6</span><span class="operator">:</span>
+  <span class="keyword">default</span><span class="operator">:</span>
+    <span class="keyword">break</span>;
+  <span class="identifier">}</span>
+
+  <span class="keyword">return</span>;
+<!-- 10 --></div><span class="identifier">}</span>
+
+<span class="identifier">main</span><span class="identifier">(</span><span class="identifier">)</span> <div class="func"><span class="identifier">{</span>
+  <span class="typename">long</span> <span class="typename">long</span> <span class="identifier">x</span> <span class="operator">=</span> <span class="number">0b110110</span>;
+  <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"rightrot:\n"</span><span class="identifier">)</span>;
+  <span class="identifier">to_binary</span><span class="identifier">(</span><span class="identifier">x</span><span class="identifier">)</span>;
+  <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"\n"</span><span class="identifier">)</span>;
+  <span class="identifier">to_binary</span><span class="identifier">(</span><span class="identifier">rightrot</span><span class="identifier">(</span><span class="identifier">x</span>, <span class="number">3</span><span class="identifier">)</span><span class="identifier">)</span>;
+  <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"\n"</span><span class="identifier">)</span>;
+  
+  <span class="typename">unsigned</span> <span class="identifier">i</span> <span class="operator">=</span> <span class="number">0b101010</span>;
+  <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"invert:\n"</span><span class="identifier">)</span>;
+  <span class="identifier">to_binary</span><span class="identifier">(</span><span class="identifier">i</span><span class="identifier">)</span>;
+  <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"\n"</span><span class="identifier">)</span>;
+  <span class="identifier">to_binary</span><span class="identifier">(</span><span class="identifier">invert</span><span class="identifier">(</span><span class="identifier">i</span>, <span class="number">4</span>, <span class="number">4</span><span class="identifier">)</span><span class="identifier">)</span>;
+  <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"\n"</span><span class="identifier">)</span>;
+  
+  <span class="typename">long</span> <span class="typename">long</span> <span class="identifier">a</span> <span class="operator">=</span> <span class="number">0b111001010011</span>;
+  <span class="typename">long</span> <span class="typename">long</span> <span class="identifier">b</span> <span class="operator">=</span> <span class="number">0b11111010</span>;
+  <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"bits of: "</span><span class="identifier">)</span>; <span class="identifier">to_binary</span><span class="identifier">(</span><span class="identifier">a</span><span class="identifier">)</span>; <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"\n"</span><span class="identifier">)</span>;
+  <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"bits to: "</span><span class="identifier">)</span>; <span class="identifier">to_binary</span><span class="identifier">(</span><span class="identifier">b</span><span class="identifier">)</span>; <span class="identifier">printf</span><span class="identifier">(</span><span class="string">"\n"</span><span class="identifier">)</span>;
+  <span class="identifier">to_binary</span><span class="identifier">(</span><span class="identifier">setbits</span><span class="identifier">(</span><span class="identifier">a</span>, <span class="number">6</span>, <span class="number">4</span>, <span class="identifier">b</span><span class="identifier">)</span><span class="identifier">)</span>;
+
+
+  <span class="typename">int</span> <span class="identifier">testInt</span> <span class="operator">=</span> <span class="number">12345678</span>;
+  <span class="typename">float</span> <span class="identifier">testFloat</span> <span class="operator">=</span> <span class="number">1234.5678f</span>;
+  <span class="typename">double</span> <span class="identifier">testDouble</span> <span class="operator">=</span> <span class="number">1234.5678</span>;
+  
+  <span class="keyword">return</span> <span class="number">0;</span>;
+<!-- 1 --></div><span class="identifier">}</span>
+
+<span class="preproc">#endif</span> <span class="comment">/* SAMPLE_CODE_C */</span>
+
+</pre>
+<script>
+function toggleComplexity() {
+  var funcs = document.getElementsByClassName("func");  if (funcs.length == 0) return;
+  var len = funcs.length;
+  for (var i = 0; i < len; ++i) {
+    var f = document.getElementsByClassName("func")[0];
+    var complexity = f.innerHTML.match("(<!-- )([0-9]+)( -->)")[2];
+    if (complexity < 3)
+        f.className = "complexity-level-one";
+    else if (complexity < 7)
+        f.className = "complexity-level-two";
+    else if (complexity < 15)
+        f.className = "complexity-level-three";
+    else if (complexity < 20)
+        f.className = "complexity-level-four";
+    else
+        f.className = "complexity-level-five";
+  }
+}
+</script></body></html>
