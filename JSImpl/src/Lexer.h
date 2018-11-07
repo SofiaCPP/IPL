@@ -53,6 +53,7 @@ enum class TokenType
 	BitwiseAndEqual,
 	BitwiseXorEqual,
 	BitwiseOrEqual,
+	Backslash,
 
 	Identifier,
 	String,
@@ -88,6 +89,7 @@ enum class TokenType
 	Try,
 	Typeof,
 	Var,
+	Let,
 	Void,
 	While,
 	With,
@@ -96,6 +98,9 @@ enum class TokenType
 	Undefined,
 	True,
 	False,
+
+	Whitespace,
+	Comment,
 
 	Eof,
 	Invalid
@@ -115,4 +120,11 @@ struct LexerResult
 	IPLError Error;
 };
 
+struct LexerSettings
+{
+	bool CreateWhitespaceTokens;
+	bool CreateCommentTokens;
+};
+
+LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings);
 LexerResult Tokenize(const char* code, IPLVector<Token>& tokens);

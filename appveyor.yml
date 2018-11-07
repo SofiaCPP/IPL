@@ -1,0 +1,54 @@
+version: '{build}'
+
+image:
+  - Visual Studio 2015
+  - Ubuntu
+
+environment:
+  matrix:
+    - 
+      enabled_on_pr: yes
+
+configuration:
+  - Debug
+  - Release
+
+build:
+  project: JSImpl/solution/JSImpl.sln
+  verbosity: minimal
+  parallel: true
+
+for:
+-
+  matrix:
+    only:
+      - image: Ubuntu
+  build_script:
+    - make -C $APPVEYOR_BUILD_FOLDER/JSImpl/solution -j config=`echo ${CONFIGURATION} | sed -e 'y/DR/dr/'`64
+  test_script:
+    - '$APPVEYOR_BUILD_FOLDER/JSImpl/build/bin/$CONFIGURATION/Test'
+  after_test:
+    - curl -F "file=@$APPVEYOR_BUILD_FOLDER/test_detail.xml" "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+
+
+before_test:
+  - appveyor AddMessage "Running Tests"
+  - appveyor SetVariable -Name "GTEST_OUTPUT" -Value "xml"
+  - echo Running tests for %APPVEYOR_JOB_ID%
+  - sh: echo Running tests for $APPVEYOR_JOB_ID
+
+test_script:
+  - '%APPVEYOR_BUILD_FOLDER%/JSImpl/build/bin/%CONFIGURATION%/Test.exe'
+
+after_test:
+  - curl -F "file=@%APPVEYOR_BUILD_FOLDER%/test_detail.xml" https://ci.appveyor.com/api/testresults/junit/%APPVEYOR_JOB_ID%
+
+clone_depth: 1
+
+skip_commits:
+  files:
+    - '**/*.md'
+
+branches:
+    except:
+        - gh-pages
