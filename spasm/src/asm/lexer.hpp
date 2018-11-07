@@ -57,9 +57,6 @@ class Lexer
     //! saves the state of the lexer
     unsigned int state;
 
-    //! current char
-    char yych;
-
     //! number of current line
     size_t lineno;
 };
