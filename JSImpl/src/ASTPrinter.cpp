@@ -209,7 +209,7 @@ std::ostream& operator<<(std::ostream& os, const TokenType& t)
 #define MEMBERS_COUNT(type, name, def) ++membersCount;
 #define VISIT_MEMBER(type, name, def) ++currentVisitCount; Print(os, *this, #name, e->Get##name(), currentVisitCount == membersCount);
 
-#define GENERATE_AST_PRINTER_FUNCTION(ClassName, Base, MEMBERS_ITERATOR)     \
+#define GENERATE_AST_PRINTER_FUNCTION(ClassName, MEMBERS_ITERATOR)           \
 	void ASTPrinter::Visit(ClassName* e)                                     \
 	{                                                                        \
 		int membersCount = 0, currentVisitCount = 0;                         \

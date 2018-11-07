@@ -2,6 +2,7 @@
 #include <stdio.h>
 int yylex();
 int yyerror(const char* error);
+#define YYDEBUG 1
 %}
 
 %start input

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="googletest">
+      <UniqueIdentifier>{E2296FC4-CEE1-B011-37E9-896D23C04B02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="googletest\googletest">
+      <UniqueIdentifier>{9B66EE6D-07D3-A968-D0C6-41C63CF2CBD0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="googletest\googletest\src">
+      <UniqueIdentifier>{3FA7DAF5-AB69-0E80-F419-9D0C601BE75D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="googletest\googletest\include">
+      <UniqueIdentifier>{9B646C1A-077D-5344-D029-E3DD3C01E8DD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="googletest\googletest\include\gtest">
+      <UniqueIdentifier>{7EFBCD74-EAB4-381F-7314-53F9DFCCEE8E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest_prod.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-message.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-param-test.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-test-part.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-printers.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-typed-test.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-spi.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest_pred_impl.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-death-test.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="googletest\googletest\src\gtest-all.cc">
+      <Filter>googletest\googletest\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
