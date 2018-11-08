@@ -1,0 +1,77 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><title>Introduction to Virtual Machines</title><meta name=description content="Course on implementing programming languages"><meta name=author content><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css id=theme><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css><script>var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=window.location.search.match(/print-pdf/gi)?'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/pdf.css':'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/paper.css';document.getElementsByTagName('head')[0].appendChild(link);</script></head><body><div class=reveal><div class=slides><section><h1 id=virtual-machines-wikipedia>Virtual Machines - Wikipedia</h1><blockquote><p>In computing, a virtual machine (VM) is an emulation of a computer system.
+Virtual machines are based on computer architectures and provide functionality
+of a physical computer.</p></blockquote></section><section><h1 id=virtual-machines-wikipedia-1>Virtual Machines - Wikipedia</h1><ul><li>system virtual machines - provide substitute for a real machine</li><li>process virtual machines - allow executing of computer programs in a platform
+independent environment</li></ul><blockquote><p>We will be looking only at the second type of virtual machines and VM will
+mean that for us.</p></blockquote></section><section><h1 id=virtual-machines>Virtual Machines</h1><ul><li>Implement a computational model</li><li>Just like real machines AKA computers</li><li>run on top of the real machine</li></ul></section><section><h2 id=computational-model>Computational model</h2><ul><li>Regular Languages</li><li>Context Free Languages</li><li><em>Everything that is computable</em></li></ul></section><section><h2 id=computational-model-1>Computational model</h2><ul><li>Regular Expressions</li><li>Pushdown automata</li><li>Turing machines</li></ul></section><section><h3 id=turing-machine>Turing machine</h3><ul><li>has infinite tape with cells</li><li>each cells can hold one of finite number of values</li><li>head that can read, write and move to the left and right</li><li>finite set of states, one designated as starting state</li><li>finite program that given (state, value) return the new (state, action, value)</li></ul></section><section><h3 id=turing-machine-operation>Turing machine operation</h3><ol><li>starts with the initial state</li><li>Read the value at the head position</li><li>look up (state, value) in the table - if missing <em>HALT</em></li><li>Set state to <em>new state</em>, write <em>new value</em> at the head position and move the
+head left or right</li><li>Go to 2</li></ol></section><section><h2 id=from-theory-to-practice>From theory to practice</h2><ul><li>Infinite tapes are expensive</li><li>Not great user experience to interact via checking the cells on the tape</li></ul></section><section><p>Still computers and VMs are an implementations of Turing machines.</p><p>The tape is not infinite :/</p><ul><li>less powerful</li><li>we have to reuse the tape</li></ul></section><section><h3 id=what-is-inside-a-machine>What is inside a machine</h3><ol><li>Processor - implements the machine running algorithm<ul><li>reads, writes to the tape, moves the head and changes the current state</li></ul></li><li>Memory - the tape, consists of cells of variable sizes filled with 0 and 1<ul><li>almost always random accessible</li></ul></li><li>Program - the state transition function/table<ul><li>resides in the memory - von Neumann architecture</li></ul></li><li>Program Counter (PC) - the current state</li></ol><aside class=notes><p>All the fancy output like sound and graphics is writting at dedicated addresses
+in memory.</p><p>So to writting something on the screen, used to be write the bytes in
+0xF000-0xFFFF and the hardware will just blit them on the screen.
+Playing a sound - set some address to the frequency of the tone.</p></aside></section><section><h4 id=how-the-machine-works>How the machine works?</h4><ol><li>Reads the instruction at PC</li><li>Decodes the instruction at PC</li><li>Modifies the memory according to the instruction</li><li>Moves PC to the next instruction</li><li>Go to 1</li></ol></section><section><h3 id=instructions>Instructions</h3><ul><li>CISC - Complex Instruction Set Computer<ul><li>one instruction can do a lot of operations</li></ul></li><li>RISC - Reduced Instruction Set Computer</li><li>Register Memory - most operations can use both - registers and memory
+addresses</li><li>Register Register - most operations take place only between registers and
+there are dedicated instructions that allow loading and storing data in memory</li></ul></section><section><h3 id=instructions-1>Instructions</h3><ul><li>x86 - CISC, Register Memory<ul><li>the CPU actually runs microcode that is RISC &hellip;</li></ul></li><li>ARM - RISC, Register Register</li></ul></section><section><h3 id=instructions-2>Instructions</h3><ul><li>transfer data between registers and memory</li><li>add, substract, multiply, divide values</li><li>boolean operations on values</li><li>change the PC</li><li>call a subroutine</li></ul></section><section><h3 id=subroutines>Subroutines</h3><ul><li>not required by Turing machines</li><li><p>but very useful, that are part of every machine</p></li><li><p>Stack for storing return addresses (at least)</p></li><li><p>Stack Pointer (SP)</p></li></ul></section><section><h3 id=real-vs-virtual-machine>&ldquo;Real&rdquo; vs Virtual Machine</h3><ul><li>the &ldquo;real&rdquo; machine is implemented in the hardware</li><li>the operations of the machine are mapped 1:1 to the hardware actions</li><li>these statements used to be true, not any more</li></ul><aside class=notes><p>Out-of-order execution, branch prediction -&gt; meltdown, spectre show that our
+&ldquo;machine&rdquo; code runs on a virtual machine.</p></aside></section><section><h2 id=virtual-machines-1>Virtual machines</h2><ul><li>Stack based</li><li>Register based</li></ul></section><section><h3 id=stack-based-vm>Stack based VM</h3><ul><li>all operations work with arguments on the stack<ul><li>operands are popped from the stack</li><li>the result is pushed on the stack</li></ul></li></ul></section><section><pre><code>    read // from input to top of stack
+    dup
+loop:
+    push 1
+    sub
+    dup
+    push 0
+    jmpeq end
+    swap
+    dup -1
+    add
+    swap
+    jmp loop
+end:
+    pop
+    print // pop result and print
+</code></pre></section><section><ul><li>the instructions are smaller and the code is compact</li><li>more code is required</li></ul></section><section><h3 id=register-based-vm>Register based VM</h3><ul><li>operations can work with registers</li></ul></section><section><pre><code>    read 0
+    move 1, 0
+loop:
+    sub 0, 0, #1
+    cmp 0, #0
+    jmp end
+    add 1, 1, 0
+    jmp loop
+end:
+    print 1
+</code></pre></section><section><ul><li>less code</li><li>the instructions have arguments and can be larger</li></ul></section><section><h4 id=typing>Typing</h4><p>VMs can be statically or dynamically typed</p><ul><li>certain registers / memory locations / instructios can work only on certain
+argument types.</li></ul></section><section><h3 id=from-vm-to-a-interpreter>From VM to a interpreter</h3><p>Implementing everything at the VM level would be too hard</p><ul><li>interpreter = VM + runtime</li><li>VM - control logic and computations</li><li>runtime - language features and standard library</li></ul></section><section><h3 id=course-future>Course future</h3><ol><li>Implement a register based VM that works with numbers</li><li>Implement a runtime<ol><li>Strings</li><li>Objects</li><li>Arrays</li><li>Functions</li><li>Garbage Collector</li></ol></li><li>Make JSImpl generate code for the VM</li></ol></section><section><h2 id=implementing-a-vm>Implementing a VM</h2><ul><li>register based</li><li>still needs a stack for argument passing and keeping local variables</li></ul></section><section><h3 id=instruction-set>Instruction set</h3><ul><li>choosing an instruction set is difficult<ul><li>performance<ul><li>speed</li><li>energy consumption</li></ul></li><li>how easy it is to target that instruction set</li></ul></li></ul></section><section><p>Fixed size instructions vs variable length instructions:</p><ul><li>fixed size is easier to decode, but imposes restrictions and can be wasteful</li></ul></section><section><h3 id=instruction-set-1>Instruction set</h3><p>We&rsquo;ll be doing varible length instructions</p><blockquote><p>The instruction set is subject to change, so do not start the press (yet!).</p></blockquote></section><section><h3 id=instruction-set-2>Instruction set</h3><p>Instructions will be between 1 and 25 bytes.</p><ul><li>6 bits for OpCode - we have up to 64 opcodes</li><li>2 bits - n - length of the arguments<ul><li>2^n bytes per agrument</li></ul></li></ul></section><section><h3 id=instruction-set-3>Instruction set</h3><p><a href="https://docs.google.com/spreadsheets/d/1Q90x60BF-7T0jqPngScsjlaGBXXHRx4tszwCTSRYUrA/edit?usp=sharing">https://docs.google.com/spreadsheets/d/1Q90x60BF-7T0jqPngScsjlaGBXXHRx4tszwCTSRYUrA/edit?usp=sharing</a></p></section><section><h3 id=calling-convention>Calling convention</h3><ol><li>push arguments on stack</li><li>call function</li><li>callee can access arguments from the stack with regiters<ul><li>0 - count of arguments</li><li>-1 - first argument</li><li>-n - n-th argument</li></ul></li><li>caller calls <code>ret reg</code>, which removes all locals and arguments and leaves
+<code>reg</code> on top of the stack</li><li>caller pops the result from the stack</li></ol></section><section><h3 id=how-a-program-looks>How a program looks?</h3><pre><code>function add_answer(x) {
+    return x + 42;
+}
+</code></pre></section><section><pre><code>func add
+const 42 // goes to register 2
+add 2, -1, 2
+ret 2
+</code></pre></section><section><h3 id=interpreter-loop>Interpreter loop</h3><ol><li>read the next instruction</li><li>decode the opcode and arguments<ul><li>move PC to the next instruction</li></ul></li><li>execute the operation</li><li>go to 1</li></ol></section><section><pre><code>while (1) {
+    auto instruction = get_op(PC);
+    switch (instruction &amp; 0x3F) {
+        case ADD: {
+            const auto size = (instruction &gt;&gt; 6);
+            const auto arg0 = get_arg(PC, size);
+            const auto arg1 = get_arg(PC, size);
+            const auto arg2 = get_arg(PC, size);
+            m_Stack[arg0] = m_Stack[arg1] + m_Stack[arg2];
+        }
+        // ...
+    }
+}
+</code></pre></section><section><pre><code>int get_op(byte*&amp; PC) {
+    return *(PC++);
+}
+size_t get_arg(byte*&amp; PC, int size) {
+    switch (size) {
+        case 0:
+            return *(PC++);
+        case 1:
+            return *(((unsigned short*&amp;)PC)++);
+        case 2:
+            return *(((unsigned int*&amp;)PC)++);
+        case 3:
+            return *(((size_t*)PC&amp;)++);
+    }
+}
+</code></pre></section><section><h1 id=homework>Homework</h1><ul><li>implement a brainfuck interpreter</li><li>implement a gcd in spasm</li></ul></section><section><h1 id=toc_30>?</h1></section></div></div><script type=application/json id=reveal-hugo-page-params>null</script><script type=application/json id=reveal-hugo-site-params>{"highlight_theme":"monokai","slide_number":true,"transition":"none"}</script><script type=application/json id=reveal-hugo-defaults>{"center":true,"controls":true,"highlight_theme":"default","history":true,"progress":true,"theme":"black","transition":"slide"}</script><script>window.revealHugoDependencies={dependencies:[{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/lib/js/classList.js',condition:function(){return!document.body.classList;}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/marked.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/markdown.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/highlight/highlight.js',async:true,callback:function(){hljs.initHighlightingOnLoad();}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/zoom-js/zoom.js',async:true},{src:'\/IPL\/reveal-hugo\/plugin\/notes\/notes.js',async:true}]};</script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/js/head.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.js></script><script>function camelize(map){if(map){Object.keys(map).forEach(function(k){newK=k.replace(/(\_\w)/g,function(m){return m[1].toUpperCase()});if(newK!=k){map[newK]=map[k];delete map[k];}});}
+return map;}
+var revealHugoPageParams=JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);var revealHugoSiteParams=JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);var revealHugoDefaults=JSON.parse(document.getElementById('reveal-hugo-defaults').innerHTML);var options=Object.assign({},camelize(revealHugoDefaults),camelize(revealHugoSiteParams),camelize(revealHugoPageParams),revealHugoDependencies);Reveal.initialize(options);</script></body></html>
