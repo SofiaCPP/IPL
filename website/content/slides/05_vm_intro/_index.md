@@ -87,6 +87,18 @@ The tape is not infinite :/
     - resides in the memory - von Neumann architecture
 4. Program Counter (PC) - the current state
 
+{{% note %}}
+
+All the fancy output like sound and graphics is writting at dedicated addresses
+in memory.
+
+So to writting something on the screen, used to be write the bytes in
+0xF000-0xFFFF and the hardware will just blit them on the screen.
+Playing a sound - set some address to the frequency of the tone.
+
+
+{{% /note %}}
+
 ---
 #### How the machine works?
 
@@ -99,14 +111,19 @@ The tape is not infinite :/
 ---
 ### Instructions
 
-- CISC
-- RISC
-- Register Memory / Register Register / Memory Memory
+- CISC - Complex Instruction Set Computer
+    - one instruction can do a lot of operations
+- RISC - Reduced Instruction Set Computer
+- Register Memory - most operations can use both - registers and memory
+  addresses
+- Register Register - most operations take place only between registers and
+  there are dedicated instructions that allow loading and storing data in memory
 
 ---
 ### Instructions
 
 - x86 - CISC, Register Memory
+    - the CPU actually runs microcode that is RISC ...
 - ARM - RISC, Register Register
 
 ---
@@ -132,7 +149,81 @@ The tape is not infinite :/
 
 - the "real" machine is implemented in the hardware
 - the operations of the machine are mapped 1:1 to the hardware actions
-- both used to be true, not any more
+- these statements used to be true, not any more
+
+{{% note %}}
+Out-of-order execution, branch prediction -> meltdown, spectre show that our
+"machine" code runs on a virtual machine.
+{{% /note %}}
+
+---
+## Virtual machines
+
+- Stack based
+- Register based
+
+---
+### Stack based VM
+
+- all operations work with arguments on the stack
+    - operands are popped from the stack
+    - the result is pushed on the stack
+
+---
+
+        read // from input to top of stack
+        dup
+    loop:
+        push 1
+        sub
+        dup
+        push 0
+        jmpeq end
+        swap
+        dup -1
+        add
+        swap
+        jmp loop
+    end:
+        pop
+        print // pop result and print
+
+---
+
+- the instructions are smaller and the code is compact
+- more code is required
+
+---
+### Register based VM
+
+- operations can work with registers
+
+---
+
+        read 0
+        move 1, 0
+    loop:
+        sub 0, 0, #1
+        cmp 0, #0
+        jmp end
+        add 1, 1, 0
+        jmp loop
+    end:
+        print 1
+
+---
+
+- less code
+- the instructions have arguments and can be larger
+
+---
+
+#### Typing
+
+VMs can be statically or dynamically typed
+
+- certain registers / memory locations / instructios can work only on certain
+  argument types.
 
 ---
 ### From VM to a interpreter
@@ -142,6 +233,130 @@ Implementing everything at the VM level would be too hard
 - interpreter = VM + runtime
 - VM - control logic and computations
 - runtime - language features and standard library
+
+---
+### Course future
+
+1. Implement a register based VM that works with numbers
+2. Implement a runtime
+    1. Strings
+    2. Objects
+    3. Arrays
+    4. Functions
+    5. Garbage Collector
+3. Make JSImpl generate code for the VM
+
+---
+## Implementing a VM
+
+- register based
+- still needs a stack for argument passing and keeping local variables
+
+---
+### Instruction set
+
+- choosing an instruction set is difficult
+    - performance
+        - speed
+        - energy consumption
+    - how easy it is to target that instruction set
+
+---
+
+Fixed size instructions vs variable length instructions:
+
+- fixed size is easier to decode, but imposes restrictions and can be wasteful
+
+---
+### Instruction set
+
+We'll be doing varible length instructions
+
+> The instruction set is subject to change, so do not start the press (yet!).
+
+---
+### Instruction set
+
+Instructions will be between 1 and 25 bytes.
+
+- 6 bits for OpCode - we have up to 64 opcodes
+- 2 bits - n - length of the arguments
+    - 2^n bytes per agrument
+
+---
+### Instruction set
+
+https://docs.google.com/spreadsheets/d/1Q90x60BF-7T0jqPngScsjlaGBXXHRx4tszwCTSRYUrA/edit?usp=sharing
+
+---
+### Calling convention
+
+1. push arguments on stack
+2. call function
+3. callee can access arguments from the stack with regiters
+    - 0 - count of arguments
+    - -1 - first argument
+    - -n - n-th argument
+4. caller calls `ret reg`, which removes all locals and arguments and leaves
+   `reg` on top of the stack
+5. caller pops the result from the stack
+
+---
+### How a program looks?
+
+    function add_answer(x) {
+        return x + 42;
+    }
+
+---
+
+    func add
+    const 42 // goes to register 2
+    add 2, -1, 2
+    ret 2
+
+---
+### Interpreter loop
+
+1. read the next instruction
+2. decode the opcode and arguments
+    - move PC to the next instruction
+3. execute the operation
+4. go to 1
+
+---
+
+    while (1) {
+        auto instruction = get_op(PC);
+        switch (instruction & 0x3F) {
+            case ADD: {
+                const auto size = (instruction >> 6);
+                const auto arg0 = get_arg(PC, size);
+                const auto arg1 = get_arg(PC, size);
+                const auto arg2 = get_arg(PC, size);
+                m_Stack[arg0] = m_Stack[arg1] + m_Stack[arg2];
+            }
+            // ...
+        }
+    }
+
+---
+
+    int get_op(byte*& PC) {
+        return *(PC++);
+    }
+    size_t get_arg(byte*& PC, int size) {
+        switch (size) {
+            case 0:
+                return *(PC++);
+            case 1:
+                return *(((unsigned short*&)PC)++);
+            case 2:
+                return *(((unsigned int*&)PC)++);
+            case 3:
+                return *(((size_t*)PC&)++);
+        }
+    }
 
 ---
 # Homework
