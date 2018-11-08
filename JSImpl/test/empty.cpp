@@ -35,7 +35,7 @@ TEST(Pointer, int16)
 	int8_t data[] = { 1, 42, 0,  3};
 	int8_t* PC = data;
 	get_op(PC);
-	ASSERT_EQ(42, get_arg(PC, 1));
+	ASSERT_EQ(42U, get_arg(PC, 1));
 	ASSERT_EQ(data + 3, PC);
 }
 
@@ -44,7 +44,7 @@ TEST(Pointer, int32)
 	int8_t data[] = { 1, 42, 0,  3, 0, 1 };
 	int8_t* PC = data;
 	get_op(PC);
-	ASSERT_EQ(0x0003002a, get_arg(PC, 2));
+	ASSERT_EQ(0x0003002aU, get_arg(PC, 2));
 	ASSERT_EQ(data + 5, PC);
 }
 
