@@ -22,6 +22,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gmock", "..\test\gmock.vcxp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest_main", "..\test\gtest_main.vcxproj", "{30B03E7E-1C68-80CB-856F-592771461BBC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sprt", "..\..\spasm\solution\sprt.vcxproj", "{AE0A9E7C-9A41-9F0D-432E-85102F441B0F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spasm", "..\..\spasm\solution\spasm.vcxproj", "{69185F10-D52C-87C1-9EAE-2A210A8283F2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sprun", "..\..\spasm\solution\sprun.vcxproj", "{FD605F10-6975-87C1-32F7-2A219ECA83F2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AE0A9E7C-9A41-9F0D-432E-85102F441B0F} = {AE0A9E7C-9A41-9F0D-432E-85102F441B0F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -52,6 +61,18 @@ Global
 		{30B03E7E-1C68-80CB-856F-592771461BBC}.Debug|x64.Build.0 = Debug|x64
 		{30B03E7E-1C68-80CB-856F-592771461BBC}.Release|x64.ActiveCfg = Release|x64
 		{30B03E7E-1C68-80CB-856F-592771461BBC}.Release|x64.Build.0 = Release|x64
+		{AE0A9E7C-9A41-9F0D-432E-85102F441B0F}.Debug|x64.ActiveCfg = Debug|x64
+		{AE0A9E7C-9A41-9F0D-432E-85102F441B0F}.Debug|x64.Build.0 = Debug|x64
+		{AE0A9E7C-9A41-9F0D-432E-85102F441B0F}.Release|x64.ActiveCfg = Release|x64
+		{AE0A9E7C-9A41-9F0D-432E-85102F441B0F}.Release|x64.Build.0 = Release|x64
+		{69185F10-D52C-87C1-9EAE-2A210A8283F2}.Debug|x64.ActiveCfg = Debug|x64
+		{69185F10-D52C-87C1-9EAE-2A210A8283F2}.Debug|x64.Build.0 = Debug|x64
+		{69185F10-D52C-87C1-9EAE-2A210A8283F2}.Release|x64.ActiveCfg = Release|x64
+		{69185F10-D52C-87C1-9EAE-2A210A8283F2}.Release|x64.Build.0 = Release|x64
+		{FD605F10-6975-87C1-32F7-2A219ECA83F2}.Debug|x64.ActiveCfg = Debug|x64
+		{FD605F10-6975-87C1-32F7-2A219ECA83F2}.Debug|x64.Build.0 = Debug|x64
+		{FD605F10-6975-87C1-32F7-2A219ECA83F2}.Release|x64.ActiveCfg = Release|x64
+		{FD605F10-6975-87C1-32F7-2A219ECA83F2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

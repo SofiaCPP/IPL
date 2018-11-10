@@ -3,6 +3,7 @@
 #include "ASTPrinter.h"
 #include "ASTInterpreter.h"
 #include <iostream>
+#include <cstring>
 
 void RunParseCalc()
 {
@@ -42,11 +43,11 @@ void InteractiveInterpreter()
 	do
 	{
 		std::cin.getline(command, 1000);
-		if (strcmp(command, "exit") == 0)
+		if (std::strcmp(command, "exit") == 0)
 		{
 			break;
 		}
-		if (strcmp(command, "print") == 0)
+		if (std::strcmp(command, "print") == 0)
 		{
 			i.Print(p);
 			continue;

@@ -8,11 +8,6 @@
 
 #include <sstream>
 
-bool CloseFload(double a, double b, double eps = 0.00001)
-{
-	return fabs(a - b) < eps;
-}
-
 TEST(Parser, ParseUnaryExpr)
 {
 	IPLVector<Token> tokens;
@@ -39,6 +34,19 @@ TEST(Parser, VariableDeclaration)
 	ASSERT_TRUE(i.ModifyVariable("s") == 0.0);
 }
 
+TEST(Parser, Assignment)
+{
+	IPLVector<Token> tokens;
+	Tokenize("var s = 0; s = 100;", tokens);
+
+	auto expr = Parse(tokens);
+	std::ostringstream output;
+	ASTInterpreter i;
+	i.Run(expr.get());
+	ASSERT_TRUE(i.HasVariable("s"));
+	ASSERT_TRUE(i.ModifyVariable("s") == 100);
+}
+
 TEST(Parser, VariableDeclarationAdditionOfLiterals)
 {
 	IPLVector<Token> tokens;
@@ -49,7 +57,7 @@ TEST(Parser, VariableDeclarationAdditionOfLiterals)
 	ASTInterpreter i;
 	i.Run(expr.get());
 	ASSERT_TRUE(i.HasVariable("s"));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("s"), 11.0));
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("s"), 11.0);
 }
 
 TEST(Parser, VariableDeclarationAdditionOfVariables)
@@ -64,9 +72,9 @@ TEST(Parser, VariableDeclarationAdditionOfVariables)
 	ASSERT_TRUE(i.HasVariable("a"));
 	ASSERT_TRUE(i.HasVariable("b"));
 	ASSERT_TRUE(i.HasVariable("c"));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("a"), 5.0));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("b"), 4.0));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("c"), 9.0));
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("a"), 5.0);
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 4.0);
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("c"), 9.0);
 }
 
 TEST(Parser, VariableDeclarationMultiplicationOfLiterals)
@@ -79,7 +87,7 @@ TEST(Parser, VariableDeclarationMultiplicationOfLiterals)
 	ASTInterpreter i;
 	i.Run(expr.get());
 	ASSERT_TRUE(i.HasVariable("s"));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("s"), 30.0));
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("s"), 30.0);
 }
 
 TEST(Parser, VariableDeclarationMultiplicationOfVariables)
@@ -94,9 +102,9 @@ TEST(Parser, VariableDeclarationMultiplicationOfVariables)
 	ASSERT_TRUE(i.HasVariable("a"));
 	ASSERT_TRUE(i.HasVariable("b"));
 	ASSERT_TRUE(i.HasVariable("c"));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("a"), 5.0));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("b"), 4.0));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("c"), 20.0));
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("a"), 5.0);
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 4.0);
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("c"), 20.0);
 }
 
 
@@ -111,23 +119,104 @@ TEST(Parser, Unary)
 	i.Run(expr.get());
 	ASSERT_TRUE(i.HasVariable("a"));
 	ASSERT_TRUE(i.HasVariable("b"));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("a"), 6.0));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("b"), 5.0));
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("a"), 6.0);
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 5.0);
 }
 
 
 TEST(Parser, If)
 {
-	IPLVector<Token> tokens;
-	Tokenize("var a = 5; var b = 3; if(a == 5){a++; b++;} b++;", tokens);
+	{
+		IPLVector<Token> tokens;
+		Tokenize("var a = 5; var b = 3; if(a == 5){a++; b++;} b++;", tokens);
 
-	auto expr = Parse(tokens);
-	std::ostringstream output;
-	ASTInterpreter i;
-	i.Run(expr.get());
-	ASSERT_TRUE(i.HasVariable("a"));
-	ASSERT_TRUE(i.HasVariable("b"));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("a"), 6.0));
-	ASSERT_TRUE(CloseFload(i.ModifyVariable("b"), 5.0));
+		auto expr = Parse(tokens);
+		std::ostringstream output;
+		ASTInterpreter i;
+		i.Run(expr.get());
+		ASSERT_TRUE(i.HasVariable("a"));
+		ASSERT_TRUE(i.HasVariable("b"));
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("a"), 6.0);
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 5.0);
+	}
+	{
+		IPLVector<Token> tokens;
+		Tokenize("var a = 5; var b = 3; if(a == 5)a++; b++; b++;", tokens);
+
+		auto expr = Parse(tokens);
+		std::ostringstream output;
+		ASTInterpreter i;
+		i.Run(expr.get());
+		ASSERT_TRUE(i.HasVariable("a"));
+		ASSERT_TRUE(i.HasVariable("b"));
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("a"), 6.0);
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 5.0);
+	}
+
+	{
+		IPLVector<Token> tokens;
+		Tokenize("var a = 5; var b = 3; if(a != 5)a++; b++; b++;", tokens);
+
+		auto expr = Parse(tokens);
+		std::ostringstream output;
+		ASTInterpreter i;
+		i.Run(expr.get());
+		ASSERT_TRUE(i.HasVariable("a"));
+		ASSERT_TRUE(i.HasVariable("b"));
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("a"), 5.0);
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 5.0);
+	}
+
+	{
+		IPLVector<Token> tokens;
+		Tokenize("var a = 5; var b = 3; if(a != 5){a++;} else { b++;}b++;", tokens);
+
+		auto expr = Parse(tokens);
+		std::ostringstream output;
+		ASTInterpreter i;
+		i.Run(expr.get());
+		ASSERT_TRUE(i.HasVariable("a"));
+		ASSERT_TRUE(i.HasVariable("b"));
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("a"), 5.0);
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 5.0);
+	}
+
+	{
+		IPLVector<Token> tokens;
+		Tokenize("var a = 5; var b = 3; if(a == 5){a++;} else { b++;}b++;", tokens);
+
+		auto expr = Parse(tokens);
+		std::ostringstream output;
+		ASTInterpreter i;
+		i.Run(expr.get());
+		ASSERT_TRUE(i.HasVariable("a"));
+		ASSERT_TRUE(i.HasVariable("b"));
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("a"), 6.0);
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 4.0);
+	}
 }
 
+TEST(Parser, For)
+{
+	{
+		IPLVector<Token> tokens;
+		Tokenize("var i = 0; for (var j = 0; j < 10; j++) { i = i + j; }", tokens);
+
+		auto expr = Parse(tokens);
+		std::ostringstream output;
+		ASTInterpreter i;
+		i.Run(expr.get());
+		ASSERT_TRUE(i.HasVariable("i"));
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("i"), 45.0);
+	}
+	{
+		IPLVector<Token> tokens;
+		Tokenize("var i = 0; for (var j = 0; j < 10; j++) i = i + j;", tokens);
+		auto expr = Parse(tokens);
+		std::ostringstream output;
+		ASTInterpreter i;
+		i.Run(expr.get());
+		ASSERT_TRUE(i.HasVariable("i"));
+		ASSERT_DOUBLE_EQ(i.ModifyVariable("i"), 45.0);
+	}
+}
