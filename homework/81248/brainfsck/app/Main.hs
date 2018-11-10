@@ -17,5 +17,5 @@ main = do
     else either fail eval . parse =<< BS.readFile (head xs)
 
 usage :: String
-usage = "To run the interpreter, start brainfsck with one argument - the path to a brainfuck script.\
+usage = "Usage: Start brainfsck with one argument - the path to a brainfuck script.\n\
          \> stack run brainfsck -- asdf.bf"
