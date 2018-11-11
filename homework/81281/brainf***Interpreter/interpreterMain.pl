@@ -1,5 +1,6 @@
 :- use_module(library(dcg/basics)).
 :- use_module(library(readutil)).
+:- use_module(library(quintus)).
 :- [brainySource].
 
 :- set_prolog_flag(verbose, silent).
@@ -30,5 +31,5 @@ startCycleTillQuit:-
     nl,
     current_stream(0, read, Stream),
     read_line_to_codes(Stream, BFProgram),
-    interpret(BFProgram),
-    startCycleTillQuit.
+    ((string_codes("quit", BFProgram), write("Bye!"), nl);
+    (interpret(BFProgram), startCycleTillQuit)).
