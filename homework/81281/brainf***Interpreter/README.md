@@ -18,4 +18,4 @@ _The interpreter reads from a file if there is input._
 
 _Mode 0 is for interactive interpretation and 1 is for interpretation of a file._
 
-*The interpreter is a bit slow if the program has a lot of loops with the current method of handling loops. Also Prolog isn't the fastest PL of them all xD.*
+**The interpreter is a bit slow if the program has a lot of loops with the current method of handling loops. Also Prolog isn't the fastest PL of them all xD.**
