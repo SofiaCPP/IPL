@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <stack>
+#include <vector>
 
 namespace SpasmImpl
 {
@@ -13,5 +14,8 @@ typedef std::stack<PC_t> Rstack_t;
 
 class Spasm;
 typedef void (Spasm::*Operation)();
+
+template <typename T>
+using SPVector = std::vector<T>;
 }  // namespace SpasmImpl
 #endif  // ----- #ifndef TYPES_HPP

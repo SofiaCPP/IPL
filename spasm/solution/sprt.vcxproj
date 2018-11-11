@@ -110,8 +110,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\dstack.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\spasm.cpp">
     </ClCompile>
     <ClCompile Include="..\src\frames.cpp">

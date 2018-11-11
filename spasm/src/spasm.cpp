@@ -1,10 +1,13 @@
 #include <algorithm>
 #include <iostream>
+#include <cassert>
 
 #include "spasm.hpp"
 
 namespace SpasmImpl
 {
+
+
 PC_t Spasm::op_size = 21;
 // Be sure the same number is on the previous and next lines
 Operation Spasm::operations[] = {NULL,
@@ -105,16 +108,6 @@ void Spasm::deleteobj()
 }
 
 /*!
-** Returns the dstack, so that it can be examined after execution
-**
-** \return const reference to the data stack
-*/
-const Dstack& Spasm::get_dstack() const
-{
-    return data_stack;
-}
-
-/*!
 ** Starts the machine. The machine stops if it reaches an invalid opcode
 ** or opcode 0 or the pc reaches beyond the end of the bytecode.
 */
@@ -139,7 +132,7 @@ void Spasm::run()
 void Spasm::push()
 {
     ++pc;
-    data_stack.push(*reinterpret_cast<data_t*>(bytecode + pc));
+    push_data(*reinterpret_cast<data_t*>(bytecode + pc));
     pc += sizeof(data_t) - 1;
 }
 
@@ -148,7 +141,7 @@ void Spasm::push()
 */
 void Spasm::pop()
 {
-    data_stack.pop();
+    data_stack.pop_back();
 }
 
 /*!
@@ -156,7 +149,7 @@ void Spasm::pop()
 */
 void Spasm::dup()
 {
-    data_stack.push(data_stack.top());
+    push_data(data_stack.back());
 }
 
 /*!
@@ -167,7 +160,7 @@ void Spasm::read()
 {
     data_t x;
     *istr >> x;
-    data_stack.push(x);
+    push_data(x);
 }
 
 /*!
@@ -176,7 +169,8 @@ void Spasm::read()
 */
 void Spasm::print()
 {
-    *ostr << data_stack.pop();
+    *ostr << data_stack.back();
+    pop();
 }
 
 /*!
@@ -185,9 +179,9 @@ void Spasm::print()
 */
 void Spasm::plus()
 {
-    data_t x, y = data_stack.pop();
-    x = data_stack.pop();
-    data_stack.push(x + y);
+    data_t x, y = pop_data();
+    x = pop_data();
+    push_data(x + y);
 }
 
 /*!
@@ -196,9 +190,9 @@ void Spasm::plus()
 */
 void Spasm::minus()
 {
-    data_t x, y = data_stack.pop();
-    x = data_stack.pop();
-    data_stack.push(x - y);
+    data_t x, y = pop_data();
+    x = pop_data();
+    push_data(x - y);
 }
 
 /*!
@@ -207,9 +201,9 @@ void Spasm::minus()
 */
 void Spasm::multiply()
 {
-    data_t x, y = data_stack.pop();
-    x = data_stack.pop();
-    data_stack.push(x * y);
+    data_t y = pop_data(),
+           x = pop_data();
+    push_data(x * y);
 }
 
 /*!
@@ -218,9 +212,9 @@ void Spasm::multiply()
 */
 void Spasm::divide()
 {
-    data_t x, y = data_stack.pop();
-    x = data_stack.pop();
-    data_stack.push(x / y);
+    data_t y = pop_data(),
+           x = pop_data();
+    push_data(x / y);
 }
 
 /*!
@@ -229,9 +223,9 @@ void Spasm::divide()
 */
 void Spasm::modulus()
 {
-    data_t x, y = data_stack.pop();
-    x = data_stack.pop();
-    data_stack.push(x % y);
+    data_t y = pop_data(),
+           x = pop_data();
+    push_data(x % y);
 }
 
 /*!
@@ -242,7 +236,7 @@ void Spasm::modulus()
 void Spasm::gotrue()
 {
     ++pc;
-    if (data_stack.pop())
+    if (pop_data())
         pc = *(reinterpret_cast<PC_t*>(bytecode + pc)) - 1;
     else
         pc += sizeof(size_t) - 1;
@@ -256,7 +250,7 @@ void Spasm::gotrue()
 void Spasm::gofalse()
 {
     ++pc;
-    if (!data_stack.pop())
+    if (!pop_data())
         pc = *(reinterpret_cast<PC_t*>(bytecode + pc)) - 1;
     else
         pc += sizeof(size_t) - 1;
@@ -278,12 +272,15 @@ void Spasm::go()
 */
 void Spasm::call()
 {
+    assert(false && "not-implemented");
+#if 0
     size_t fs;              // new frame size
     return_stack.push(pc);  // using the ++pc in run()
-    data_stack.pop(&fs, sizeof(fs));
-    data_stack.pop(&pc, sizeof(pc));
+    pop_data(&fs, sizeof(fs));
+    pop_data(&pc, sizeof(pc));
     frame.new_frame(fs);
     --pc;  // the ++pc in run()
+#endif
 }
 
 /*!
@@ -303,10 +300,7 @@ void Spasm::ret()
 */
 void Spasm::load()
 {
-    size_t offset;
-
-    data_stack.pop(&offset, sizeof(offset));
-    data_stack.push(frame[offset]);
+    assert(false && "not-implemented");
 }
 
 /*!
@@ -314,11 +308,7 @@ void Spasm::load()
 */
 void Spasm::store()
 {
-    data_t value = data_stack.pop();
-    size_t offset;
-
-    data_stack.pop(&offset, sizeof(offset));
-    frame[offset] = value;
+    assert(false && "not-implemented");
 }
 
 /*!
@@ -327,10 +317,10 @@ void Spasm::store()
 */
 void Spasm::less()
 {
-    data_t y = data_stack.pop();
-    data_t x = data_stack.pop();
+    data_t y = pop_data();
+    data_t x = pop_data();
 
-    data_stack.push(x < y);
+    push_data(x < y);
 }
 
 /*!
@@ -339,10 +329,22 @@ void Spasm::less()
 */
 void Spasm::lesseq()
 {
-    data_t y = data_stack.pop();
-    data_t x = data_stack.pop();
+    data_t y = pop_data();
+    data_t x = pop_data();
 
-    data_stack.push(x <= y);
+    push_data(x <= y);
+}
+
+data_t Spasm::pop_data()
+{
+    auto result = data_stack.back();
+    data_stack.pop_back();
+    return result;
+}
+
+void Spasm::push_data(data_t data)
+{
+    data_stack.push_back(data);
 }
 
 }  // namespace SpasmImpl

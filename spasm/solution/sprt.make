@@ -61,7 +61,6 @@ ifeq ($(config),debug64)
   LINKOBJS            = $(OBJECTS)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJECTS := \
-	$(OBJDIR)/src/dstack.o \
 	$(OBJDIR)/src/frames.o \
 	$(OBJDIR)/src/spasm.o \
 
@@ -92,7 +91,6 @@ ifeq ($(config),release64)
   LINKOBJS            = $(OBJECTS)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJECTS := \
-	$(OBJDIR)/src/dstack.o \
 	$(OBJDIR)/src/frames.o \
 	$(OBJDIR)/src/spasm.o \
 
@@ -158,10 +156,6 @@ $(GCH_OBJC): $(PCH) $(MAKEFILE) | $(OBJDIR)
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_OBJCPPFLAGS) -x objective-c++-header $(DEFINES) $(INCLUDES) -o "$@" -c "$<"
 endif
-
-$(OBJDIR)/src/dstack.o: ../src/dstack.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 
 $(OBJDIR)/src/frames.o: ../src/frames.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
 	@echo $(notdir $<)

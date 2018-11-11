@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-#include "dstack.hpp"
 #include "frames.hpp"
 #include "types.hpp"
 
@@ -29,8 +28,6 @@ class Spasm
 
     void run();
 
-    const Dstack& get_dstack() const;
-
    private:
     //! Operations (opcodes) of the machine
     static Operation operations[];
@@ -47,8 +44,9 @@ class Spasm
     //! bytecode of the program
     byte* bytecode;
 
+    typedef SPVector<data_t> DataStack;
     //! Data stack for arithmetic operations and control flow
-    Dstack data_stack;
+    DataStack data_stack;
 
     //! Return stack for the addresses of the returns
     Rstack_t return_stack;
@@ -91,6 +89,9 @@ class Spasm
     // private method for copying and deleting an object
     void copybc(const Spasm&);
     void deleteobj();
+
+    data_t pop_data();
+    void push_data(data_t);
 };
 
 }  // namespace SpasmImpl
