@@ -10,7 +10,7 @@ main:-
     current_prolog_flag(argv, Argv),
     Argv = [H1|_],
     atom_string(H1, Filename),
-    ((Filename == "", readyToReadAndInterpret("Hello, how can I help you?"));
+    ((Filename == "", readyToReadAndInterpret("Hello, how can I help you?\nExit me by typing \"quit\"."));
     (Filename \= "", readyToReadAndInterpret("Ready to interpret your file.\n", Filename))),
     halt.
 main:-
