@@ -4,11 +4,11 @@ token(tPlusPlusCellContent) --> "+", !.
 token(tMinusMinusCellContent) --> "-", !.
 token(tWriteCellContent) --> ".", !.
 token(tReadCellContent) --> ",", !.
-token([tWhileLoop|Body]) --> "[", parceLoop(Body), "]".
+token([tWhileLoop|Body]) --> "[", parseLoop(Body), "]".
 token(tUnknown) --> allThatIsNotAToken(I), !, {I \= []}.
 
-parceLoop([]) --> "".
-parceLoop([H|T]) --> token(H), !, parceLoop(T).
+parseLoop([]) --> "".
+parseLoop([H|T]) --> token(H), !, parseLoop(T).
 
 allThatIsNotAToken([C|Cs]) --> [C|Cs], \+ token(C), \+ token([C|Cs]),
     allThatIsNotAToken(Cs).
