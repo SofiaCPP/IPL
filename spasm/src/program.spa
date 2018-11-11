@@ -3,10 +3,10 @@ label next
 dup
 push 1
 <
-gotrue bye
+jmpt bye
 push 1
 -
 dup
 print
-go next
+jmp next
 label bye
