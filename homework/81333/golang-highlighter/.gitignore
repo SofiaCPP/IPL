@@ -1,0 +1,8 @@
+# stack files
+.stack-work/
+highlighter.cabal
+*~
+
+# test files
+*.txt
+*.html

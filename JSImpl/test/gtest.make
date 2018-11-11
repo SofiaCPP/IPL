@@ -46,7 +46,7 @@ ifeq ($(config),debug64)
   OBJDIR              = ../build/obj/Debug/x64/Debug/gtest
   TARGETDIR           = ../build/bin/Debug
   TARGET              = $(TARGETDIR)/libgtest.a
-  DEFINES            +=
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   INCLUDES           += -I"googletest/googletest" -I"googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
@@ -76,7 +76,7 @@ ifeq ($(config),release64)
   OBJDIR              = ../build/obj/Release/x64/Release/gtest
   TARGETDIR           = ../build/bin/Release
   TARGET              = $(TARGETDIR)/libgtest.a
-  DEFINES            +=
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   INCLUDES           += -I"googletest/googletest" -I"googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
