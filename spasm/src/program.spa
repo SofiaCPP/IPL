@@ -1,0 +1,12 @@
+read
+label next
+dup
+push 1
+<
+gotrue bye
+push 1
+-
+dup
+print
+go next
+label bye

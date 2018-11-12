@@ -30,6 +30,9 @@ virtual machines.
 
 ## Parser
 
+- https://github.com/christophevg/human-parser-generator
+
+
 ## Code
 
 - https://blog.quarkslab.com/frozen-an-header-only-constexpr-alternative-to-gperf-for-c14-users.html
