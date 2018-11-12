@@ -1,0 +1,280 @@
+Terminals unused in grammar
+
+   DOUBLESLASH
+   PERCENT
+   DOUBLESTAR
+   BIGGER
+   LESS
+   BIGGEREQL
+   LESSEQL
+   EQL
+   NOTEQL
+   BOOLAND
+   BOOLOR
+   TILDA
+   HAT
+   SHIFTRIGHT
+   SHIFTLESS
+   ASSIGN
+   PLUSASSIGN
+   MINUSASSIGN
+   STARASSIGN
+   SLASHASSIGN
+   PERCENTASSIGN
+   DOUBLESTARASSIGN
+   DOUBLESLASHASSIGN
+   HATASSIGN
+   BOOLANDASSIGN
+   BOOLORASSIGN
+   SHIFTRIGHTASSIGN
+   SHIFTLEFTASSIGN
+   LPAREN
+   RPAREN
+   SEMICOLON
+   COMMA
+   DOT
+   IDENT
+
+
+Grammar
+
+    0 $accept: input $end
+
+    1 input: %empty
+    2      | expr
+
+    3 expr: NUMBER
+    4     | '(' expr ')'
+    5     | expr PLUS expr
+    6     | expr MINUS expr
+    7     | expr STAR expr
+    8     | expr SLASH expr
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 4
+')' (41) 4
+error (256)
+NUMBER (258) 3
+PLUS (259) 5
+MINUS (260) 6
+STAR (261) 7
+SLASH (262) 8
+DOUBLESLASH (263)
+PERCENT (264)
+DOUBLESTAR (265)
+BIGGER (266)
+LESS (267)
+BIGGEREQL (268)
+LESSEQL (269)
+EQL (270)
+NOTEQL (271)
+BOOLAND (272)
+BOOLOR (273)
+TILDA (274)
+HAT (275)
+SHIFTRIGHT (276)
+SHIFTLESS (277)
+ASSIGN (278)
+PLUSASSIGN (279)
+MINUSASSIGN (280)
+STARASSIGN (281)
+SLASHASSIGN (282)
+PERCENTASSIGN (283)
+DOUBLESTARASSIGN (284)
+DOUBLESLASHASSIGN (285)
+HATASSIGN (286)
+BOOLANDASSIGN (287)
+BOOLORASSIGN (288)
+SHIFTRIGHTASSIGN (289)
+SHIFTLEFTASSIGN (290)
+LPAREN (291)
+RPAREN (292)
+SEMICOLON (293)
+COMMA (294)
+DOT (295)
+IDENT (296)
+
+
+Nonterminals, with rules where they appear
+
+$accept (44)
+    on left: 0
+input (45)
+    on left: 1 2, on right: 0
+expr (46)
+    on left: 3 4 5 6 7 8, on right: 2 4 5 6 7 8
+
+
+State 0
+
+    0 $accept: . input $end
+
+    NUMBER  shift, and go to state 1
+    '('     shift, and go to state 2
+
+    $default  reduce using rule 1 (input)
+
+    input  go to state 3
+    expr   go to state 4
+
+
+State 1
+
+    3 expr: NUMBER .
+
+    $default  reduce using rule 3 (expr)
+
+
+State 2
+
+    4 expr: '(' . expr ')'
+
+    NUMBER  shift, and go to state 1
+    '('     shift, and go to state 2
+
+    expr  go to state 5
+
+
+State 3
+
+    0 $accept: input . $end
+
+    $end  shift, and go to state 6
+
+
+State 4
+
+    2 input: expr .
+    5 expr: expr . PLUS expr
+    6     | expr . MINUS expr
+    7     | expr . STAR expr
+    8     | expr . SLASH expr
+
+    PLUS   shift, and go to state 7
+    MINUS  shift, and go to state 8
+    STAR   shift, and go to state 9
+    SLASH  shift, and go to state 10
+
+    $default  reduce using rule 2 (input)
+
+
+State 5
+
+    4 expr: '(' expr . ')'
+    5     | expr . PLUS expr
+    6     | expr . MINUS expr
+    7     | expr . STAR expr
+    8     | expr . SLASH expr
+
+    PLUS   shift, and go to state 7
+    MINUS  shift, and go to state 8
+    STAR   shift, and go to state 9
+    SLASH  shift, and go to state 10
+    ')'    shift, and go to state 11
+
+
+State 6
+
+    0 $accept: input $end .
+
+    $default  accept
+
+
+State 7
+
+    5 expr: expr PLUS . expr
+
+    NUMBER  shift, and go to state 1
+    '('     shift, and go to state 2
+
+    expr  go to state 12
+
+
+State 8
+
+    6 expr: expr MINUS . expr
+
+    NUMBER  shift, and go to state 1
+    '('     shift, and go to state 2
+
+    expr  go to state 13
+
+
+State 9
+
+    7 expr: expr STAR . expr
+
+    NUMBER  shift, and go to state 1
+    '('     shift, and go to state 2
+
+    expr  go to state 14
+
+
+State 10
+
+    8 expr: expr SLASH . expr
+
+    NUMBER  shift, and go to state 1
+    '('     shift, and go to state 2
+
+    expr  go to state 15
+
+
+State 11
+
+    4 expr: '(' expr ')' .
+
+    $default  reduce using rule 4 (expr)
+
+
+State 12
+
+    5 expr: expr . PLUS expr
+    5     | expr PLUS expr .
+    6     | expr . MINUS expr
+    7     | expr . STAR expr
+    8     | expr . SLASH expr
+
+    STAR   shift, and go to state 9
+    SLASH  shift, and go to state 10
+
+    $default  reduce using rule 5 (expr)
+
+
+State 13
+
+    5 expr: expr . PLUS expr
+    6     | expr . MINUS expr
+    6     | expr MINUS expr .
+    7     | expr . STAR expr
+    8     | expr . SLASH expr
+
+    STAR   shift, and go to state 9
+    SLASH  shift, and go to state 10
+
+    $default  reduce using rule 6 (expr)
+
+
+State 14
+
+    5 expr: expr . PLUS expr
+    6     | expr . MINUS expr
+    7     | expr . STAR expr
+    7     | expr STAR expr .
+    8     | expr . SLASH expr
+
+    $default  reduce using rule 7 (expr)
+
+
+State 15
+
+    5 expr: expr . PLUS expr
+    6     | expr . MINUS expr
+    7     | expr . STAR expr
+    8     | expr . SLASH expr
+    8     | expr SLASH expr .
+
+    $default  reduce using rule 8 (expr)
