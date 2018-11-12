@@ -4,9 +4,9 @@
 #include <string>
 
 #define TOKENS    \
+    TOK(dup)      \
     TOK(push)     \
     TOK(pop)      \
-    TOK(dup)      \
     TOK(print)    \
     TOK(read)     \
     TOK(plus)     \
@@ -14,9 +14,9 @@
     TOK(multiply) \
     TOK(divide)   \
     TOK(modulus)  \
-    TOK(gotrue)   \
-    TOK(gofalse)  \
-    TOK(go)       \
+    TOK(jmpt)     \
+    TOK(jmpf)     \
+    TOK(jmp)      \
     TOK(call)     \
     TOK(ret)      \
     TOK(load)     \
