@@ -17,5 +17,7 @@ typedef void (Spasm::*Operation)();
 
 template <typename T>
 using SPVector = std::vector<T>;
+
+typedef long long int reg_t;
 }  // namespace SpasmImpl
 #endif  // ----- #ifndef TYPES_HPP

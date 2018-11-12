@@ -8,6 +8,28 @@
 
 namespace SpasmImpl
 {
+enum OpCodes : char
+{
+    Halt,
+    Dup,
+    Pop,
+    PopTo,
+    Push,
+    Print,
+    Read,
+    Call,
+    Ret,
+    Jump,
+    JumpT,
+    JumpF,
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Mod,
+    Less,
+    LessEq,
+};
 //! The Abstract Stack Machine
 /*!
 ** The machine contains a data stack for operations and control flow and
@@ -22,31 +44,34 @@ class Spasm
           const byte*,
           std::istream& = std::cin,
           std::ostream& = std::cout);
-    Spasm(const Spasm&);
     ~Spasm();
-    Spasm& operator=(const Spasm&);
+    Spasm(const Spasm&) = delete;
+    Spasm& operator=(const Spasm&) = delete;
 
-    void run();
+    enum RunResult {
+        Success,
+        Exception,
+        NotImplemented,
+    };
+    RunResult run();
 
    private:
-    //! Operations (opcodes) of the machine
-    static Operation operations[];
-
-    //! number of operations
-    static PC_t op_size;
-
     //! Program counter - points the current opcode
-    PC_t pc;
+    PC_t m_PC = 0;
 
-    //! size of the program bytecode
-    PC_t bc_size;
-
+    typedef SPVector<byte> ByteCode;
     //! bytecode of the program
-    byte* bytecode;
+    ByteCode m_ByteCode;
 
     typedef SPVector<data_t> DataStack;
-    //! Data stack for arithmetic operations and control flow
+    //! stack for storing arguments and local variables
     DataStack data_stack;
+
+    //! Stack pointer - always the top of the stack
+    data_t* m_SP = nullptr;
+
+    //! Frame pointer - the start of the stack for the current function
+    data_t* m_FP = nullptr;
 
     //! Return stack for the addresses of the returns
     Rstack_t return_stack;
@@ -60,38 +85,38 @@ class Spasm
     //! Output stream for print () opertion
     std::ostream* ostr;
 
-    void push();
+    void push(reg_t reg);
+    void pop(reg_t reg);
     void pop();
     void dup();
 
-    void print();
-    void read();
+    void print(reg_t reg);
+    void read(reg_t reg);
 
-    void plus();
-    void minus();
-    void multiply();
-    void divide();
-    void modulus();
+    void plus(reg_t a0, reg_t a1, reg_t a2);
+    void minus(reg_t a0, reg_t a1, reg_t a2);
+    void multiply(reg_t a0, reg_t a1, reg_t a2);
+    void divide(reg_t a0, reg_t a1, reg_t a2);
+    void modulus(reg_t a0, reg_t a1, reg_t a2);
 
-    void gotrue();
-    void gofalse();
-    void go();
+    void gotrue(reg_t a0, reg_t a1);
+    void gofalse(reg_t a0, reg_t a1);
+    void go(reg_t a0);
 
     void call();
-    void ret();
+    void ret(reg_t a0);
 
     void load();
     void store();
 
-    void less();
-    void lesseq();
+    void less(reg_t a0, reg_t a1, reg_t a2);
+    void lesseq(reg_t a0, reg_t a1, reg_t a2);
 
-    // private method for copying and deleting an object
-    void copybc(const Spasm&);
-    void deleteobj();
-
+    data_t get_local(reg_t reg);
+    void set_local(reg_t reg, data_t data);
     data_t pop_data();
     void push_data(data_t);
+    reg_t read_reg(int size);
 };
 
 }  // namespace SpasmImpl
