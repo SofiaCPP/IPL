@@ -22,6 +22,7 @@ enum OpCodes : char
     Jump,
     JumpT,
     JumpF,
+    Const,
     Add,
     Sub,
     Mul,
@@ -40,7 +41,7 @@ class Spasm
 {
    public:
     Spasm();
-    Spasm(PC_t,
+    void Initialize(PC_t,
           const byte*,
           std::istream& = std::cin,
           std::ostream& = std::cout);
@@ -116,7 +117,8 @@ class Spasm
     void set_local(reg_t reg, data_t data);
     data_t pop_data();
     void push_data(data_t);
-    reg_t read_reg(int size);
+    reg_t read_reg(size_t size);
+    data_t read_number(size_t size);
 };
 
 }  // namespace SpasmImpl

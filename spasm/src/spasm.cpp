@@ -16,15 +16,16 @@ Spasm::Spasm() {}
 ** \param _istr		- input stream for the machine
 ** \param _ostr		- output stream for the machine
 */
-Spasm::Spasm(PC_t _bc_size,
+void Spasm::Initialize(PC_t _bc_size,
              const byte* _bytecode,
              std::istream& _istr,
              std::ostream& _ostr)
-    : m_PC(0),
-      m_ByteCode(_bytecode, _bytecode + _bc_size),
-      istr(&_istr),
-      ostr(&_ostr)
+
 {
+	m_PC = 0;
+	m_ByteCode.assign(_bytecode, _bytecode + _bc_size);
+	istr = &_istr;
+	ostr = &_ostr;
     data_stack.resize(1024);
     m_SP = &data_stack[0];
     m_FP = &data_stack[0];
@@ -39,14 +40,13 @@ Spasm::~Spasm() {}
 */
 Spasm::RunResult Spasm::run()
 {
-    const auto size = m_ByteCode.size();
-    while (m_PC < size)
+    const auto codeSize = m_ByteCode.size();
+    while (m_PC < codeSize)
     {
         const auto instruction = m_ByteCode[m_PC++];
         const auto opcode = OpCodes(instruction & 0x3f);
         const auto size = instruction >> 6;
         assert(size == 0 && "no long args yet");
-        (void)size;
         switch (opcode)
         {
             case OpCodes::Halt:
@@ -97,6 +97,13 @@ Spasm::RunResult Spasm::run()
                 gofalse(arg0, arg1);
                 break;
             }
+			case OpCodes::Const:
+			{
+				const auto reg = read_reg(size);
+				const auto value = read_number(size);
+				set_local(reg, value);
+				break;
+			}
             case OpCodes::Add:
             {
                 const auto arg0 = read_reg(size);
@@ -381,10 +388,17 @@ void Spasm::push_data(data_t data)
     *(m_SP++) = data;
 }
 
-reg_t Spasm::read_reg(int size)
+reg_t Spasm::read_reg(size_t size)
 {
     assert(size == 0);
     return m_ByteCode[m_PC++];
 }
+
+data_t Spasm::read_number(size_t size)
+{
+	assert(size == 0);
+	return m_ByteCode[m_PC++];
+}
+
 
 }  // namespace SpasmImpl
