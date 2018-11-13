@@ -24,7 +24,7 @@ int main(int argc, const char* argv[])
     std::cout << std::endl;
 
     Spasm::Spasm vm;
-	vm.Initialize(len, bytecode.get());
+    vm.Initialize(len, bytecode.get());
 
     vm.run();
 

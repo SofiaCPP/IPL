@@ -9,8 +9,5 @@
     <ClCompile Include="..\src\spasm.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\frames.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

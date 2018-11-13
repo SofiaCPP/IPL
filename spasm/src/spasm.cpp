@@ -17,15 +17,15 @@ Spasm::Spasm() {}
 ** \param _ostr		- output stream for the machine
 */
 void Spasm::Initialize(PC_t _bc_size,
-             const byte* _bytecode,
-             std::istream& _istr,
-             std::ostream& _ostr)
+                       const byte* _bytecode,
+                       std::istream& _istr,
+                       std::ostream& _ostr)
 
 {
-	m_PC = 0;
-	m_ByteCode.assign(_bytecode, _bytecode + _bc_size);
-	istr = &_istr;
-	ostr = &_ostr;
+    m_PC = 0;
+    m_ByteCode.assign(_bytecode, _bytecode + _bc_size);
+    istr = &_istr;
+    ostr = &_ostr;
     data_stack.resize(1024);
     m_SP = &data_stack[0];
     m_FP = &data_stack[0];
@@ -65,6 +65,15 @@ Spasm::RunResult Spasm::run()
                 push(arg0);
                 break;
             }
+            case OpCodes::Alloc:
+            {
+                const auto count = PC_t(read_reg(size));
+                for (PC_t i = 0; i < count; ++i)
+                {
+                    push_data(0);
+                }
+                break;
+            }
             case OpCodes::Print:
             {
                 const auto arg0 = read_reg(size);
@@ -75,6 +84,18 @@ Spasm::RunResult Spasm::run()
             {
                 const auto arg0 = read_reg(size);
                 read(arg0);
+                break;
+            }
+            case OpCodes::Call:
+            {
+                const auto arg0 = read_reg(size);
+                call(arg0);
+                break;
+            }
+            case OpCodes::Ret:
+            {
+                const auto arg0 = read_reg(size);
+                ret(arg0);
                 break;
             }
             case OpCodes::Jump:
@@ -97,13 +118,13 @@ Spasm::RunResult Spasm::run()
                 gofalse(arg0, arg1);
                 break;
             }
-			case OpCodes::Const:
-			{
-				const auto reg = read_reg(size);
-				const auto value = read_number(size);
-				set_local(reg, value);
-				break;
-			}
+            case OpCodes::Const:
+            {
+                const auto reg = read_reg(size);
+                const auto value = read_number(size);
+                set_local(reg, value);
+                break;
+            }
             case OpCodes::Add:
             {
                 const auto arg0 = read_reg(size);
@@ -298,17 +319,13 @@ void Spasm::go(reg_t a0)
 ** Function call. A new frame with the specified size is created, the
 ** return address is saved in the return stack and the new pc is loaded.
 */
-void Spasm::call()
+void Spasm::call(reg_t a0)
 {
-    assert(false && "not-implemented");
-#if 0
-    size_t fs;              // new frame size
-    return_stack.push(pc);  // using the ++pc in run()
-    pop_data(&fs, sizeof(fs));
-    pop_data(&pc, sizeof(pc));
-    frame.new_frame(fs);
-    --pc;  // the ++pc in run()
-#endif
+    Frame call{m_PC, PC_t(m_FP - &data_stack[0]),
+               m_SP - &data_stack[0] - PC_t(*(m_SP - 1)) - 1};
+    m_Frames.push(std::move(call));
+    m_FP = m_SP - 1;
+    go(a0);
 }
 
 /*!
@@ -317,13 +334,12 @@ void Spasm::call()
 */
 void Spasm::ret(reg_t reg)
 {
-    // TODO: Implement
-    (void)reg;
-#if 0
-    pc = return_stack.top();
-    return_stack.pop();
-    frame.pop_frame();
-#endif
+    Frame parent = m_Frames.top();
+    m_Frames.pop();
+    m_SP = &data_stack[parent.StackPointer];
+    *(m_SP - 1) = m_FP[reg];
+    m_FP = &data_stack[parent.FramePointer];
+    m_PC = parent.ReturnAddress;
 }
 
 /*!
@@ -396,9 +412,8 @@ reg_t Spasm::read_reg(size_t size)
 
 data_t Spasm::read_number(size_t size)
 {
-	assert(size == 0);
-	return m_ByteCode[m_PC++];
+    assert(size == 0);
+    return m_ByteCode[m_PC++];
 }
-
 
 }  // namespace SpasmImpl

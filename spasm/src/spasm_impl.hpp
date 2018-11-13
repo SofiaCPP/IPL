@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-#include "frames.hpp"
 #include "types.hpp"
 
 namespace SpasmImpl
@@ -15,6 +14,7 @@ enum OpCodes : char
     Pop,
     PopTo,
     Push,
+    Alloc,
     Print,
     Read,
     Call,
@@ -30,7 +30,10 @@ enum OpCodes : char
     Mod,
     Less,
     LessEq,
+    LastIndex = LessEq,
 };
+static_assert(LastIndex < 0x3f, "Too many opcodes");
+
 //! The Abstract Stack Machine
 /*!
 ** The machine contains a data stack for operations and control flow and
@@ -74,11 +77,15 @@ class Spasm
     //! Frame pointer - the start of the stack for the current function
     data_t* m_FP = nullptr;
 
-    //! Return stack for the addresses of the returns
-    Rstack_t return_stack;
+    struct Frame {
+        PC_t ReturnAddress;
+        PC_t FramePointer;
+        PC_t StackPointer;
+    };
 
-    //! Stack for the frame of the functions
-    FrameStack frame;
+    typedef std::stack<Frame> FrameStack;
+    //! Stack for function frames
+    FrameStack m_Frames;
 
     //! Input stream for read () operation
     std::istream* istr;
@@ -104,7 +111,7 @@ class Spasm
     void gofalse(reg_t a0, reg_t a1);
     void go(reg_t a0);
 
-    void call();
+    void call(reg_t a0);
     void ret(reg_t a0);
 
     void load();

@@ -61,7 +61,6 @@ ifeq ($(config),debug64)
   LINKOBJS            = $(OBJECTS)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJECTS := \
-	$(OBJDIR)/src/frames.o \
 	$(OBJDIR)/src/spasm.o \
 
   define PREBUILDCMDS
@@ -91,7 +90,6 @@ ifeq ($(config),release64)
   LINKOBJS            = $(OBJECTS)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJECTS := \
-	$(OBJDIR)/src/frames.o \
 	$(OBJDIR)/src/spasm.o \
 
   define PREBUILDCMDS
@@ -156,10 +154,6 @@ $(GCH_OBJC): $(PCH) $(MAKEFILE) | $(OBJDIR)
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_OBJCPPFLAGS) -x objective-c++-header $(DEFINES) $(INCLUDES) -o "$@" -c "$<"
 endif
-
-$(OBJDIR)/src/frames.o: ../src/frames.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 
 $(OBJDIR)/src/spasm.o: ../src/spasm.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
 	@echo $(notdir $<)
