@@ -1,0 +1,6 @@
+def func():
+ if True:
+  if False:
+   print("12343")
+  a=3
+ a=2

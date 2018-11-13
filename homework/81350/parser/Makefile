@@ -1,12 +1,12 @@
 all: parser
 
-parser: lex.yy.c parser.tab.c
-	gcc lex.yy.c parser.tab.c -lfl -o parser
+parser: parser.tab.c parser.tab.h stack.c stack.h lex.yy.c
+	gcc lex.yy.c parser.tab.c stack.c -lfl -o parser
 
-parser.tab.c: parser.y
+parser.tab.c parser.tab.h: parser.y
 	bison -v -d parser.y
 
-lex.yy.c: lexer.lex
+lex.yy.c: lexer.lex parser.tab.h stack.h
 	flex lexer.lex
 
 clean:
