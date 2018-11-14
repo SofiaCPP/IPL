@@ -1,2 +1,3 @@
-def func():
-  num = +2
+func():
+  a=2
+  a=2+3

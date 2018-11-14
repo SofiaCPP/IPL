@@ -1,236 +1,182 @@
-
 %{
-#include "stack.h"
-#include <stdio.h>
+/* need this for the call to atof() below */
+#include <math.h>
 #include "parser.tab.h"
-
-int g_current_line_indent = 0;
-int g_is_fake_outdent_symbol = 0;
-int current_line = 0;
-int is_read_indent = 0;
-int is_preveous_unindent = 0;
-
+#include "stack.h"
+#define YY_NO_UNISTD_H
 static const unsigned int TAB_WIDTH = 2;
 
-#define YY_USER_INIT { \
-        push(0); \
-        BEGIN(initial); \
-    }
-
-int yycolumn = 1;
-void set_yycolumn(int val) {
-    yycolumn = val;
-    yylloc.first_column = yycolumn;
-    yylloc.last_column = yycolumn + yyleng - 1;
-}
-
-#define YY_USER_ACTION { \
-    yylloc.first_line = yylloc.last_line = yylineno; \
-    set_yycolumn(yycolumn); \
-    yycolumn += yyleng; \
-}
-
-char* fixed_unindent(char* text){
-  char* add_new_line = "";
-  if(is_preveous_unindent){
-    add_new_line ="<br>";
-    is_preveous_unindent = 0;
-  }
-  return concatenate(add_new_line, text);
-}
-
+#define YY_USER_INIT { push(0); BEGIN(initial); }
+int current_line = 0;
+int current_line_indent = 0;
+int indent_level = 0;
+int is_fake_sym = 0;
 %}
-
- /* This is a sub-parser (state) for indentation-sensitive scoping */
-%x initial
-%x indent
-%s normal
-
- /* %option 8bit reentrant bison-bridge */
-%option warn
-%option nodefault
-%option yylineno
-%option noyywrap
-
 
 digit         [0-9]
 number [1-9]{digit}*
 fnumber {digit}+"."{digit}*
-letter        [a-zA-Z_]
-stringdq \"([^\"]|(\\\"))*\"
-stringsq \'([^\']|(\\\'))*\'
+letter        [a-zA-Z]
+string ["]{3}(["]{0,2}([^\\"]|\\(.|\n)))*["]{3}
 
- /*%option debug*/
+%x initial
+%x indent
+%s normal
+
 %%
-    int indent_caller = normal;
+  int indent_caller = normal;
+<*>"\n" { REJECT; }
 
+<initial>.  { unput(*yytext); indent_caller = normal; BEGIN(indent); }
+<initial>\n { indent_caller = normal; BEGIN(indent); }
 
-<*>\n { set_yycolumn(0); yylineno--; REJECT; }
-
-
-<initial>.  { set_yycolumn(yycolumn-1); indent_caller = normal; yyless(0); BEGIN(indent); }
-<initial>\n { indent_caller = normal; yyless(0); BEGIN(indent); }
-
- /* The following are the rules that keep track of indentation. */
-<indent>" "     { g_current_line_indent++; }
-<indent>\t      { g_current_line_indent = (g_current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
-<indent>\n      { g_current_line_indent = 0; /* ignoring blank line */ }
-<indent><<EOF>> {
-                    if(peek() != 0) {
-                        pop();
-
-                        if(g_current_line_indent != peek()) {
+<indent>" "          { current_line_indent++;}
+<indent>"\t"         { current_line_indent = (current_line_indent+2) & ~1;} /* one tab is 2 spaces*/
+<indent>"\n"         { current_line_indent = 0; return NEWLINE;}
+<indent><<EOF>>      {
+                        if(peek() != 0){
+                          pop();
+                          if(current_line_indent != peek()){
                             unput('\n');
-                            for(size_t i = 0 ; i < peek() ; ++i) {
-                                unput(' ');
+                            for(int i=0; i< peek(); i++){
+                              unput(' ');
                             }
-                        } else {
+                          } else {
                             BEGIN(indent_caller);
-                        }
-
-                        return UNINDENT;
-                    } else {
-                        yyterminate();
-                    }
-                }
-
-<indent>.       {
-                  //  if(!g_is_fake_outdent_symbol) {
-                        unput(*yytext);
-                  //  }
-                    set_yycolumn(yycolumn-1);
-                    g_is_fake_outdent_symbol = 0;
-
-
-                    if(g_current_line_indent > peek()) {
-                        push(g_current_line_indent);
-                        BEGIN(indent_caller);
-                        return INDENT;
-                    } else if(g_current_line_indent < peek()) {
-                        pop();
-
-                        if(g_current_line_indent != peek()) {
-                            for(size_t i = 0 ; i < g_current_line_indent ; ++i) {
-                                unput(' ');
-                            }
-                            unput('\n');
-
-                            unput('$');
-
-                            g_is_fake_outdent_symbol = 1;
-                            for(size_t i = 0 ; i < peek() ; ++i) {
-                                unput(' ');
-                            }
-                            unput('\n');
+                          }
+                          return UNINDENT;
                         } else {
-
-                            BEGIN(indent_caller);
+                          yyterminate();
                         }
-                        is_preveous_unindent = 1;
-                        return UNINDENT;
-                    } else {
-                        BEGIN(indent_caller);
-                    }
-                }
-<normal>" "      { yylval.lexeme = " ";}
-<normal>\n    { g_current_line_indent = 0; indent_caller = YY_START; BEGIN(indent); yylval.lexeme = "<br>"; return NEWLINE; }
+                      }
+<indent>.        {
+                  if(!is_fake_sym){
+                     unput(*yytext);
+                  }
+                  is_fake_sym = 0;
+                   if (current_line_indent > peek()) {
+                       push(current_line_indent);
+                       BEGIN(indent_caller);
+                       return INDENT;
+                   } else if (current_line_indent < peek()) {
+                       pop();
+                       if(current_line_indent != peek()){
+                         for(int i=0; i< current_line_indent; i++){
+                           unput(' ');
+                         }
+                           unput('\n');
 
-<normal>{number}|{fnumber}   { yylval.lexeme = fixed_unindent(yytext); return NUMBER; }
-<normal>{digit}              { yylval.lexeme = fixed_unindent(yytext); return NUMBER;}
-<normal>{stringsq}           { yylval.lexeme = fixed_unindent(yytext); return STRING;}
-<normal>{stringdq}           { yylval.lexeme = fixed_unindent(yytext); return STRING;}
+                         unput('.');
+                         is_fake_sym = 1;
+                         for(int i=0; i < peek(); i++){
+                           unput(' ');
+                           is_fake_sym = 1;
+                         }
+                         unput('\n');
+                         is_fake_sym = 1;
+                       } else {
+                         BEGIN(indent_caller);
+                       }
+                       return UNINDENT;
+                   } else {
+                       BEGIN(indent_caller);
+                   }
+                 }
+<normal>"\n"     { current_line_indent = 0; indent_caller = YY_START; BEGIN(indent); return NEWLINE;}
 
-<normal>"+"                  { yylval.lexeme = fixed_unindent(yytext); return PLUS;       }
-<normal>"-"                  { yylval.lexeme = fixed_unindent(yytext); return MINUS;      }
-<normal>"*"                  { yylval.lexeme = fixed_unindent(yytext); return STAR;       }
-<normal>"/"                  { yylval.lexeme = fixed_unindent(yytext); return SLASH;      }
-<normal>"//"		             { yylval.lexeme = fixed_unindent(yytext); return DOUBLESLASH;}
-<normal>"%"		               { yylval.lexeme = fixed_unindent(yytext); return PERCENT;    }
-<normal>"**"		             { yylval.lexeme = fixed_unindent(yytext); return DOUBLESTAR; }
-<normal>">"		               { yylval.lexeme = fixed_unindent(yytext); return BIGGER;     }
-<normal>"<"		               { yylval.lexeme = fixed_unindent(yytext); return LESS;	  }
-<normal>">="		             { yylval.lexeme = fixed_unindent(yytext); return BIGGEREQL;  }
-<normal>"<="		             { yylval.lexeme = fixed_unindent(yytext); return LESSEQL;    }
-<normal>"=="		             { yylval.lexeme = fixed_unindent(yytext); return EQL;	  }
-<normal>"!="		             { yylval.lexeme = fixed_unindent(yytext); return NOTEQL;	  }
+<normal>{number}|{fnumber}   { yylval.Number = atof(yytext); return NUMBER; }
+<normal>{digit}              { yylval.Number = atof(yytext); return NUMBER;}
+<normal>{string}             { strcpy(yylval.Lexeme, strdup(yytext)); return STRING;}
+
+<normal>"+"                  { return PLUS;       }
+<normal>"-"                  { return MINUS;      }
+<normal>"*"                  { return STAR;       }
+<normal>"/"                  { return SLASH;      }
+<normal>"//"		             { return DOUBLESLASH;}
+<normal>"%"		               { return PERCENT;    }
+<normal>"**"		             { return DOUBLESTAR; }
+<normal>">"		               { return BIGGER;     }
+<normal>"<"		               { return LESS;	  }
+<normal>">="		             { return BIGGEREQL;  }
+<normal>"<="		             { return LESSEQL;    }
+<normal>"=="		             { return EQL;	  }
+<normal>"!="		             { return NOTEQL;	  }
 
 
-<normal>"&"		               { yylval.lexeme = fixed_unindent(yytext); return BOOLAND;    }
-<normal>"|"		               { yylval.lexeme = fixed_unindent(yytext); return BOOLOR;     }
-<normal>"~"		               { yylval.lexeme = fixed_unindent(yytext); return TILDA;      }
-<normal>"^"                  { yylval.lexeme = fixed_unindent(yytext); return HAT;        }
-<normal>">>"                 { yylval.lexeme = fixed_unindent(yytext); return SHIFTRIGHT; }
-<normal>"<<"                 { yylval.lexeme = fixed_unindent(yytext); return SHIFTLESS;  }
+<normal>"&"		               { return BOOLAND;    }
+<normal>"|"		               { return BOOLOR;     }
+<normal>"~"		               { return TILDA;      }
+<normal>"^"                  { return HAT;        }
+<normal>">>"                 { return SHIFTRIGHT; }
+<normal>"<<"                 { return SHIFTLESS;  }
 
 
-<normal>"="		               { yylval.lexeme = fixed_unindent(yytext); return ASSIGN;     }
-<normal>"+="                 { yylval.lexeme = fixed_unindent(yytext); return PLUSASSIGN; }
-<normal>"-="                 { yylval.lexeme = fixed_unindent(yytext); return MINUSASSIGN;}
-<normal>"*="                 { yylval.lexeme = fixed_unindent(yytext); return STARASSIGN; }
-<normal>"/="                 { yylval.lexeme = fixed_unindent(yytext); return SLASHASSIGN;}
-<normal>"%="                 { yylval.lexeme = fixed_unindent(yytext); return PERCENTASSIGN;}
-<normal>"**="                { yylval.lexeme = fixed_unindent(yytext); return DOUBLESTARASSIGN;}
-<normal>"//="                { yylval.lexeme = fixed_unindent(yytext); return DOUBLESLASHASSIGN;}
-<normal>"^="                 { yylval.lexeme = fixed_unindent(yytext); return HATASSIGN;}
-<normal>"&="                 { yylval.lexeme = fixed_unindent(yytext); return BOOLANDASSIGN;}
-<normal>"|="                 { yylval.lexeme = fixed_unindent(yytext); return BOOLORASSIGN;}
-<normal>">>="                { yylval.lexeme = fixed_unindent(yytext); return SHIFTRIGHTASSIGN;}
-<normal>"<<="                { yylval.lexeme = fixed_unindent(yytext); return SHIFTLEFTASSIGN;}
-<normal>"@="                 { yylval.lexeme = fixed_unindent(yytext); return ATASSIGN; }
+<normal>"="		               { return ASSIGN;     }
+<normal>"+="                 { return PLUSASSIGN; }
+<normal>"-="                 { return MINUSASSIGN;}
+<normal>"*="                 { return STARASSIGN; }
+<normal>"/="                 { return SLASHASSIGN;}
+<normal>"%="                 { return PERCENTASSIGN;}
+<normal>"**="                { return DOUBLESTARASSIGN;}
+<normal>"//="                { return DOUBLESLASHASSIGN;}
+<normal>"^="                 { return HATASSIGN;}
+<normal>"&="                 { return BOOLANDASSIGN;}
+<normal>"|="                 { return BOOLORASSIGN;}
+<normal>">>="                { return SHIFTRIGHTASSIGN;}
+<normal>"<<="                { return SHIFTLEFTASSIGN;}
+<normal>"@="                 { return ATASSIGN; }
 
-<normal>"@"                  { yylval.lexeme = fixed_unindent(yytext); return AT;}
-<normal>"("                  { yylval.lexeme = fixed_unindent(yytext); return LPAREN;     }
-<normal>")"                  { yylval.lexeme = fixed_unindent(yytext); return RPAREN;     }
-<normal>"["                  { yylval.lexeme = fixed_unindent(yytext); return LSQPAREN;}
-<normal>"]"                  { yylval.lexeme = fixed_unindent(yytext); return RSQPAREN;}
-<normal>"{"                  { yylval.lexeme = fixed_unindent(yytext); return LCURPAREN;}
-<normal>"}"                  { yylval.lexeme = fixed_unindent(yytext); return RCURPAREN;}
-<normal>";"                  { yylval.lexeme = fixed_unindent(yytext); return SEMICOLON;  }
-<normal>":"                  { yylval.lexeme = fixed_unindent(yytext); return COLON;      }
-<normal>","                  { yylval.lexeme = fixed_unindent(yytext); return COMMA;      }
-<normal>"."                  { yylval.lexeme = fixed_unindent(yytext); return DOT;    	  }
-<normal>"..."                { yylval.lexeme = fixed_unindent(yytext); return THREEDOTS;}
+<normal>"@"                  { return AT;}
+<normal>"("                  { return LPAREN;     }
+<normal>")"                  { return RPAREN;     }
+<normal>"["                  { return LSQPAREN;}
+<normal>"]"                  { return RSQPAREN;}
+<normal>"{"                  { return LCURPAREN;}
+<normal>"}"                  { return RCURPAREN;}
+<normal>";"                  { return SEMICOLON;  }
+<normal>":"                  { return COLON;      }
+<normal>","                  { return COMMA;      }
+<normal>"."                  { return DOT;    	  }
+<normal>"..."                { return THREEDOTS;}
 
-<normal>"$"                  { return DOLAR; }
-
-<normal>"async"              { yylval.lexeme = fixed_unindent(yytext); return ASYNC;}
-<normal>"def"                { yylval.lexeme = fixed_unindent(yytext); return DEF; }
-<normal>"and"                { yylval.lexeme = fixed_unindent(yytext); return AND;}
-<normal>"or"                 { yylval.lexeme = fixed_unindent(yytext); return OR;}
-<normal>"not"                { yylval.lexeme = fixed_unindent(yytext); return NOT;}
-<normal>"in"                 { yylval.lexeme = fixed_unindent(yytext); return IN;}
-<normal>"not in"             { yylval.lexeme = fixed_unindent(yytext); return NOTIN;}
-<normal>"is"                 { yylval.lexeme = fixed_unindent(yytext); return IS;}
-<normal>"is not"             { yylval.lexeme = fixed_unindent(yytext); return ISNOT;}
-<normal>"await"              { yylval.lexeme = fixed_unindent(yytext); return AWAIT;}
-<normal>"None"               { yylval.lexeme = fixed_unindent(yytext); return NONE;}
-<normal>"True"               { yylval.lexeme = fixed_unindent(yytext); return TRUE;}
-<normal>"False"              { yylval.lexeme = fixed_unindent(yytext); return FALSE;}
-<normal>"class"              { yylval.lexeme = fixed_unindent(yytext); return CLASS;}
-<normal>"for"                { yylval.lexeme = fixed_unindent(yytext); return FOR;}
-<normal>"if"                 { yylval.lexeme = fixed_unindent(yytext); return IF;}
-<normal>"elif"               { yylval.lexeme = fixed_unindent(yytext); return ELIF;}
-<normal>"else"               { yylval.lexeme = fixed_unindent(yytext); return ELSE;}
-<normal>"except"             { yylval.lexeme = fixed_unindent(yytext); return EXCEPT;}
-<normal>"from"               { yylval.lexeme = fixed_unindent(yytext); return FROM;}
-<normal>"finally"            { yylval.lexeme = fixed_unindent(yytext); return FINALLY;}
-<normal>"lambda"             { yylval.lexeme = fixed_unindent(yytext); return LAMBDA;}
-<normal>"yield"              { yylval.lexeme = fixed_unindent(yytext); return YIELD;}
-<normal>"as"                 { yylval.lexeme = fixed_unindent(yytext); return AS;}
-<normal>"assert"             { yylval.lexeme = fixed_unindent(yytext); return ASSERT;}
-<normal>"break"              { yylval.lexeme = fixed_unindent(yytext); return BREAK;}
-<normal>"continue"           { yylval.lexeme = fixed_unindent(yytext); return CONTINUE;}
-<normal>"del"                { yylval.lexeme = fixed_unindent(yytext); return DEL;}
-<normal>"global"             { yylval.lexeme = fixed_unindent(yytext); return GLOBAL;}
-<normal>"import"             { yylval.lexeme = fixed_unindent(yytext); return IMPORT;}
-<normal>"nonlocal"           { yylval.lexeme = fixed_unindent(yytext); return NONLOCAL;}
-<normal>"pass"               { yylval.lexeme = fixed_unindent(yytext); return PASS;}
-<normal>"raise"              { yylval.lexeme = fixed_unindent(yytext); return RAISE;}
-<normal>"return"             { yylval.lexeme = fixed_unindent(yytext); return RETURN;}
-<normal>"try"                { yylval.lexeme = fixed_unindent(yytext); return TRY;}
-<normal>"while"              { yylval.lexeme = fixed_unindent(yytext); return WHILE;}
-<normal>"with"               { yylval.lexeme = fixed_unindent(yytext); return WITH;}
+<normal>"async"              { return ASYNC;}
+<normal>"def"                { return DEF; }
+<normal>"and"                { return AND;}
+<normal>"or"                 { return OR;}
+<normal>"not"                { return NOT;}
+<normal>"in"                 { return IN;}
+<normal>"not in"             { return NOTIN;}
+<normal>"is"                 { return IS;}
+<normal>"is not"             { return ISNOT;}
+<normal>"await"              { return AWAIT;}
+<normal>"None"               { return NONE;}
+<normal>"True"               { return TRUE;}
+<normal>"False"              { return FALSE;}
+<normal>"class"              { return CLASS;}
+<normal>"for"                { return FOR;}
+<normal>"if"                 { return IF;}
+<normal>"elif"               { return ELIF;}
+<normal>"else"               { return ELSE;}
+<normal>"except"             { return EXCEPT;}
+<normal>"from"               { return FROM;}
+<normal>"finally"            { return FINALLY;}
+<normal>"lambda"             { return LAMBDA;}
+<normal>"yield"              { return YIELD;}
+<normal>"as"                 { return AS;}
+<normal>"assert"             { return ASSERT;}
+<normal>"break"              { return BREAK;}
+<normal>"continue"           { return CONTINUE;}
+<normal>"del"                { return DEL;}
+<normal>"global"             { return GLOBAL;}
+<normal>"import"             { return IMPORT;}
+<normal>"nonlocal"           { return NONLOCAL;}
+<normal>"pass"               { return PASS;}
+<normal>"raise"              { return RAISE;}
+<normal>"return"             { return RETURN;}
+<normal>"try"                { return TRY;}
+<normal>"while"              { return WHILE;}
+<normal>"with"               { return WITH;}
 
 <normal>{letter}({letter}|{digit})* {
-                      yylval.lexeme = fixed_unindent(yytext); return NAME; }
-%%
+                       strcpy(yylval.Lexeme, strdup(yytext));
+return NAME; }

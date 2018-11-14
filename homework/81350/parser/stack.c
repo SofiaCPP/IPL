@@ -44,13 +44,3 @@ int push(int data) {
       printf("Could not insert data, Stack is full.\n");
    }
 }
-
-char* concatenate(char* first, char* second) {
-    int firstlen = strlen(first);
-    int secondlen = strlen(second);
-    char* result;
-    result = malloc(firstlen + secondlen + 1);
-    strcpy(result, first);
-    strcat(result, second);
-    return result;
-}
