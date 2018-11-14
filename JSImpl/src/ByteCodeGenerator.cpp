@@ -16,6 +16,9 @@ public:
 	virtual void Visit(TopStatements* e) override;
 	virtual void Visit(ListExpression* e) override;
 	virtual void Visit(VariableDefinitionExpression* e) override;
+	virtual void Visit(IdentifierExpression* e) override;
+	virtual void Visit(EmptyExpression* e) override { (void)e; }
+	virtual void Visit(IfStatement* e) override;
 
 	IPLString GetCode();
 	unsigned ResolveRegisterName(IPLString& name);
@@ -101,19 +104,20 @@ void ByteCodeGenerator::Visit(BlockStatement* e)
 void ByteCodeGenerator::Visit(TopStatements* e)
 {
 	auto& statements = e->GetValues();
+
+	Instruction current;
+	current.Descriptor = Instruction::Type::PUSH;
+	auto index = m_Code.size();
+	m_Code.push_back(current);
 	for (auto& s : statements)
 	{
-		Instruction current;
-		current.Descriptor = Instruction::Type::PUSH;
-		auto index = m_Code.size();
-		m_Code.push_back(current);
 		s->Accept(*this);
-		m_Code[index].Number = (unsigned)m_RegisterTable.size();
-
-		current.Descriptor = Instruction::Type::POP;
-		current.Number = (unsigned)m_RegisterTable.size();
-		m_Code.push_back(current);
 	}
+	m_Code[index].Number = (unsigned)m_RegisterTable.size();
+
+	current.Descriptor = Instruction::Type::POP;
+	current.Number = (unsigned)m_RegisterTable.size();
+	m_Code.push_back(current);
 }
 
 void ByteCodeGenerator::Visit(VariableDefinitionExpression* e)
@@ -123,22 +127,20 @@ void ByteCodeGenerator::Visit(VariableDefinitionExpression* e)
 	{
 		e->GetValue()->Accept(*this);
 	}
-	Instruction current;
-	current.Descriptor = Instruction::Type::MOV;
-	current.Args[0] = e->GetName();
-	current.Args[1] = m_RegisterStack.top();
-	m_RegisterStack.pop();
-	m_Code.push_back(current);
+	if (!m_RegisterStack.empty())
+	{
+		Instruction current;
+		current.Descriptor = Instruction::Type::MOV;
+		current.Args[0] = e->GetName();
+		current.Args[1] = m_RegisterStack.top();
+		m_RegisterStack.pop();
+		m_Code.push_back(current);
+	}
 }
 
 void ByteCodeGenerator::Visit(BinaryExpression* e)
 {
 	Instruction current;
-	IPLString regName = IPLString ("tmp");
-	regName += std::to_string(m_RegisterTable.size());
-	m_RegisterTable.push_back(regName);
-	m_RegisterStack.push(regName);
-	current.Args[0] = regName;
 
 	e->GetLeft()->Accept(*this);
 	current.Args[1] = m_RegisterStack.top();
@@ -147,6 +149,22 @@ void ByteCodeGenerator::Visit(BinaryExpression* e)
 	e->GetRight()->Accept(*this);
 	current.Args[2] = m_RegisterStack.top();
 	m_RegisterStack.pop();
+
+	if (e->GetOperator() == TokenType::Equal)
+	{
+		current.Descriptor = Instruction::Type::MOV;
+		current.Args[0] = current.Args[1];
+		current.Args[1] = current.Args[2];
+		m_Code.push_back(current);
+		return;
+	}
+
+
+	IPLString regName = IPLString ("tmp");
+	regName += std::to_string(m_RegisterTable.size());
+	m_RegisterTable.push_back(regName);
+	m_RegisterStack.push(regName);
+	current.Args[0] = regName;
 
 	switch (e->GetOperator()) {
 	case TokenType::Plus:
@@ -171,14 +189,50 @@ void ByteCodeGenerator::Visit(BinaryExpression* e)
 		NOT_IMPLEMENTED;
 		break;
 	case TokenType::Equal:
-		current.Descriptor = Instruction::Type::MOV;
-		current.Args[0] = current.Args[1];
-		current.Args[1] = current.Args[2];
+
 	break;
 	default:
 		NOT_IMPLEMENTED;
 	}
 	m_Code.push_back(current);
+}
+
+void ByteCodeGenerator::Visit(IfStatement* e)
+{
+	Instruction current;
+	e->GetCondition()->Accept(*this);
+	current.Descriptor = Instruction::Type::JMPF;
+	current.Args[0] = m_RegisterStack.top();
+	current.Number = 0.0;
+	m_RegisterStack.pop();
+	auto ifIndex = m_Code.size();
+	m_Code.push_back(current);
+
+	e->GetIfStatement()->Accept(*this);
+
+	if (e->GetElseStatement())
+	{
+		current.Descriptor = Instruction::Type::JMP;
+		m_Code.push_back(current);
+		auto afterTrueBlock = m_Code.size();
+
+		e->GetElseStatement()->Accept(*this);
+
+		// Patching
+		m_Code[ifIndex].Number = (double)afterTrueBlock;
+		m_Code[afterTrueBlock - 1].Number = (double)m_Code.size();
+	}
+	else
+	{
+		m_Code[ifIndex].Number = (double)m_Code.size();
+
+	}
+
+}
+
+void ByteCodeGenerator::Visit(IdentifierExpression* e)
+{
+	m_RegisterStack.push(e->GetName());
 }
 
 void ByteCodeGenerator::Visit(LiteralNumber* e)
@@ -208,9 +262,10 @@ unsigned ByteCodeGenerator::ResolveRegisterName(IPLString& name)
 IPLString ByteCodeGenerator::GetCode()
 {
 	IPLString result;
-
+	auto programCounter = 0;
 	for (auto& i : m_Code)
 	{
+		result += std::to_string(programCounter) + ": ";
 		switch (i.Descriptor)
 		{
 		case ByteCodeGenerator::Instruction::ADD:
@@ -259,24 +314,25 @@ IPLString ByteCodeGenerator::GetCode()
 			NOT_IMPLEMENTED;
 			break;
 		case ByteCodeGenerator::Instruction::JMP:
-			result += "jmp";
-			NOT_IMPLEMENTED;
+			result += "jmp " + std::to_string((size_t)i.Number) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::JMPT:
-			result += "jmpt r" + std::to_string(ResolveRegisterName(i.Args[0])) + '\n';
+			result += "jmpt r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " " + std::to_string((size_t)i.Number) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::JMPF:
-			result += "jmpf r" + std::to_string(ResolveRegisterName(i.Args[0])) + '\n';
+			result += "jmpf r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " " + std::to_string((size_t)i.Number) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::DUP:
 			result += "dup";
 			NOT_IMPLEMENTED;
 			break;
 		case ByteCodeGenerator::Instruction::PUSH:
-			result += "push " + std::to_string((unsigned)i.Number) + '\n';
+			result += "push " + std::to_string((size_t)i.Number) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::POP:
-			result += "pop " + std::to_string((unsigned)i.Number) + '\n';
+			result += "pop " + std::to_string((size_t)i.Number) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::SAVE:
 			result += "save";
@@ -375,6 +431,7 @@ IPLString ByteCodeGenerator::GetCode()
 			break;
 			
 		}
+		++programCounter;
 	}
 
 	result += "halt\n";
