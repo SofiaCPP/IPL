@@ -798,7 +798,7 @@ and_expr_more: BOOLAND shift_expr { $$ = concatenate(stylize($1, "operator"), $2
 shift_expr: arith_expr { $$ = $1; }
           | arith_expr shift_expr_more { $$ = concatenate($1, $2);}
 shift_expr_more: shift_op arith_expr { $$ = concatenate($1, $2);}
-               | shift_expr shift_op arith_expr {
+               | shift_expr_more shift_op arith_expr {
                                $$ = concatenate($1, $2);
                                $$ = concatenate($$, $3);
                              }
@@ -816,7 +816,7 @@ arith_op: PLUS { $$ = stylize($1, "operator");}
 term: factor { $$ = $1; }
     | factor term_more { $$ = concatenate($1, $2);}
 term_more: term_op factor { $$ = concatenate($1, $2);}
-         | term term_op factor {
+         | term_more term_op factor {
                          $$ = concatenate($1, $2);
                          $$ = concatenate($$, $3);
                        }
@@ -1063,7 +1063,7 @@ int yyerror(const char* error)
 void printHtmlHeader(){
        puts(
                    "<head>"
-                   "    <title>hello_world.go</title>"
+                   "    <title>python-parse.html</title>"
        );
        printStyles();
        puts(
