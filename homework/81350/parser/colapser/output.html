@@ -1,0 +1,25 @@
+<!doctype><html>
+<head>    <title>hello_world.go</title>
+    <style>        .identifier {            color: black;        }        .keyword {            color: purple;        }        .number {            color: blue;        }        .string {            color: green;        }        .operator {            color: #db184c;            font-style: bold;        .constant {           color: purple;        }        .collapsible {            color: white;            cursor: pointer;            padding: 2px;            width: 2%;            border: none;            text-align: center;            outline: none;            font-size: 15px;        }     </style>
+</head>
+<body bgcolor="#e2cdb7">    <pre class="code">
+<span class="keyword">def </span><span class="identifier">func </span>():<button class="collapsible">+</button><div class="content"><br>&nbsp&nbsp<span class="identifier">num </span><span class="operator">= </span><span class="operator">+ </span><span class="number">2 </span></div></pre></body>
+<script>var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+coll[i].addEventListener("click", function() {
+this.classList.toggle("active");
+var content = this.nextElementSibling;
+if (content.style.display === "inline") {
+content.style.display = "none";
+this.innerHTML="+"} else {
+content.style.display = "inline";
+this.innerHTML="-"}
+});
+}
+for (i = 0; i < coll.length; i++) {
+coll[i].click()
+}
+</script>
+</html>
