@@ -22,11 +22,11 @@ Token::Token(Token::Token_type type,
              const char* end)
     : _type(type), _lineno(lineno)
 {
-    if (_type == integer || _type == xinteger)
+    if (_type == Integer || _type == XInteger)
     {
         _value_int = strtol(start, NULL, 0);
     }
-    else if (_type == ident)
+    else if (_type == Ident)
     {
         if (end)
         {

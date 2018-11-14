@@ -4,30 +4,32 @@
 #include <string>
 
 #define TOKENS    \
-    TOK(dup)      \
-    TOK(push)     \
-    TOK(pop)      \
-    TOK(print)    \
-    TOK(read)     \
-    TOK(plus)     \
-    TOK(minus)    \
-    TOK(multiply) \
-    TOK(divide)   \
-    TOK(modulus)  \
-    TOK(jmpt)     \
-    TOK(jmpf)     \
-    TOK(jmp)      \
-    TOK(call)     \
-    TOK(ret)      \
-    TOK(load)     \
-    TOK(store)    \
-    TOK(less)     \
-    TOK(lesseq)   \
-    TOK(label)    \
-    TOK(ident)    \
-    TOK(integer)  \
-    TOK(xinteger) \
-    TOK(endinput)
+	TOK(Halt)	  \
+    TOK(Dup)      \
+    TOK(Pop)      \
+    TOK(PopTo)    \
+    TOK(Push)     \
+    TOK(Alloc)    \
+    TOK(Print)    \
+    TOK(Read)     \
+    TOK(Call)     \
+    TOK(Ret)      \
+    TOK(Jump)     \
+    TOK(JumpT)    \
+    TOK(JumpF)    \
+    TOK(Const)    \
+    TOK(Add)      \
+    TOK(Sub)      \
+    TOK(Mul)      \
+    TOK(Div)      \
+    TOK(Mod)      \
+    TOK(Less)     \
+    TOK(LessEq)   \
+    TOK(Label)    \
+    TOK(Ident)    \
+    TOK(Integer)  \
+    TOK(XInteger) \
+    TOK(EndInput)
 
 namespace SpasmImpl
 {
@@ -40,14 +42,42 @@ class Token
    public:
     enum Token_type
     {
-        halt = 0,
-#define TOK(x) x,
-        TOKENS
-#undef TOK
-            notused
+		_NoArgBegin,
+		Halt = _NoArgBegin,
+		Dup,
+		Pop,
+		_OneArgBegin,
+		PopTo = _OneArgBegin,
+		Push,
+		Alloc,
+		Print,
+		Read,
+		Call,
+		Ret,
+		Jump,
+		_TwoArgBegin,
+		JumpT = _TwoArgBegin,
+		JumpF,
+		Const,
+		_ThreeArgBegin,
+		Add = _ThreeArgBegin,
+		Sub,
+		Mul,
+		Div,
+		Mod,
+		Less,
+		LessEq,
+		_NotOpCodeBegin,
+		Label = _NotOpCodeBegin,
+		Ident,
+		//Register,
+		Integer,
+		XInteger,
+		EndInput,
+        NotUsed
     };
 
-    Token(Token_type = notused);
+    Token(Token_type = NotUsed);
 
     Token(Token_type, size_t, const char* = NULL, const char* = NULL);
 

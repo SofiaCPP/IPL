@@ -21,13 +21,13 @@ Tokenizer::Tokenizer(std::istream& istr)
 void Tokenizer::push_token(const Token& token)
 {
     _tokens.push(token);
-    if (token.type() == Token::endinput)
+    if (token.type() == Token::EndInput)
         end_input = true;
 }
 
 Token Tokenizer::next_token()
 {
-    Token t(Token::endinput);
+    Token t(Token::EndInput);
     if (!_tokens.empty())
     {
         t = _tokens.front();
