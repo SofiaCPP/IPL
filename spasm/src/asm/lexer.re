@@ -106,35 +106,35 @@ XINTEGER	{
 				continue;
 			}
 
-"+"			{
+"add"			{
 				ts.push_token (Token (Token::plus, lineno));
 				token_start = cursor;
 
 				continue;
 			}
 
-"-"			{
+"sub"			{
 				ts.push_token (Token (Token::minus, lineno));
 				token_start = cursor;
 
 				continue;
 			}
 
-"*"			{
+"mul"			{
 				ts.push_token (Token (Token::multiply, lineno));
 				token_start = cursor;
 
 				continue;
 			}
 
-"/"			{
+"div"			{
 				ts.push_token (Token (Token::divide, lineno));
 				token_start = cursor;
 
 				continue;
 			}
 
-"%"			{
+"mod"			{
 				ts.push_token (Token (Token::modulus, lineno));
 				token_start = cursor;
 
@@ -142,21 +142,21 @@ XINTEGER	{
 			}
 
 "jmpt"	{
-				ts.push_token (Token (Token::gotrue, lineno));
+				ts.push_token (Token (Token::jmpt, lineno));
 				token_start = cursor;
 
 				continue;
 			}
 
 "jmpf"	{
-				ts.push_token (Token (Token::gofalse, lineno));
+				ts.push_token (Token (Token::jmpf, lineno));
 				token_start = cursor;
 
 				continue;
 			}
 
 "jmp"		{
-				ts.push_token (Token (Token::go, lineno));
+				ts.push_token (Token (Token::jmp, lineno));
 				token_start = cursor;
 
 				continue;
@@ -176,26 +176,13 @@ XINTEGER	{
 				continue;
 			}
 
-"load"		{
-				ts.push_token (Token (Token::load, lineno));
-				token_start = cursor;
-
-				continue;
-			}
-
-"store"		{
-				ts.push_token (Token (Token::store, lineno));
-				token_start = cursor;
-
-				continue;
-			}
-"<="		{
+"leq"		{
 				ts.push_token (Token (Token::lesseq, lineno));
 				token_start = cursor;
 
 				continue;
 			}
-"<"			{
+"less"			{
 				ts.push_token (Token (Token::less, lineno));
 				token_start = cursor;
 

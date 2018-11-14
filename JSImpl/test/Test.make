@@ -47,7 +47,7 @@ ifeq ($(config),debug64)
   TARGETDIR           = ../build/bin/Debug
   TARGET              = $(TARGETDIR)/Test
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
-  INCLUDES           += -I"googletest/googletest/include" -I"googletest/googlemock/include" -I".."
+  INCLUDES           += -I"googletest/googletest/include" -I"googletest/googlemock/include" -I".." -I"../../spasm/src"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
@@ -56,7 +56,7 @@ ifeq ($(config),debug64)
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64 -std=c++14
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Debug" -L"." -m64
-  LDDEPS             += ../build/bin/Debug/libJSLib.a ../build/bin/Debug/libgtest.a ../build/bin/Debug/libgmock.a ../build/bin/Debug/libgtest_main.a
+  LDDEPS             += ../build/bin/Debug/libsprt.a ../build/bin/Debug/libJSLib.a ../build/bin/Debug/libgtest.a ../build/bin/Debug/libgmock.a ../build/bin/Debug/libgtest_main.a
   LIBS               += $(LDDEPS) -lpthread
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
@@ -65,6 +65,7 @@ ifeq ($(config),debug64)
 	$(OBJDIR)/LexerTests.o \
 	$(OBJDIR)/ParserTests.o \
 	$(OBJDIR)/empty.o \
+	$(OBJDIR)/sprtTests.o \
 
   define PREBUILDCMDS
   endef
@@ -79,7 +80,7 @@ ifeq ($(config),release64)
   TARGETDIR           = ../build/bin/Release
   TARGET              = $(TARGETDIR)/Test
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
-  INCLUDES           += -I"googletest/googletest/include" -I"googletest/googlemock/include" -I".."
+  INCLUDES           += -I"googletest/googletest/include" -I"googletest/googlemock/include" -I".." -I"../../spasm/src"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
@@ -88,7 +89,7 @@ ifeq ($(config),release64)
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64 -std=c++14
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Release" -L"." -m64
-  LDDEPS             += ../build/bin/Release/libJSLib.a ../build/bin/Release/libgtest.a ../build/bin/Release/libgmock.a ../build/bin/Release/libgtest_main.a
+  LDDEPS             += ../build/bin/Release/libsprt.a ../build/bin/Release/libJSLib.a ../build/bin/Release/libgtest.a ../build/bin/Release/libgmock.a ../build/bin/Release/libgtest_main.a
   LIBS               += $(LDDEPS) -lpthread
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
@@ -97,6 +98,7 @@ ifeq ($(config),release64)
 	$(OBJDIR)/LexerTests.o \
 	$(OBJDIR)/ParserTests.o \
 	$(OBJDIR)/empty.o \
+	$(OBJDIR)/sprtTests.o \
 
   define PREBUILDCMDS
   endef
@@ -165,6 +167,10 @@ $(OBJDIR)/ParserTests.o: ParserTests.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/.
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 
 $(OBJDIR)/empty.o: empty.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/.
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/sprtTests.o: sprtTests.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/.
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 

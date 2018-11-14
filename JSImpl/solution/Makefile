@@ -20,7 +20,7 @@ JSImpl: JSLib
 	@echo "==== Building JSImpl ($(config)) ===="
 	@${MAKE} --no-print-directory -C . -f JSImpl.make
 
-Test: JSLib gtest gmock gtest_main
+Test: sprt JSLib gtest gmock gtest_main
 	@echo "==== Building Test ($(config)) ===="
 	@${MAKE} --no-print-directory -C ../test -f Test.make
 

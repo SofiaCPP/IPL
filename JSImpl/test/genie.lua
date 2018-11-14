@@ -9,8 +9,10 @@ project 'Test'
         'googletest/googletest/include',
         'googletest/googlemock/include',
         '..',
+        '../../spasm/src',
     }
     links {
+        'sprt',
         'JSLib',
         'gtest',
         'gmock',
