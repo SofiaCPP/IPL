@@ -13,8 +13,8 @@ enum OpCodes : char
     Dup,
     Pop,
     PopTo,
+    PushFrom,
     Push,
-    Alloc,
     Print,
     Read,
     Call,
@@ -45,14 +45,15 @@ class Spasm
    public:
     Spasm();
     void Initialize(PC_t,
-          const byte*,
-          std::istream& = std::cin,
-          std::ostream& = std::cout);
+                    const byte*,
+                    std::istream& = std::cin,
+                    std::ostream& = std::cout);
     ~Spasm();
     Spasm(const Spasm&) = delete;
     Spasm& operator=(const Spasm&) = delete;
 
-    enum RunResult {
+    enum RunResult
+    {
         Success,
         Exception,
         NotImplemented,
@@ -77,7 +78,8 @@ class Spasm
     //! Frame pointer - the start of the stack for the current function
     data_t* m_FP = nullptr;
 
-    struct Frame {
+    struct Frame
+    {
         PC_t ReturnAddress;
         PC_t FramePointer;
         PC_t StackPointer;
@@ -94,8 +96,7 @@ class Spasm
     std::ostream* ostr;
 
     void push(reg_t reg);
-    void pop(reg_t reg);
-    void pop();
+    void popto(reg_t reg);
     void dup();
 
     void print(reg_t reg);

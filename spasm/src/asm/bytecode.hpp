@@ -14,7 +14,7 @@ class Bytecode_Stream
 {
    public:
     typedef int8_t byte;
-	typedef byte Opcode_t;
+    typedef byte Opcode_t;
 
     virtual ~Bytecode_Stream();
     virtual void push_opcode(Opcode_t) = 0;

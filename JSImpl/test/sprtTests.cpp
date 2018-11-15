@@ -198,22 +198,22 @@ TEST_F(SPRTTest, JumpFalse)
 TEST_F(SPRTTest, Call)
 {
 	Spasm::byte bytecode[] = {
-		OpCodes::Alloc, 5,      // 2
+		OpCodes::Push, 5,      // 2
 		OpCodes::Const, 1, 0,   // 5
 		OpCodes::Const, 2, 6,   // 8
 		OpCodes::Const, 3, 7,   // 11
 		OpCodes::Const, 4, 2,   // 14
-		OpCodes::Push, 3,       // 16
-		OpCodes::Push, 2,       // 18
-		OpCodes::Push, 4,       // 20
+		OpCodes::PushFrom, 3,       // 16
+		OpCodes::PushFrom, 2,       // 18
+		OpCodes::PushFrom, 4,       // 20
 		OpCodes::Call, 25,      // 22
 		OpCodes::Print, 4,      // 24
-                OpCodes::Halt,          // 25
+        OpCodes::Halt,          // 25
 		OpCodes::Print, 0,      // 27
 		OpCodes::Print, -1,     // 29
 		OpCodes::Print, -2,     // 31
 		OpCodes::Mul, 1, -2, -1,// 33
-                OpCodes::Ret, 1,        // 35
+        OpCodes::Ret, 1,        // 35
 	};
 
 	Run(bytecode, sizeof(bytecode));
@@ -232,17 +232,44 @@ TEST_F(SPRTTest, Read)
 	ASSERT_EQ(Output.str(), "42");
 }
 
+TEST_F(SPASMTest, RSyntax)
+{
+	const char* program =
+		"push 5"		"\n"
+		"const r1 0"	"\n"
+		"const r2 6"	"\n"
+		"const r3 7"	"\n"
+		"const r4 2"	"\n"
+		"pushr r3"		"\n"
+		"pushr r2"		"\n"
+		"pushr r4"		"\n"
+		"call mult"		"\n"
+		"popr r1"		"\n"
+		"print r1"		"\n"
+		"halt"			"\n"
+		"label mult"	"\n"
+		"print a0"		"\n"
+		"print a1"		"\n"
+		"print a2"		"\n"
+		"mul r1 a2 a1"	"\n"
+		"ret r1"		"\n"
+		""
+		;
+	CompileAndRun(program);
+	ASSERT_EQ(Output.str(), "26742");
+}
+
 TEST_F(SPASMTest, Call)
 {
 	const char* program =
-		"alloc 5"		"\n"
+		"push 5"		"\n"
 		"const 1 0"		"\n"
 		"const 2 6"		"\n"
 		"const 3 7"		"\n"
 		"const 4 2"		"\n"
-		"push 3"		"\n"
-		"push 2"		"\n"
-		"push 4"		"\n"
+		"pushr 3"		"\n"
+		"pushr 2"		"\n"
+		"pushr 4"		"\n"
 		"call mult"		"\n"
 		"print 4"		"\n"
 		"halt"			"\n"
@@ -261,7 +288,7 @@ TEST_F(SPASMTest, Call)
 TEST_F(SPASMTest, GCD)
 {
 	const char* program =
-		"alloc 3"		"\n"
+		"push 3"		"\n"
 		"read 1"		"\n"
 		"read 2"		"\n"
 		"label loop"	"\n"
