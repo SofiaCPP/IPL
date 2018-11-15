@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <spasm.hpp>
+#include <assembler.hpp>
 #include <sstream>
 
 using Spasm::OpCodes;
@@ -9,12 +10,12 @@ struct SPRTTest : public ::testing::Test
 {
     typedef std::vector<Spasm::byte> ByteCode;
 
-    void Run(ByteCode& code)
+    void Run(const ByteCode& code)
     {
         Run(code.data(), code.size());
     }
 
-    void Run(Spasm::byte* bytecode, size_t size)
+    void Run(const Spasm::byte* bytecode, size_t size)
     {
         VM.Initialize(size, bytecode, Input, Output);
         ASSERT_EQ(Spasm::Spasm::RunResult::Success, VM.run());
@@ -25,6 +26,19 @@ struct SPRTTest : public ::testing::Test
     Spasm::Spasm VM;
     std::istringstream Input;
     std::ostringstream Output;
+};
+
+struct SPASMTest : public SPRTTest
+{
+	void CompileAndRun(const std::string& program)
+	{
+		SpasmImpl::ASM::Bytecode_Memory bytecode;
+		std::istringstream programInput;
+		programInput.str(program);
+		ASSERT_TRUE(SpasmImpl::ASM::compile(programInput, bytecode))
+			<< "Could not compile the program:" << std::endl << program;
+		Run(bytecode.bytecode());
+	}
 };
 
 TEST_F(SPRTTest, Empty)
@@ -218,3 +232,54 @@ TEST_F(SPRTTest, Read)
 	ASSERT_EQ(Output.str(), "42");
 }
 
+TEST_F(SPASMTest, Call)
+{
+	const char* program =
+		"alloc 5"		"\n"
+		"const 1 0"		"\n"
+		"const 2 6"		"\n"
+		"const 3 7"		"\n"
+		"const 4 2"		"\n"
+		"push 3"		"\n"
+		"push 2"		"\n"
+		"push 4"		"\n"
+		"call mult"		"\n"
+		"print 4"		"\n"
+		"halt"			"\n"
+		"label mult"	"\n"
+		"print 0"		"\n"
+		"print -1"		"\n"
+		"print -2"		"\n"
+		"mul 1 -2 -1"	"\n"
+		"ret 1"			"\n"
+		""
+		;
+	CompileAndRun(program);
+	ASSERT_EQ(Output.str(), "26742");
+}
+
+TEST_F(SPASMTest, GCD)
+{
+	const char* program =
+		"alloc 3"		"\n"
+		"read 1"		"\n"
+		"read 2"		"\n"
+		"label loop"	"\n"
+		"less 3 1 2"	"\n"
+		"jmpt 3 sub_ba"	"\n"
+		"less 3 2 1"	"\n"
+		"jmpt 3 sub_ab"	"\n"
+		"print 1"		"\n"
+		"halt"			"\n"
+		"label sub_ab"	"\n"
+		"sub 1 1 2"		"\n"
+		"jmp loop"		"\n"
+		"label sub_ba"	"\n"
+		"sub 2 2 1"		"\n"
+		"jmp loop"		"\n"
+		""
+		;
+	Input.str("21 12");
+	CompileAndRun(program);
+	ASSERT_EQ(Output.str(), "3");
+}
