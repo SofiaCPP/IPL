@@ -114,6 +114,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\ASTInterpreter.h" />
     <ClInclude Include="..\src\ASTPrinter.h" />
+    <ClInclude Include="..\src\ByteCodeGenerator.h" />
     <ClInclude Include="..\src\CommonTypes.h" />
     <ClInclude Include="..\src\Expression.h" />
     <ClInclude Include="..\src\ExpressionDefinitions.h" />
@@ -126,6 +127,8 @@
     <ClCompile Include="..\src\ASTInterpreter.cpp">
     </ClCompile>
     <ClCompile Include="..\src\ASTPrinter.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\ByteCodeGenerator.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Expression.cpp">
     </ClCompile>
