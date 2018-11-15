@@ -21,11 +21,13 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -111,23 +113,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ASTInterpreter.h" />
-    <ClInclude Include="..\src\Expression.h" />
-    <ClInclude Include="..\src\ExpressionsFwd.h" />
     <ClInclude Include="..\src\ASTPrinter.h" />
+    <ClInclude Include="..\src\CommonTypes.h" />
+    <ClInclude Include="..\src\Expression.h" />
+    <ClInclude Include="..\src\ExpressionDefinitions.h" />
+    <ClInclude Include="..\src\ExpressionsFwd.h" />
     <ClInclude Include="..\src\ExpressionVisitor.h" />
     <ClInclude Include="..\src\Lexer.h" />
-    <ClInclude Include="..\src\CommonTypes.h" />
-    <ClInclude Include="..\src\ExpressionDefinitions.h" />
     <ClInclude Include="..\src\Parser.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Lexer.cpp">
-    </ClCompile>
     <ClCompile Include="..\src\ASTInterpreter.cpp">
+    </ClCompile>
+    <ClCompile Include="..\src\ASTPrinter.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Expression.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\ASTPrinter.cpp">
+    <ClCompile Include="..\src\Lexer.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Parser.cpp">
     </ClCompile>

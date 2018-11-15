@@ -6,21 +6,13 @@ ifndef config
 endif
 export config
 
-PROJECTS := JSImpl JSLib Test gmock gtest gtest_main spasm sprt sprun
+PROJECTS := JSImpl JSLib Test gmock gtest gtest_main spasm spasm_lib sprt sprun
 
 .PHONY: all clean help $(PROJECTS)
 
 all: $(PROJECTS)
 
-JSLib: 
-	@echo "==== Building JSLib ($(config)) ===="
-	@${MAKE} --no-print-directory -C . -f JSLib.make
-
-JSImpl: JSLib
-	@echo "==== Building JSImpl ($(config)) ===="
-	@${MAKE} --no-print-directory -C . -f JSImpl.make
-
-Test: sprt JSLib gtest gmock gtest_main
+Test: sprt spasm_lib JSLib gtest gmock gtest_main
 	@echo "==== Building Test ($(config)) ===="
 	@${MAKE} --no-print-directory -C ../test -f Test.make
 
@@ -36,11 +28,23 @@ gtest_main:
 	@echo "==== Building gtest_main ($(config)) ===="
 	@${MAKE} --no-print-directory -C ../test -f gtest_main.make
 
+JSLib: 
+	@echo "==== Building JSLib ($(config)) ===="
+	@${MAKE} --no-print-directory -C . -f JSLib.make
+
+JSImpl: JSLib
+	@echo "==== Building JSImpl ($(config)) ===="
+	@${MAKE} --no-print-directory -C . -f JSImpl.make
+
 sprt: 
 	@echo "==== Building sprt ($(config)) ===="
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprt.make
 
-spasm: 
+spasm_lib: 
+	@echo "==== Building spasm_lib ($(config)) ===="
+	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm_lib.make
+
+spasm: spasm_lib
 	@echo "==== Building spasm ($(config)) ===="
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm.make
 
@@ -49,13 +53,14 @@ sprun: sprt
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprun.make
 
 clean:
-	@${MAKE} --no-print-directory -C . -f JSLib.make clean
-	@${MAKE} --no-print-directory -C . -f JSImpl.make clean
 	@${MAKE} --no-print-directory -C ../test -f Test.make clean
 	@${MAKE} --no-print-directory -C ../test -f gtest.make clean
 	@${MAKE} --no-print-directory -C ../test -f gmock.make clean
 	@${MAKE} --no-print-directory -C ../test -f gtest_main.make clean
+	@${MAKE} --no-print-directory -C . -f JSLib.make clean
+	@${MAKE} --no-print-directory -C . -f JSImpl.make clean
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprt.make clean
+	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm_lib.make clean
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm.make clean
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprun.make clean
 
@@ -69,13 +74,14 @@ help:
 	@echo "TARGETS:"
 	@echo "   all (default)"
 	@echo "   clean"
-	@echo "   JSLib"
-	@echo "   JSImpl"
 	@echo "   Test"
 	@echo "   gtest"
 	@echo "   gmock"
 	@echo "   gtest_main"
+	@echo "   JSLib"
+	@echo "   JSImpl"
 	@echo "   sprt"
+	@echo "   spasm_lib"
 	@echo "   spasm"
 	@echo "   sprun"
 	@echo ""
