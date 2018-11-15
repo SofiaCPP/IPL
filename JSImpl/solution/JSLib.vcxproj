@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -56,14 +56,12 @@
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      </PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader></PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -71,12 +69,11 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      </PreprocessorDefinitions>
     </ResourceCompile>
-    <Lib>
-      <OutputFile>$(OutDir)JSLib.lib</OutputFile>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Lib>
+  <Lib>
+    <OutputFile>$(OutDir)JSLib.lib</OutputFile>
+    <TargetMachine>MachineX64</TargetMachine>
+  </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -88,14 +85,12 @@
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      </PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader></PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -103,12 +98,11 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      </PreprocessorDefinitions>
     </ResourceCompile>
-    <Lib>
-      <OutputFile>$(OutDir)JSLib.lib</OutputFile>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Lib>
+  <Lib>
+    <OutputFile>$(OutDir)JSLib.lib</OutputFile>
+    <TargetMachine>MachineX64</TargetMachine>
+  </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -134,7 +128,8 @@
     </ClCompile>
     <ClCompile Include="..\src\ASTPrinter.cpp">
     </ClCompile>
-    <ClCompile Include="..\src\ByteCodeGenerator.cpp" />
+    <ClCompile Include="..\src\ByteCodeGenerator.cpp">
+    </ClCompile>
     <ClCompile Include="..\src\Expression.cpp">
     </ClCompile>
     <ClCompile Include="..\src\Lexer.cpp">
