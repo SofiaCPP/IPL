@@ -19,11 +19,12 @@ public:
 	virtual void Visit(IdentifierExpression* e) override;
 	virtual void Visit(EmptyExpression* e) override { (void)e; }
 	virtual void Visit(IfStatement* e) override;
+	virtual void Visit(ForStatement* e) override;
 
 	IPLString GetCode();
 	unsigned ResolveRegisterName(IPLString& name);
-private:
 
+private:
 	struct Instruction
 	{
 		enum Type : char
@@ -72,11 +73,49 @@ private:
 		IPLString Args[3];
 		double Number;
 	};
+	size_t PushInstruction(Instruction::Type opcode, IPLString& arg1, IPLString& arg2, IPLString& arg3);
+	size_t PushInstruction(Instruction::Type opcode, size_t Address);
+	size_t PushInstruction(Instruction::Type opcode, IPLString& arg1, size_t Address);
+
+private:
 	IPLVector<IPLString> m_RegisterTable;
 	IPLVector<Instruction> m_Code;
 
 	IPLStack<IPLString> m_RegisterStack;
 	unsigned m_CurrentStackPointer;	IPLString m_OutputCode;};
+
+size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, IPLString& arg0, IPLString& arg1, IPLString& arg2)
+{
+	Instruction ins;
+	ins.Descriptor = opcode;
+	ins.Args[0] = arg0;
+	ins.Args[1] = arg1;
+	ins.Args[2] = arg2;
+	auto address = m_Code.size();
+	m_Code.push_back(ins);
+	return address;
+}
+
+size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, size_t Address)
+{
+	Instruction ins;
+	ins.Descriptor = opcode;
+	ins.Number = (double)Address;
+	auto address = m_Code.size();
+	m_Code.push_back(ins);
+	return address;
+}
+
+size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, IPLString& arg0, size_t Address)
+{
+	Instruction ins;
+	ins.Descriptor = opcode;
+	ins.Args[0] = arg0;
+	ins.Number = (double)Address;
+	auto address = m_Code.size();
+	m_Code.push_back(ins);
+	return address;
+}
 
 void ByteCodeGenerator::Visit(FunctionDeclaration* e)
 {
@@ -122,6 +161,14 @@ void ByteCodeGenerator::Visit(TopStatements* e)
 
 void ByteCodeGenerator::Visit(VariableDefinitionExpression* e)
 {
+	auto it = std::find_if(m_RegisterTable.begin(), m_RegisterTable.end(), [&](IPLString& current) {
+		return e->GetName() == current;
+	});
+	if (it != m_RegisterTable.end())
+	{
+		// TODO: error double definitions
+		return;
+	}
 	m_RegisterTable.push_back(e->GetName());
 	if (e->GetValue())
 	{
@@ -225,9 +272,20 @@ void ByteCodeGenerator::Visit(IfStatement* e)
 	else
 	{
 		m_Code[ifIndex].Number = (double)m_Code.size();
-
 	}
+}
 
+void ByteCodeGenerator::Visit(ForStatement* e)
+{
+	e->GetInitialization()->Accept(*this);
+	auto compareAddress = m_Code.size();
+	e->GetCondition()->Accept(*this);
+	auto endAddress = PushInstruction(Instruction::Type::JMPF, m_RegisterStack.top(), 0);
+	m_RegisterStack.pop();
+	e->GetBody()->Accept(*this);
+	e->GetIteration()->Accept(*this);
+	PushInstruction(Instruction::Type::JMP, compareAddress);
+	m_Code[endAddress].Number = (double)m_Code.size();
 }
 
 void ByteCodeGenerator::Visit(IdentifierExpression* e)
@@ -237,18 +295,12 @@ void ByteCodeGenerator::Visit(IdentifierExpression* e)
 
 void ByteCodeGenerator::Visit(LiteralNumber* e)
 {
-	Instruction current;
-
 	IPLString regName = IPLString("const");
 	regName += std::to_string(m_RegisterTable.size());
 	m_RegisterTable.push_back(regName);
 	m_RegisterStack.push(regName);
 
-	current.Descriptor = Instruction::Type::CONST;
-	current.Args[0] = regName;
-	current.Number = e->GetValue();
-
-	m_Code.push_back(current);
+	PushInstruction(Instruction::Type::CONST, regName, (size_t)e->GetValue());
 }
 
 unsigned ByteCodeGenerator::ResolveRegisterName(IPLString& name)
@@ -433,7 +485,7 @@ IPLString ByteCodeGenerator::GetCode()
 		}
 		++programCounter;
 	}
-
+	result += std::to_string(programCounter) + ": ";
 	result += "halt\n";
 	return result;
 }

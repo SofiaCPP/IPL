@@ -67,8 +67,8 @@ void Generate()
 {
 	IPLVector<Token> tokens;
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
-	Tokenize("var a; if(a < 4) { a = 8;} else { a = 2} ", tokens);
-
+	/*Tokenize("var a; if(a < 4) { a = 8; if(a < 7) {var b = 4;}} else { a = 2} ", tokens);*/
+	Tokenize("var i = 0; for (var j = 0; j < 10; j = j + 1) { i = i + j; }", tokens);
 	std::cout << GenerateByteCode(Parse(tokens));
 }
 
