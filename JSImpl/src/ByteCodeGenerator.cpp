@@ -82,7 +82,9 @@ private:
 	IPLVector<Instruction> m_Code;
 
 	IPLStack<IPLString> m_RegisterStack;
-	unsigned m_CurrentStackPointer;	IPLString m_OutputCode;};
+	unsigned m_CurrentStackPointer;
+	IPLString m_OutputCode;
+};
 
 size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, IPLString& arg0, IPLString& arg1, IPLString& arg2)
 {
