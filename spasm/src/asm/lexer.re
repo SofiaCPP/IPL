@@ -52,6 +52,7 @@ DIGIT	= [0-9] ;
 XDIGIT	= [0-9a-fA-F] ;
 
 INTEGER		= "-"? "0" | ([1-9] DIGIT*) ;
+NONNEGATIVE	= "0" | ([1-9] DIGIT*) ;
 XINTEGER	= "0" [xX] XDIGIT+ ;
 IDENTIFIER	= [a-zA-Z_] [0-9a-zA-Z_]* ;
 
@@ -63,6 +64,22 @@ INTEGER		{
 				continue;
 			}
 
+"r" NONNEGATIVE		{
+				ts.push_token (Token (Token::Integer, lineno,
+				token_start + 1, cursor));
+				token_start = cursor;
+
+				continue;
+			}
+"a" NONNEGATIVE		{
+				Token t(Token::Integer, lineno,
+						token_start + 1, cursor);
+				t.set_int(-t.value_int());
+				ts.push_token(t);
+				token_start = cursor;
+				continue;
+			}
+
 XINTEGER	{
 				ts.push_token (Token (Token::XInteger, lineno,
 				token_start, cursor));
@@ -71,14 +88,14 @@ XINTEGER	{
 				continue;
 			}
 
-"push"		{
-				ts.push_token (Token (Token::Push, lineno));
+"pushr"		{
+				ts.push_token (Token (Token::PushFrom, lineno));
 				token_start = cursor;
 
 				continue;
 			}
-"alloc"		{
-				ts.push_token (Token (Token::Alloc, lineno));
+"push"		{
+				ts.push_token (Token (Token::Push, lineno));
 				token_start = cursor;
 
 				continue;
@@ -89,7 +106,7 @@ XINTEGER	{
 
 				continue;
 			}
-"popto"		{
+"popr"		{
 				ts.push_token (Token (Token::PopTo, lineno));
 				token_start = cursor;
 

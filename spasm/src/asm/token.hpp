@@ -3,34 +3,6 @@
 
 #include <string>
 
-#define TOKENS    \
-	TOK(Halt)	  \
-    TOK(Dup)      \
-    TOK(Pop)      \
-    TOK(PopTo)    \
-    TOK(Push)     \
-    TOK(Alloc)    \
-    TOK(Print)    \
-    TOK(Read)     \
-    TOK(Call)     \
-    TOK(Ret)      \
-    TOK(Jump)     \
-    TOK(JumpT)    \
-    TOK(JumpF)    \
-    TOK(Const)    \
-    TOK(Add)      \
-    TOK(Sub)      \
-    TOK(Mul)      \
-    TOK(Div)      \
-    TOK(Mod)      \
-    TOK(Less)     \
-    TOK(LessEq)   \
-    TOK(Label)    \
-    TOK(Ident)    \
-    TOK(Integer)  \
-    TOK(XInteger) \
-    TOK(EndInput)
-
 namespace SpasmImpl
 {
 namespace ASM
@@ -42,38 +14,38 @@ class Token
    public:
     enum Token_type
     {
-		_NoArgBegin,
-		Halt = _NoArgBegin,
-		Dup,
-		Pop,
-		_OneArgBegin,
-		PopTo = _OneArgBegin,
-		Push,
-		Alloc,
-		Print,
-		Read,
-		Call,
-		Ret,
-		Jump,
-		_TwoArgBegin,
-		JumpT = _TwoArgBegin,
-		JumpF,
-		Const,
-		_ThreeArgBegin,
-		Add = _ThreeArgBegin,
-		Sub,
-		Mul,
-		Div,
-		Mod,
-		Less,
-		LessEq,
-		_NotOpCodeBegin,
-		Label = _NotOpCodeBegin,
-		Ident,
-		//Register,
-		Integer,
-		XInteger,
-		EndInput,
+        _NoArgBegin,
+        Halt = _NoArgBegin,
+        Dup,
+        Pop,
+        _OneArgBegin,
+        PopTo = _OneArgBegin,
+        PushFrom,
+        Push,
+        Print,
+        Read,
+        Call,
+        Ret,
+        Jump,
+        _TwoArgBegin,
+        JumpT = _TwoArgBegin,
+        JumpF,
+        Const,
+        _ThreeArgBegin,
+        Add = _ThreeArgBegin,
+        Sub,
+        Mul,
+        Div,
+        Mod,
+        Less,
+        LessEq,
+        _NotOpCodeBegin,
+        Label = _NotOpCodeBegin,
+        Ident,
+        // Register,
+        Integer,
+        XInteger,
+        EndInput,
         NotUsed
     };
 
@@ -86,6 +58,7 @@ class Token
     size_t lineno() const;
 
     int value_int() const;
+    void set_int(int v) { _value_int = v; }
 
     const std::string& value_str() const;
 

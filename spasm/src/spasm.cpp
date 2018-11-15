@@ -55,23 +55,30 @@ Spasm::RunResult Spasm::run()
                 dup();
                 break;
             case OpCodes::Pop:
-                pop();
+            {
+                const auto count = PC_t(read_reg(size));
+                assert(m_SP - count >= m_FP);
+                m_SP -= count;
                 break;
+            }
             case OpCodes::PopTo:
+            {
+                const auto arg0 = read_reg(size);
+                popto(arg0);
                 break;
-            case OpCodes::Push:
+            }
+            case OpCodes::PushFrom:
             {
                 const auto arg0 = read_reg(size);
                 push(arg0);
                 break;
             }
-            case OpCodes::Alloc:
+            case OpCodes::Push:
             {
                 const auto count = PC_t(read_reg(size));
-                for (PC_t i = 0; i < count; ++i)
-                {
-                    push_data(0);
-                }
+                assert(m_SP + count <= &data_stack[data_stack.size() - 1]);
+                std::fill(m_SP, m_SP + count, 0);
+                m_SP += count;
                 break;
             }
             case OpCodes::Print:
@@ -199,12 +206,9 @@ void Spasm::push(reg_t reg)
     push_data(get_local(reg));
 }
 
-/*!
-** Pops a data_t object from the data stack.
-*/
-void Spasm::pop()
+void Spasm::popto(reg_t reg)
 {
-    --m_SP;
+    m_FP[reg] = *(--m_SP);
 }
 
 /*!
