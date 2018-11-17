@@ -24,21 +24,24 @@ solution 'JSImpl'
         objdir(root .. 'obj/Release')
     configuration '*'
 
-    project 'JSLib'
-        kind 'StaticLib'
-        language 'C++'
-        uuid(os.uuid('JSLib'))
-        files '../src/*.cpp'
-        removefiles '../src/main.cpp'
-        files '../src/*.h'
-
-    project 'JSImpl'
-        kind 'ConsoleApp'
-        language 'C++'
-        uuid(os.uuid('JSImpl'))
-        files '../src/main.cpp'
-        links 'JSLib'
-
     include '../test'
-    include '../../spasm/solution/'
     startproject 'Test'
+
+    group 'JSImpl'
+        project 'JSLib'
+            kind 'StaticLib'
+            language 'C++'
+            uuid(os.uuid('JSLib'))
+            files '../src/*.cpp'
+            removefiles '../src/main.cpp'
+            files '../src/*.h'
+
+        project 'JSImpl'
+            kind 'ConsoleApp'
+            language 'C++'
+            uuid(os.uuid('JSImpl'))
+            files '../src/main.cpp'
+            links 'JSLib'
+
+    group 'Spasm'
+        include '../../spasm/solution/'

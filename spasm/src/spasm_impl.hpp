@@ -3,12 +3,37 @@
 
 #include <iostream>
 
-#include "dstack.hpp"
-#include "frames.hpp"
 #include "types.hpp"
 
 namespace SpasmImpl
 {
+enum OpCodes : char
+{
+    Halt,
+    Dup,
+    Pop,
+    PopTo,
+    PushFrom,
+    Push,
+    Print,
+    Read,
+    Call,
+    Ret,
+    Jump,
+    JumpT,
+    JumpF,
+    Const,
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Mod,
+    Less,
+    LessEq,
+    LastIndex = LessEq,
+};
+static_assert(LastIndex < 0x3f, "Too many opcodes");
+
 //! The Abstract Stack Machine
 /*!
 ** The machine contains a data stack for operations and control flow and
@@ -19,42 +44,50 @@ class Spasm
 {
    public:
     Spasm();
-    Spasm(PC_t,
-          const byte*,
-          std::istream& = std::cin,
-          std::ostream& = std::cout);
-    Spasm(const Spasm&);
+    void Initialize(PC_t,
+                    const byte*,
+                    std::istream& = std::cin,
+                    std::ostream& = std::cout);
     ~Spasm();
-    Spasm& operator=(const Spasm&);
+    Spasm(const Spasm&) = delete;
+    Spasm& operator=(const Spasm&) = delete;
 
-    void run();
-
-    const Dstack& get_dstack() const;
+    enum RunResult
+    {
+        Success,
+        Exception,
+        NotImplemented,
+    };
+    RunResult run();
 
    private:
-    //! Operations (opcodes) of the machine
-    static Operation operations[];
-
-    //! number of operations
-    static PC_t op_size;
-
     //! Program counter - points the current opcode
-    PC_t pc;
+    PC_t m_PC = 0;
 
-    //! size of the program bytecode
-    PC_t bc_size;
-
+    typedef SPVector<byte> ByteCode;
     //! bytecode of the program
-    byte* bytecode;
+    ByteCode m_ByteCode;
 
-    //! Data stack for arithmetic operations and control flow
-    Dstack data_stack;
+    typedef SPVector<data_t> DataStack;
+    //! stack for storing arguments and local variables
+    DataStack data_stack;
 
-    //! Return stack for the addresses of the returns
-    Rstack_t return_stack;
+    //! Stack pointer - always the top of the stack
+    data_t* m_SP = nullptr;
 
-    //! Stack for the frame of the functions
-    FrameStack frame;
+    //! Frame pointer - the start of the stack for the current function
+    data_t* m_FP = nullptr;
+
+    struct Frame
+    {
+        PC_t ReturnAddress;
+        PC_t FramePointer;
+        PC_t StackPointer;
+    };
+
+    typedef std::stack<Frame> FrameStack;
+    //! Stack for function frames
+    FrameStack m_Frames;
 
     //! Input stream for read () operation
     std::istream* istr;
@@ -62,35 +95,38 @@ class Spasm
     //! Output stream for print () opertion
     std::ostream* ostr;
 
-    void push();
-    void pop();
+    void push(reg_t reg);
+    void popto(reg_t reg);
     void dup();
 
-    void print();
-    void read();
+    void print(reg_t reg);
+    void read(reg_t reg);
 
-    void plus();
-    void minus();
-    void multiply();
-    void divide();
-    void modulus();
+    void plus(reg_t a0, reg_t a1, reg_t a2);
+    void minus(reg_t a0, reg_t a1, reg_t a2);
+    void multiply(reg_t a0, reg_t a1, reg_t a2);
+    void divide(reg_t a0, reg_t a1, reg_t a2);
+    void modulus(reg_t a0, reg_t a1, reg_t a2);
 
-    void gotrue();
-    void gofalse();
-    void go();
+    void gotrue(reg_t a0, reg_t a1);
+    void gofalse(reg_t a0, reg_t a1);
+    void go(reg_t a0);
 
-    void call();
-    void ret();
+    void call(reg_t a0);
+    void ret(reg_t a0);
 
     void load();
     void store();
 
-    void less();
-    void lesseq();
+    void less(reg_t a0, reg_t a1, reg_t a2);
+    void lesseq(reg_t a0, reg_t a1, reg_t a2);
 
-    // private method for copying and deleting an object
-    void copybc(const Spasm&);
-    void deleteobj();
+    data_t get_local(reg_t reg);
+    void set_local(reg_t reg, data_t data);
+    data_t pop_data();
+    void push_data(data_t);
+    reg_t read_reg(size_t size);
+    data_t read_number(size_t size);
 };
 
 }  // namespace SpasmImpl

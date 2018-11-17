@@ -34,11 +34,24 @@ end
         removefiles '../src/main.cpp'
         files '../src/*.h'
 
+    project 'spasm_lib'
+        kind 'StaticLib'
+        language 'C++'
+        uuid(os.uuid('spasm_lib'))
+        files '../src/asm/*.cpp'
+        removefiles {
+            '../src/asm/main.cpp',
+            '../src/asm/lexdump.cpp',
+            '../src/asm/lexdump3.cpp',
+        }
+        files '../src/asm/*.h'
+
     project 'spasm'
         kind 'ConsoleApp'
         language 'C++'
         uuid(os.uuid('spasm'))
-        files '../src/asm/*.cpp'
+		links 'spasm_lib'
+        files '../src/asm/main.cpp'
         removefiles {
             '../src/asm/lexdump.cpp',
             '../src/asm/lexdump3.cpp',

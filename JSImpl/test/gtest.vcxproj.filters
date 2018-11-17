@@ -18,7 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="googletest\googletest\include\gtest\gtest_prod.h">
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-death-test.h">
       <Filter>googletest\googletest\include\gtest</Filter>
     </ClInclude>
     <ClInclude Include="googletest\googletest\include\gtest\gtest-message.h">
@@ -27,25 +27,25 @@
     <ClInclude Include="googletest\googletest\include\gtest\gtest-param-test.h">
       <Filter>googletest\googletest\include\gtest</Filter>
     </ClInclude>
-    <ClInclude Include="googletest\googletest\include\gtest\gtest-test-part.h">
-      <Filter>googletest\googletest\include\gtest</Filter>
-    </ClInclude>
     <ClInclude Include="googletest\googletest\include\gtest\gtest-printers.h">
-      <Filter>googletest\googletest\include\gtest</Filter>
-    </ClInclude>
-    <ClInclude Include="googletest\googletest\include\gtest\gtest-typed-test.h">
       <Filter>googletest\googletest\include\gtest</Filter>
     </ClInclude>
     <ClInclude Include="googletest\googletest\include\gtest\gtest-spi.h">
       <Filter>googletest\googletest\include\gtest</Filter>
     </ClInclude>
-    <ClInclude Include="googletest\googletest\include\gtest\gtest_pred_impl.h">
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-test-part.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-typed-test.h">
       <Filter>googletest\googletest\include\gtest</Filter>
     </ClInclude>
     <ClInclude Include="googletest\googletest\include\gtest\gtest.h">
       <Filter>googletest\googletest\include\gtest</Filter>
     </ClInclude>
-    <ClInclude Include="googletest\googletest\include\gtest\gtest-death-test.h">
+    <ClInclude Include="googletest\googletest\include\gtest\gtest_pred_impl.h">
+      <Filter>googletest\googletest\include\gtest</Filter>
+    </ClInclude>
+    <ClInclude Include="googletest\googletest\include\gtest\gtest_prod.h">
       <Filter>googletest\googletest\include\gtest</Filter>
     </ClInclude>
   </ItemGroup>

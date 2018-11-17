@@ -6,6 +6,7 @@
 namespace Spasm
 {
 using SpasmImpl::byte;
+using SpasmImpl::OpCodes;
 using SpasmImpl::PC_t;
 using SpasmImpl::Spasm;
 }  // namespace Spasm
