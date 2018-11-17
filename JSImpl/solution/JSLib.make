@@ -46,7 +46,7 @@ ifeq ($(config),debug64)
   OBJDIR              = ../build/obj/Debug/x64/Debug/JSLib
   TARGETDIR           = ../build/bin/Debug
   TARGET              = $(TARGETDIR)/libJSLib.a
-  DEFINES            +=
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
@@ -63,6 +63,7 @@ ifeq ($(config),debug64)
   OBJECTS := \
 	$(OBJDIR)/src/ASTInterpreter.o \
 	$(OBJDIR)/src/ASTPrinter.o \
+	$(OBJDIR)/src/ByteCodeGenerator.o \
 	$(OBJDIR)/src/Expression.o \
 	$(OBJDIR)/src/Lexer.o \
 	$(OBJDIR)/src/Parser.o \
@@ -79,7 +80,7 @@ ifeq ($(config),release64)
   OBJDIR              = ../build/obj/Release/x64/Release/JSLib
   TARGETDIR           = ../build/bin/Release
   TARGET              = $(TARGETDIR)/libJSLib.a
-  DEFINES            +=
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
@@ -96,6 +97,7 @@ ifeq ($(config),release64)
   OBJECTS := \
 	$(OBJDIR)/src/ASTInterpreter.o \
 	$(OBJDIR)/src/ASTPrinter.o \
+	$(OBJDIR)/src/ByteCodeGenerator.o \
 	$(OBJDIR)/src/Expression.o \
 	$(OBJDIR)/src/Lexer.o \
 	$(OBJDIR)/src/Parser.o \
@@ -168,6 +170,10 @@ $(OBJDIR)/src/ASTInterpreter.o: ../src/ASTInterpreter.cpp $(GCH) $(MAKEFILE) | $
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 
 $(OBJDIR)/src/ASTPrinter.o: ../src/ASTPrinter.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/src/ByteCodeGenerator.o: ../src/ByteCodeGenerator.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 

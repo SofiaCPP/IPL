@@ -12,6 +12,9 @@
     <ClInclude Include="..\src\ASTPrinter.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ByteCodeGenerator.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\CommonTypes.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -39,6 +42,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ASTPrinter.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ByteCodeGenerator.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Expression.cpp">

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <memory>
 #include <stack>
+#include <cassert>
 
 template<typename T>
 using IPLVector = std::vector<T>;
@@ -33,3 +34,5 @@ struct IPLError
 	IPLString File;
 	IPLString What;
 };
+
+#define NOT_IMPLEMENTED assert(0 && "not-implemented")

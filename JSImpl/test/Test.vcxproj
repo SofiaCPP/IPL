@@ -57,8 +57,8 @@
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -71,8 +71,8 @@
       <ProgramDataBaseFileName>$(IntDir)Test.compile.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -87,8 +87,8 @@
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -101,8 +101,8 @@
       <ProgramDataBaseFileName>$(IntDir)Test.compile.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,8 +122,16 @@
     </ClCompile>
     <ClCompile Include="ParserTests.cpp">
     </ClCompile>
+    <ClCompile Include="sprtTests.cpp">
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\spasm\solution\sprt.vcxproj">
+      <Project>{AE0A9E7C-9A41-9F0D-432E-85102F441B0F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\spasm\solution\spasm_lib.vcxproj">
+      <Project>{3F16CDE1-AB80-8158-F4BE-32FE60685FAD}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\solution\JSLib.vcxproj">
       <Project>{19EA680D-85FE-90BE-4E80-341EBA538DEF}</Project>
     </ProjectReference>

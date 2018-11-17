@@ -21,6 +21,7 @@ public:
     virtual void Visit(LiteralString* e) override;
     virtual void Visit(LiteralNumber* e) override;
     virtual void Visit(LiteralBoolean* e) override;
+    virtual void Visit(LiteralObject* e) override;
     virtual void Visit(BinaryExpression* e) override;
     virtual void Visit(UnaryExpression* e) override;
     virtual void Visit(IdentifierExpression* e) override;
@@ -36,8 +37,18 @@ public:
     virtual void Visit(FunctionDeclaration* e) override;
     virtual void Visit(TopStatements* e) override;
     virtual void Visit(EmptyExpression* e) override;
+    virtual void Visit(CallExpression* e) override;
 
     value_type& ModifyVariable(const IPLString& name);
+    bool HasVariable(const IPLString& name);
+
+	class Printer
+	{
+	public:
+		virtual void PrintVariable(const char* name, double value) = 0;
+	};
+
+    void Print(Printer& p);
 private:
     void RunExpression(const ExpressionPtr& e);
     bool EvalToBool(const ExpressionPtr& e);
