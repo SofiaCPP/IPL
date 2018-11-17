@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <memory>
 #include <cmath>
 
 TEST(Empty, Empty)
@@ -129,8 +130,9 @@ struct Value
 
 TEST(NaNBox, PlainDoubles)
 {
+	double a = 42.0;
     double values[] = {
-        0.0, 2.89, 3.14, 0.0 / 1.0, 1.0 / 0.0,
+        0.0, 2.89, 3.14, 0.0 / 1.0, 1.0 / (a - 6 * 7)
     };
     for (auto value: values)
     {
