@@ -23,7 +23,8 @@ int main(int argc, const char* argv[])
         std::cout << std::hex << (int)bytecode[i] << ' ';
     std::cout << std::endl;
 
-    Spasm::Spasm vm(len, bytecode.get());
+    Spasm::Spasm vm;
+    vm.Initialize(len, bytecode.get());
 
     vm.run();
 

@@ -9,13 +9,22 @@
     <ClInclude Include="..\src\ASTInterpreter.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ASTPrinter.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ByteCodeGenerator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\CommonTypes.h">
+      <Filter>src</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\Expression.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ExpressionsFwd.h">
+    <ClInclude Include="..\src\ExpressionDefinitions.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ASTPrinter.h">
+    <ClInclude Include="..\src\ExpressionsFwd.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ExpressionVisitor.h">
@@ -24,27 +33,24 @@
     <ClInclude Include="..\src\Lexer.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\CommonTypes.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ExpressionDefinitions.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Parser.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Lexer.cpp">
+    <ClCompile Include="..\src\ASTInterpreter.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ASTInterpreter.cpp">
+    <ClCompile Include="..\src\ASTPrinter.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ByteCodeGenerator.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Expression.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ASTPrinter.cpp">
+    <ClCompile Include="..\src\Lexer.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Parser.cpp">
