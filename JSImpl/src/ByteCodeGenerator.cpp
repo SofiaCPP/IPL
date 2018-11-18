@@ -8,7 +8,7 @@ class ByteCodeGenerator : public ExpressionVisitor
 {
 public:
 
-	ByteCodeGenerator(const ByteCodeGeneratorOptions& o, const IPLVector<IPLString>& source) : m_Options(o), m_Source(source){};
+	ByteCodeGenerator(const ByteCodeGeneratorOptions& o, const IPLVector<IPLString>& source) : m_Source(source), m_Options(o) {};
 	~ByteCodeGenerator() {};
 
 	virtual void Visit(FunctionDeclaration* e) override;
@@ -100,7 +100,6 @@ private:
 	IPLVector<IPLString> m_Source;
 
 	IPLStack<IPLString> m_RegisterStack;
-	unsigned m_CurrentStackPointer;
 	IPLString m_OutputCode;
 	ByteCodeGeneratorOptions m_Options;
 };
@@ -177,7 +176,7 @@ IPLString ByteCodeGenerator::CreateRegister()
 
 void ByteCodeGenerator::AddDebugInformation(Expression* e)
 {
-	if (!m_Options.AddDebugInformation || e->GetLine() == -1 || e->GetColumn() == -1)
+	if (!m_Options.AddDebugInformation || e->GetLine() == (unsigned)-1 || e->GetColumn() == (unsigned)-1)
 	{
 		return;
 	}
