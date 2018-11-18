@@ -3,32 +3,6 @@
 
 #include <string>
 
-#define TOKENS    \
-    TOK(push)     \
-    TOK(pop)      \
-    TOK(dup)      \
-    TOK(print)    \
-    TOK(read)     \
-    TOK(plus)     \
-    TOK(minus)    \
-    TOK(multiply) \
-    TOK(divide)   \
-    TOK(modulus)  \
-    TOK(gotrue)   \
-    TOK(gofalse)  \
-    TOK(go)       \
-    TOK(call)     \
-    TOK(ret)      \
-    TOK(load)     \
-    TOK(store)    \
-    TOK(less)     \
-    TOK(lesseq)   \
-    TOK(label)    \
-    TOK(ident)    \
-    TOK(integer)  \
-    TOK(xinteger) \
-    TOK(endinput)
-
 namespace SpasmImpl
 {
 namespace ASM
@@ -40,14 +14,42 @@ class Token
    public:
     enum Token_type
     {
-        halt = 0,
-#define TOK(x) x,
-        TOKENS
-#undef TOK
-            notused
+        _NoArgBegin,
+        Halt = _NoArgBegin,
+        Dup,
+        Pop,
+        _OneArgBegin,
+        PopTo = _OneArgBegin,
+        PushFrom,
+        Push,
+        Print,
+        Read,
+        Call,
+        Ret,
+        Jump,
+        _TwoArgBegin,
+        JumpT = _TwoArgBegin,
+        JumpF,
+        Const,
+        _ThreeArgBegin,
+        Add = _ThreeArgBegin,
+        Sub,
+        Mul,
+        Div,
+        Mod,
+        Less,
+        LessEq,
+        _NotOpCodeBegin,
+        Label = _NotOpCodeBegin,
+        Ident,
+        // Register,
+        Integer,
+        XInteger,
+        EndInput,
+        NotUsed
     };
 
-    Token(Token_type = notused);
+    Token(Token_type = NotUsed);
 
     Token(Token_type, size_t, const char* = NULL, const char* = NULL);
 
@@ -56,6 +58,7 @@ class Token
     size_t lineno() const;
 
     int value_int() const;
+    void set_int(int v) { _value_int = v; }
 
     const std::string& value_str() const;
 

@@ -21,28 +21,7 @@ public:
         return m_LValue;
     }
 
-    virtual void Visit(LiteralNull* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(LiteralUndefined* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(LiteralString* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(LiteralNumber* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(LiteralBoolean* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(LiteralObject* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(BinaryExpression* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(UnaryExpression* e) override { NOT_IMPLEMENTED; }
     virtual void Visit(IdentifierExpression* e) override { m_LValue = &m_Interpreter->ModifyVariable(e->GetName()); }
-    virtual void Visit(ListExpression* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(VariableDefinitionExpression* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(BlockStatement* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(LabeledStatement* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(IfStatement* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(SwitchStatement* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(CaseStatement *e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(WhileStatement* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(ForStatement* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(FunctionDeclaration* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(TopStatements* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(EmptyExpression* e) override { NOT_IMPLEMENTED; }
-    virtual void Visit(CallExpression* e) override { NOT_IMPLEMENTED; }
 
     ASTInterpreter* m_Interpreter;
     ASTInterpreter::value_type* m_LValue;

@@ -4,5 +4,6 @@
     <ClCompile Include="empty.cpp" />
     <ClCompile Include="LexerTests.cpp" />
     <ClCompile Include="ParserTests.cpp" />
+    <ClCompile Include="sprtTests.cpp" />
   </ItemGroup>
 </Project>
