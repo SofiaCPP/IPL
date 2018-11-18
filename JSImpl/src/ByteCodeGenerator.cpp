@@ -335,9 +335,7 @@ void ByteCodeGenerator::Visit(IdentifierExpression* e)
 void ByteCodeGenerator::Visit(LiteralNumber* e)
 {
 	AddDebugInformation(e);
-	IPLString regName = IPLString("const");
-	regName += std::to_string(m_RegisterTable.size());
-	m_RegisterTable.push_back(regName);
+	IPLString regName = CreateRegister();
 	m_RegisterStack.push(regName);
 
 	PushInstruction(Instruction::Type::CONST, regName, e->GetValue());
@@ -612,7 +610,7 @@ IPLString ByteCodeGenerator::GetCode()
 			{
 			auto line = i.Values.Int[0];
 			auto column = i.Values.Int[1];
-			result += "D lable: " + m_Source[line].substr(0, column) + "@@=>" + m_Source[line].substr(column, m_Source[line].size()) + '\n';
+			result += "D: " + m_Source[line].substr(0, column) + "@@=>" + m_Source[line].substr(column, m_Source[line].size()) + '\n';
 			}
 			break;
 		default:
