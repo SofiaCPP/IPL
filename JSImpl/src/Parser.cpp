@@ -63,6 +63,14 @@ private:
 	{
 		unsigned Current;
 	};
+
+	struct Location
+	{
+		unsigned Line;
+		unsigned Column;
+	};
+	Location GetLocation() const { return { m_Tokens[m_Current].Line , m_Tokens[m_Current].Column }; }
+
 	InternalState Snapshot();
 	void Restore(const InternalState& state);
 
@@ -649,6 +657,7 @@ ExpressionPtr Parser::ConditionalExpression()
 
 ExpressionPtr Parser::AssignmentExpression()
 {
+	auto location = GetLocation();
 	auto snapShot = m_Current;
 	auto left = LeftSideExpression();
 	if (MatchOneOf({ TokenType::Equal,
@@ -665,11 +674,21 @@ ExpressionPtr Parser::AssignmentExpression()
 	{
 		auto type = Prev().Type;
 		auto right = AssignmentExpression();
-		return IPLMakeSharePtr<BinaryExpression>(left, right, type);
+		auto be = IPLMakeSharePtr<BinaryExpression>(left, right, type);
+		if (be)
+		{
+			be->SetLocation(location.Line, location.Column);
+		}
+		return be;
 	}
 	// revert state;
 	m_Current = snapShot;
-	return ConditionalExpression();
+	auto ce = ConditionalExpression();
+	if (ce)
+	{
+		ce->SetLocation(location.Line, location.Column);
+	}
+	return ce;
 }
 
 ExpressionPtr Parser::Expression()
@@ -729,6 +748,7 @@ ExpressionPtr Parser::EmptyStatement()
 ExpressionPtr Parser::VariableDefinition()
 {
 	auto VariableDeclaration = [&]() -> ExpressionPtr {
+		auto location = GetLocation();
 		if (Match(TokenType::Identifier))
 		{
 			auto id = Prev().Lexeme;
@@ -737,7 +757,9 @@ ExpressionPtr Parser::VariableDefinition()
 			{
 				ae = AssignmentExpression();
 			}
-			return IPLMakeSharePtr<VariableDefinitionExpression>(id, ae);
+			auto vd = IPLMakeSharePtr<VariableDefinitionExpression>(id, ae);
+			vd->SetLocation(location.Line, location.Column);
+			return vd;
 		}
 		return nullptr;
 	};
@@ -790,17 +812,21 @@ ExpressionPtr Parser::Block()
 
 ExpressionPtr Parser::LabeledStatement()
 {
+	auto location = GetLocation();
 	if (Match(TokenType::Identifier))
 	{
 		auto identifier = Prev().Lexeme;
 		auto stament = Statement();
-		return IPLMakeSharePtr<::LabeledStatement>(identifier, stament);
+		auto ls = IPLMakeSharePtr<::LabeledStatement>(identifier, stament);
+		ls->SetLocation(location.Line, location.Column);
+		return ls;
 	}
 	return nullptr;
 }
 
 ExpressionPtr Parser::IfStatementfull()
 {
+	auto location = GetLocation();
 	if (Match(TokenType::If))
 	{
 		auto cond = ParenthesizedExpression();
@@ -810,7 +836,9 @@ ExpressionPtr Parser::IfStatementfull()
 		{
 			elseBody = Statement();
 		}
-		return IPLMakeSharePtr<::IfStatement>(cond, ifBody, elseBody);
+		auto is = IPLMakeSharePtr<::IfStatement>(cond, ifBody, elseBody);
+		is->SetLocation(location.Line, location.Column);
+		return is;
 	}
 	return nullptr;
 }
@@ -868,18 +896,22 @@ ExpressionPtr Parser::DoStatement()
 
 ExpressionPtr Parser::WhileStatement()
 {
+	auto location = GetLocation();
 	if (Match(TokenType::While))
 	{
 		auto cond = ParenthesizedExpression();
 		auto body = Statement();
 		auto isDoWhile = false;
-		return IPLMakeSharePtr<::WhileStatement>(cond, body, isDoWhile);
+		auto ws = IPLMakeSharePtr<::WhileStatement>(cond, body, isDoWhile);
+		ws->SetLocation(location.Line, location.Column);
+		return ws;
 	}
 	return nullptr;
 }
 
 ExpressionPtr Parser::ForStatement()
 {
+	auto location = GetLocation();
 	if (Match(TokenType::For))
 	{
 		if (!Match(TokenType::LeftParen))
@@ -907,7 +939,9 @@ ExpressionPtr Parser::ForStatement()
 			assert(false);
 		}
 		auto body = Statement();
-		return IPLMakeSharePtr<::ForStatement>(initializer, cond, iteration, body);
+		auto fs = IPLMakeSharePtr<::ForStatement>(initializer, cond, iteration, body);
+		fs->SetLocation(location.Line, location.Column);
+		return fs;
 	}
 	return nullptr;
 }
@@ -1047,7 +1081,7 @@ ExpressionPtr Parser::FunctionDefinition()
 		}
 		return nullptr;
 	};
-
+	auto location = GetLocation();
 	if (Match(TokenType::Function))
 	{
 		if (Match(TokenType::Identifier))
@@ -1058,7 +1092,9 @@ ExpressionPtr Parser::FunctionDefinition()
 			{
 				if (auto body = Body())
 				{
-					return IPLMakeSharePtr<FunctionDeclaration>(name, identifiers, body);
+					auto fd = IPLMakeSharePtr<FunctionDeclaration>(name, identifiers, body);
+					fd->SetLocation(location.Line, location.Column);
+					return fd;
 				}
 				else
 				{
