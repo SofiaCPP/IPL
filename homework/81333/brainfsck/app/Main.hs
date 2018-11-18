@@ -2,15 +2,13 @@
 
 module Main where
 
-import           Control.Monad.IO.Class
-import           System.Console.Haskeline
-import           System.Environment       (getArgs)
+import           System.Environment    (getArgs)
 
-import qualified Data.ByteString.Char8    as B
+import qualified Data.ByteString.Char8 as B
 
-import           Lib                      (blocks)
+import           Lib                   (blocks)
 
-import           Text.Brainfsck.Parser    (parseText)
+import           Text.Brainfsck.Parser (parseText)
 import           Text.Brainfsck.Types
 
 main :: IO ()
