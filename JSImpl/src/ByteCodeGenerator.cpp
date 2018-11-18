@@ -33,7 +33,8 @@ private:
 	{
 		enum Type : char
 		{
-			ADD,
+			FIRST = 0,
+			ADD = FIRST,
 			SUB,
 			MUL,
 			DIV,
@@ -72,6 +73,7 @@ private:
 			STRING,
 			HALT,
 			DEBUG,
+			LAST = DEBUG
 		};
 
 		Type Descriptor;
@@ -91,6 +93,7 @@ private:
 
 	void PushConst(double c);
 	IPLString CreateRegister();
+	bool CheckOpCode(Instruction::Type opcode) { return opcode >= Instruction::Type::FIRST && opcode <= Instruction::Type::LAST; }
 private:
 	IPLVector<IPLString> m_RegisterTable;
 	IPLVector<Instruction> m_Code;
@@ -104,6 +107,7 @@ private:
 
 size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, const IPLString& arg0, const IPLString& arg1, const IPLString& arg2)
 {
+	assert(CheckOpCode(opcode));
 	Instruction ins;
 	ins.Descriptor = opcode;
 	ins.Args[0] = arg0;
@@ -115,6 +119,7 @@ size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, const IPLStr
 
 size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, size_t Address)
 {
+	assert(CheckOpCode(opcode));
 	Instruction ins;
 	ins.Descriptor = opcode;
 	ins.Values.Address[0] = Address;
@@ -124,6 +129,7 @@ size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, size_t Addre
 
 size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, int Int)
 {
+	assert(CheckOpCode(opcode));
 	Instruction ins;
 	ins.Descriptor = opcode;
 	ins.Values.Int[0] = Int;
@@ -133,6 +139,7 @@ size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, int Int)
 
 size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, const IPLString& arg0, size_t Address)
 {
+	assert(CheckOpCode(opcode));
 	Instruction ins;
 	ins.Descriptor = opcode;
 	ins.Args[0] = arg0;
@@ -143,6 +150,7 @@ size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, const IPLStr
 
 size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, const IPLString& arg0, double value)
 {
+	assert(CheckOpCode(opcode));
 	Instruction ins;
 	ins.Descriptor = opcode;
 	ins.Args[0] = arg0;
@@ -291,10 +299,8 @@ void ByteCodeGenerator::Visit(BinaryExpression* e)
 
 void ByteCodeGenerator::Visit(IfStatement* e)
 {
-	Instruction current;
 	e->GetCondition()->Accept(*this);
 	auto ifAddress = PushInstruction(Instruction::Type::JMPF, m_RegisterStack.top(), size_t(0));
-	m_Code.push_back(current);
 
 	e->GetIfStatement()->Accept(*this);
 
@@ -305,8 +311,8 @@ void ByteCodeGenerator::Visit(IfStatement* e)
 		e->GetElseStatement()->Accept(*this);
 
 		// Patching
-		m_Code[ifAddress].Values.Address[0] = blockEndAddress;
-		m_Code[blockEndAddress - 1].Values.Address[0] = m_Code.size();
+		m_Code[ifAddress].Values.Address[0] = blockEndAddress + 1;
+		m_Code[blockEndAddress].Values.Address[0] = m_Code.size();
 	}
 	else
 	{
