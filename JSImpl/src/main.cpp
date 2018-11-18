@@ -5,9 +5,13 @@
 #include "ByteCodeGenerator.h"
 #include <iostream>
 #include <cstring>
-#include <Windows.h>
+
 #include <sstream>
 #include <iterator>
+
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
 
 void RunParseCalc()
 {
@@ -68,7 +72,6 @@ void InteractiveInterpreter()
 
 void Generate()
 {
-	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	IPLVector<Token> tokens;
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
 	/*Tokenize("var a; if(a < 4) { a = 8; if(a < 7) {var b = 4;}} else { a = 2} ", tokens);*/
@@ -79,14 +82,17 @@ void Generate()
 						"}";
 	Tokenize(source.c_str(), tokens);
 
-	std::istringstream asmb(GenerateByteCode(Parse(tokens), source,
-		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, true)));
-	//sets the color to intense red on blue background
+	auto asmb = GenerateByteCode(Parse(tokens), source,
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, true));
 
-	while (asmb.good())
+	//sets the color to intense red on blue background
+#if defined(_WIN32)
+	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	std::istringstream asmbStream(asmb);
+	while (asmbStream.good())
 	{
 		IPLString it;
-		std::getline(asmb, it);
+		std::getline(asmbStream, it);
 		if (it[0] == 'D')
 		{
 			SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN| BACKGROUND_BLUE | FOREGROUND_INTENSITY);
@@ -103,6 +109,9 @@ void Generate()
 		}
 		SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 	}
+#else
+	std::cout << asmb;
+#endif
 }
 
 int main()
