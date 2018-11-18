@@ -110,6 +110,7 @@ struct Token
 {
 	TokenType Type;
 	unsigned Line;
+	unsigned Column;
 	IPLString Lexeme;
 	double Number;
 };
