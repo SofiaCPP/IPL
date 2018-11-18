@@ -1,0 +1,9 @@
+The program in brainfuck is stored in "input.file". The program can be changed
+to any valid program in brainfuck. 
+To use the interpreter:
+
+1. You need to build it:
+$ make
+
+2. Run the interpreter:
+$ ./brainfuck
