@@ -6,6 +6,13 @@
 #include <iostream>
 #include <cstring>
 
+#include <sstream>
+#include <iterator>
+
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
+
 void RunParseCalc()
 {
 	IPLVector<Token> tokens;
@@ -68,8 +75,43 @@ void Generate()
 	IPLVector<Token> tokens;
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
 	/*Tokenize("var a; if(a < 4) { a = 8; if(a < 7) {var b = 4;}} else { a = 2} ", tokens);*/
-	Tokenize("var i = 0; for (var j = 0; j < 10; j = j + 1) { i = i + j; }", tokens);
-	std::cout << GenerateByteCode(Parse(tokens));
+	IPLString source =  "var i = 0; \n"
+						"for (var j = 0; j < 10; j++)\n"
+						"{\n"
+						"	i = i + j;\n"
+						"}";
+	Tokenize(source.c_str(), tokens);
+
+	auto asmb = GenerateByteCode(Parse(tokens), source,
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, true));
+
+	//sets the color to intense red on blue background
+#if defined(_WIN32)
+	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	std::istringstream asmbStream(asmb);
+	while (asmbStream.good())
+	{
+		IPLString it;
+		std::getline(asmbStream, it);
+		if (it[0] == 'D')
+		{
+			SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN| BACKGROUND_BLUE | FOREGROUND_INTENSITY);
+			auto dd = it.find("@@=>");
+			std::cout << it.substr(0, dd);
+			SetConsoleTextAttribute(hStdout, FOREGROUND_RED | BACKGROUND_BLUE | FOREGROUND_INTENSITY);
+			std::cout << it.substr(dd, 4);
+			SetConsoleTextAttribute(hStdout, FOREGROUND_GREEN | BACKGROUND_BLUE | FOREGROUND_INTENSITY);
+			std::cout << it.substr(dd + 4, it.size()) << std::endl;
+		}
+		else
+		{
+			std::cout << it << std::endl;
+		}
+		SetConsoleTextAttribute(hStdout, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+	}
+#else
+	std::cout << asmb;
+#endif
 }
 
 int main()
@@ -78,7 +120,7 @@ int main()
 	//InteractiveInterpreter();
 	Generate();
 #if defined(_WIN32)
-	std::system("pause");
+	//std::system("pause");
 #endif
 	return 0;
 }
