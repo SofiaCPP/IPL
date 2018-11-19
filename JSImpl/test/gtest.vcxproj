@@ -21,11 +21,13 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -114,16 +116,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="googletest\googletest\include\gtest\gtest_prod.h" />
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-death-test.h" />
     <ClInclude Include="googletest\googletest\include\gtest\gtest-message.h" />
     <ClInclude Include="googletest\googletest\include\gtest\gtest-param-test.h" />
-    <ClInclude Include="googletest\googletest\include\gtest\gtest-test-part.h" />
     <ClInclude Include="googletest\googletest\include\gtest\gtest-printers.h" />
-    <ClInclude Include="googletest\googletest\include\gtest\gtest-typed-test.h" />
     <ClInclude Include="googletest\googletest\include\gtest\gtest-spi.h" />
-    <ClInclude Include="googletest\googletest\include\gtest\gtest_pred_impl.h" />
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-test-part.h" />
+    <ClInclude Include="googletest\googletest\include\gtest\gtest-typed-test.h" />
     <ClInclude Include="googletest\googletest\include\gtest\gtest.h" />
-    <ClInclude Include="googletest\googletest\include\gtest\gtest-death-test.h" />
+    <ClInclude Include="googletest\googletest\include\gtest\gtest_pred_impl.h" />
+    <ClInclude Include="googletest\googletest\include\gtest\gtest_prod.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="googletest\googletest\src\gtest-all.cc">

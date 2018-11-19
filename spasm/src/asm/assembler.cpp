@@ -18,24 +18,64 @@ void Assembler::assemble()
 {
     Lexer::Token token = _tokenizer->next_token();
 
-    while (token.type() != Lexer::Token::endinput)
+    while (token.type() != Lexer::Token::EndInput)
     {
-        switch (token.type())
+        const auto type = token.type();
+        if (type >= Lexer::Token::_NotOpCodeBegin)
         {
-            case Lexer::Token::ident:
-                assemble_identifier(token);
-                break;
-            case Lexer::Token::label:
+            switch (token.type())
+            {
+                case Lexer::Token::Ident:
+                    assemble_identifier(token);
+                    break;
+                case Lexer::Token::Label:
+                    token = _tokenizer->next_token();
+                    assert(token.type() == Lexer::Token::Ident);
+                    _symbols.define(token.value_str(), _bytecode->size());
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            _bytecode->push_opcode((Bytecode_Stream::Opcode_t)token.type());
+            if (type >= Lexer::Token::_OneArgBegin)
+            {
+                if (type == Lexer::Token::Call || type == Lexer::Token::Jump)
+                {
+                    token = _tokenizer->next_token();
+                    assert(token.type() == Lexer::Token::Ident);
+                    assemble_identifier(token);
+                }
+                else
+                {
+                    token = _tokenizer->next_token();
+                    assert(token.type() == Lexer::Token::Integer);
+                    _bytecode->push_integer(token.value_int());
+                }
+            }
+            if (type >= Lexer::Token::_TwoArgBegin)
+            {
+                if (type == Lexer::Token::JumpF || type == Lexer::Token::JumpT)
+                {
+                    token = _tokenizer->next_token();
+                    assert(token.type() == Lexer::Token::Ident);
+                    assemble_identifier(token);
+                }
+                else
+                {
+                    token = _tokenizer->next_token();
+                    assert(token.type() == Lexer::Token::Integer);
+                    _bytecode->push_integer(token.value_int());
+                }
+            }
+            if (type >= Lexer::Token::_ThreeArgBegin)
+            {
                 token = _tokenizer->next_token();
-                assert(token.type() == Lexer::Token::ident);
-                _symbols.define(token.value_str(), _bytecode->size());
-                break;
-            case Lexer::Token::integer:
-            case Lexer::Token::xinteger:
+                assert(token.type() == Lexer::Token::Integer);
                 _bytecode->push_integer(token.value_int());
-                break;
-            default:
-                _bytecode->push_opcode((Bytecode_Stream::Opcode_t)token.type());
+            }
         }
 
         token = _tokenizer->next_token();

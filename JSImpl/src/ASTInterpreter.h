@@ -42,11 +42,11 @@ public:
     value_type& ModifyVariable(const IPLString& name);
     bool HasVariable(const IPLString& name);
 
-    class Printer
-    {
-    public:
-        virtual void PrintVariable(const char* name, double value) = 0;
-    };
+	class Printer
+	{
+	public:
+		virtual void PrintVariable(const char* name, double value) = 0;
+	};
 
     void Print(Printer& p);
 private:
