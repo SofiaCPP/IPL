@@ -22,20 +22,33 @@ Token::Token(Token::Token_type type,
              const char* end)
     : _type(type), _lineno(lineno)
 {
-    if (_type == Integer || _type == XInteger)
+    switch (_type)
     {
-        _value_int = strtol(start, NULL, 0);
-    }
-    else if (_type == Ident)
-    {
-        if (end)
+        case Integer:
+        case XInteger:
         {
-            _value_str = std::string(start, end);
+            _value_int = strtol(start, NULL, 0);
+            break;
         }
-        else
+        case FloatingPoint:
         {
-            _value_str = std::string(start);
+            _value_double = strtod(start, NULL);
+            break;
         }
+        case Ident:
+        {
+            if (end)
+            {
+                _value_str = std::string(start, end);
+            }
+            else
+            {
+                _value_str = std::string(start);
+            }
+            break;
+        }
+        default:
+            break;
     }
 }
 

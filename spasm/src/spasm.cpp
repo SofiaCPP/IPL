@@ -46,7 +46,6 @@ Spasm::RunResult Spasm::run()
         const auto instruction = m_ByteCode[m_PC++];
         const auto opcode = OpCodes(instruction & 0x3f);
         const auto size = instruction >> 6;
-        assert(size == 0 && "no long args yet");
         switch (opcode)
         {
             case OpCodes::Halt:
@@ -281,7 +280,7 @@ void Spasm::divide(reg_t a0, reg_t a1, reg_t a2)
 */
 void Spasm::modulus(reg_t a0, reg_t a1, reg_t a2)
 {
-    set_local(a0, int64_t(get_local(a1)) % int64_t(get_local(a2)));
+    set_local(a0, data_t(int64_t(get_local(a1)) % int64_t(get_local(a2))));
 }
 
 /*!
@@ -410,14 +409,60 @@ void Spasm::push_data(data_t data)
 
 reg_t Spasm::read_reg(size_t size)
 {
-    assert(size == 0);
-    return m_ByteCode[m_PC++];
+    switch (size)
+    {
+        case 0:
+            return m_ByteCode[m_PC++];
+        case 1:
+        {
+            auto result = *reinterpret_cast<int16_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 2;
+            return result;
+        }
+        case 2:
+        {
+            auto result = *reinterpret_cast<int32_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 4;
+            return result;
+        }
+        case 3:
+        {
+            auto result = *reinterpret_cast<int64_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 8;
+            return result;
+        }
+    }
+    assert(false && "not reached");
+    return 0;
 }
 
 data_t Spasm::read_number(size_t size)
 {
-    assert(size == 0);
-    return m_ByteCode[m_PC++];
+    switch (size)
+    {
+        case 0:
+            return m_ByteCode[m_PC++];
+        case 1:
+        {
+            auto result = *reinterpret_cast<int16_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 2;
+            return result;
+        }
+        case 2:
+        {
+            auto result = *reinterpret_cast<int32_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 4;
+            return result;
+        }
+        case 3:
+        {
+            auto result = *reinterpret_cast<double*>(&m_ByteCode[0] + m_PC);
+            m_PC += 8;
+            return result;
+        }
+    }
+    assert(false && "not reached");
+    return 0;
 }
 
 }  // namespace SpasmImpl

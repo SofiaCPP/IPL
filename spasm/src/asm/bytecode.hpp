@@ -18,7 +18,8 @@ class Bytecode_Stream
 
     virtual ~Bytecode_Stream();
     virtual void push_opcode(Opcode_t) = 0;
-    virtual void push_integer(int) = 0;
+    virtual void push_integer(int, int size) = 0;
+    virtual void push_double(double) = 0;
     virtual void push_location(size_t) = 0;
     virtual void set_location(size_t, size_t) = 0;
     virtual size_t size() const = 0;
@@ -30,7 +31,8 @@ class Bytecode_File : public Bytecode_Stream
     Bytecode_File(const std::string&);
 
     virtual void push_opcode(Opcode_t);
-    virtual void push_integer(int);
+    virtual void push_integer(int, int size);
+    virtual void push_double(double) override;
 
    private:
     Bytecode_File(const Bytecode_File&);
@@ -45,7 +47,8 @@ class Bytecode_Memory : public Bytecode_Stream
 {
    public:
     virtual void push_opcode(Opcode_t);
-    virtual void push_integer(int);
+    virtual void push_integer(int, int) override;
+    virtual void push_double(double) override;
     virtual void push_location(size_t);
     virtual void set_location(size_t, size_t);
     virtual size_t size() const;

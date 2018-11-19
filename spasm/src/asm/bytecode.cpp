@@ -26,17 +26,17 @@ void Bytecode_File::push_opcode(Bytecode_Stream::Opcode_t opcode)
     push_byte(opcode);
 }
 
-void Bytecode_File::push_integer(int number)
+void Bytecode_File::push_integer(int number, int size)
 {
-    if (number <= 0xff)
-    {
-        push_byte((byte)number);
-    }
-    else
-    {
-        for (size_t i = 0; i < sizeof(int); ++i)
-            push_byte((number >> (i << 3)) & 0xff);
-    }
+    for (int i = 0; i < size; ++i)
+        push_byte((number >> (i << 3)) & 0xff);
+}
+
+void Bytecode_File::push_double(double number)
+{
+    auto bits = *reinterpret_cast<size_t*>(&number);
+    for (size_t i = 0; i < sizeof(size_t); ++i)
+        push_byte((bits >> (i << 3)) & 0xff);
 }
 
 void Bytecode_Memory::push_byte(Bytecode_Stream::byte byte)
@@ -49,17 +49,17 @@ void Bytecode_Memory::push_opcode(Bytecode_Stream::Opcode_t opcode)
     push_byte(opcode);
 }
 
-void Bytecode_Memory::push_integer(int number)
+void Bytecode_Memory::push_integer(int number, int size)
 {
-    if (number <= 0xff)
-    {
-        push_byte((byte)number);
-    }
-    else
-    {
-        for (size_t i = 0; i < sizeof(int); ++i)
-            push_byte((number >> (i << 3)) & 0xff);
-    }
+    for (int i = 0; i < size; ++i)
+        push_byte((number >> (i << 3)) & 0xff);
+}
+
+void Bytecode_Memory::push_double(double number)
+{
+    auto bits = *reinterpret_cast<size_t*>(&number);
+    for (size_t i = 0; i < sizeof(size_t); ++i)
+        push_byte((bits >> (i << 3)) & 0xff);
 }
 
 void Bytecode_Memory::set_location(size_t index, size_t location)
