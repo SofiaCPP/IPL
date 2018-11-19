@@ -281,7 +281,7 @@ void Spasm::divide(reg_t a0, reg_t a1, reg_t a2)
 */
 void Spasm::modulus(reg_t a0, reg_t a1, reg_t a2)
 {
-    set_local(a0, get_local(a1) % get_local(a2));
+    set_local(a0, int64_t(get_local(a1)) % int64_t(get_local(a2)));
 }
 
 /*!

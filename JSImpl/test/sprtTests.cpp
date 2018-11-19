@@ -81,7 +81,7 @@ TEST_F(SPRTTest, Div)
 	};
 
 	Run(bytecode, sizeof(bytecode));
-	ASSERT_EQ(Output.str(), "0");
+	ASSERT_EQ(Output.str(), "0.857143");
 }
 
 TEST_F(SPRTTest, Mod)
