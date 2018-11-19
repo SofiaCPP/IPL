@@ -105,7 +105,7 @@ void Assembler::assemble_identifier(const Lexer::Token& token)
     _bytecode->push_location(symbol->definition());
 }
 
-bool compile(std::istream& istr, Bytecode_Memory& bytecode)
+bool compile(std::istream& istr, Bytecode_Stream& bytecode)
 {
     Lexer::Tokenizer tokenizer(istr);
     Assembler assembler(tokenizer, bytecode);
