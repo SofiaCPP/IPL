@@ -8,8 +8,15 @@
 class Expression : public IPLEnableShared<Expression>
 {
 	public:
+		Expression() : m_Line((unsigned)-1), m_Column((unsigned)-1) {}
 		virtual ~Expression() {}
 		virtual void Accept(ExpressionVisitor& v) = 0;
+		unsigned GetLine() { return m_Line; };
+		unsigned GetColumn() { return m_Column; };
+		void SetLocation(unsigned l, unsigned c) { m_Line = l; m_Column = c; };
+	private:
+		unsigned m_Line = 0;
+		unsigned m_Column = 0;
 };
 
 #define EXPAND_ARGUMENT(type, name, def)\
