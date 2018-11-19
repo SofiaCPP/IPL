@@ -28,8 +28,15 @@ void Bytecode_File::push_opcode(Bytecode_Stream::Opcode_t opcode)
 
 void Bytecode_File::push_integer(int number)
 {
-    for (size_t i = 0; i < sizeof(int); ++i)
-        push_byte((number >> (i << 3)) & 0xff);
+    if (number <= 0xff)
+    {
+        push_byte((byte)number);
+    }
+    else
+    {
+        for (size_t i = 0; i < sizeof(int); ++i)
+            push_byte((number >> (i << 3)) & 0xff);
+    }
 }
 
 void Bytecode_Memory::push_byte(Bytecode_Stream::byte byte)
@@ -44,20 +51,41 @@ void Bytecode_Memory::push_opcode(Bytecode_Stream::Opcode_t opcode)
 
 void Bytecode_Memory::push_integer(int number)
 {
-    for (size_t i = 0; i < sizeof(int); ++i)
-        push_byte((number >> (i << 3)) & 0xff);
+    if (number <= 0xff)
+    {
+        push_byte((byte)number);
+    }
+    else
+    {
+        for (size_t i = 0; i < sizeof(int); ++i)
+            push_byte((number >> (i << 3)) & 0xff);
+    }
 }
 
 void Bytecode_Memory::set_location(size_t index, size_t location)
 {
-    for (size_t i = 0; i < sizeof(size_t); ++i)
-        _bytecode.at(index + i) = ((location >> (i << 3)) & 0xff);
+    if (location <= 0xff)
+    {
+        _bytecode[index] = (byte)location;
+    }
+    else
+    {
+        for (size_t i = 0; i < sizeof(size_t); ++i)
+            _bytecode.at(index + i) = ((location >> (i << 3)) & 0xff);
+    }
 }
 
 void Bytecode_Memory::push_location(size_t location)
 {
-    for (size_t i = 0; i < sizeof(size_t); ++i)
-        _bytecode.push_back((location >> (i << 3)) & 0xff);
+    if (location <= 0xff)
+    {
+        push_byte((byte)location);
+    }
+    else
+    {
+        for (size_t i = 0; i < sizeof(size_t); ++i)
+            _bytecode.push_back((location >> (i << 3)) & 0xff);
+    }
 }
 
 const Bytecode_Memory::Bytecode& Bytecode_Memory::bytecode() const

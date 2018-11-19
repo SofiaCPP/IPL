@@ -13,31 +13,8 @@ namespace ASM
 class Bytecode_Stream
 {
    public:
-    typedef unsigned char byte;
-    enum Opcode_t : byte
-    {
-        halt = 0,
-        push,
-        pop,
-        dup,
-        print,
-        read,
-        plus,
-        minus,
-        multiply,
-        divide,
-        modulus,
-        gotrue,
-        gofalse,
-        go,
-        call,
-        ret,
-        load,
-        store,
-        less,
-        lesseq
-    };
-
+    typedef int8_t byte;
+    typedef byte Opcode_t;
 
     virtual ~Bytecode_Stream();
     virtual void push_opcode(Opcode_t) = 0;
