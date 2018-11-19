@@ -14,6 +14,34 @@ Assembler::Assembler(Lexer::Tokenizer& tokenizer, Bytecode_Stream& bytecode)
 {
 }
 
+int get_arg_size(const Lexer::Token args[])
+{
+    int size = 0;
+    for (int i = 0; i < 3; ++i)
+    {
+        switch (args[i].type())
+        {
+            case Lexer::Token::Integer:
+            case Lexer::Token::XInteger:
+            {
+                if (args[i].value_int() > 0xff)
+                {
+                    size = std::max(size, 3);
+                }
+                break;
+            }
+            case Lexer::Token::FloatingPoint:
+            {
+                size = std::max(size, 3);
+                break;
+            }
+            default:
+                break;
+        }
+    }
+    return size;
+}
+
 void Assembler::assemble()
 {
     Lexer::Token token = _tokenizer->next_token();
@@ -39,42 +67,65 @@ void Assembler::assemble()
         }
         else
         {
-            _bytecode->push_opcode((Bytecode_Stream::Opcode_t)token.type());
+            Lexer::Token args[3];
             if (type >= Lexer::Token::_OneArgBegin)
             {
-                if (type == Lexer::Token::Call || type == Lexer::Token::Jump)
-                {
-                    token = _tokenizer->next_token();
-                    assert(token.type() == Lexer::Token::Ident);
-                    assemble_identifier(token);
-                }
-                else
-                {
-                    token = _tokenizer->next_token();
-                    assert(token.type() == Lexer::Token::Integer);
-                    _bytecode->push_integer(token.value_int());
-                }
+                args[0] = _tokenizer->next_token();
             }
             if (type >= Lexer::Token::_TwoArgBegin)
             {
-                if (type == Lexer::Token::JumpF || type == Lexer::Token::JumpT)
-                {
-                    token = _tokenizer->next_token();
-                    assert(token.type() == Lexer::Token::Ident);
-                    assemble_identifier(token);
-                }
-                else
-                {
-                    token = _tokenizer->next_token();
-                    assert(token.type() == Lexer::Token::Integer);
-                    _bytecode->push_integer(token.value_int());
-                }
+                args[1] = _tokenizer->next_token();
             }
             if (type >= Lexer::Token::_ThreeArgBegin)
             {
-                token = _tokenizer->next_token();
-                assert(token.type() == Lexer::Token::Integer);
-                _bytecode->push_integer(token.value_int());
+                args[2] = _tokenizer->next_token();
+            }
+            const auto size = get_arg_size(args);
+            _bytecode->push_opcode((size << 6) |
+                                   (Bytecode_Stream::Opcode_t)token.type());
+            const auto arg_size = 1 << size;
+
+            if (args[0].type() != Lexer::Token::NotUsed)
+            {
+                if (type == Lexer::Token::Call || type == Lexer::Token::Jump)
+                {
+                    assert(args[0].type() == Lexer::Token::Ident);
+                    assemble_identifier(args[0]);
+                }
+                else
+                {
+                    assert(args[0].type() == Lexer::Token::Integer);
+                    _bytecode->push_integer(args[0].value_int(), arg_size);
+                }
+            }
+            if (args[1].type() != Lexer::Token::NotUsed)
+            {
+                if (type == Lexer::Token::JumpF || type == Lexer::Token::JumpT)
+                {
+                    assert(args[1].type() == Lexer::Token::Ident);
+                    assemble_identifier(args[1]);
+                }
+                else
+                {
+                    auto& token = args[1];
+                    if (token.type() == Lexer::Token::Integer)
+                    {
+                        _bytecode->push_integer(token.value_int(), arg_size);
+                    }
+                    else if (token.type() == Lexer::Token::FloatingPoint)
+                    {
+                        _bytecode->push_double(token.value_double());
+                    }
+                    else
+                    {
+                        assert(false && "expected a number type");
+                    }
+                }
+            }
+            if (args[2].type() != Lexer::Token::NotUsed)
+            {
+                assert(args[2].type() == Lexer::Token::Integer);
+                _bytecode->push_integer(args[2].value_int(), arg_size);
             }
         }
 

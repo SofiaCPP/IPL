@@ -45,6 +45,7 @@ class Token
         // Register,
         Integer,
         XInteger,
+        FloatingPoint,
         EndInput,
         NotUsed
     };
@@ -60,6 +61,8 @@ class Token
     int value_int() const;
     void set_int(int v) { _value_int = v; }
 
+    double value_double() const { return _value_double; }
+
     const std::string& value_str() const;
 
    private:
@@ -68,6 +71,7 @@ class Token
     size_t _lineno;
 
     int _value_int;
+    double _value_double;
 
     std::string _value_str;
 };
