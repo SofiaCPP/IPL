@@ -1,0 +1,180 @@
+---
+title: "Values in the VM"
+date: 2018-11-21T17:45:53+03:00
+draft: false
+outputs: ["Reveal"]
+---
+
+# Values in the VM
+
+- Languages and VMs
+- NanBoxing
+- Boxing
+
+---
+
+# Language Semantics and VM
+
+---
+
+# Values in the VM?
+
+    function add(a, b) {
+        return a + b
+    }
+
+
+---
+
+    add r1 a1 a2
+    ret r1
+
+---
+
+- must work for numbers
+- must work for strings
+- must work for strings and numbers mixed
+- can work for objects and arrays
+    - if the target language has semantics for that
+
+---
+
+## How do we support that?
+
+C++ is statically type, the value in the registers can have a single C++ type
+
+---
+
+## Axiom of CS
+
+> *Every* problem can be solved by adding another level of indirection.
+
+> ..., except too many indirections.
+
+---
+
+### Polymorhism
+
+- C++ way for type erasure
+
+- Base class with virtual methods
+
+---
+
+    struct Value {
+        virtual ValuePtr Add(ValuePtr rhs) const = 0;
+        // ...
+    }
+
+    struct NumberValue : Value {
+        double m_Number;
+    }
+
+---
+
+#### Performance
+
+- `sizeof(NumberValue)` - 16 B - 100% overhead
+    - pointer + double
+- cache miss on every access to the number
+- virtual call for adding two numbers
+
+- It is so inefficient, that almost nobody does it this way
+
+---
+### What we can do?
+
+---
+
+    struct Value {
+        bool m_IsDouble;
+        union {
+            double as_Double;
+            void* as_Pointer;
+        } m_Value;
+    }
+
+---
+
+- still 100% memory overhead because m_Value will be aligned to 8 bytes
+    - will not fit in a register
+    - more cache misses
+
+---
+### Doubles and IEEE 
+
+A double has 64-bits, from least to most significant:
+
+1. 52 bits - mantissa
+    - a leading 1 bit set to 1 is assumed, so the precision is 53 bits
+2. 11 bits - exponent - from 0 to 2047
+3. 1 bit - sign
+
+Value = Mantissa * 2 ^ (exponent - 1023)
+
+---
+
+Not all possible values are actually valid numbers.
+
+- Infinity - exponent is 2047, mantissa - 0
+
+
+---
+
+    double r = sqrt(-1);
+
+ NaN - Not a Number
+
+- sign bit is set
+- exponent is all 1 (2047)
+- most significant bit of the mantissa is 1
+- the rest 51 bits do not matter - it is always a NaN
+    - the CPU always sets them to 0
+
+
+---
+# The rest 51 bits do not matter
+
+- so we can (ab)use them to store our pointers!
+- but one pointer is 64 bits?
+
+---
+
+> For x86_64 / arm64 the addresses above 2^48 are reserved and can't be used
+> from user applications
+
+---
+
+- 48 bits for the pointer
+- 3 bits for ... type
+
+---
+### Type
+
+enum ValueType {
+    Number = 0,
+    Null = 1,
+    Undefined = 2,
+    Boolean = 3,
+    String = 4,
+    Array = 5,
+    Object = 6,
+    Function= 7,
+};
+
+---
+#### Why Number is 0?
+
+- so that we treat regular NaNs as numbers.
+
+
+
+---
+
+### Boxing
+
+---
+
+---
+
+# ?
