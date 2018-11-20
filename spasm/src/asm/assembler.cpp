@@ -24,9 +24,29 @@ int get_arg_size(const Lexer::Token args[])
             case Lexer::Token::Integer:
             case Lexer::Token::XInteger:
             {
-                if (args[i].value_int() > 0xff)
+                if (args[i].value_int() > 0xffffffff)
                 {
                     size = std::max(size, 3);
+                }
+                else if (args[i].value_int() > 0xffff)
+                {
+                    size = std::max(size, 2);
+                }
+                else if (args[i].value_int() > 0xff)
+                {
+                    size = std::max(size, 1);
+                }
+                else if (args[i].value_int() < -0xffffffff)
+                {
+                    size = std::max(size, 3);
+                }
+                else if (args[i].value_int() < -0xffff)
+                {
+                    size = std::max(size, 2);
+                }
+                else if (args[i].value_int() < -0xff)
+                {
+                    size = std::max(size, 1);
                 }
                 break;
             }
