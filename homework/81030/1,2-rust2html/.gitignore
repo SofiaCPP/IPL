@@ -2,4 +2,7 @@ a.out
 lex.yy.c
 
 /rust2html
+/rust2html-prettyprint
 /example.html
+/example-chains.html
+/example-ugly.html

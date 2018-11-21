@@ -1,8 +1,13 @@
-%option nounistd
 %option noyywrap
 %option stack
 
 %{
+#ifdef _WIN32
+#define isatty _isatty
+#else
+#include <unistd.h>
+#endif
+
 #include <stdbool.h>
 
 #define INDENTATION "    "

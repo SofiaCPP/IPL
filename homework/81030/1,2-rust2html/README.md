@@ -10,23 +10,23 @@ On Unix-like OS:
 
 * the regular highlighter:
 
-    flex rust2html.l
-    cc -o rust2html lex.yy.c
+        flex rust2html.l
+        cc -o rust2html lex.yy.c
 
 * the extended (pretty-printing) highlighter:
 
-    flex rust2html-prettyprint.l
-    cc -o rust2html-prettyprint lex.yy.c
+        flex rust2html-prettyprint.l
+        cc -o rust2html-prettyprint lex.yy.c
 
 Using the provided `Makefile`:
 
 * the regular highlighter:
 
-    make rust2html
+        make rust2html
 
 * the extended (pretty-printing) highlighter:
 
-    make rust2html-prettyprint
+        make rust2html-prettyprint
 
 ## Usage
 
