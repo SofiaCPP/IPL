@@ -167,13 +167,65 @@ enum ValueType {
 
 - so that we treat regular NaNs as numbers.
 
+---
+#### NanBoxing
 
+
+1. Need to split easily `double` to bits - use union to share the memory between
+   a `double` and structs with bitfields.
+
+    union {
+        double as_double;
+        NanPointer as_pointer;
+        CheckType to_check;
+
+    } m_value;
 
 ---
 
-### Boxing
+    struct NanPointer
+    {
+        // order from least to most significant bits
+        // bit field - has type size_t, but only 48 bits
+        size_t pointer:48;
+        size_t tag:3; // 0 for a real nan and non zero for out type
+        size_t nan:13; // must be all 1s to force a nan
+    };
 
 ---
+
+    // Used to check whether the value is a double or not
+    struct CheckType
+    {
+        size_t payload: 48;
+        size_t check:16;
+    };
+
+---
+
+    bool is_double() const
+    {
+        // If any of the least significant bits is non-zero,
+        // then this is not a normal double or a NaN value
+        return m_value.to_check.check <= 0xFFF8;
+    }
+
+    double get_double() const
+    {
+        assert(is_double());
+        return m_value.as_double;
+    }
+
+---
+
+    int get_tag() {
+        assert(!is_double());
+        return m_value.as_pointer.tag;
+    }
+
+    void* get_pointer() const {
+        return (void*)(size_t) m_value.as_pointer.pointer;
+    }
 
 ---
 
