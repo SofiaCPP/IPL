@@ -9,11 +9,20 @@ outputs: ["Reveal"]
 
 - Languages and VMs
 - NanBoxing
-- Boxing
 
 ---
 
 # Language Semantics and VM
+
+The VM implementation depends a lot on language semantics
+
+- typing - static or dynamic?
+- number types - integers and floating point
+- strings - immutability
+
+---
+
+That is why it is almost every language has its own VM.
 
 ---
 
@@ -151,16 +160,16 @@ Not all possible values are actually valid numbers.
 ---
 ### Type
 
-enum ValueType {
-    Number = 0,
-    Null = 1,
-    Undefined = 2,
-    Boolean = 3,
-    String = 4,
-    Array = 5,
-    Object = 6,
-    Function= 7,
-};
+    enum ValueType {
+        Number = 0,
+        Null = 1,
+        Undefined = 2,
+        Boolean = 3,
+        String = 4,
+        Array = 5,
+        Object = 6,
+        Function= 7,
+    };
 
 ---
 #### Why Number is 0?
@@ -171,8 +180,8 @@ enum ValueType {
 #### NanBoxing
 
 
-1. Need to split easily `double` to bits - use union to share the memory between
-   a `double` and structs with bitfields.
+Need to split easily `double` to bits - use union to share the memory between a
+`double` and structs with bitfields.
 
     union {
         double as_double;
@@ -226,6 +235,64 @@ enum ValueType {
     void* get_pointer() const {
         return (void*)(size_t) m_value.as_pointer.pointer;
     }
+
+---
+
+#?
+
+---
+
+## Strings
+
+Strings in JavaScript are immutable, which means that changing one string
+returns another.
+
+
+---
+
+#### String interning
+
+> A method of storing only one instance of any given string, which is immutable.
+
+This means that there is only one copy of `"answer"` inside the VM
+
+---
+
+Comparing strings for equality becomes very fast.
+
+> Two strings are the same if and only if their pointers are the same.
+
+---
+
+    struct StringValue
+    {
+        std::string Value;
+        // extra data
+        // int RefCount;
+        // int GCFlags;
+
+    }
+
+---
+    class Spasm
+    {
+        typedef std::unordered_set<StringValue> StringTable;
+
+        StringTable m_Strings;
+    };
+
+---
+
+    Value Spasm::AllocateString(const char* s) {
+        auto current = m_Strings.find(s);
+        if (current != m_Strings.end())
+        {
+            return Value(ValueType::String, &(*current));
+        }
+        auto insert = m_Strings.insert(StringValue(s));
+        return Value(ValueType::String, &(*insert.second));
+    }
+
 
 ---
 
