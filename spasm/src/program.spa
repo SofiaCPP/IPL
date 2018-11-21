@@ -1,0 +1,12 @@
+read
+label next
+dup
+push 1
+<
+jmpt bye
+push 1
+-
+dup
+print
+jmp next
+label bye

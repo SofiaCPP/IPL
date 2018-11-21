@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="empty.cpp" />
+    <ClCompile Include="LexerTests.cpp" />
+    <ClCompile Include="ParserTests.cpp" />
+    <ClCompile Include="sprtTests.cpp" />
+  </ItemGroup>
+</Project>

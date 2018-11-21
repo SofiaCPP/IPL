@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\asm">
+      <UniqueIdentifier>{6A9848A9-D677-C744-DF8F-521B4BEE2DA6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\asm\assembler.cpp">
+      <Filter>src\asm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\asm\bytecode.cpp">
+      <Filter>src\asm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\asm\lexer.cpp">
+      <Filter>src\asm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\asm\symbol.cpp">
+      <Filter>src\asm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\asm\token.cpp">
+      <Filter>src\asm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\asm\tokenizer.cpp">
+      <Filter>src\asm</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

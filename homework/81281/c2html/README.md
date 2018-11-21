@@ -1,5 +1,16 @@
-# Homework 1
-Create a xxx2html syntax highlighter for a language of your choice.
+# Homework 1 + 2
+## Create a xxx2html syntax highlighter for a language of your choice. 
++ ~~In this case it is C.~~
+## Extend the xxx2html tool to:
+
++ ~~Produce pretty-printed html.~~
+
++ **TODO:** bonus: support line length limit
+
++ **TODO:** Produce html where functions have their background colored depending on cyclomatic complexity ranging from light green to light read.
+
++ ~~Produce html where control structures can be collapsed.~~
+
 
 ### How to install and use SWI-Prolog
 
@@ -10,13 +21,15 @@ Create a xxx2html syntax highlighter for a language of your choice.
 + [Command line options](http://www.swi-prolog.org/pldoc/man?section=cmdline)
 
 ### Added bash script for executing program after successful installation of SWI-Prolog on a Unix or Unix-like variants
-[Script](./executeProgram.sh)
+
+[Script](./c2htmlrun.sh)
 
 ### If you are going to install SWI-Prolog on Windows 
-+ You can omit lines 4 to 16 from c2html.pl.
++ You can omit lines 6 to 17 from c2html.pl.
 + Afterward in order to execute the program you can call the main predicate and give it a valid string name of file.
 
-For example **main("test.c").**
+For example **mainy("test.c").**
+
 
 ### For the curious who want to find about DCG Grammar rules :
 
