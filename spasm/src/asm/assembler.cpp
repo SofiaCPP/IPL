@@ -36,7 +36,7 @@ int get_arg_size(const Lexer::Token args[])
                 {
                     size = std::max(size, 1);
                 }
-                else if (args[i].value_int() < -0xffffffff)
+                else if (args[i].value_int() < -0xffffffffLL)
                 {
                     size = std::max(size, 3);
                 }
@@ -101,8 +101,8 @@ void Assembler::assemble()
                 args[2] = _tokenizer->next_token();
             }
             const auto size = get_arg_size(args);
-            _bytecode->push_opcode((size << 6) |
-                                   (Bytecode_Stream::Opcode_t)token.type());
+            _bytecode->push_opcode((Bytecode_Stream::Opcode_t)((size << 6) |
+                                   token.type()));
             const auto arg_size = 1 << size;
 
             if (args[0].type() != Lexer::Token::NotUsed)
@@ -127,14 +127,13 @@ void Assembler::assemble()
                 }
                 else
                 {
-                    auto& token = args[1];
-                    if (token.type() == Lexer::Token::Integer)
+                    if (args[1].type() == Lexer::Token::Integer)
                     {
-                        _bytecode->push_integer(token.value_int(), arg_size);
+                        _bytecode->push_integer(args[1].value_int(), arg_size);
                     }
-                    else if (token.type() == Lexer::Token::FloatingPoint)
+                    else if (args[1].type() == Lexer::Token::FloatingPoint)
                     {
-                        _bytecode->push_double(token.value_double());
+                        _bytecode->push_double(args[1].value_double());
                     }
                     else
                     {
