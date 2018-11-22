@@ -57,7 +57,7 @@ Token::Token_type Token::type() const
     return _type;
 }
 
-int Token::value_int() const
+int64_t Token::value_int() const
 {
     return _value_int;
 }

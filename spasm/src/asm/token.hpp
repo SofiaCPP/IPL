@@ -58,8 +58,8 @@ class Token
 
     size_t lineno() const;
 
-    int value_int() const;
-    void set_int(int v) { _value_int = v; }
+    int64_t value_int() const;
+    void set_int(int64_t v) { _value_int = v; }
 
     double value_double() const { return _value_double; }
 
@@ -70,7 +70,7 @@ class Token
 
     size_t _lineno;
 
-    int _value_int;
+    int64_t _value_int;
     double _value_double;
 
     std::string _value_str;

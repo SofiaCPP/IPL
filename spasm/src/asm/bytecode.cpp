@@ -26,7 +26,20 @@ void Bytecode_File::push_opcode(Bytecode_Stream::Opcode_t opcode)
     push_byte(opcode);
 }
 
-void Bytecode_File::push_integer(int number, int size)
+union DoubleToBits
+{
+    double as_double;
+    int64_t as_bits;
+};
+
+int64_t to_bits(double d)
+{
+    DoubleToBits v;
+    v.as_double = d;
+    return v.as_bits;
+};
+
+void Bytecode_File::push_integer(int64_t number, int size)
 {
     for (int i = 0; i < size; ++i)
         push_byte((number >> (i << 3)) & 0xff);
@@ -34,7 +47,7 @@ void Bytecode_File::push_integer(int number, int size)
 
 void Bytecode_File::push_double(double number)
 {
-    auto bits = *reinterpret_cast<size_t*>(&number);
+    auto bits = to_bits(number);
     for (size_t i = 0; i < sizeof(size_t); ++i)
         push_byte((bits >> (i << 3)) & 0xff);
 }
@@ -49,7 +62,7 @@ void Bytecode_Memory::push_opcode(Bytecode_Stream::Opcode_t opcode)
     push_byte(opcode);
 }
 
-void Bytecode_Memory::push_integer(int number, int size)
+void Bytecode_Memory::push_integer(int64_t number, int size)
 {
     for (int i = 0; i < size; ++i)
         push_byte((number >> (i << 3)) & 0xff);
@@ -57,7 +70,7 @@ void Bytecode_Memory::push_integer(int number, int size)
 
 void Bytecode_Memory::push_double(double number)
 {
-    auto bits = *reinterpret_cast<size_t*>(&number);
+    auto bits = to_bits(number);
     for (size_t i = 0; i < sizeof(size_t); ++i)
         push_byte((bits >> (i << 3)) & 0xff);
 }
