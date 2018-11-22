@@ -253,8 +253,18 @@ IDENTIFIER      {
 
                                 continue;
                         }
+DIGIT* ":"         {
+                                token_start = cursor;
 
-"\n"            {
+                                continue;
+                        }
+"#" .* "\n"				{
+                                ++lineno;
+                                token_start = cursor;
+
+                                continue;
+                        }
+"\n"		            {
                                 ++lineno;
                                 token_start = cursor;
 

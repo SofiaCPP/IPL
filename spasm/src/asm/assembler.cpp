@@ -101,8 +101,8 @@ void Assembler::assemble()
                 args[2] = _tokenizer->next_token();
             }
             const auto size = get_arg_size(args);
-            _bytecode->push_opcode((Bytecode_Stream::Opcode_t)((size << 6) |
-                                   token.type()));
+            _bytecode->push_opcode(
+                (Bytecode_Stream::Opcode_t)((size << 6) | token.type()));
             const auto arg_size = 1 << size;
 
             if (args[0].type() != Lexer::Token::NotUsed)

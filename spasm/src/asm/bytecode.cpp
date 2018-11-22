@@ -26,8 +26,7 @@ void Bytecode_File::push_opcode(Bytecode_Stream::Opcode_t opcode)
     push_byte(opcode);
 }
 
-union DoubleToBits
-{
+union DoubleToBits {
     double as_double;
     int64_t as_bits;
 };
