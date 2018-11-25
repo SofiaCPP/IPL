@@ -76,7 +76,7 @@ void Generate()
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
 	/*Tokenize("var a; if(a < 4) { a = 8; if(a < 7) {var b = 4;}} else { a = 2} ", tokens);*/
 	IPLString source =  "var i = 0; \n"
-						"for (var j = 0; j < 10; j++)\n"
+		"for (var j = 0; 10 >= j; j++)\n"
 						"{\n"
 						"	i = i + j;\n"
 						"}";

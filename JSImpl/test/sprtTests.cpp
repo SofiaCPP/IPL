@@ -127,7 +127,6 @@ TEST_F(SPRTTest, Less)
 	ASSERT_EQ(Output.str(), "100");
 }
 
-
 TEST_F(SPRTTest, LessEq)
 {
 	Spasm::byte bytecode[] = {
@@ -143,6 +142,76 @@ TEST_F(SPRTTest, LessEq)
 
 	Run(bytecode, sizeof(bytecode));
 	ASSERT_EQ(Output.str(), "101");
+}
+
+TEST_F(SPRTTest, Greater)
+{
+	Spasm::byte bytecode[] = {
+		OpCodes::Const, 1, 6,
+		OpCodes::Const, 2, 7,
+		OpCodes::Greater, 3, 1, 2,
+		OpCodes::Greater, 4, 2, 1,
+		OpCodes::Greater, 5, 2, 2,
+		OpCodes::Print, 3,
+		OpCodes::Print, 4,
+		OpCodes::Print, 5,
+	};
+
+	Run(bytecode, sizeof(bytecode));
+	ASSERT_EQ(Output.str(), "010");
+}
+
+TEST_F(SPRTTest, GreaterEq)
+{
+	Spasm::byte bytecode[] = {
+		OpCodes::Const, 1, 6,
+		OpCodes::Const, 2, 7,
+		OpCodes::GreaterEq, 3, 1, 2,
+		OpCodes::GreaterEq, 4, 2, 1,
+		OpCodes::GreaterEq, 5, 2, 2,
+		OpCodes::Print, 3,
+		OpCodes::Print, 4,
+		OpCodes::Print, 5,
+	};
+
+	Run(bytecode, sizeof(bytecode));
+	ASSERT_EQ(Output.str(), "011");
+}
+
+TEST_F(SPRTTest, Equal)
+{
+	Spasm::byte bytecode[] = {
+		OpCodes::Const, 1, 6,
+		OpCodes::Const, 2, 7,
+		OpCodes::Const, 3, 6,		
+		OpCodes::Equal, 4, 2, 1,
+		OpCodes::Equal, 5, 2, 2,
+		OpCodes::Equal, 6, 1, 3,		
+		OpCodes::Print, 4,
+		OpCodes::Print, 5,
+		OpCodes::Print, 6,
+	};
+
+	Run(bytecode, sizeof(bytecode));
+	ASSERT_EQ(Output.str(), "011");
+}
+
+TEST_F(SPRTTest, NotEqual)
+{
+	Spasm::byte bytecode[] = {
+		OpCodes::Const, 1, 6,
+		OpCodes::Const, 2, 7,
+		OpCodes::Const, 3, 6,
+		OpCodes::NotEqual, 4, 2, 1,
+		OpCodes::NotEqual, 5, 2, 2,
+		OpCodes::NotEqual, 6, 1, 3,
+		OpCodes::Print, 4,
+		OpCodes::Print, 5,
+		OpCodes::Print, 6,
+	};
+
+	Run(bytecode, sizeof(bytecode));
+	ASSERT_EQ(Output.str(), "100");
 }
 
 TEST_F(SPRTTest, Jump)
