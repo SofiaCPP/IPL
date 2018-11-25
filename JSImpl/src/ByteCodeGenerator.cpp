@@ -53,7 +53,11 @@ private:
 			SAVE,
 			RESTORE,
 			LESS,
+			LESSEQ,
+			GREATER,
+			GREATEREQ,
 			EQ,
+			NEQ,
 			LEQ,
 			GETG,
 			SETG,
@@ -282,11 +286,20 @@ void ByteCodeGenerator::Visit(BinaryExpression* e)
 	case TokenType::Less:
 		PushInstruction(Instruction::Type::LESS, o, l, r);
 		return;
+	case TokenType::LessEqual:
+		PushInstruction(Instruction::Type::LESSEQ, o, l, r);
+		return;
+	case TokenType::Greater:
+		PushInstruction(Instruction::Type::GREATER, o, l, r);
+		return;
+	case TokenType::GreaterEqual:
+		PushInstruction(Instruction::Type::GREATEREQ, o, l, r);
+		break;
 	case TokenType::EqualEqual:
 		PushInstruction(Instruction::Type::EQ, o, l, r);
 		return;
 	case TokenType::BangEqual:
-		NOT_IMPLEMENTED;
+		PushInstruction(Instruction::Type::NEQ,o,l,r);
 		break;
 	case TokenType::Equal:
 
@@ -532,8 +545,28 @@ IPLString ByteCodeGenerator::GetCode()
 				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
 				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
 			break;
+		case ByteCodeGenerator::Instruction::LESSEQ:
+			result += "lesseq r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
+			break;
+		case ByteCodeGenerator::Instruction::GREATER:
+			result += "greater r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
+			break;
+		case ByteCodeGenerator::Instruction::GREATEREQ:
+			result += "greatereq r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
+			break;
 		case ByteCodeGenerator::Instruction::EQ:
 			result += "eq r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
+			break;
+		case ByteCodeGenerator::Instruction::NEQ:
+			result += "neq r" + std::to_string(ResolveRegisterName(i.Args[0]))
 				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
 				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
 			break;

@@ -36,6 +36,9 @@
     <ClInclude Include="..\src\Parser.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\JSONParser.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ASTInterpreter.cpp">
@@ -54,6 +57,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Parser.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\JSONParser.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
