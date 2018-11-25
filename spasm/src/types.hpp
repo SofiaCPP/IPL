@@ -9,7 +9,7 @@ namespace SpasmImpl
 {
 typedef int8_t byte;
 typedef size_t PC_t;
-typedef int data_t;
+typedef double data_t;
 
 class Spasm;
 typedef void (Spasm::*Operation)();
