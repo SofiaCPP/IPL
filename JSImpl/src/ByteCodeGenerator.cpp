@@ -270,8 +270,7 @@ void ByteCodeGenerator::Visit(BinaryExpression* e)
 	IPLString o = CreateRegister();
 	m_RegisterStack.push(o);
 
-	TokenType t = e->GetOperator();
-	switch (t) {
+	switch (e->GetOperator()) {
 	case TokenType::Plus:
 		PushInstruction(Instruction::Type::ADD, o, l, r);
 		return;
