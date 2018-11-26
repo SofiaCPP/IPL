@@ -187,6 +187,38 @@ Spasm::RunResult Spasm::run()
                 lesseq(arg0, arg1, arg2);
                 break;
             }
+			case OpCodes::Greater:
+			{
+				const auto arg0 = read_reg(size);
+				const auto arg1 = read_reg(size);
+				const auto arg2 = read_reg(size);
+				greater(arg0, arg1, arg2);
+				break;
+			}
+			case OpCodes::GreaterEq:
+			{
+				const auto arg0 = read_reg(size);
+				const auto arg1 = read_reg(size);
+				const auto arg2 = read_reg(size);
+				greatereq(arg0, arg1, arg2);
+				break;
+			}
+			case OpCodes::Equal:
+			{
+				const auto arg0 = read_reg(size);
+				const auto arg1 = read_reg(size);
+				const auto arg2 = read_reg(size);
+				equal(arg0, arg1, arg2);
+				break;
+			}
+			case OpCodes::NotEqual:
+			{
+				const auto arg0 = read_reg(size);
+				const auto arg1 = read_reg(size);
+				const auto arg2 = read_reg(size);
+				not_equal(arg0, arg1, arg2);
+				break;
+			}
             default:
             {
                 std::cerr << opcode << ": not implemented" << std::endl;
@@ -378,6 +410,26 @@ void Spasm::less(reg_t a0, reg_t a1, reg_t a2)
 void Spasm::lesseq(reg_t a0, reg_t a1, reg_t a2)
 {
     set_local(a0, get_local(a1) <= get_local(a2));
+}
+
+void Spasm::greater(reg_t a0, reg_t a1, reg_t a2)
+{
+	set_local(a0, get_local(a1) > get_local(a2));
+}
+
+void Spasm::greatereq(reg_t a0, reg_t a1, reg_t a2)
+{
+	set_local(a0, get_local(a1) >= get_local(a2));
+}
+
+void Spasm::equal(reg_t a0, reg_t a1, reg_t a2)
+{
+	set_local(a0, fabs(get_local(a1) - get_local(a2)) < 0.0001);
+}
+
+void Spasm::not_equal(reg_t a0, reg_t a1, reg_t a2)
+{
+	set_local(a0, fabs(get_local(a1) - get_local(a2)) > 0.0001);
 }
 
 data_t Spasm::get_local(reg_t reg)
