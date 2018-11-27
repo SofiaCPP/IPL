@@ -23,6 +23,7 @@ enum OpCodes : char
     JumpT,
     JumpF,
     Const,
+    String,
     Add,
     Sub,
     Mul,
@@ -30,10 +31,10 @@ enum OpCodes : char
     Mod,
     Less,
     LessEq,
-	Greater,
-	GreaterEq,
-	Equal,
-	NotEqual,
+    Greater,
+    GreaterEq,
+    Equal,
+    NotEqual,
     LastIndex = NotEqual,
 };
 static_assert(LastIndex < 0x3f, "Too many opcodes");

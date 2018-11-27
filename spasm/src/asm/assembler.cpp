@@ -55,6 +55,23 @@ int get_arg_size(const Lexer::Token args[])
                 size = std::max(size, 3);
                 break;
             }
+            case Lexer::Token::StringValue:
+            {
+                const auto length = args[i].value_str().size();
+                if (length > 0xffffffff)
+                {
+                    size = std::max(size, 3);
+                }
+                else if (length > 0xffff)
+                {
+                    size = std::max(size, 2);
+                }
+                else if (length > 0xff)
+                {
+                    size = std::max(size, 1);
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -124,6 +141,14 @@ void Assembler::assemble()
                 {
                     assert(args[1].type() == Lexer::Token::Ident);
                     assemble_identifier(args[1]);
+                }
+                else if (type == Lexer::Token::String)
+                {
+                    assert(args[1].type() == Lexer::Token::StringValue);
+                    const auto& s = args[1].value_str();
+                    fprintf(stderr, "got string %d - %s\n", int(s.size()),
+                            s.c_str());
+                    _bytecode->push_string(s.data(), s.size(), arg_size);
                 }
                 else
                 {

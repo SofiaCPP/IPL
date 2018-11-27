@@ -379,3 +379,14 @@ TEST_F(SPASMTest, GCD)
 	CompileAndRun(program);
 	ASSERT_EQ(Output.str(), "3");
 }
+
+TEST_F(SPASMTest, String)
+{
+	const char* program =
+		"push 1"		                "\n"
+		"string 1 'the answer is 42'"		"\n"
+		"print 1"		                "\n"
+                ;
+	CompileAndRun(program);
+	ASSERT_EQ(Output.str(), "3");
+}
