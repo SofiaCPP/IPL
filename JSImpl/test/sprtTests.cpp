@@ -380,7 +380,7 @@ TEST_F(SPASMTest, GCD)
 	ASSERT_EQ(Output.str(), "3");
 }
 
-TEST_F(SPASMTest, String)
+TEST_F(SPASMTest, DISABLED_String)
 {
 	const char* program =
 		"push 1"		                "\n"
