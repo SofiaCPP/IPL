@@ -30,7 +30,11 @@ enum OpCodes : char
     Mod,
     Less,
     LessEq,
-    LastIndex = LessEq,
+	Greater,
+	GreaterEq,
+	Equal,
+	NotEqual,
+    LastIndex = NotEqual,
 };
 static_assert(LastIndex < 0x3f, "Too many opcodes");
 
@@ -120,6 +124,12 @@ class Spasm
 
     void less(reg_t a0, reg_t a1, reg_t a2);
     void lesseq(reg_t a0, reg_t a1, reg_t a2);
+
+	void greater(reg_t a0, reg_t a1, reg_t a2);
+	void greatereq(reg_t a0, reg_t a1, reg_t a2);
+
+	void equal(reg_t a0, reg_t a1, reg_t a2);
+	void not_equal(reg_t a0, reg_t a1, reg_t a2);
 
     data_t get_local(reg_t reg);
     void set_local(reg_t reg, data_t data);

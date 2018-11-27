@@ -29,7 +29,7 @@ class Assembler
 
 };  // class Assembler
 
-bool compile(std::istream&, Bytecode_Memory& bytecode);
+bool compile(std::istream&, Bytecode_Stream& bytecode);
 }  // namespace ASM
 }  // namespace SpasmImpl
 
