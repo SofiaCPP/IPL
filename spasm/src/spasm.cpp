@@ -46,7 +46,6 @@ Spasm::RunResult Spasm::run()
         const auto instruction = m_ByteCode[m_PC++];
         const auto opcode = OpCodes(instruction & 0x3f);
         const auto size = instruction >> 6;
-        assert(size == 0 && "no long args yet");
         switch (opcode)
         {
             case OpCodes::Halt:
@@ -77,7 +76,7 @@ Spasm::RunResult Spasm::run()
             {
                 const auto count = PC_t(read_reg(size));
                 assert(m_SP + count <= &data_stack[data_stack.size() - 1]);
-                std::fill(m_SP, m_SP + count, 0);
+                std::fill(m_SP, m_SP + count, data_t{});
                 m_SP += count;
                 break;
             }
@@ -186,6 +185,38 @@ Spasm::RunResult Spasm::run()
                 const auto arg1 = read_reg(size);
                 const auto arg2 = read_reg(size);
                 lesseq(arg0, arg1, arg2);
+                break;
+            }
+            case OpCodes::Greater:
+            {
+                const auto arg0 = read_reg(size);
+                const auto arg1 = read_reg(size);
+                const auto arg2 = read_reg(size);
+                greater(arg0, arg1, arg2);
+                break;
+            }
+            case OpCodes::GreaterEq:
+            {
+                const auto arg0 = read_reg(size);
+                const auto arg1 = read_reg(size);
+                const auto arg2 = read_reg(size);
+                greatereq(arg0, arg1, arg2);
+                break;
+            }
+            case OpCodes::Equal:
+            {
+                const auto arg0 = read_reg(size);
+                const auto arg1 = read_reg(size);
+                const auto arg2 = read_reg(size);
+                equal(arg0, arg1, arg2);
+                break;
+            }
+            case OpCodes::NotEqual:
+            {
+                const auto arg0 = read_reg(size);
+                const auto arg1 = read_reg(size);
+                const auto arg2 = read_reg(size);
+                not_equal(arg0, arg1, arg2);
                 break;
             }
             default:
@@ -326,7 +357,7 @@ void Spasm::go(reg_t a0)
 void Spasm::call(reg_t a0)
 {
     Frame call{m_PC, PC_t(m_FP - &data_stack[0]),
-               m_SP - &data_stack[0] - PC_t(*(m_SP - 1)) - 1};
+               m_SP - &data_stack[0] - PC_t((*(m_SP - 1)).get_double()) - 1};
     m_Frames.push(std::move(call));
     m_FP = m_SP - 1;
     go(a0);
@@ -381,6 +412,26 @@ void Spasm::lesseq(reg_t a0, reg_t a1, reg_t a2)
     set_local(a0, get_local(a1) <= get_local(a2));
 }
 
+void Spasm::greater(reg_t a0, reg_t a1, reg_t a2)
+{
+    set_local(a0, get_local(a1) > get_local(a2));
+}
+
+void Spasm::greatereq(reg_t a0, reg_t a1, reg_t a2)
+{
+    set_local(a0, get_local(a1) >= get_local(a2));
+}
+
+void Spasm::equal(reg_t a0, reg_t a1, reg_t a2)
+{
+    set_local(a0, get_local(a1) == get_local(a2));
+}
+
+void Spasm::not_equal(reg_t a0, reg_t a1, reg_t a2)
+{
+    set_local(a0, get_local(a1) != get_local(a2));
+}
+
 data_t Spasm::get_local(reg_t reg)
 {
     assert(&data_stack[0] <= (m_FP + reg));
@@ -410,14 +461,60 @@ void Spasm::push_data(data_t data)
 
 reg_t Spasm::read_reg(size_t size)
 {
-    assert(size == 0);
-    return m_ByteCode[m_PC++];
+    switch (size)
+    {
+        case 0:
+            return m_ByteCode[m_PC++];
+        case 1:
+        {
+            auto result = *reinterpret_cast<int16_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 2;
+            return result;
+        }
+        case 2:
+        {
+            auto result = *reinterpret_cast<int32_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 4;
+            return result;
+        }
+        case 3:
+        {
+            auto result = *reinterpret_cast<int64_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 8;
+            return result;
+        }
+    }
+    assert(false && "not reached");
+    return 0;
 }
 
 data_t Spasm::read_number(size_t size)
 {
-    assert(size == 0);
-    return m_ByteCode[m_PC++];
+    switch (size)
+    {
+        case 0:
+            return data_t(double(m_ByteCode[m_PC++]));
+        case 1:
+        {
+            auto result = *reinterpret_cast<int16_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 2;
+            return data_t(double(result));
+        }
+        case 2:
+        {
+            auto result = *reinterpret_cast<int32_t*>(&m_ByteCode[0] + m_PC);
+            m_PC += 4;
+            return data_t(double(result));
+        }
+        case 3:
+        {
+            auto result = *reinterpret_cast<double*>(&m_ByteCode[0] + m_PC);
+            m_PC += 8;
+            return data_t(double(result));
+        }
+    }
+    assert(false && "not reached");
+    return data_t{};
 }
 
 }  // namespace SpasmImpl

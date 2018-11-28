@@ -81,7 +81,7 @@ TEST_F(SPRTTest, Div)
 	};
 
 	Run(bytecode, sizeof(bytecode));
-	ASSERT_EQ(Output.str(), "0");
+	ASSERT_EQ(Output.str(), "0.857143");
 }
 
 TEST_F(SPRTTest, Mod)
@@ -127,7 +127,6 @@ TEST_F(SPRTTest, Less)
 	ASSERT_EQ(Output.str(), "100");
 }
 
-
 TEST_F(SPRTTest, LessEq)
 {
 	Spasm::byte bytecode[] = {
@@ -143,6 +142,76 @@ TEST_F(SPRTTest, LessEq)
 
 	Run(bytecode, sizeof(bytecode));
 	ASSERT_EQ(Output.str(), "101");
+}
+
+TEST_F(SPRTTest, Greater)
+{
+	Spasm::byte bytecode[] = {
+		OpCodes::Const, 1, 6,
+		OpCodes::Const, 2, 7,
+		OpCodes::Greater, 3, 1, 2,
+		OpCodes::Greater, 4, 2, 1,
+		OpCodes::Greater, 5, 2, 2,
+		OpCodes::Print, 3,
+		OpCodes::Print, 4,
+		OpCodes::Print, 5,
+	};
+
+	Run(bytecode, sizeof(bytecode));
+	ASSERT_EQ(Output.str(), "010");
+}
+
+TEST_F(SPRTTest, GreaterEq)
+{
+	Spasm::byte bytecode[] = {
+		OpCodes::Const, 1, 6,
+		OpCodes::Const, 2, 7,
+		OpCodes::GreaterEq, 3, 1, 2,
+		OpCodes::GreaterEq, 4, 2, 1,
+		OpCodes::GreaterEq, 5, 2, 2,
+		OpCodes::Print, 3,
+		OpCodes::Print, 4,
+		OpCodes::Print, 5,
+	};
+
+	Run(bytecode, sizeof(bytecode));
+	ASSERT_EQ(Output.str(), "011");
+}
+
+TEST_F(SPRTTest, Equal)
+{
+	Spasm::byte bytecode[] = {
+		OpCodes::Const, 1, 6,
+		OpCodes::Const, 2, 7,
+		OpCodes::Const, 3, 6,		
+		OpCodes::Equal, 4, 2, 1,
+		OpCodes::Equal, 5, 2, 2,
+		OpCodes::Equal, 6, 1, 3,		
+		OpCodes::Print, 4,
+		OpCodes::Print, 5,
+		OpCodes::Print, 6,
+	};
+
+	Run(bytecode, sizeof(bytecode));
+	ASSERT_EQ(Output.str(), "011");
+}
+
+TEST_F(SPRTTest, NotEqual)
+{
+	Spasm::byte bytecode[] = {
+		OpCodes::Const, 1, 6,
+		OpCodes::Const, 2, 7,
+		OpCodes::Const, 3, 6,
+		OpCodes::NotEqual, 4, 2, 1,
+		OpCodes::NotEqual, 5, 2, 2,
+		OpCodes::NotEqual, 6, 1, 3,
+		OpCodes::Print, 4,
+		OpCodes::Print, 5,
+		OpCodes::Print, 6,
+	};
+
+	Run(bytecode, sizeof(bytecode));
+	ASSERT_EQ(Output.str(), "100");
 }
 
 TEST_F(SPRTTest, Jump)
@@ -235,24 +304,24 @@ TEST_F(SPRTTest, Read)
 TEST_F(SPASMTest, RSyntax)
 {
 	const char* program =
-		"push 5"		"\n"
-		"const r1 0"	"\n"
-		"const r2 6"	"\n"
-		"const r3 7"	"\n"
-		"const r4 2"	"\n"
-		"pushr r3"		"\n"
-		"pushr r2"		"\n"
-		"pushr r4"		"\n"
-		"call mult"		"\n"
-		"popr r1"		"\n"
-		"print r1"		"\n"
-		"halt"			"\n"
-		"label mult"	"\n"
-		"print a0"		"\n"
-		"print a1"		"\n"
-		"print a2"		"\n"
-		"mul r1 a2 a1"	"\n"
-		"ret r1"		"\n"
+		"00: push 5"		"\n"
+		"01: const r1 0"	"\n"
+		"02: const r2 6"	"\n"
+		"03: const r3 7"	"\n"
+		"04: const r4 2"	"\n"
+		"05: pushr r3"		"\n"
+		"06: pushr r2"		"\n"
+		"07: pushr r4"		"\n"
+		"08: call mult # *"	"\n"
+		"09: popr r1"		"\n"
+		"10: print r1"		"\n"
+		"11: halt"			"\n"
+		"12: label mult"	"\n"
+		"13: print a0"		"\n"
+		"14: print a1"		"\n"
+		"15: print a2"		"\n"
+		"16: mul r1 a2 a1"	"\n"
+		"17: ret r1"		"\n"
 		""
 		;
 	CompileAndRun(program);

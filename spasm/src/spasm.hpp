@@ -2,6 +2,7 @@
 #define SPASM_HPP
 
 #include "spasm_impl.hpp"
+#include "value.hpp"
 
 namespace Spasm
 {
