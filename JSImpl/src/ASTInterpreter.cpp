@@ -185,6 +185,15 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
         case TokenType::Less:
             m_Evaluation.push_back(left < right);
             break;
+		case TokenType::LessEqual:
+			m_Evaluation.push_back(left <= right);
+			break;
+		case TokenType::Greater:
+			m_Evaluation.push_back(left > right);
+			break;
+		case TokenType::GreaterEqual:
+			m_Evaluation.push_back(left >= right);
+			break;
         case TokenType::Comma:
             m_Evaluation.push_back(right);
             break;
