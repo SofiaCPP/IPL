@@ -1,4 +1,7 @@
 #include <gtest/gtest.h>
+#include <memory>
+#include <cmath>
+#include <spasm.hpp>
 
 TEST(Empty, Empty)
 {
@@ -59,4 +62,51 @@ TEST(Pointer, int64)
 }
 
 
+TEST(NaNBox, PlainDoubles)
+{
+	double a = floor(rand() / RAND_MAX);
+    double values[] = {
+        0.0, 2.89, 3.14, 0.0 / 1.0, 1.0 / a
+    };
+    for (auto value: values)
+    {
+		Spasm::Value box(value);
+        ASSERT_TRUE(box.is_double());
+        ASSERT_EQ(value, box.get_double());
 
+		Spasm::Value box2(-value);
+        ASSERT_TRUE(box2.is_double());
+        ASSERT_EQ(-value, box2.get_double());
+    }
+}
+
+TEST(NaNBox, Border)
+{
+	Spasm::Value v(Spasm::ValueType::Object, nullptr);
+    ASSERT_TRUE(std::isnan(v.m_value.as_double));
+    ASSERT_FALSE(std::isinf(v.m_value.as_double));
+}
+
+TEST(NaNBox, IsNaN)
+{
+	Spasm::Value v2(std::sqrt(-1.0));
+    ASSERT_TRUE(v2.is_double());
+}
+
+TEST(NaNBox, Pointers)
+{
+    std::vector<std::unique_ptr<int>> pointers;
+    int n = 1024;
+    pointers.reserve(n);
+    for (int i = 0; i < n; ++i)
+    {
+        pointers.emplace_back(std::make_unique<int>(i));
+    }
+
+    for (auto& value: pointers)
+    {
+        Spasm::Value box(Spasm::ValueType::Object, value.get());
+        ASSERT_FALSE(box.is_double());
+        ASSERT_EQ(value.get(), box.get_pointer());
+    }
+}
