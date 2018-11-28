@@ -146,8 +146,6 @@ void Assembler::assemble()
                 {
                     assert(args[1].type() == Lexer::Token::StringValue);
                     const auto& s = args[1].value_str();
-                    fprintf(stderr, "got string %d - %s\n", int(s.size()),
-                            s.c_str());
                     _bytecode->push_string(s.data(), s.size(), arg_size);
                 }
                 else

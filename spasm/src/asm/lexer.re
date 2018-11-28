@@ -257,8 +257,8 @@ IDENTIFIER      {
                                 continue;
                         }
 SSTRING | DSTRING      {
-                                ts.push_token (Token (Token::StringValue, lineno, token_start,
-                                                        cursor));
+                                ts.push_token (Token (Token::StringValue, lineno, token_start + 1,
+                                                        cursor - 1));
                                 token_start = cursor;
 
                                 continue;
