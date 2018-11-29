@@ -56,6 +56,8 @@ NONNEGATIVE     = "0" | ([1-9] DIGIT*) ;
 XINTEGER        = "0" [xX] XDIGIT+ ;
 FLOATING        = "-"? "0" | ([1-9] DIGIT*) "." NONNEGATIVE ;
 IDENTIFIER      = [a-zA-Z_] [0-9a-zA-Z_]* ;
+SSTRING         = "'" ([^']|"\\'")* "'" ;
+DSTRING         = "\"" ([^"]|"\\\"")* "\"" ;
 
 INTEGER         {
                                 ts.push_token (Token (Token::Integer, lineno,
@@ -198,13 +200,20 @@ XINTEGER        {
                                 token_start = cursor;
 
                                 continue;
-                        }
+                }
 "const"         {
                                 ts.push_token (Token (Token::Const, lineno));
                                 token_start = cursor;
 
                                 continue;
-                        }
+                }
+
+"string"        {
+                                ts.push_token (Token (Token::String, lineno));
+                                token_start = cursor;
+
+                                continue;
+                }
 
 "call"          {
                                 ts.push_token (Token (Token::Call, lineno));
@@ -243,6 +252,13 @@ XINTEGER        {
 IDENTIFIER      {
                                 ts.push_token (Token (Token::Ident, lineno, token_start,
                                                         cursor));
+                                token_start = cursor;
+
+                                continue;
+                        }
+SSTRING | DSTRING      {
+                                ts.push_token (Token (Token::StringValue, lineno, token_start + 1,
+                                                        cursor - 1));
                                 token_start = cursor;
 
                                 continue;

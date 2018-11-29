@@ -1,0 +1,4 @@
+resolver: 12.13
+
+packages:
+- .
