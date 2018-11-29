@@ -36,6 +36,7 @@ Token::Token(Token::Token_type type,
             break;
         }
         case Ident:
+        case StringValue:
         {
             if (end)
             {
