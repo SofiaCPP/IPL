@@ -21,6 +21,7 @@ class Bytecode_Stream
     virtual void push_integer(int64_t, int size) = 0;
     virtual void push_double(double) = 0;
     virtual void push_location(size_t) = 0;
+    virtual void push_string(const char* s, size_t length, int size) = 0;
     virtual void set_location(size_t, size_t) = 0;
     virtual size_t size() const = 0;
 };  // class Bytecode_Stream
@@ -51,6 +52,7 @@ class Bytecode_Memory : public Bytecode_Stream
     virtual void push_double(double) override;
     virtual void push_location(size_t);
     virtual void set_location(size_t, size_t);
+    virtual void push_string(const char* s, size_t length, int size) override;
     virtual size_t size() const;
 
     typedef std::vector<Bytecode_Stream::byte> Bytecode;

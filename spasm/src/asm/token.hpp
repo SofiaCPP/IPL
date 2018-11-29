@@ -31,6 +31,7 @@ class Token
         JumpT = _TwoArgBegin,
         JumpF,
         Const,
+        String,
         _ThreeArgBegin,
         Add = _ThreeArgBegin,
         Sub,
@@ -46,6 +47,7 @@ class Token
         Integer,
         XInteger,
         FloatingPoint,
+        StringValue,
         EndInput,
         NotUsed
     };

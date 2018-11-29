@@ -379,3 +379,47 @@ TEST_F(SPASMTest, GCD)
 	CompileAndRun(program);
 	ASSERT_EQ(Output.str(), "3");
 }
+
+TEST_F(SPASMTest, StringS)
+{
+	const char* program =
+		"push 1"		                "\n"
+		"string 1 'the answer is 42'"		"\n"
+		"print 1"		                "\n"
+                ;
+	CompileAndRun(program);
+	ASSERT_EQ(Output.str(), "the answer is 42");
+}
+
+TEST_F(SPASMTest, StringD)
+{
+	const char* program =
+		"push 1"		                "\n"
+		"string 1 'the answer is 42'"		"\n"
+		"print 1"		                "\n"
+		;
+	CompileAndRun(program);
+	ASSERT_EQ(Output.str(), "the answer is 42");
+}
+
+TEST_F(SPASMTest, StringEscapeS)
+{
+	const char* program =
+		"push 1"							"\n"
+		"string 1 'the answer\\' is 42'"	"\n"
+		"print 1"							"\n"
+		;
+	CompileAndRun(program);
+	ASSERT_EQ(Output.str(), "the answer\\' is 42");
+}
+
+TEST_F(SPASMTest, StringEscapeD)
+{
+	const char* program =
+		"push 1"							"\n"
+		"string 1 \"the answer\\\" is 42\""	"\n"
+		"print 1"							"\n"
+		;
+	CompileAndRun(program);
+	ASSERT_EQ(Output.str(), "the answer\\\" is 42");
+}

@@ -131,6 +131,13 @@ Spasm::RunResult Spasm::run()
                 set_local(reg, value);
                 break;
             }
+            case OpCodes::String:
+            {
+                const auto reg = read_reg(size);
+                const auto value = read_string(size);
+                set_local(reg, value);
+                break;
+            }
             case OpCodes::Add:
             {
                 const auto arg0 = read_reg(size);
@@ -461,6 +468,16 @@ void Spasm::push_data(data_t data)
 
 reg_t Spasm::read_reg(size_t size)
 {
+    return read_integer(size);
+}
+
+data_t Spasm::read_number(size_t size)
+{
+    return data_t(double(read_integer(size)));
+}
+
+int64_t Spasm::read_integer(size_t size)
+{
     switch (size)
     {
         case 0:
@@ -488,33 +505,13 @@ reg_t Spasm::read_reg(size_t size)
     return 0;
 }
 
-data_t Spasm::read_number(size_t size)
+data_t Spasm::read_string(size_t size)
 {
-    switch (size)
-    {
-        case 0:
-            return data_t(double(m_ByteCode[m_PC++]));
-        case 1:
-        {
-            auto result = *reinterpret_cast<int16_t*>(&m_ByteCode[0] + m_PC);
-            m_PC += 2;
-            return data_t(double(result));
-        }
-        case 2:
-        {
-            auto result = *reinterpret_cast<int32_t*>(&m_ByteCode[0] + m_PC);
-            m_PC += 4;
-            return data_t(double(result));
-        }
-        case 3:
-        {
-            auto result = *reinterpret_cast<double*>(&m_ByteCode[0] + m_PC);
-            m_PC += 8;
-            return data_t(double(result));
-        }
-    }
-    assert(false && "not reached");
-    return data_t{};
+    const auto length = read_integer(size);
+    const auto s = reinterpret_cast<const char*>(&m_ByteCode[m_PC]);
+    m_PC += length;
+    const auto value = m_Strings.Get(s, length);
+    return data_t(::Spasm::ValueType::String, (void*)value);
 }
 
 }  // namespace SpasmImpl
