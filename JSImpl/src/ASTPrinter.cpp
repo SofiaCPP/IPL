@@ -222,7 +222,7 @@ std::ostream& operator<<(std::ostream& os, const TokenType& t)
 		os << "{";                                                           \
 		Enter();                                                             \
 		InsertIndent();                                                      \
-		os << "\"ExpresionType\": \"" << #ClassName "\"";                    \
+		os << "\"ExpressionType\": \"" << #ClassName "\"";                    \
 		if (membersCount)                                                    \
 		{                                                                    \
 			os << ",";                                                       \
