@@ -28,3 +28,6 @@ Table of contents for the course.
 
 0. Values in VMs - [slides]({{< ref "/slides/06_vm_values" >}}),
    [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/06_vm_values/_index.md)
+
+0. Objects in VMs - [slides]({{< ref "/slides/08_vm_objects" >}}),
+   [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/08_vm_objects/_index.md)
