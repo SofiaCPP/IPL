@@ -1,0 +1,96 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><title>Objects in the VM</title><meta name=description content="Course on implementing programming languages"><meta name=author content><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css id=theme><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css><script>var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=window.location.search.match(/print-pdf/gi)?'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/pdf.css':'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/paper.css';document.getElementsByTagName('head')[0].appendChild(link);</script></head><body><div class=reveal><div class=slides><section><h1 id=objects-in-the-vm>Objects in the VM</h1></section><section><h2 id=contents>Contents</h2><ol><li>JavaScript Language Features</li><li>Getting properties</li><li>Objects</li><li>Optimizations</li><li>Talking to the world</li></ol></section><section><h2 id=javascript-language-features>JavaScript Language Features</h2><blockquote><p>We will be discussing only EcmaScript 3 inheritance.</p></blockquote><ol><li>Prototype-based inheritance</li><li>Everything is an object</li></ol></section><section><h3 id=inheritance>Inheritance</h3><p>JavaScript is dynamically typed, so inheritance is about properties</p><pre><code>console.log(answer.value)
+</code></pre></section><section><h4 id=property-access>Property access</h4><p>When looking-up a property in a object:
+1. Look for the property in the object, if not found
+2. Look for the property in the object&rsquo;s prototype, if not found
+3. Look for the property in the object&rsquo;s prototype&rsquo;s prototype &hellip;</p></section><section><pre><code>Value GetProperty(object, name) {
+    Value result = object.GetProps().GetProperty(name);
+    while (result == undefined || object.GetPrototype()) {
+        object = object.GetPrototype();
+        result = object.GetProps().GetProperty(name);
+    }
+    return result;
+}
+</code></pre></section><section><h3 id=properties>Properties</h3><p>We need to map from string to a value.</p></section><section><pre><code>struct Properties
+{
+    typedef std::unordered_map&lt;StringValue* name, Value&gt; PropertyMap;
+    PropertyMap m_Props;
+
+    Value GetProperty(StringValue* name) {
+        const auto i = m_Props.find(name);
+        return i != m_Props.end()? i-&gt;second : Value::kUndefined;
+    }
+};
+</code></pre></section><section><h3 id=settting-a-property>Settting a property?</h3><ul><li><p>Set on the object directly</p><p>void SetProperty(Object* object, StringValue* name, Value value) {
+object-&gt;GetProps().Set(name, value);
+}</p></li></ul></section><section><h3 id=prototypes>Prototypes</h3><p>struct Object {
+Value GetProperty(StringValue* name);
+Object* GetPrototype() { return m_Prototype; }
+Properties&amp; GetProps() { return m_OwnProps;}</p><pre><code>Object* m_Prototype;
+Properties m_OwnProps;
+</code></pre><p>};</p></section><section><h2 id=optimizations>Optimizations</h2></section><section><h3 id=inline-cache>Inline Cache</h3><blockquote><p>Skip the name look up for a property at the place where the look is done</p></blockquote></section><section><pre><code>var s = 0;
+for (var i = 0; i &lt; strings.length; ++i) {
+    s += strings[i].length; // &lt;&lt; Here is the interesting part
+}
+</code></pre></section><section><pre><code>getprop $t, $strings, $i
+getprop $r, $t, &quot;length&quot; // Goes in to the runtime and does the hash lookup
+add $s, $s, $r
+</code></pre></section><section><pre><code>getprop $t, $strings, $i
+if (typeof $t == &quot;string&quot;) {
+    $r = getfast($t, 0); // (size_t*)(*t+8);
+} else {
+    getprop $r, $t, &quot;length&quot; 
+}
+</code></pre></section><section><p><a href=www.filpizlo.com/papers.html>JSC impl</a></p></section><section><h2 id=hidden-structures>Hidden structures</h2></section><section><h2 id=implementation>Implementation</h2></section><section><h2 id=enhancing-value>Enhancing <code>Value</code></h2><ul><li><code>toString</code></li><li><code>getProperty</code></li><li><code>setProperty</code></li></ul></section><section><h3 id=tostring><code>toString</code></h3><pre><code>Value Value::toString(Spasm* vm) const
+{
+    switch(get_type())
+    {
+        case Number:
+        // ...
+    }
+}
+</code></pre></section><section><h3 id=getproperty><code>getProperty</code></h3><pre><code>Value Value::getProperty(Spasm* vm, Value key) const
+{
+    switch(get_type())
+    {
+        case Number:
+        // ...
+    }
+}
+</code></pre></section><section><h3 id=toc_15>?</h3><ul><li>lots of duplication</li><li>lots of casting</li></ul></section><section><h3 id=visitor-again>Visitor again</h3></section><section><pre><code>template &lt;typename V&gt;
+typename V::ResultType Visit(V&amp; v) {
+    switch(get_type())
+    {
+        case Number: return v.Visit(get_double());
+        case Null: return v.VisitNull();
+        case Undefined: return v.VisitUndefined();
+        case String: return v.Visit(get_string());
+        // ...
+    }
+}
+</code></pre></section><section><h4 id=tostring-1><code>toString</code></h4></section><section><pre><code>struct ToStringVisitor
+{
+    typedef Value ResultType;
+
+    Value Visit(double d) const;
+    Value VisitUndefined() const;
+    Value VisitNull() const;
+    Value Visit(const StringValue&amp; value) const;
+    Value Visit(const ArrayValue&amp; value) const;
+    Value Visit(const ObjectValue&amp; value) const;
+    Value Visit(const FunctionValue&amp; value) const;
+};
+</code></pre></section><section><h3 id=talking-to-the-world>Talking to the world</h3><pre><code>typedef Value (*Function)(Value thisObject, Value function, Value* args,
+        size_t count, Value* exception)
+
+typedef Value (*Getter)(Value thisObject, StringValue* name,
+        Value* exception);
+
+typedef void (*Setter)(Value thisObject, StringValue* name, Value value,
+        Value* exception);
+</code></pre></section><section><h3 id=property-descriptors>Property descriptors</h3><p>Special kind of object that has:</p><pre><code>struct PropertyDescriptor {
+    Getter m_Getter;
+    Setter m_Setter;
+};
+</code></pre></section><section><h1 id=toc_20>?</h1></section></div></div><script type=application/json id=reveal-hugo-page-params>null</script><script type=application/json id=reveal-hugo-site-params>{"highlight_theme":"monokai","slide_number":true,"transition":"none"}</script><script type=application/json id=reveal-hugo-defaults>{"center":true,"controls":true,"highlight_theme":"default","history":true,"progress":true,"theme":"black","transition":"slide"}</script><script>window.revealHugoDependencies={dependencies:[{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/lib/js/classList.js',condition:function(){return!document.body.classList;}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/marked.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/markdown.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/highlight/highlight.js',async:true,callback:function(){hljs.initHighlightingOnLoad();}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/zoom-js/zoom.js',async:true},{src:'\/IPL\/reveal-hugo\/plugin\/notes\/notes.js',async:true}]};</script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/js/head.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.js></script><script>function camelize(map){if(map){Object.keys(map).forEach(function(k){newK=k.replace(/(\_\w)/g,function(m){return m[1].toUpperCase()});if(newK!=k){map[newK]=map[k];delete map[k];}});}
+return map;}
+var revealHugoPageParams=JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);var revealHugoSiteParams=JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);var revealHugoDefaults=JSON.parse(document.getElementById('reveal-hugo-defaults').innerHTML);var options=Object.assign({},camelize(revealHugoDefaults),camelize(revealHugoSiteParams),camelize(revealHugoPageParams),revealHugoDependencies);Reveal.initialize(options);</script></body></html>
