@@ -34,6 +34,7 @@ JavaScript is dynamically typed, so inheritance is about properties
 #### Property access
 
 When looking-up a property in a object:
+
 1. Look for the property in the object, if not found
 2. Look for the property in the object's prototype, if not found
 3. Look for the property in the object's prototype's prototype ...
@@ -42,7 +43,7 @@ When looking-up a property in a object:
 
     Value GetProperty(object, name) {
         Value result = object.GetProps().GetProperty(name);
-        while (result == undefined || object.GetPrototype()) {
+        while (result == undefined && object.GetPrototype()) {
             object = object.GetPrototype();
             result = object.GetProps().GetProperty(name);
         }
@@ -70,23 +71,25 @@ We need to map from string to a value.
 ---
 ### Settting a property?
 
-- Set on the object directly
+Set on the object directly
 
-    void SetProperty(Object* object, StringValue* name, Value value) {
+    void SetProperty(Object* object, StringValue* name,
+                     Value value)
+    {
         object->GetProps().Set(name, value);
     }
 
 ---
 ### Prototypes
 
-struct Object {
-    Value GetProperty(StringValue* name);
-    Object* GetPrototype() { return m_Prototype; }
-    Properties& GetProps() { return m_OwnProps;}
+    struct Object {
+        Value GetProperty(StringValue* name);
+        Object* GetPrototype() { return m_Prototype; }
+        Properties& GetProps() { return m_OwnProps;}
 
-    Object* m_Prototype;
-    Properties m_OwnProps;
-};
+        Object* m_Prototype;
+        Properties m_OwnProps;
+    };
 
 ---
 ## Optimizations
