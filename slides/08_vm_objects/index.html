@@ -1,10 +1,7 @@
 <!doctype html><html lang=en><head><meta charset=utf-8><title>Objects in the VM</title><meta name=description content="Course on implementing programming languages"><meta name=author content><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css id=theme><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css><script>var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=window.location.search.match(/print-pdf/gi)?'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/pdf.css':'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/paper.css';document.getElementsByTagName('head')[0].appendChild(link);</script></head><body><div class=reveal><div class=slides><section><h1 id=objects-in-the-vm>Objects in the VM</h1></section><section><h2 id=contents>Contents</h2><ol><li>JavaScript Language Features</li><li>Getting properties</li><li>Objects</li><li>Optimizations</li><li>Talking to the world</li></ol></section><section><h2 id=javascript-language-features>JavaScript Language Features</h2><blockquote><p>We will be discussing only EcmaScript 3 inheritance.</p></blockquote><ol><li>Prototype-based inheritance</li><li>Everything is an object</li></ol></section><section><h3 id=inheritance>Inheritance</h3><p>JavaScript is dynamically typed, so inheritance is about properties</p><pre><code>console.log(answer.value)
-</code></pre></section><section><h4 id=property-access>Property access</h4><p>When looking-up a property in a object:
-1. Look for the property in the object, if not found
-2. Look for the property in the object&rsquo;s prototype, if not found
-3. Look for the property in the object&rsquo;s prototype&rsquo;s prototype &hellip;</p></section><section><pre><code>Value GetProperty(object, name) {
+</code></pre></section><section><h4 id=property-access>Property access</h4><p>When looking-up a property in a object:</p><ol><li>Look for the property in the object, if not found</li><li>Look for the property in the object&rsquo;s prototype, if not found</li><li>Look for the property in the object&rsquo;s prototype&rsquo;s prototype &hellip;</li></ol></section><section><pre><code>Value GetProperty(object, name) {
     Value result = object.GetProps().GetProperty(name);
-    while (result == undefined || object.GetPrototype()) {
+    while (result == undefined &amp;&amp; object.GetPrototype()) {
         object = object.GetPrototype();
         result = object.GetProps().GetProperty(name);
     }
@@ -20,14 +17,20 @@
         return i != m_Props.end()? i-&gt;second : Value::kUndefined;
     }
 };
-</code></pre></section><section><h3 id=settting-a-property>Settting a property?</h3><ul><li><p>Set on the object directly</p><p>void SetProperty(Object* object, StringValue* name, Value value) {
-object-&gt;GetProps().Set(name, value);
-}</p></li></ul></section><section><h3 id=prototypes>Prototypes</h3><p>struct Object {
-Value GetProperty(StringValue* name);
-Object* GetPrototype() { return m_Prototype; }
-Properties&amp; GetProps() { return m_OwnProps;}</p><pre><code>Object* m_Prototype;
-Properties m_OwnProps;
-</code></pre><p>};</p></section><section><h2 id=optimizations>Optimizations</h2></section><section><h3 id=inline-cache>Inline Cache</h3><blockquote><p>Skip the name look up for a property at the place where the look is done</p></blockquote></section><section><pre><code>var s = 0;
+</code></pre></section><section><h3 id=settting-a-property>Settting a property?</h3><p>Set on the object directly</p><pre><code>void SetProperty(Object* object, StringValue* name,
+                 Value value)
+{
+    object-&gt;GetProps().Set(name, value);
+}
+</code></pre></section><section><h3 id=prototypes>Prototypes</h3><pre><code>struct Object {
+    Value GetProperty(StringValue* name);
+    Object* GetPrototype() { return m_Prototype; }
+    Properties&amp; GetProps() { return m_OwnProps;}
+
+    Object* m_Prototype;
+    Properties m_OwnProps;
+};
+</code></pre></section><section><h2 id=optimizations>Optimizations</h2></section><section><h3 id=inline-cache>Inline Cache</h3><blockquote><p>Skip the name look up for a property at the place where the look is done</p></blockquote></section><section><pre><code>var s = 0;
 for (var i = 0; i &lt; strings.length; ++i) {
     s += strings[i].length; // &lt;&lt; Here is the interesting part
 }
