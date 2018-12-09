@@ -3,7 +3,7 @@ title: "Homeworks"
 date: 2018-11-17T19:01:49+02:00
 draft: false
 ---
-# Virtual Machine related homeworks
+# Virtual Machine and JSImpl related homeworks
 
 The tasks that can be used as homeworks are added as
 [issues](https://github.com/SofiaCPP/IPL/issues). Their status can be monitored
