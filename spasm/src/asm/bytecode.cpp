@@ -100,6 +100,12 @@ void Bytecode_Memory::push_location(size_t location)
     }
 }
 
+void Bytecode_Memory::push_string(const char* s, size_t length, int size)
+{
+    push_integer(int64_t(length), size);
+    _bytecode.insert(_bytecode.end(), s, s + length);
+}
+
 const Bytecode_Memory::Bytecode& Bytecode_Memory::bytecode() const
 {
     return _bytecode;
