@@ -82,7 +82,7 @@ Spasm::RunResult Spasm::run()
                     {
                         resizeCoeff = float(ceil(count / data_stack.size()) + 1);
                     }
-                    resizeDataStack();
+                    resizeDataStack(resizeCoeff);
                 }
                 std::fill(m_SP, m_SP + count, data_t{});
                 m_SP += count;
