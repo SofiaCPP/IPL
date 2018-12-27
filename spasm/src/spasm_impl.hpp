@@ -115,8 +115,10 @@ class Spasm
     //! Input stream for read () operation
     std::istream* istr;
 
-    //! Output stream for print () opertion
+    //! Output stream for print () operation
     std::ostream* ostr;
+
+    void resizeDataStack(float resizeCoefficient = 2.f);
 
     void push(reg_t reg);
     void popto(reg_t reg);
