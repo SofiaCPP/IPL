@@ -1,0 +1,45 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><title>Garbage collection in the VM</title><meta name=description content="Course on implementing programming languages"><meta name=author content><meta name=apple-mobile-web-app-capable content=yes><meta name=apple-mobile-web-app-status-bar-style content=black-translucent><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.min.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css id=theme><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai.min.css><script>var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=window.location.search.match(/print-pdf/gi)?'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/pdf.css':'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/css/print/paper.css';document.getElementsByTagName('head')[0].appendChild(link);</script></head><body><div class=reveal><div class=slides><section><h1 id=garbage-collection-in-the-vm>Garbage Collection in the VM</h1></section><section><h2 id=contents>Contents</h2><ol><li>Allocation</li><li>Mark and sweep</li><li>Embedability</li><li>Incremental</li><li>Optimizations</li></ol></section><section><h2 id=disclaimer>Disclaimer</h2><blockquote><p>This is how GC can be implemented. Everything is subject to change.</p></blockquote></section><section><h2 id=allocation>Allocation</h2><p>Having a custom allocator is a <em>must</em> have for most VM</p><ul><li>decent performance</li><li>optimizations</li></ul></section><section><h3 id=allocators-and-c>Allocators and C++</h3><p><a href=https://sofiacpp.github.io/advanced-cpp/slides/17_allocators.html>Allocators in
+C++</a></p></section><section><h3 id=simplicity-matters>Simplicity matters</h3><p>For simplicity, we are going to not use a special allocator.</p></section><section><h2 id=mark-and-sweep>Mark and sweep</h2><ul><li>mark reacheable objects starting from variables (roots)</li><li>sweep<ul><li>unmarked objects are returned to the free heap</li><li>marked objects are unmarked (for the next cycle)</li></ul></li></ul></section><section><h3 id=mark>Mark</h3><ul><li>every object starts as dead</li><li>reacheable objects are marked as alive</li></ul></section><section><h4 id=reachable-objects>Reachable objects</h4></section><section><h4 id=roots>Roots</h4><ul><li>registers</li><li>stack</li><li>global object / environment</li></ul><p>Where are these stored?</p></section><section><h4 id=roots-1>Roots</h4><ul><li>The <code>data_stack</code><ul><li>everything upto <code>m_SP</code></li></ul></li><li>The global object</li></ul></section><section><h4 id=marking>Marking</h4><pre><code>void Spasm::Mark() {
+    for (auto cell = &amp;data_stack[0]; cell != m_SP; ++cell) {
+        Mark(cell); // ?
+    }
+    Mark(m_Global);
+}
+</code></pre></section><section><h4 id=visit-every-object-in-the-heap>Visit every object in the heap?</h4><ul><li>Visitor pattern again</li></ul></section><section><pre><code>struct MarkVisitor
+{
+    typedef void ResultType;
+
+    void Visit(double d) const {}
+    void VisitUndefined() const {}
+    void VisitNull() const {}
+    void Visit(StringValue&amp; value) const;
+    void Visit(ArrayValue&amp; value) const;
+    void Visit(ObjectValue&amp; value) const;
+    void Visit(FunctionValue&amp; value) const;
+};
+</code></pre></section><section><pre><code>void Visit(StringValue&amp; value) const {
+    if (Dead(value)) {
+        SetAlive(value);
+    }
+}
+</code></pre></section><section><pre><code>void Visit(ArrayValue&amp; value) const {
+    if (Dead(value)) {
+        SetAlive(value);
+        for (auto i = 0u; i &lt; value.length(); ++i) {
+            value.item(i).Visit(*this);
+        }
+    }
+}
+</code></pre></section><section><pre><code>void Visit(ObjectValue&amp; value) const {
+    if (Dead(value)) {
+        SetAlive(value);
+        for (auto* p : value.m_Properties) {
+            p-&gt;first.Visit(*this);
+            p-&gt;second.Visit(*this);
+        }
+        value.m_Prototype-&gt;Visit(*this);
+    }
+}
+</code></pre></section><section><h4 id=state>State</h4><p>Where to store whether an object is <em>dead</em> or <em>alive</em></p><ul><li><code>bool</code> per object, string, array, function</li><li><code>bitmap</code> that holds one bit for a range of objects</li><li><code>bit</code> per pointer</li></ul></section><section><h1 id=toc_14>?</h1></section></div></div><script type=application/json id=reveal-hugo-page-params>null</script><script type=application/json id=reveal-hugo-site-params>{"highlight_theme":"monokai","slide_number":true,"transition":"none"}</script><script type=application/json id=reveal-hugo-defaults>{"center":true,"controls":true,"highlight_theme":"default","history":true,"progress":true,"theme":"black","transition":"slide"}</script><script>window.revealHugoDependencies={dependencies:[{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/lib/js/classList.js',condition:function(){return!document.body.classList;}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/marked.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/markdown/markdown.js',condition:function(){return!!document.querySelector('[data-markdown]');}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/highlight/highlight.js',async:true,callback:function(){hljs.initHighlightingOnLoad();}},{src:'https:\/\/cdnjs.cloudflare.com\/ajax\/libs\/reveal.js\/3.6.0/plugin/zoom-js/zoom.js',async:true},{src:'\/IPL\/reveal-hugo\/plugin\/notes\/notes.js',async:true}]};</script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/lib/js/head.min.js></script><script src=https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/js/reveal.js></script><script>function camelize(map){if(map){Object.keys(map).forEach(function(k){newK=k.replace(/(\_\w)/g,function(m){return m[1].toUpperCase()});if(newK!=k){map[newK]=map[k];delete map[k];}});}
+return map;}
+var revealHugoPageParams=JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);var revealHugoSiteParams=JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);var revealHugoDefaults=JSON.parse(document.getElementById('reveal-hugo-defaults').innerHTML);var options=Object.assign({},camelize(revealHugoDefaults),camelize(revealHugoSiteParams),camelize(revealHugoPageParams),revealHugoDependencies);Reveal.initialize(options);</script></body></html>
