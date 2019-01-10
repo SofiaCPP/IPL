@@ -34,7 +34,6 @@ Table of contents for the course.
 
 0. Garbage Collection Theory
 
-
     0. [Theory](https://www.slideshare.net/eelcovisser/garbage-collection-69688448)
     0. [Lua GC](http://www.inf.puc-rio.br/~roberto/talks/gc-lua.pdf)
     0. [V8 GC](http://jayconrod.com/posts/55/a-tour-of-v8-garbage-collection)
@@ -42,3 +41,5 @@ Table of contents for the course.
     0. [Java Z GC](http://cr.openjdk.java.net/~pliden/slides/ZGC-FOSDEM-2018.pdf)
     0. [LuaJIT GC](http://wiki.luajit.org/New-Garbage-Collector)
 
+0. Garbage Collection in Spasm - [slides]({{< ref "/slides/10_vm_gc" >}}),
+   [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/10_vm_gc/_index.md)
