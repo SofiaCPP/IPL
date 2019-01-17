@@ -353,28 +353,44 @@ ExpressionPtr Parser::LeftSideExpression()
 
 ExpressionPtr Parser::CallExpression()
 {
-	ExpressionPtr result;
-	auto ss = Snapshot();
-	if (result = PrimaryExpression())
-	{
-		return result;
-	}
-	Restore(ss);
-	if (result = FullNewExpression())
-	{
-		return result;
-	}
-
-	if (result = CallExpressionHelper())
-	{
-		return result;
-	}
+	// ExpressionPtr result;
+	// auto ss = Snapshot();
+	// if (result = PrimaryExpression())
+	// {
+	// 	return result;
+	// }
+	// Restore(ss);
+	// if (result = FullNewExpression())
+	// {
+	// 	return result;
+	// }
+        
+	// if (result = CallExpressionHelper())
+	// {
+	// 	return result;
+	// }
 	// TODO error
-	return nullptr;
+
+        ExpressionPtr identifier;
+        if (!Match(TokenType::Identifier))  // Custom grammar here :)
+        {
+                return nullptr;
+        }
+        identifier = IPLMakeSharePtr<Identifier>(Prev().Lexeme);
+        auto ss = Snapshot();
+        auto args = Arguments(); 
+        if (args != nullptr)
+        {
+                return IPLSharedPtr<CallExpression>(identifier, args);
+        }
+
+        Restore(ss);
+        return nullptr;
 }
 
+/*
 ExpressionPtr Parser::CallExpressionHelper()
-{
+{        
 	if (Match(TokenType::LeftSquareBracket))
 	{
 		auto expr = Expression();
@@ -403,11 +419,12 @@ ExpressionPtr Parser::CallExpressionHelper()
 	{
 		// return  meaningfull expr
 		auto next = CallExpressionHelper();
-		return nullptr;
+                return nullptr;
 	}
 
 	return nullptr;
-};
+}; 
+*/
 
 ExpressionPtr Parser::ShortNewExpression()
 {
@@ -1008,36 +1025,37 @@ ExpressionPtr Parser::OptionalExpression()
 
 ExpressionPtr Parser::Arguments()
 {
-	if (Match(TokenType::LeftParen))
+	if (!Match(TokenType::LeftParen))
 	{
-		auto result = IPLMakeSharePtr<ListExpression>();
-		auto current = AssignmentExpression();
-		while (current)
-		{
-			result->GetValuesByRef().push_back(current);
-			if (Match(TokenType::Comma))
-			{
-				current = AssignmentExpression();
-				if (current)
-				{
-					// TODO error
-					return nullptr;
-				}
-			}
-			else
-			{
-				current = nullptr;
-			}
-		}
-
-		if (Match(TokenType::RightParen))
-		{
-			return result;
-		}
-		// TODO error
-		return nullptr;
+                return nullptr;
 	}
-	return nullptr;
+        
+	auto result = IPLMakeSharePtr<ListExpression>();
+        auto current = AssignmentExpression();
+        while (current)
+        {
+                result->GetValuesByRef().push_back(current);
+                if (Match(TokenType::Comma))
+                {
+                        current = AssignmentExpression();
+                        if (current)
+                        {
+                                // TODO error
+                                return nullptr;
+                        }
+                }
+                else
+                {
+                        current = nullptr;
+                }
+        }
+
+        if (Match(TokenType::RightParen))
+        {
+                return result;
+        }
+        // TODO error
+        return nullptr;
 }
 
 ExpressionPtr Parser::Parse()
