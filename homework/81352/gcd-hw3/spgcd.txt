@@ -1,0 +1,16 @@
+push 3
+read r1    
+read r2    
+label loop
+eq r3 r1 r2
+jmpt r3 end
+less r3 r1 r2
+jmpt r3 subs 
+sub r1 r1 r2
+jmp loop    
+label subs
+sub r2 r2 r1
+jmp loop    
+label end
+print r1
+halt    

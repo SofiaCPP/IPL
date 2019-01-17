@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+#include <unordered_set>
 #include "types.hpp"
 
 namespace SpasmImpl
@@ -23,6 +24,7 @@ enum OpCodes : char
     JumpT,
     JumpF,
     Const,
+    String,
     Add,
     Sub,
     Mul,
@@ -30,13 +32,28 @@ enum OpCodes : char
     Mod,
     Less,
     LessEq,
-	Greater,
-	GreaterEq,
-	Equal,
-	NotEqual,
+    Greater,
+    GreaterEq,
+    Equal,
+    NotEqual,
     LastIndex = NotEqual,
 };
 static_assert(LastIndex < 0x3f, "Too many opcodes");
+
+class StringTable
+{
+   public:
+    const SPStringValue* Get(const char* s, size_t length)
+    {
+        SPString v(s, length);
+        auto pos = m_Strings.insert(SPStringValue(v));
+        return &(*pos.first);
+    }
+
+   private:
+    typedef std::unordered_set<SPStringValue> StringMap;
+    StringMap m_Strings;
+};
 
 //! The Abstract Stack Machine
 /*!
@@ -93,6 +110,8 @@ class Spasm
     //! Stack for function frames
     FrameStack m_Frames;
 
+    StringTable m_Strings;
+
     //! Input stream for read () operation
     std::istream* istr;
 
@@ -125,11 +144,11 @@ class Spasm
     void less(reg_t a0, reg_t a1, reg_t a2);
     void lesseq(reg_t a0, reg_t a1, reg_t a2);
 
-	void greater(reg_t a0, reg_t a1, reg_t a2);
-	void greatereq(reg_t a0, reg_t a1, reg_t a2);
+    void greater(reg_t a0, reg_t a1, reg_t a2);
+    void greatereq(reg_t a0, reg_t a1, reg_t a2);
 
-	void equal(reg_t a0, reg_t a1, reg_t a2);
-	void not_equal(reg_t a0, reg_t a1, reg_t a2);
+    void equal(reg_t a0, reg_t a1, reg_t a2);
+    void not_equal(reg_t a0, reg_t a1, reg_t a2);
 
     data_t get_local(reg_t reg);
     void set_local(reg_t reg, data_t data);
@@ -137,6 +156,8 @@ class Spasm
     void push_data(data_t);
     reg_t read_reg(size_t size);
     data_t read_number(size_t size);
+    int64_t read_integer(size_t size);
+    data_t read_string(size_t size);
 };
 
 }  // namespace SpasmImpl
