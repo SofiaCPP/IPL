@@ -225,7 +225,7 @@ void ByteCodeGenerator::Visit(ListExpression* e)
 	auto& statements = e->GetValues();
 	for (auto& s : statements)
 	{
-		s->Accept(*this);22
+		s->Accept(*this);
 	}
 }
 
