@@ -17,7 +17,7 @@ private:
 	ExpressionPtr Unary();
 	ExpressionPtr LeftSideExpression();
 	ExpressionPtr CallExpression();
-	ExpressionPtr CallExpressionHelper();
+        ExpressionPtr CallExpressionHelper();
 	ExpressionPtr ShortNewExpression();
 	ExpressionPtr ShortNewSubexpression();
 	ExpressionPtr FullNewExpression();
@@ -74,7 +74,7 @@ private:
 	InternalState Snapshot();
 	void Restore(const InternalState& state);
 
-	Token& Prev() { return m_Tokens[m_Current - 1]; }
+    	Token& Prev() { return m_Tokens[m_Current - 1]; }
 	IPLVector<Token> m_Tokens;
 	unsigned m_Current;
 	std::function<void()> OnError;
@@ -353,42 +353,48 @@ ExpressionPtr Parser::LeftSideExpression()
 
 ExpressionPtr Parser::CallExpression()
 {
-	// ExpressionPtr result;
-	// auto ss = Snapshot();
-	// if (result = PrimaryExpression())
-	// {
-	// 	return result;
-	// }
-	// Restore(ss);
-	// if (result = FullNewExpression())
-	// {
-	// 	return result;
-	// }
+	ExpressionPtr result;
+	auto ss = Snapshot();
+	if (result = PrimaryExpression())
+	{
+                auto next = CallExpressionHelper();
+                if (next == nullptr) {
+                        return result;
+                }
+                // else arguments or whatever
+		return IPLMakeSharePtr<::CallExpression>(result, next);
+	}
+	Restore(ss);
+	if (result = FullNewExpression())
+	{
+		return result;
+	}
         
-	// if (result = CallExpressionHelper())
-	// {
-	// 	return result;
-	// }
-	// TODO error
+	if (result = CallExpressionHelper())
+	{
+		return result;
+	}
 
-        ExpressionPtr identifier;
-        if (!Match(TokenType::Identifier))  // Custom grammar here :)
-        {
-                return nullptr;
-        }
-        identifier = IPLMakeSharePtr<Identifier>(Prev().Lexeme);
-        auto ss = Snapshot();
-        auto args = Arguments(); 
-        if (args != nullptr)
-        {
-                return IPLSharedPtr<CallExpression>(identifier, args);
-        }
-
-        Restore(ss);
         return nullptr;
+	//TODO error
+
+        // ExpressionPtr identifier;
+        // // Custom grammar here :)
+        // if (!Match(TokenType::Identifier))
+        // {
+        //         return nullptr;
+        // }
+        // identifier = IPLMakeSharePtr<IdentifierExpression>(Prev().Lexeme);
+        // auto ss = Snapshot();
+        // ExpressionPtr args;
+        // if (args = Arguments())
+        // {
+        //         return IPLMakeSharePtr<::CallExpression>(identifier, args);
+        // }
+        // Restore(ss);
+        // return nullptr;
 }
 
-/*
 ExpressionPtr Parser::CallExpressionHelper()
 {        
 	if (Match(TokenType::LeftSquareBracket))
@@ -419,12 +425,15 @@ ExpressionPtr Parser::CallExpressionHelper()
 	{
 		// return  meaningfull expr
 		auto next = CallExpressionHelper();
+                if (next == nullptr) {
+                        return args;
+                }
+                // TODO chain call
                 return nullptr;
 	}
 
 	return nullptr;
 }; 
-*/
 
 ExpressionPtr Parser::ShortNewExpression()
 {
@@ -675,19 +684,19 @@ ExpressionPtr Parser::ConditionalExpression()
 ExpressionPtr Parser::AssignmentExpression()
 {
 	auto location = GetLocation();
-	auto snapShot = m_Current;
+	auto snapShot = Snapshot();
 	auto left = LeftSideExpression();
 	if (MatchOneOf({ TokenType::Equal,
-		TokenType::StarEqual,
-		TokenType::DivideEqual,
-		TokenType::ModuloEqual,
-		TokenType::PlusEqual,
-		TokenType::MinusEqual,
-		TokenType::LeftShiftEqual,
-		TokenType::RightShiftEqual,
-		TokenType::BitwiseAndEqual,
-		TokenType::BitwiseXorEqual,
-		TokenType::BitwiseOrEqual }))
+                         TokenType::StarEqual,
+                         TokenType::DivideEqual,
+                         TokenType::ModuloEqual,
+                         TokenType::PlusEqual,
+                         TokenType::MinusEqual,
+                         TokenType::LeftShiftEqual,
+                         TokenType::RightShiftEqual,
+                         TokenType::BitwiseAndEqual,
+                         TokenType::BitwiseXorEqual,
+                         TokenType::BitwiseOrEqual }))
 	{
 		auto type = Prev().Type;
 		auto right = AssignmentExpression();
@@ -699,7 +708,7 @@ ExpressionPtr Parser::AssignmentExpression()
 		return be;
 	}
 	// revert state;
-	m_Current = snapShot;
+	Restore(snapShot);
 	auto ce = ConditionalExpression();
 	if (ce)
 	{
@@ -1058,10 +1067,11 @@ ExpressionPtr Parser::Arguments()
         return nullptr;
 }
 
+
 ExpressionPtr Parser::Parse()
 {
 	auto result = Parser::Program();
-	assert(m_Current + 1 == m_Tokens.size());
+        assert(m_Current + 1 == m_Tokens.size());
 	return result;
 }
 

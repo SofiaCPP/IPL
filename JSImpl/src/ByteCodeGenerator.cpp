@@ -8,7 +8,12 @@ class ByteCodeGenerator : public ExpressionVisitor
 {
 public:
 
-	ByteCodeGenerator(const ByteCodeGeneratorOptions& o, const IPLVector<IPLString>& source) : m_Source(source), m_Options(o) {};
+	ByteCodeGenerator(const ByteCodeGeneratorOptions& o, const IPLVector<IPLString>& source)
+          : m_Source(source),
+            m_Options(o)
+        {
+                m_RegisterTable.emplace_back(); // Global variables frame
+        };
 	~ByteCodeGenerator() {};
 
 	virtual void Visit(FunctionDeclaration* e) override;
@@ -27,7 +32,7 @@ public:
         virtual void Visit(CallExpression* e) override;
   
 	IPLString GetCode();
-	unsigned ResolveRegisterName(IPLString& name);
+	unsigned ResolveRegisterName(IPLString& name) const;
 
 private:
 	void AddDebugInformation(Expression* e);
@@ -98,15 +103,17 @@ private:
 	size_t PushInstruction(Instruction::Type opcode, const IPLString& arg0, double value);
 
 	void PushConst(double c);
-	// IPLString CreateRegister();
-        // void CreateFrame();
-        // void PopFrame();
+	IPLString CreateRegister();
+        void CreateFrame();
+        void PopFrame();
         void PushIntoFrame(IPLString& r);
+        size_t RegisterCountUntil(IPLVector<IPLVector<IPLString>>::const_reverse_iterator it) const;
 	bool CheckOpCode(Instruction::Type opcode) { return opcode >= Instruction::Type::FIRST && opcode <= Instruction::Type::LAST; }
 private:
-	IPLVector<IPLString> m_RegisterTable;
-  //IPLStack<IPLVector<IPLString>> m_RegisterTablesStack;
-	IPLVector<Instruction> m_Code;
+	//IPLVector<IPLString> m_RegisterTable;
+        IPLVector<IPLVector<IPLString>> m_RegisterTable;
+        IPLUnorderedMap<IPLString, size_t> m_FunctionToAddr;
+  	IPLVector<Instruction> m_Code;
 	IPLVector<IPLString> m_Source;
 
 	IPLStack<IPLString> m_RegisterStack;
@@ -176,28 +183,25 @@ void ByteCodeGenerator::PushConst(double c)
 	PushInstruction(Instruction::Type::CONST, regName, c);
 }
 
-// ?! Hmm
-/*
 void ByteCodeGenerator::CreateFrame() {
-        m_RegisterTablesStack.push(new IPLVector<IPLString>());
+        m_RegisterTable.emplace_back();
 }
 
 void ByteCodeGenerator::PopFrame() {
-        assert(!m_RegisterTablesStack.empty());
-        m_RegisterTablesStack.pop();
+        assert(!m_RegisterTable.empty());
+        m_RegisterTable.pop_back();
 }
 
 void ByteCodeGenerator::PushIntoFrame(IPLString& r) {
-        assert(!m_RegisterTablesStack.empty());
-        m_RegisterTablesStack.top().emplace_back(r);
+        assert(!m_RegisterTable.empty());
+        m_RegisterTable.back().push_back(r);
 }
-*/
       
 IPLString ByteCodeGenerator::CreateRegister()
 {
 	IPLString regName = IPLString("tmp");
-	regName += std::to_string(m_RegisterTable.size());
-	m_RegisterTable.push_back(regName);
+	regName += std::to_string(m_RegisterTable.back().size());
+	PushIntoFrame(regName);
 	return regName;
 }
 
@@ -214,10 +218,16 @@ void ByteCodeGenerator::AddDebugInformation(Expression* e)
 	m_Code.push_back(ins);
 }
 
+/**
+ * Saves the address of the first instruction of the function so we can call it
+ */
 void ByteCodeGenerator::Visit(FunctionDeclaration* e)
 {
-        PushInstruction(Instruction::Type::Label, e->GetName(), (size_t)m_Code.size());
-	e->GetBody()->Accept(*this);
+        m_FunctionToAddr[e->GetName()] = m_Code.size();
+        CreateFrame();
+        e->GetBody()->Accept(*this);
+        PopFrame();
+        PushInstruction(Instruction::Type::RET, (size_t)1);
 }
 
 void ByteCodeGenerator::Visit(ListExpression* e)
@@ -247,24 +257,24 @@ void ByteCodeGenerator::Visit(TopStatements* e)
 	{
 		s->Accept(*this);
 	}
-	m_Code[startAddress].Values.Int[0] = (int)m_RegisterTable.size();
+	m_Code[startAddress].Values.Int[0] = (int)m_RegisterTable.back().size();
 
-	PushInstruction(Instruction::Type::POP, (int)m_RegisterTable.size());
+	PushInstruction(Instruction::Type::POP, (int)m_RegisterTable.back().size());
 }
 
 void ByteCodeGenerator::Visit(VariableDefinitionExpression* e)
 {
-	auto it = std::find_if(m_RegisterTable.begin(), m_RegisterTable.end(), [&](IPLString& current) {
+	auto it = std::find_if(m_RegisterTable.back().begin(), m_RegisterTable.back().end(), [&](IPLString& current) {
 		return e->GetName() == current;
 	});
 
 
-	if (it != m_RegisterTable.end())
+	if (it != m_RegisterTable.back().end())
 	{
 		// TODO: error double definitions
 		return;
 	}
-	m_RegisterTable.push_back(e->GetName());
+	m_RegisterTable.back().push_back(e->GetName());
 	if (e->GetValue())
 	{
 		e->GetValue()->Accept(*this);
@@ -490,24 +500,42 @@ void ByteCodeGenerator::Visit(UnaryExpression* e)
 
 void ByteCodeGenerator::Visit(CallExpression* e)
 {
-        auto identifier = e->GetIdentifier();
-        auto args = e->GetArguments();
+        auto identifier = dynamic_cast<IdentifierExpression*>(e->GetIdentifier().get())->GetName();
+        auto args = dynamic_cast<ListExpression*>(e->GetArguments().get())->GetValues();
         PushInstruction(Instruction::Type::PUSH, args.size() + 1);
-        for (auto& arg : args)
+        PushConst(0.0); // Result
+
+        // First arguments should be on the top of the stack
+        for (auto it = args.crbegin(); it != args.crend(); ++it)
         {
-                PushConst(std::stod(arg)); // Support only double arguments
+                PushConst(0.0); // Support only double arguments
         }
-        PushInstruction(Instruction::Type::CALL, identifier);
-        PushInstruction(Instruction::Type::RET, 1);
-        PushInstruction(Instruction::Type::POP, 1);
+        assert(m_FunctionToAddr.count(identifier) != 0);
+        PushInstruction(Instruction::Type::CALL, m_FunctionToAddr[identifier]);
+        PushInstruction(Instruction::Type::POP, args.size()); // Last one for return
 }
 
-unsigned ByteCodeGenerator::ResolveRegisterName(IPLString& name)
+      size_t ByteCodeGenerator::RegisterCountUntil(IPLVector<IPLVector<IPLString>>::const_reverse_iterator it) const
 {
-	auto it = std::find_if(m_RegisterTable.begin(), m_RegisterTable.end(), [&](IPLString& current) {
-		return name == current;
-	});
-	return unsigned(it - m_RegisterTable.begin());
+        size_t result = 0;
+        for (++it; it != m_RegisterTable.crend(); ++it) {
+                result += it->size();
+        }
+        return result;
+}
+
+unsigned ByteCodeGenerator::ResolveRegisterName(IPLString& name) const
+{
+        for (auto it = m_RegisterTable.rbegin(); it != m_RegisterTable.rend(); ++it) {
+                auto fit = std::find_if(it->begin(), it->end(),
+                                        [&](const IPLString& current) {
+                                                return name == current;
+                                        });
+                if (fit != it->end()) {
+                        return unsigned(fit - it->begin() + RegisterCountUntil(it));
+                }
+        }
+        assert(0 && "Resolve invalid register");
 }
 
 IPLString ByteCodeGenerator::GetCode()
@@ -577,9 +605,8 @@ IPLString ByteCodeGenerator::GetCode()
 				+ " " + std::to_string(i.Values.Address[0]) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::DUP:
-			result += "dup r" + std::to_string(ResolveRegisterName(i.Args[0]))
-                          + " r" + std::to_string(ResolveRegisterName(i.Args[1]));
-			//NOT_IMPLEMENTED;
+                        result += "dup\n";
+                        NOT_IMPLEMENTED;
 			break;
 		case ByteCodeGenerator::Instruction::PUSH:
 			result += "push " + std::to_string(i.Values.Int[0]) + '\n';
