@@ -423,3 +423,17 @@ TEST_F(SPASMTest, StringEscapeD)
 	CompileAndRun(program);
 	ASSERT_EQ(Output.str(), "the answer\\\" is 42");
 }
+
+
+TEST_F(SPASMTest, DataStackResize)
+{
+    const char* program =
+        "00: push 1025"		 "\n"
+        "01: push 15000"     "\n"
+        "02: const 16025 123""\n"
+        "03: print 16025"    "\n"
+        ""
+        ;
+    CompileAndRun(program);
+    ASSERT_EQ(Output.str(), "123");
+}
