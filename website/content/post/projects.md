@@ -4,9 +4,7 @@ date: 2019-01-09T19:01:49+02:00
 draft: false
 ---
 
-Projects are due 9th of February 2019, 10:00.
-
-Projects will be presented on 9th of February, 2019 at 11:00.
+Projects will be presented on 9th of February, 2019 at 11:00 at hall 501.
 
 <!--more-->
 
