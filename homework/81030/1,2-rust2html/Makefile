@@ -1,3 +1,4 @@
+PROGRAM_NAMES := rust2html rust2html-prettyprint rust2html-with-cyclomatic-complexity
 PROGRAM_SOURCE_FILENAMES := $(PROGRAM_NAMES:%=%.lex.yy.c)
 EXAMPLE_NAMES := example example-chains example-ugly
 EXAMPLE_OUTPUT_DOCUMENT_FILENAMES := $(EXAMPLE_NAMES:%=%.html)

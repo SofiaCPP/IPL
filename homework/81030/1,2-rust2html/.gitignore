@@ -3,6 +3,7 @@ lex.yy.c
 
 /rust2html
 /rust2html-prettyprint
+/rust2html-with-cyclomatic-complexity
 /example.html
 /example-chains.html
 /example-ugly.html
