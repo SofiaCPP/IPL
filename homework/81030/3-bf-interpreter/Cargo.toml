@@ -1,0 +1,6 @@
+[package]
+name = "bf-interpreter"
+version = "0.1.0"
+authors = ["Radoslav Georgiev <rgeorgiev583@gmail.com>"]
+
+[dependencies]
