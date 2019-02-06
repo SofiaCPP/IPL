@@ -71,6 +71,7 @@ struct StackScope
 
 ASTInterpreter::ASTInterpreter()
     : m_Fallthrough(false)
+    , m_Break(false)
 {
     // Allow globals
     EnterScope();
@@ -145,6 +146,11 @@ ASTInterpreter::value_type& ASTInterpreter::ModifyVariable(const IPLString& name
 bool ASTInterpreter::HasVariable(const IPLString& name)
 {
     return m_Variables.find(name) != m_Variables.end();
+}
+
+bool ASTInterpreter::IsInSkipMode()
+{
+    return m_Break;
 }
 
 void ASTInterpreter::Visit(LiteralNull* e) {
@@ -226,6 +232,12 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
 }
 
 void ASTInterpreter::Visit(UnaryExpression* e) {
+    if (e->GetOperator() == TokenType::Break)
+    {
+        m_Break = true;
+        return;
+    }
+
     LValueExtractor extractor(this);
     auto lvalue = extractor.Run(e->GetExpr().get());
     if (e->GetSuffix())
@@ -298,10 +310,14 @@ void ASTInterpreter::Visit(SwitchStatement* e)
     m_Evaluation.pop_back();
 
     m_Fallthrough = false;
+    m_Break = false;
 }
 
 void ASTInterpreter::Visit(CaseStatement *e)
 {
+    if (m_Break)
+        return;
+
     if (m_Fallthrough || EvalIsEqual(e->GetCondition()))
     {
         RunExpression(e->GetBody());
@@ -319,6 +335,8 @@ void ASTInterpreter::Visit(WhileStatement* e) {
         VariableScope bodyScope(this);
         RunExpression(e->GetBody());
     }
+
+    m_Break = false;
 }
 
 void ASTInterpreter::Visit(ForStatement* e) {
@@ -339,6 +357,8 @@ void ASTInterpreter::Visit(ForStatement* e) {
             RunExpression(e->GetIteration());
         }
     }
+
+    m_Break = false;
 }
 
 void ASTInterpreter::Visit(FunctionDeclaration* e) { NOT_IMPLEMENTED;}

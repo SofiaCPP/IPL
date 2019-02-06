@@ -40,7 +40,7 @@ class Expression : public IPLEnableShared<Expression>
 		:                                                                      \
 		MEMBERS_ITERATOR(EXPAND_INITIALIZER_LIST) m_dummy(__dummy) {}          \
 		virtual ~ClassName() {}                                                \
-		virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }  \
+		virtual void Accept(ExpressionVisitor& v) override { if (!v.IsInSkipMode()) v.Visit(this); }  \
                                                                                \
 		MEMBERS_ITERATOR(GENERATE_GETTERS)                                     \
 		private:                                                               \

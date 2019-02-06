@@ -16,6 +16,8 @@ public:
 
     ValueStack Run(Expression* program);
 
+	virtual bool IsInSkipMode() override;
+
     virtual void Visit(LiteralNull* e) override;
     virtual void Visit(LiteralUndefined* e) override;
     virtual void Visit(LiteralString* e) override;
