@@ -52,6 +52,7 @@ public:
 private:
     void RunExpression(const ExpressionPtr& e);
     bool EvalToBool(const ExpressionPtr& e);
+    bool EvalIsEqual(const ExpressionPtr& e);
 
     void EnterScope();
     void LeaveScope();
@@ -63,4 +64,7 @@ private:
 
     typedef IPLVector<IPLString> Scope;
     IPLStack<Scope> m_Scopes;
+
+    bool m_Fallthrough;
+    bool m_Break;
 };

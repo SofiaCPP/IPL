@@ -70,6 +70,7 @@ struct StackScope
 };
 
 ASTInterpreter::ASTInterpreter()
+    : m_Fallthrough(false)
 {
     // Allow globals
     EnterScope();
@@ -99,6 +100,15 @@ bool ASTInterpreter::EvalToBool(const ExpressionPtr& e)
     auto result = m_Evaluation.back();
     m_Evaluation.pop_back();
     return result != 0.0;
+}
+
+bool ASTInterpreter::EvalIsEqual(const ExpressionPtr& e)
+{
+    e->Accept(*this);
+    auto second = m_Evaluation.back();
+    m_Evaluation.pop_back();
+    auto first = m_Evaluation.back();
+    return fabs(second - first) < 0.0001;
 }
 
 void ASTInterpreter::EnterScope()
@@ -138,14 +148,14 @@ bool ASTInterpreter::HasVariable(const IPLString& name)
 }
 
 void ASTInterpreter::Visit(LiteralNull* e) {
-   NOT_IMPLEMENTED; 
+   NOT_IMPLEMENTED;
 }
 
 void ASTInterpreter::Visit(LiteralUndefined* e) {
-   NOT_IMPLEMENTED; 
+   NOT_IMPLEMENTED;
 }
 void ASTInterpreter::Visit(LiteralString* e) {
-   NOT_IMPLEMENTED; 
+   NOT_IMPLEMENTED;
 }
 
 void ASTInterpreter::Visit(LiteralObject* e)
@@ -278,8 +288,26 @@ void ASTInterpreter::Visit(IfStatement* e) {
     }
 }
 
-void ASTInterpreter::Visit(SwitchStatement* e) { NOT_IMPLEMENTED;}
-void ASTInterpreter::Visit(CaseStatement *e) { NOT_IMPLEMENTED;}
+void ASTInterpreter::Visit(SwitchStatement* e)
+{
+    VariableScope scope(this);
+    e->GetCondition()->Accept(*this);
+    for (const auto& stmt : e->GetCases())
+        stmt->Accept(*this);
+    RunExpression(e->GetDefaultCase());
+    m_Evaluation.pop_back();
+
+    m_Fallthrough = false;
+}
+
+void ASTInterpreter::Visit(CaseStatement *e)
+{
+    if (m_Fallthrough || EvalIsEqual(e->GetCondition()))
+    {
+        RunExpression(e->GetBody());
+        m_Fallthrough = true;
+    }
+}
 
 void ASTInterpreter::Visit(WhileStatement* e) {
     VariableScope scope(this);
