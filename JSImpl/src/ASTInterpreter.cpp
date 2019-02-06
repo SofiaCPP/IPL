@@ -1,10 +1,13 @@
 #include "ASTInterpreter.h"
 #include "Expression.h"
 #include <iostream>
+#include <limits>
 #include <math.h>
 
 #undef NOT_IMPLEMENTED
 #define NOT_IMPLEMENTED (void)e; assert(0 && "not-implemented")
+
+#define FLOAT_EQUALS(first, second) fabs(first - second) < std::numeric_limits<double>::epsilon()
 
 struct LValueExtractor : public ExpressionVisitor
 {
@@ -110,7 +113,7 @@ bool ASTInterpreter::EvalIsEqual(const ExpressionPtr& e)
     auto second = m_Evaluation.back();
     m_Evaluation.pop_back();
     auto first = m_Evaluation.back();
-    return fabs(second - first) < 0.0001;
+    return FLOAT_EQUALS(first, second);
 }
 
 void ASTInterpreter::EnterScope()
@@ -215,10 +218,10 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
             m_Evaluation.push_back(right);
             break;
         case TokenType::EqualEqual:
-            m_Evaluation.push_back(fabs(left - right) < 0.0001);
+            m_Evaluation.push_back(FLOAT_EQUALS(left, right));
             break;
         case TokenType::BangEqual:
-            m_Evaluation.push_back(fabs(left - right) > 0.0001);
+            m_Evaluation.push_back(FLOAT_EQUALS(left, right));
             break;
         case TokenType::Equal:
         {
