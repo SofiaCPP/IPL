@@ -72,6 +72,7 @@ struct StackScope
 ASTInterpreter::ASTInterpreter()
     : m_Fallthrough(false)
     , m_Break(false)
+    , m_Continue(false)
 {
     // Allow globals
     EnterScope();
@@ -150,7 +151,7 @@ bool ASTInterpreter::HasVariable(const IPLString& name)
 
 bool ASTInterpreter::IsInSkipMode()
 {
-    return m_Break;
+    return m_Break || m_Continue;
 }
 
 void ASTInterpreter::Visit(LiteralNull* e) {
@@ -232,10 +233,16 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
 }
 
 void ASTInterpreter::Visit(UnaryExpression* e) {
-    if (e->GetOperator() == TokenType::Break)
+    switch (e->GetOperator())
     {
+    case TokenType::Break:
         m_Break = true;
         return;
+    case TokenType::Continue:
+        m_Continue = true;
+        return;
+    default:
+        ;
     }
 
     LValueExtractor extractor(this);
@@ -330,10 +337,12 @@ void ASTInterpreter::Visit(WhileStatement* e) {
     if (e->GetDoWhile()) {
         VariableScope bodyScope(this);
         RunExpression(e->GetBody());
+        m_Continue = false;
     }
     while (EvalToBool(e->GetCondition())) {
         VariableScope bodyScope(this);
         RunExpression(e->GetBody());
+        m_Continue = false;
     }
 
     m_Break = false;
@@ -351,6 +360,7 @@ void ASTInterpreter::Visit(ForStatement* e) {
         {
             VariableScope bodyScope(this);
             RunExpression(e->GetBody());
+            m_Continue = false;
         }
         {
             StackScope stackScope(this);

@@ -69,4 +69,5 @@ private:
 
     bool m_Fallthrough;
     bool m_Break;
+    bool m_Continue;
 };
