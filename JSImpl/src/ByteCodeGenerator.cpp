@@ -22,6 +22,8 @@ public:
 	virtual void Visit(EmptyExpression* e) override { (void)e; }
 	virtual void Visit(IfStatement* e) override;
 	virtual void Visit(ForStatement* e) override;
+	virtual void Visit(SwitchStatement* e) override;
+	virtual void Visit(CaseStatement* e) override;
 	virtual void Visit(UnaryExpression* e) override;
 
 	IPLString GetCode();
@@ -106,6 +108,8 @@ private:
 	IPLStack<IPLString> m_RegisterStack;
 	IPLString m_OutputCode;
 	ByteCodeGeneratorOptions m_Options;
+
+	IPLVector<std::pair<size_t, ExpressionPtr>> m_SwitchCases;
 };
 
 size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, const IPLString& arg0, const IPLString& arg1, const IPLString& arg2)
@@ -343,6 +347,43 @@ void ByteCodeGenerator::Visit(ForStatement* e)
 	e->GetIteration()->Accept(*this);
 	PushInstruction(Instruction::Type::JMP, compareAddress);
 	m_Code[endAddress].Values.Address[0] = m_Code.size();
+}
+
+void ByteCodeGenerator::Visit(SwitchStatement* e)
+{
+	// unfortunately, we cannot use a jump table for the switch as JS allows non-integer values as conditions
+	e->GetCondition()->Accept(*this);
+    for (const auto& c : e->GetCases())
+	{
+        c->Accept(*this);
+	}
+
+	auto jumpToDefaultAddress = PushInstruction(Instruction::Type::JMP);
+
+	for (const auto& c : m_SwitchCases)
+	{
+		auto jumpAddress = c.first;
+		m_Code[jumpAddress].Values.Address[0] = m_Code.size();
+		c.second->Accept(*this);
+	}
+
+	m_Code[jumpToDefaultAddress].Values.Address[0] = m_Code.size();
+	e->GetDefaultCase()->Accept(*this);
+
+	m_SwitchCases.clear();
+	m_RegisterStack.pop();
+}
+
+void ByteCodeGenerator::Visit(CaseStatement* e)
+{
+	e->GetCondition()->Accept(*this);
+	auto caseCondition = m_RegisterStack.top();
+	m_RegisterStack.pop();
+	auto switchCondition = m_RegisterStack.top();
+	auto result = CreateRegister();
+	PushInstruction(Instruction::Type::EQ, result, switchCondition, caseCondition);
+	auto jumpAddress = PushInstruction(Instruction::Type::JMPT, result, (size_t)0);
+	m_SwitchCases.emplace_back(jumpAddress, e->GetBody());
 }
 
 void ByteCodeGenerator::Visit(IdentifierExpression* e)
@@ -654,7 +695,7 @@ IPLString ByteCodeGenerator::GetCode()
 		default:
 			NOT_IMPLEMENTED;
 			break;
-			
+
 		}
 		++programCounter;
 	}
