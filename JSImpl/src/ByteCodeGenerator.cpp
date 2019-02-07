@@ -110,6 +110,7 @@ private:
 	ByteCodeGeneratorOptions m_Options;
 
 	IPLVector<std::pair<size_t, ExpressionPtr>> m_SwitchCases;
+	IPLVector<size_t> m_BreakInstructionAddresses;
 };
 
 size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, const IPLString& arg0, const IPLString& arg1, const IPLString& arg2)
@@ -347,6 +348,10 @@ void ByteCodeGenerator::Visit(ForStatement* e)
 	e->GetIteration()->Accept(*this);
 	PushInstruction(Instruction::Type::JMP, compareAddress);
 	m_Code[endAddress].Values.Address[0] = m_Code.size();
+
+	for (auto breakInstructionAddress : m_BreakInstructionAddresses)
+		m_Code[breakInstructionAddress].Values.Address[0] = m_Code.size();
+	m_BreakInstructionAddresses.clear();
 }
 
 void ByteCodeGenerator::Visit(SwitchStatement* e)
@@ -372,6 +377,10 @@ void ByteCodeGenerator::Visit(SwitchStatement* e)
 
 	m_SwitchCases.clear();
 	m_RegisterStack.pop();
+
+	for (auto breakInstructionAddress : m_BreakInstructionAddresses)
+		m_Code[breakInstructionAddress].Values.Address[0] = m_Code.size();
+	m_BreakInstructionAddresses.clear();
 }
 
 void ByteCodeGenerator::Visit(CaseStatement* e)
@@ -430,6 +439,12 @@ void ByteCodeGenerator::Visit(UnaryExpression* e)
 				PushInstruction(Instruction::Type::MOV, o, reg);
 				m_RegisterStack.push(o);
 				PushInstruction(Instruction::Type::SUB, reg, reg, one);
+			}
+			return;
+		case TokenType::Break:
+			{
+				auto breakAddress = PushInstruction(Instruction::Type::JMP);
+				m_BreakInstructionAddresses.push_back(breakAddress);
 			}
 			return;
 		default:
