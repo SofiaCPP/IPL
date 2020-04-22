@@ -179,3 +179,33 @@ TEST(CodeGen, SimpleFor)
 
 	ASSERT_TRUE(asmb == expected);
 }
+
+TEST(CodeGen, SimpleCall)
+{
+        IPLVector<Token> tokens;
+        IPLString source = "function f(a, b) { return 42; } var a = f(1,2);";
+        Tokenize(source.c_str(), tokens);
+        auto ast = Parse(tokens);
+        auto asmb = GenerateByteCode(ast, source,
+                                     ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
+        IPLString expected =
+          "0: push 8\n"
+          "1: const r1 42.000000\n"
+          "2: mov r0 r1\n"
+          "3: ret r0\n"
+          "4: const r3 1.000000\n"
+          "5: mov r2 r3\n"
+          "6: const r5 2.000000\n"
+          "7: mov r4 r5\n"
+          "8: push 3\n"
+          "9: const r5 0.000000\n" // result
+          "10: const r6 0.000000\n"
+          "11: const r7 0.000000\n"
+          "12: call 1\n"
+          "13: pop 2\n"
+          "14: mov r4 r7"
+          "14: pop 8\n"
+          "15: halt\n";
+
+        ASSERT_TRUE(asmb == expected);
+}
