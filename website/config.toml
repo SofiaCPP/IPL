@@ -1,7 +1,7 @@
 baseURL = "https://sofiacpp.github.io/IPL/"
 languageCode = "en-us"
 title = "Implementation of Programming Languages"
-theme = "base16"
+theme = [ "base16", "reveal-hugo" ]
 
 preserveTaxonomyNames = true
 rssLimit = 10
