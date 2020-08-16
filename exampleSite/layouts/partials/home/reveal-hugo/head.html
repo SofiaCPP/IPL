@@ -1,0 +1,39 @@
+<!-- This partial is included before the end of the head tag for only the 'example' presentation -->
+<!-- A common use would be to add CSS to the page to customize the theme -->
+<style>
+/* Add padding, margin and a hover effect on code samples */
+.reveal section pre {
+  box-shadow: none;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  border: 1px solid lightgrey;
+}
+.reveal section pre:hover {
+  border: 1px solid grey;
+  transition: border 0.3s ease;
+}
+.reveal section pre > code {
+  padding: 10px;
+}
+.reveal table {
+  font-size: 0.65em;
+}
+/* For slide-specific CSS example */
+.reveal section.side-by-side h1 {
+  position: absolute;
+}
+.reveal section.side-by-side h1:first-of-type {
+  left: 25%;
+}
+.reveal section.side-by-side h1:nth-of-type(2) {
+  right: 25%;
+}
+.reveal section[data-background-image] a,
+.reveal section[data-background-image] p,
+.reveal section[data-background-image] h2 {
+  color: white;
+}
+.reveal section[data-background-image] a {
+  text-decoration: underline;
+}
+</style>

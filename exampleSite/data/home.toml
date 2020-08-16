@@ -1,0 +1,46 @@
+# Note: it seems that under goldmark, markdown in data templates has issues.
+#       In particular "---" is converted to <hr> even inside code fences!
+
+reusable = '''
+
+## Reusable slides
+
+Store markdown in a [data template](https://gohugo.io/templates/data-templates/) and reuse it in multiple sections or presentations.
+
+<br>
+<small>
+navigate down to learn more
+</small>
+<br>
+<a href="#" class="navigate-down">🔽</a>
+
+---
+
+Add a `example` key to data/home.toml:
+
+```toml
+example = "I'm a slide"
+```
+<br>
+
+Set the `content` attribute to "home.example":
+
+```markdown
+{{< slide content="home.example" >}}
+```
+
+---
+
+💡 Each data template entry can contain one or more slides, separated by `---` with newlines.
+
+---
+
+💡 All other slide shortcode attributes (background, transition, etc.) can be used and will be applied to each slide in the data template entry.
+
+---
+
+💡 Adding a new file in `data` folder requires to restart `hugo`
+
+💡 Symbolinc links are not allowed in `data` folder
+
+'''
