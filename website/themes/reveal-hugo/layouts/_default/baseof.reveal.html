@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {{ partial "layout/head" . }}
+    {{ partial "layout/theme" . }}
+    <!-- To insert markup before the closing head tag for all presentations,
+         create layouts/partials/reveal-hugo/head.html -->
+    {{- partial "reveal-hugo/head" . -}}
+    <!-- To insert markup at the end of the head tag for a specific presentation,
+         create layouts/partials/{section}/reveal-hugo/head.html -->
+    {{- $sectionHeadPartial := printf "%s/reveal-hugo/head" (.Page.Section | default "home") -}}
+    {{- if fileExists (printf "layouts/partials/%s.html" $sectionHeadPartial) -}}{{ partial $sectionHeadPartial . }}{{- end }}
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        {{- block "main" . -}}{{- end -}}
+      </div>
+      <!-- To insert markup at the end of the .reveal tag for all presentations,
+           create layouts/partials/reveal-hugo/end.html -->
+      {{- partial "reveal-hugo/end" . -}}
+      <!-- To insert markup at the end of the .reveal tag for a specific presentation,
+           create layouts/partials/{section}/reveal-hugo/end.html -->
+      {{- $sectionHeadPartial := printf "%s/reveal-hugo/end" (.Page.Section | default "home") -}}
+      {{- if fileExists (printf "layouts/partials/%s.html" $sectionHeadPartial) -}}{{ partial $sectionHeadPartial . }}{{- end }}
+    </div>
+    {{- partial "layout/javascript" . }}
+    <!-- To insert markup before the closing body tag for all presentations,
+         create layouts/partials/reveal-hugo/body.html -->
+    {{- partial "reveal-hugo/body" . }}
+    <!-- To insert markup at the end of the head tag for a specific presentation,
+         create layouts/partials/{section}/reveal-hugo/body.html -->
+    {{- $sectionBodyPartial := printf "%s/reveal-hugo/body" (.Page.Section | default "home") -}}
+    {{- if fileExists (printf "layouts/partials/%s.html" $sectionBodyPartial) -}}{{ partial $sectionBodyPartial . }}{{- end }}
+  </body>
+</html>
