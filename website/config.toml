@@ -10,7 +10,7 @@ pygmentsCodefences = true
 pygmentsStyle = "native"
 
 [taxonomies]
-    category = "categories"  
+    edition = "edition"  
     tag = "tags"
 
 [permalinks]

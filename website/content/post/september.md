@@ -1,6 +1,7 @@
 ---
 title: "September Session Exam"
 date: 2019-08-22T19:01:49+02:00
+edition: 2018
 draft: false
 ---
 
