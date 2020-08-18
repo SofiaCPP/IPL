@@ -4,8 +4,8 @@
     {{- partial "head" . }}
     <!-- styles definition-->
     {{- $options := (dict "targetPath" "css/styles.css" "outputStyle" "compressed" "enableSourceMap" "true") -}}
-    {{ $mainSassFile :=  "sass/main.sass" }}
-    {{- $styles := resources.Get $mainSassFile | resources.ExecuteAsTemplate $mainSassFile . | resources.ToCSS $options | resources.Fingerprint "sha512" }}
+    {{ $mainSassFile :=  "sass/main.css" }}
+    {{- $styles := resources.Get $mainSassFile | resources.ExecuteAsTemplate $mainSassFile . | resources.Fingerprint "sha512" }}
 
     <!-- scripts definition -->
     {{- $highlightPath := "js/highlight.js" }}
