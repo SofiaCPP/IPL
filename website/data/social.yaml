@@ -1,0 +1,7 @@
+- item: "github"
+  url: "https://github.com/SofiaCPP/IPL"
+- item: "facebook"
+  url: "https://github.com/SofiaCPP/IPL"
+- item: "rss"
+  url: "index.xml"
+  internal:  true
