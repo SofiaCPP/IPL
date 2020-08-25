@@ -37,6 +37,7 @@ pygmentsStyle = "native"
     description = "Course on implementing programming languages"
     GitHubURL = "https://github.com/SofiaCPP/IPL"
     numberOfTagsShown = 14
+    mobileNavigation = "right"
 
     [params.logo]
     url = "images/wrench.png"
