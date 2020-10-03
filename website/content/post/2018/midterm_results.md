@@ -1,5 +1,5 @@
 ---
-title: "Midterm Test Results"
+title: "Midterm Test Results - 2018 edition"
 date: 2019-01-08T19:01:49+02:00
 edition: 2018
 draft: false

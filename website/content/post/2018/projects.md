@@ -1,5 +1,5 @@
 ---
-title: "Projects"
+title: "Projects - 2018 edition"
 date: 2019-01-09T19:01:49+02:00
 edition: 2018
 draft: false
