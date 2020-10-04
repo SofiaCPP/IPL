@@ -1,6 +1,7 @@
 ---
 title: "Course Contents"
 date: 2018-08-02T17:45:53+03:00
+edition: 2018
 draft: false
 ---
 

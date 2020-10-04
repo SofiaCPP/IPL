@@ -1,7 +1,7 @@
 baseURL = "https://sofiacpp.github.io/IPL/"
 languageCode = "en-us"
 title = "Implementation of Programming Languages"
-theme = "base16"
+theme = [ "hugo-clarity", "reveal-hugo" ]
 
 preserveTaxonomyNames = true
 rssLimit = 10
@@ -10,7 +10,7 @@ pygmentsCodefences = true
 pygmentsStyle = "native"
 
 [taxonomies]
-    category = "categories"  
+    edition = "edition"  
     tag = "tags"
 
 [permalinks]
@@ -33,13 +33,16 @@ pygmentsStyle = "native"
     weight = -130
 
 [params]
+    name = "IPL"
     description = "Course on implementing programming languages"
     GitHubURL = "https://github.com/SofiaCPP/IPL"
+    numberOfTagsShown = 14
+    mobileNavigation = "right"
 
     [params.logo]
-    url = "wrench.png"
-    width = 50
-    height = 50
+    url = "images/wrench.png"
+    width = 48
+    height = 48
     alt = "Logo"
 
 [outputFormats.Reveal]

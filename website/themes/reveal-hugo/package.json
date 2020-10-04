@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "start": "hugo server -s exampleSite"
+    "start": "hugo server -s exampleSite",
+    "build": "hugo -s exampleSite"
   },
   "dependencies": {
-    "npm": "^6.14.6"
+    "npm": "^6.13.4"
   }
 }

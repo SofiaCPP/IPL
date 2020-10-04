@@ -4,52 +4,106 @@ weight = 34
 
 ## Slide
 
-Customize individual slide attributes like id, class, background color and transition. Use the same keys as Reveal.js but omit the 'data-' prefix.
+Use this shortcode when you need to customize slide attributes like id, class, background color and transition.
 
 ---
 
-{{% slide id="custom-1" transition="zoom" transition-speed="fast" %}}
+{{< slide class="hello" >}}
+
+## Slide
+
+Add the shortcode above the slide's content, below the `---`.
+
+```markdown
+---
+
+{{</* slide class="hello" */>}}
+
+## Hello, world!
+
+---
+```
+
+---
+
+{{< slide transition="zoom" transition-speed="fast" >}}
 
 ## Custom slide 1
 
-```
-{{%/* slide id="custom-1" transition="zoom" transition-speed="fast" */%}}
+<small>Did you notice? This slide has a fast zoom transition.</small>
+
+```markdown
+---
+
+{{</* slide transition="zoom" transition-speed="fast" */>}}
 
 ## Custom slide 1
 
-{{%/* /slide */%}}
+---
 ```
-
-{{% /slide %}}
 
 ---
 
-{{% slide id="custom-2" background="#FF4081" %}}
+{{< slide background-color="#FF4081" >}}
 
 ## Custom slide 2
 
-```
-{{%/* slide id="custom-2" background="#FF4081" */%}}
+<small>This slide has a different background color.</small>
+
+```markdown
+---
+
+{{</* slide background-color="#FF4081" */>}}
 
 ## Custom slide 2
-
-{{%/* /slide */%}}
-```
-
-{{% /slide %}}
 
 ---
+```
+
+---
+
+{{< slide background-image="/images/alex-litvin-790876-unsplash.jpg" background-color="#000000" >}}
+
+## Custom slide 3
+
+<small>This slide has a background image.</small>
+
+```markdown
+---
+
+{{</* slide background-image="/images/alex-litvin-790876-unsplash.jpg" */>}}
+
+---
+```
+
+<small>(credit <a href="https://unsplash.com/@alexlitvin">Alex Litvin</a>)</small>
+
+---
+
+{{< slide id="custom-slide" >}}
 
 💡 Tip: Setting a slide's `id` attribute makes it easy to link to from other parts of the presentation.
+<br><br>
 
-<br>
 ```markdown
-Go to [custom slide 1](#custom-1)
+---
+
+{{</* slide id="custom-slide" */>}}
+
+## Custom slide
+
+---
 ```
 
-<small>
-Go to [custom slide 1](#custom-1)
-</small>
+---
+
+```markdown
+[Try the link](#custom-slide)
+```
+
+<br>
+
+[Try the link](#custom-slide)
 
 ---
 
@@ -104,19 +158,15 @@ background = "#FF4081"
 
 ---
 
-{{% slide template="hotpink" %}}
+{{< slide template="hotpink" >}}
 
 Apply the template using the **template** attribute of the slide shortcode:
 
 ```markdown
-{{%/* slide template="hotpink" */%}}
+{{</* slide template="hotpink" */>}}
 
 # I'm a hot pink slide!
-
-{{%/* /slide */%}}
 ```
-
-{{% /slide %}}
 
 ---
 
@@ -132,6 +182,69 @@ If a template exists in multiple configurations, it's properties will be merged.
 
 {{% section %}}
 
-{{% slide content="home.example" /%}}
+{{< slide content="home.reusable" >}}
+
+---
+
+{{< slide content="common.nested.reusable" >}}
+
+{{% /section %}}
+
+---
+
+{{% section %}}
+
+## Slide-specific CSS
+
+Add more variety to your presentation by applying slide-specific CSS.
+
+<br>
+<small>
+navigate down to learn more
+</small>
+<br>
+<a href="#" class="navigate-down">🔽</a>
+
+---
+
+First, use the `slide` shortcode to give the slide a class:
+
+```markdown
+---
+
+{{</* slide class="side-by-side" */>}}
+
+# 📈
+
+# 📊
+
+---
+```
+
+---
+
+Next, use a layout extension partial like `reveal-hugo/head.html` to add CSS selectors:
+
+```html
+<style>
+.reveal section.side-by-side h1 {
+  position: absolute;
+}
+.reveal section.side-by-side h1:first-of-type {
+  left: 25%;
+}
+.reveal section.side-by-side h1:nth-of-type(2) {
+  right: 25%;
+}
+</style>
+```
+
+---
+
+{{< slide class="side-by-side" >}}
+
+# 📈
+
+# 📊
 
 {{% /section %}}

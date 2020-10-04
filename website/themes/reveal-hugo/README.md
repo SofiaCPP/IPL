@@ -1,5 +1,10 @@
 # reveal-hugo
 
+![License badge](https://img.shields.io/github/license/dzello/reveal-hugo.svg)
+[![Website up/down badge](https://img.shields.io/website-up-down-green-red/https/reveal-hugo.dzello.com.svg)](https://reveal-hugo.dzello.com/)
+![Last commit badge](https://img.shields.io/github/last-commit/dzello/reveal-hugo.svg)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/70c5c7a6-5fb2-40a9-98e1-20aa21336201/deploy-status)](https://app.netlify.com/sites/reveal-hugo/deploys)
+
 A Hugo theme for [Reveal.js](https://revealjs.com/) that makes authoring and customization a breeze. With it, you can turn any properly-formatted Hugo content into a HTML presentation.
 
 ![screenshot of reveal-hugo](https://github.com/dzello/reveal-hugo/blob/master/images/screenshot.png?raw=true)
@@ -24,18 +29,33 @@ Salut.
 ---
 
 # Español
-Holá.
+Hola.
 ```
 
-Just use `---` to split content into different slides.
+Just use `---` surrounded by blank lines to split content into different slides.
 
-## Demo
+## Documentation
 
-Visit [reveal-hugo.dzello.com](https://reveal-hugo.dzello.com/) to see a presentation created with this theme and learn more about what you can do. Jump to the [exampleSite](exampleSite) folder in this repository to see the source code for that presentation.
-
-If you're looking for a very simple reveal-hugo app you can use as a boilerplate, see the [programming-quotes](https://github.com/dzello/programming-quotes) repository.
+Visit [reveal-hugo.dzello.com](https://reveal-hugo.dzello.com/) to see a presentation created with this theme and learn about all of the different functionality available to you.
 
 For a full-length blog post about reveal-hugo, checkout [Harness the Power of Static Site Generators to Create Presentations](https://forestry.io/blog/harness-the-power-of-static-to-create-presentations/) on the [Forestry.io blog](https://forestry.io/blog).
+
+### Demos
+
+Jump to the [exampleSite](exampleSite) folder in this repository to see the source code for the above presentation and several more. Here are links to those presentations live:
+
+- [logo-example](https://reveal-hugo.dzello.com/logo-example/) - Shows how to add a logo to your presentation
+- [custom-theme-example](https://reveal-hugo.dzello.com/custom-theme-example/) - Uses Hugo pipes to compile and use a custom Reveal.js SCSS theme (recommended!)
+- [section-example](https://reveal-hugo.dzello.com/section-example/) - Very basic example that shows how to create a presentation for a Hugo section
+- [plugin-example](https://reveal-hugo.dzello.com/plugin-example/) - Shows how to add additional Reveal.js plugins to your presentation, for example an image gallery
+- [template-example](https://reveal-hugo.dzello.com/template-example/) - An example of using the slide shortcode with powerful templates
+- [bundle-example](https://reveal-hugo.dzello.com/bundle-example/) - An example of creating a presentation from one or more markdown files in a leaf bundle
+- [hugo-hl-example](https://reveal-hugo.dzello.com/hugo-hl-example/) - An example of using Hugo's compile-time syntax highlighter
+- [highlightjs-linenumbers-example](https://reveal-hugo.dzello.com/highlightjs-linenumbers-example/) - An example of using the multiline and multi-step capabilities of highlight.js
+
+### Starter repository
+
+If you want to start creating a presentation right away, clone the [programming-quotes](https://github.com/dzello/programming-quotes) repository and start hacking.
 
 ## Tutorial
 
@@ -46,25 +66,34 @@ You should be able to complete this section with no prior knowledge of Hugo or R
 To start, [install Hugo](https://gohugo.io/) and create a new Hugo site:
 
 ```shell
-$ hugo new site my-presentation
+hugo new site my-presentation
 ```
 
 Change into the directory of the new site:
 
 ```shell
-$ cd my-presentation
+cd my-presentation
+```
+
+Initialize a git repository:
+
+```shell
+git init
 ```
 
 Add the reveal-hugo theme as a submodule in the themes directory:
 
 ```shell
-$ git submodule add git@github.com:dzello/reveal-hugo.git themes/reveal-hugo
+git submodule add git@github.com:dzello/reveal-hugo.git themes/reveal-hugo
 ```
 
 Open `config.toml` and add the following contents:
 
 ```toml
 theme = "reveal-hugo"
+
+[markup.goldmark.renderer]
+unsafe = true
 
 [outputFormats.Reveal]
 baseName = "index"
@@ -110,6 +139,14 @@ This is my first slide.
 This is my second slide.
 ```
 
+### Cloning an existing repository
+
+If you have an existing repository that was setup with the above steps, you have to pull in the theme submodule after cloning your repository using the following command:
+
+```shell
+git submodule update --init
+```
+
 ## Usage
 
 The Usage guide is contained in the example presentation that lives in this repository in the [exampleSite](./exampleSite) directory. You can access a live version at [reveal-hugo.dzello.com](https://reveal-hugo.dzello.com/).
@@ -151,21 +188,25 @@ Wrap any content in the fragment shortcode and it will appear incrementally. Gre
 Like fragment but more terse - content is placed inline in a self-closing shortcode.
 
 ```markdown
-- {{< frag c="One" />}}
-- {{< frag c="Two" />}}
-- {{< frag c="Three" />}}
+- {{< frag c="One" >}}
+- {{< frag c="Two" >}}
+- {{< frag c="Three" >}}
 ```
 
 #### slide shortcode
 
-The slide shortcode lets you set custom HTML and Reveal.js attributes for each slide - things like id, class, transition, background and [much more](https://github.com/hakimel/reveal.js/#slide-attributes). The names are the same as Reveal.js but without the 'data-' prefix.
+The slide shortcode lets you set custom HTML and Reveal.js attributes for each slide - things like id, class, transition, background just to name a few. The names are the same as Reveal.js but without the 'data-' prefix.
+
+Add the shortcode above the slide content, below the `---` separator. Do not place content inside of the shortcode.
 
 ```markdown
-{{% slide id="hello" background="#FFF" transition="zoom" transition-speed="fast" %}}
+---
+
+{{< slide id="hello" background="#FFF" transition="zoom" transition-speed="fast" >}}
 
 # Hello, world!
 
-{{% /slide %}}
+---
 ```
 
 Here's a list of documented slide attributes from the Reveal.js docs:
@@ -230,6 +271,39 @@ Markdown surrounded by the markdown shortcode will not be rendered by Hugo but b
 {{% /markdown %}}
 ```
 
+### MathJax support
+
+Add the following to `layouts/partials/reveal-hugo/body.html`:
+
+```
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+```
+
+Then you can do this in a slide:
+
+```
+## Cool equations
+
+Displayed equations are wrapped in double-\$
+
+$$\frac{n!}{k!(n-k)!} = \binom{n}{k}$$  
+
+Inline equations like $E=mc^2$ are wrapped in single-\$
+```
+
 ### HTML slides
 
 If you need to create fancier HTML for a slide than you can do with markdown, just add `data-noprocess` to the &lt;section&gt; element.
@@ -284,17 +358,19 @@ You can use all the additional slide shortcode attributes. They will be applied 
 
 ## Configuration
 
-Customize the Reveal.js presentation by setting these values in `config.toml` or the front matter of any presentation's `index.md` file.
+Customize the Reveal.js presentation by setting these values in `config.toml` or the front matter of any presentation's `_index.md` file.
 
-- `params.reveal_hugo.theme`: The Reveal.js theme used, defaults to "black"
-- `params.reveal_hugo.custom_theme`: The path to a locally hosted Reveal.js theme
-- `params.reveal_hugo.highlight_theme`: The [highlight.js](https://highlightjs.org/) theme used, defaults to "default"
+- `reveal_hugo.theme`: The Reveal.js theme used; defaults to "black"
+- `reveal_hugo.custom_theme`: The path to a locally hosted Reveal.js theme in the static or assets folder
+- `reveal_hugo.custom_theme_compile`: If set to true, the theme will be compiled with Hugo pipes (and must live in the assets folder)
+- `reveal_hugo.custom_theme_options`: Provide a dictionary to customize theme compilation, see [Hugo's SCSS docs](https://gohugo.io/hugo-pipes/scss-sass/#options) for a list of options
+- `reveal_hugo.highlight_theme`: The [highlight.js](https://highlightjs.org/) theme used; defaults to "default"
+- `reveal_hugo.reveal_cdn`: The location to load Reveal.js files from; defaults to the `reveal-js` folder in the static directory to support offline development. To load from a CDN instead, set this value to `https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.7.0` or whatever CDN you prefer.
+- `reveal_hugo.highlight_cdn`: The location to load highlight.js files from; defaults to to the `highlight-js` folder in the static directory to support offline development. To load from a CDN instead, set this value to `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0` or whatever CDN you prefer.
+- `reveal_hugo.load_default_plugins`: If set to true (default), the plugins included by default are loaded. These are markdown, highlight.js, notes and zoom.
+- `reveal_hugo.plugins`: An array of additional Reveal.js plugins to load, e.g. `["plugin/gallery/gallery.plugin.js"]`. The appropriate files will need to have been copied into the `static` directory. CDN loading is not supported. See here for a [big list of plugins](https://github.com/hakimel/reveal.js/wiki/Plugins,-Tools-and-Hardware) you can try.
 
-Include any other attributes in `params.reveal_hugo` that you'd like to be fed as arguments to `Reveal.initialize` in **snakecase**. So `slideNumber` becomes `slide_number`. The reason is that Hugo lowercases all params and Reveal.js is case-sensitive. Params are converted from snakecase to camelcase before passing to Reveal.js.
-
-See the [extensive list of Reveal.js configuration options](https://github.com/hakimel/reveal.js/#configuration) here. The defaults used by this theme are located in `data/reveal_hugo.toml`.
-
-If you're new to TOML, this is how it should look in your `config.toml`:
+This is how parameters will look in your `config.toml`:
 
 ```TOML
 [params.reveal_hugo]
@@ -308,9 +384,128 @@ Or in the front matter of an `_index.md` file:
 theme = "moon"
 ```
 
+Include any other attributes in those sections that you'd like to be fed as arguments to `Reveal.initialize` in **snakecase**, so `slide_number` instead of `slideNumber`. Params are converted from snakecase to camelcase before passing to Reveal.js. This is necessary to maintain the proper case of the parameters.
+
+Here's an example of configuring Reveal.js parameters alongside a theme and highlight.js theme:
+
+```TOML
+[reveal_hugo]
+theme = "moon"
+highlight_theme = "solarized-dark"
+slide_number = true
+transition = "zoom"
+```
+
+See the [extensive list of Reveal.js configuration options](https://github.com/hakimel/reveal.js/#configuration) here.
+
+### Syntax highlighting
+
+Syntax highlighting can be done with Hugo at compile-time or using Reveal.js with the pre-installed highlight.js plugin. Presentations can use both if they wish for different pieces of code.
+
+To do highlighting with Hugo, use the [highlight shortcode](https://gohugo.io/content-management/syntax-highlighting/#highlight-shortcode) and check out the [hugo-hl-example](https://reveal-hugo.dzello.com/hugo-hl-example/) example presentation.
+
+To see an example of highlighting with Reveal.js, checs out the [highlightjs-linenumbers-example](https://reveal-hugo.dzello.com/highlightjs-linenumbers-example/) presentation.
+
+By default, markdown code fences will be processed with Hugo. To turn that off, add this to your `config.toml` file:
+
+``` toml
+[markup.highlight]
+codeFences = false
+```
+
+Now, the code in the fences will be highlighted by highlight.js instead.
+
+### Custom Reveal.js themes
+
+If you have a custom reveal theme to use (in .css form), place it in the `static` folder and specify it in the configuration. For example, if your css file lives here:
+
+```
+| static
+  | stylesheets
+    - custom-theme.css
+```
+
+Then this is what you'll put in `config.toml`:
+
+```toml
+[params.reveal_hugo]
+reveal_hugo.custom_theme = "stylesheets/custom-theme.css"
+```
+
+### Compiling a custom Reveal.js theme with Hugo pipes
+
+Reveal.js theme customization is easiest to do by overriding variables in the SCSS or PostCSS build process. You can take advantage of Hugo pipes to do the theme compilation. In this case, your SCSS, Saas or PostCSS file needs to live in assets:
+
+```
+| assets
+  | stylesheets
+    - custom-theme.scss
+```
+
+If you just wanted to change the presentation colors, here's what you might put in `custom-theme.scss`:
+
+```scss
+@import "reveal-js/css/theme/template/mixins";
+@import "reveal-js/css/theme/template/settings";
+
+$backgroundColor: rgb(3, 129, 45);
+$mainColor: #fff;
+$headingColor: #fff;
+```
+
+To learn more about Reveal.js theme customization, check out the [Reveal.js theme docs](https://github.com/hakimel/reveal.js/blob/master/css/theme/README.md).
+
+This is what the front matter would look like:
+
+```toml
+[params.reveal_hugo]
+reveal_hugo.custom_theme = "stylesheets/custom-theme.css"
+reveal_hugo.custom_theme_compile = true
+```
+
+You can also add options that will be passed to [Hugo's toCSS method](https://gohugo.io/hugo-pipes/scss-sass/#options):
+
+```toml
+[reveal_hugo.custom_theme_options]
+targetPath = "css/custom-theme.css"
+enableSourceMap = true
+```
+
+Check out the [custom-theme-example presentation](https://reveal-hugo.dzello.com/custom-theme-example/) to see a working example.
+
 ## Adding HTML to the layout
 
-If you need to add something to the HTML page, just override one or both of the empty partials that live at `layouts/partials/reveal-hugo/body.html` and `layouts/partials/reveal-hugo/head.html`. These partials are injected into the page just before the closing of the body and head tags respectively. Common uses would be to add custom CSS or JavaScript to your presentation.
+If you need to add something to the HTML layout, you can create partials that live at specific locations, depending on which presentation you want to customize and where you want the HTML inserted into the page.
+
+| Presentation | Before &lt;/head&gt;            | Before &lt;/body&gt;            | Before closing &lt;/div&gt; of `div.reveal` |
+|--------------|---------------------------------|---------------------------------|---------------------------------------------|
+| All          | reveal-hugo/head.html           | reveal-hugo/body.html           | reveal-hugo/end.html                        |
+| Root         | home/reveal-hugo/head.html      | home/reveal-hugo/body.html      | home/reveal-hugo/end.html                   |
+| Section      | {section}/reveal-hugo/head.html | {section}/reveal-hugo/body.html | {section}/reveal-hugo/end.html              |
+
+This is the recommended way to add custom CSS and JavaScript to each presentation.
+
+> 💡 Tip: In Hugo, partials live in the `layouts` folder:
+> 
+> For example, if you have HTML that is to be placed before every presentation, this would be the structure:
+> ```
+> - layouts
+>   - partials
+>     - reveal-hugo
+>       - head.html
+>       - body.html
+>       - end.html
+
+## Offline development
+
+Offline-friendly development is the default. The Reveal.js and Highlight.js files are loaded from the static directory by default. (See above for how to use a CDN instead). If you need `file:///` URLs to work, make sure to set `relativeURLs` and `uglyURLs` in your `config.toml`.
+
+```toml
+relativeURLs = true
+uglyURLs = true
+```
+
+Note: `uglyURLs` isn't strictly required, but it is useful if you're loading against the filesystem as it makes sure that all URLs end in .html and links point directly at them instead of to a folder.
 
 ## Recipes
 
@@ -322,7 +517,7 @@ If your Hugo site already has a theme but you'd like to create a presentation fr
 cd my-hugo-site
 git clone git@github.com:dzello/reveal-hugo.git themes/reveal-hugo
 cd themes/reveal-hugo
-cp -r data layouts static ../../
+cp -r layouts static ../../
 ```
 
 Files and directories are named such that they shouldn't conflict with your existing content. Of course, you should double check before copying, especially the shortcodes which can't be put under a directory.
@@ -340,6 +535,28 @@ Now you can add `outputs = ["Reveal"]` to the front matter of any section's `_in
 
 Note: If you specify `outputs = ["Reveal"]` for a single content file, you can prevent anything being generated for that file. This is handy if you other default layouts that would have created a regular HTML file from it. Only the list file is required for the presentation.
 
+**Tip**: As of Hugo 0.42, Hugo [has theme inheritence](https://gohugo.io/news/0.42-relnotes/). You can avoid the file copying step above by adding `"reveal-hugo"` to your site's array of themes.
+
+### Create a presentation from a leaf bundle or single page type
+
+By default, reveal-hugo doesn't create presentations for single pages (i.e. pages other than `_index.md`) as it assumes those pages are pieces of a larger presentation in the section starting with `_index.md`. This might not be the case if your content is structured in a leaf bundle (the main file is then `index.md` with no underscore, which Hugo treats as a single page) or if you just want to put a presentation in a single file, say `presentation.md`. In these cases, you just need to tell Hugo to use a different layout.
+
+If you're using a leaf page bundle, set the following in the front matter of the `index.md` file:
+
+```toml
+layout = "bundle"
+```
+
+If you're in a single page file like `presentation.md`, set the following in the front matter:
+
+```toml
+layout = "list"
+```
+
+### Create a page that lists out all presentations
+
+See [this issue](https://github.com/dzello/reveal-hugo/issues/37) for a template that you can use.
+
 ## Reveal.js tips
 
 These are some useful Reveal.js features and shortcuts.
@@ -355,17 +572,18 @@ Here are a few useful Reveal.js-related tools:
 
 Find many more on the Reveal.js wiki: [Plugins, tools and hardware](https://github.com/hakimel/reveal.js/wiki/Plugins,-Tools-and-Hardware).
 
+## Implementations
+
+Have you built something with reveal-hugo? Add a link to it here.
+
+- [dzello's Paris Wedding Weekend Guide](https://estelle.and.dzello.com/guide/) ([source](https://github.com/dzello/estelle-and-josh/blob/master/site/content/guide/_index.md))
+- [DevOps Training](https://devops.training.barpilot.io/) ([source](https://github.com/guilhem/devops-training))
+
+
+## Changelog
+
+- 2018-08-03: The slide shortcode is now easier to use. An auto-closing version sits inside the slide instead of needing to surround its content and add a closing tag.
+
 ## Contributing
 
-Contributions are very welcome. To run the example site in this repository locally, clone this repository and run:
-
-```shell
-hugo server -s exampleSite
-```
-
-or simply...
-
-```shell
-npm start
-```
-
+Contributions are very welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.

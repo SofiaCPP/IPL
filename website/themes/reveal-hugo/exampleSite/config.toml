@@ -5,16 +5,33 @@ disableKinds = ["sitemap", "RSS"]
 theme = "."
 themesDir = "../"
 
+# uncomment for browsing at file:///
+# relativeURLs = true
+# uglyURLs = true
+
 [author]
 name = "Josh Dzielak"
 
-[params]
-description = "Includes a handy markdown-based syntax and shortcodes to help you get presentations done fast"
+# currently only the unsafe mode for goldmark is supported
+[markup.goldmark.renderer]
+unsafe = true
 
-[params.reveal_hugo]
-history = true
+# choose between Hugo compile-time or Highlight.js
+# syntax highlighting for code inside of code fences
+[markup.highlight]
+codeFences = false  # use highlight.js 
+# codeFences = true  # use hugo highlighting at compile time
+style = "tango"  # set a style for hugo highlighting
 
 [outputFormats.Reveal]
 baseName = "index"
 mediaType = "text/html"
 isHTML = true
+
+[params.reveal_hugo]
+history = true
+
+# used in content/template-example
+[params.reveal_hugo.templates.grey]
+background = "#424242"
+transition = "convex"
