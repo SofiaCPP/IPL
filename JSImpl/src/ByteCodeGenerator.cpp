@@ -97,7 +97,7 @@ private:
 
 	void PushConst(double c);
 	IPLString CreateRegister();
-	bool CheckOpCode(Instruction::Type opcode) { return opcode >= Instruction::Type::FIRST && opcode <= Instruction::Type::LAST; }
+	bool CheckOpCode(int opcode) { return opcode >= Instruction::Type::FIRST && opcode <= Instruction::Type::LAST; }
 private:
 	IPLVector<IPLString> m_RegisterTable;
 	IPLVector<Instruction> m_Code;
