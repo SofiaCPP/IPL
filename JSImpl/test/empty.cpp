@@ -10,7 +10,7 @@ TEST(Empty, Empty)
 int get_op(int8_t *& PC) {
 	return *(PC++);
 }
-size_t get_arg(int8_t*& PC, int size) {
+uint64_t get_arg(int8_t*& PC, int size) {
 	switch (size) {
 	case 0:
 		return *(PC++);
@@ -19,7 +19,7 @@ size_t get_arg(int8_t*& PC, int size) {
 	case 2:
 		return *(((unsigned int*&)PC)++);
 	case 3:
-		return *(((size_t*&)PC)++);
+		return *(((uint64_t*&)PC)++);
 	}
 	return 0;
 }
