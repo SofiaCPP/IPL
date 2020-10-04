@@ -3082,7 +3082,7 @@ void Lexer::read(size_t nbytes)
     file->read(old_limit, limit - old_limit);
     if (file->eof())
     {
-        size_t bytes = file->gcount();
+        auto bytes = file->gcount();
         std::fill(old_limit + bytes, limit, '\0');
     }
 }
@@ -3092,7 +3092,7 @@ void Lexer::buffer_init()
     file->read(buffer, buffer_size);
     if (file->eof())
     {
-        size_t bytes = file->gcount();
+        auto bytes = file->gcount();
         std::fill(buffer + bytes, buffer + buffer_size, '\0');
     }
 

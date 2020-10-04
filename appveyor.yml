@@ -14,7 +14,7 @@ configuration:
   - Release
 
 platform:
-  - x86
+  - Win32
   - x64
 
 build:
@@ -28,7 +28,7 @@ for:
     only:
       - image: Ubuntu
   build_script:
-    - make -C $APPVEYOR_BUILD_FOLDER/JSImpl/solution -j config=`echo ${CONFIGURATION} | sed -e 'y/DR/dr/'``echo ${PLATFORM} | sed -e 's/x86//' | sed -e 's/x64/64/'`
+    - make -C $APPVEYOR_BUILD_FOLDER/JSImpl/solution -j config=`echo ${CONFIGURATION} | sed -e 'y/DR/dr/'``echo ${PLATFORM} | sed -e 's/Win32//' | sed -e 's/x64/64/'`
   test_script:
     - '$APPVEYOR_BUILD_FOLDER/JSImpl/build/bin/$CONFIGURATION/Test'
   after_test:
