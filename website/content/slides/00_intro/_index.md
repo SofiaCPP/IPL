@@ -1,13 +1,13 @@
 ---
 title: "Introduction to Implementation of Programming Languages"
-date: 2018-09-15T17:45:53+03:00
+date: 2020-09-15T17:45:53+03:00
 draft: false
 outputs:
     - Reveal
 ---
 # Implementation of Programming Languages
 
-FMI 2018
+FMI 2020
 
 ---
 # Who are we?
@@ -38,7 +38,7 @@ FMI 2018
 ## What are we not going to talk about?
 
 - virtualization of computer systems
-- Regular expressions and context free grammars
+- The theory of regular expressions and context free grammars
 - compiler optimizations
 
 ---
@@ -55,7 +55,7 @@ FMI 2018
 ---
 ## How are *WE* going to learn about VMs?
 
-We are going to create a JavaScript interpreter from scratch!
+We are going to study and enhance a JavaScript interpreter.
 
 - JSImpl (tm)
 
@@ -82,6 +82,7 @@ A few sample of projects are:
 - create a Lua interpreter based on JSImpl with generational, incremental
   garbage collector
 - create an AOT compiler for JavaScript
+- create a static analyzer or a code refactoring tool
 
 ---
 ## Homework?
