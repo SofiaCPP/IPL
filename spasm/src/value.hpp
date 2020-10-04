@@ -25,39 +25,38 @@ struct Value
 
     explicit Value(double v) { m_value.as_double = v; }
 
-    explicit Value(bool v) : Value(ValueType::Boolean, (size_t)v) {}
+    explicit Value(bool v) : Value(ValueType::Boolean, (uint64_t)v) {}
 
-    Value(ValueType tag, size_t payload)
+    Value(ValueType tag, uint64_t payload)
     {
         assert(tag != ValueType::Number && "Zero tag is plain double");
         assert(!(payload >> 48) && "Use only pointers to the heap.");
         m_value.as_pointer.pointer = payload;
-        m_value.as_pointer.tag = size_t(tag);
+        m_value.as_pointer.tag = uint64_t(tag);
         m_value.as_pointer.nan = 0x1fff;
     }
 
-    Value(ValueType tag, void* pointer) : Value(tag, (size_t)pointer) {}
+    Value(ValueType tag, void* pointer) : Value(tag, (uint64_t)pointer) {}
 
     struct NanPointer
     {
-        size_t pointer : 48;
-        size_t tag : 3;
-        size_t nan : 13;
+        uint64_t pointer : 48;
+        uint64_t tag : 3;
+        uint64_t nan : 13;
     };
 
     struct CheckType
     {
-        size_t payload : 48;
-        size_t check : 16;
+        uint64_t payload : 48;
+        uint64_t check : 16;
     };
     union {
         double as_double;
         NanPointer as_pointer;
         CheckType to_check;
-        size_t as_int64;
+        uint64_t as_int64;
     } m_value;
 
-    static_assert(sizeof(size_t) == 8, "unsupported arch");
     static_assert(sizeof(double) == 8, "unsupported arch");
 
     bool is_double() const { return m_value.to_check.check <= 0xFFF8; }
@@ -76,7 +75,7 @@ struct Value
 
     void* get_pointer() const
     {
-        return (void*)(size_t)m_value.as_pointer.pointer;
+        return (void*)(uint64_t)m_value.as_pointer.pointer;
     }
 
     bool get_boolean() const
