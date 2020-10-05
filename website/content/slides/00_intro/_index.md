@@ -183,6 +183,7 @@ Abstract Syntax Tree
 1. How to grow one?
 2. What to do with it?
 3. Evaluating the syntax tree
+4. Transforming the syntax tree
 
 {{% note %}}
 - language transformation at syntax level
@@ -206,6 +207,7 @@ Virtual machines
 
 1. What is a virtual machine?
 2. Implementing the language features in the VM
+    - Library - arrays, hash maps, etc
     - OOP
     - Exception handling
 
