@@ -23,7 +23,25 @@ if x0 { if x1 s1 else s2 } // 2
 </code></pre><ul><li>CFG - it is ambiguous</li><li>PEG - 2 - because it is the first option</li></ul></section><section><h6 id=lalrn>LALR(n)</h6><p>LR(n) and LALR(n) are family of parsing algorithms for CFG</p><ul><li>n is the number of look ahead terminals</li><li>L - <em>left-to-right</em>,</li><li>R - <em>right-most derivation</em> - the right most non-terminal is replaced</li></ul></section><section><h6 id=program-1>Program</h6><pre><code>function answer() {
     return 6*7;
 }
-</code></pre></section><section><h6 id=tokens>Tokens</h6><ul><li>keyword: <code>function</code></li><li>identifier: <code>answer</code></li><li>symbol: <code>(</code></li><li>symbol: <code>)</code></li><li>symbol: <code>{</code></li><li>keyword: <code>return</code></li><li>number: 6</li><li>symbol: <code>*</code></li><li>number: 7</li><li>symbol: <code>;</code></li><li>symbol: <code>}</code></li></ul></section><section><h6 id=ast>AST</h6><h1 id=todo-use-javascript-ast-dumper>TODO: use JavaScript AST dumper</h1></section><section><h3 id=middle>Middle</h3><p>Takes the AST and transforms that to some <em>Intermediate Representation</em> (IR)
+</code></pre></section><section><h6 id=tokens>Tokens</h6><ul><li>keyword: <code>function</code></li><li>identifier: <code>answer</code></li><li>symbol: <code>(</code></li><li>symbol: <code>)</code></li><li>symbol: <code>{</code></li><li>keyword: <code>return</code></li><li>number: 6</li><li>symbol: <code>*</code></li><li>number: 7</li><li>symbol: <code>;</code></li><li>symbol: <code>}</code></li></ul></section><section><h6 id=ast>AST</h6><p><a href="https://esprima.org/demo/parse.html?code=function%20answer()%20%7B%0A%20%20%20%20return%206%20">https://esprima.org/demo/parse.html?code=function%20answer()%20%7B%0A%20%20%20%20return%206%20</a>*%207%3B%0A%7D</p><pre><code>{
+  &quot;type&quot;: &quot;FunctionDeclaration&quot;,
+  &quot;id&quot;: { &quot;type&quot;: &quot;Identifier&quot;, &quot;name&quot;: &quot;answer&quot; },
+  &quot;body&quot;: {
+    &quot;type&quot;: &quot;BlockStatement&quot;,
+    &quot;body&quot;: [
+      {
+        &quot;type&quot;: &quot;ReturnStatement&quot;,
+        &quot;argument&quot;: {
+          &quot;type&quot;: &quot;BinaryExpression&quot;,
+          &quot;operator&quot;: &quot;*&quot;,
+          &quot;left&quot;: { &quot;type&quot;: &quot;Literal&quot;, &quot;value&quot;: 6 },
+          &quot;right&quot;: { &quot;type&quot;: &quot;Literal&quot;, &quot;value&quot;: 7 }
+        }
+      }
+    ]
+  },
+}
+</code></pre></section><section><h3 id=middle>Middle</h3><p>Takes the AST and transforms that to some <em>Intermediate Representation</em> (IR)
 that is convenient for:</p><ul><li>optimization - constant propagation, loop unrolling, etc</li><li>machine code generation - register allocation, etc</li></ul></section><section><h3 id=ir>IR</h3><ul><li>A compiler might have different levels and types of IR<ul><li>text and binary</li></ul></li><li><a href=https://en.wikipedia.org/wiki/Static_single_assignment_form>Static Single Assignment form</a></li></ul></section><section><h3 id=ir-in-llvm---c>IR in LLVM - C</h3><pre><code>int mul_add(int x, int y, int z) {
   return x * y + z;
 }
@@ -33,7 +51,24 @@ entry:
   %tmp2 = add i32 %tmp, %z
   ret i32 %tmp2
 }
-</code></pre></section><section><h3 id=back-end>Back end</h3><blockquote><p>Takes the IR and produces native code for a particular machine</p></blockquote></section><section><h2 id=interpreter>Interpreter</h2><blockquote><p>Like the compiler, but instead of producing machine code, executes the program
+</code></pre></section><section><h3 id=webassembly>WebAssembly</h3><p>WebAssembly is actually an IR.</p><pre><code>(module
+  (func (export &quot;add&quot;) (param $n1 i32) (param $n2 i32) (result i32)
+    get_local $n1
+    get_local $n2
+    i32.add
+  )
+)
+</code></pre></section><section><h3 id=net-cil>.NET CIL</h3><ul><li><p>C#, F#, Basic (some versions), etc target the .NET virtual machine</p></li><li><p>Common Intermediate Language</p><p>.class public Foo
+{
+.method public static int32 Add(int32, int32) cil managed
+{
+.maxstack 2
+ldarg.0 // load the first argument;
+ldarg.1 // load the second argument;
+add // add them;
+ret // return the result;
+}
+}</p></li></ul></section><section><h3 id=back-end>Back end</h3><blockquote><p>Takes the IR and produces native code for a particular machine</p></blockquote></section><section><h2 id=interpreter>Interpreter</h2><blockquote><p>Like the compiler, but instead of producing machine code, executes the program
 instruction by instruction translating from program instructions to machine
 instructions.</p></blockquote></section><section><h2 id=interpreter-1>Interpreter</h2><ul><li>Most interpreters have a REPL which makes them great for experiments.</li><li>You don&rsquo;t need build an executable to run your program</li></ul></section><section><h3 id=compiler-vs-interpreter>Compiler vs Interpreter</h3><ul><li><a href="https://www.youtube.com/watch?v=_C5AHaS1mOA">https://www.youtube.com/watch?v=_C5AHaS1mOA</a></li></ul></section><section><h3 id=aot-compilation>AOT compilation</h3><ul><li>Ahead of Time - the program is compiled before it is being run</li></ul></section><section><h3 id=jit-compilation>JIT compilation</h3><ul><li>Just in Time - the program is running (typically in an interpreter) and parts
 of it are being compiled to native machine code while it is being executed</li></ul></section><section><h4 id=aot-vs-jit>AOT vs JIT</h4><ul><li>AOT - less overhead, faster startup, generally better performance</li><li>JIT - better chance for optimizations, since some of the program arguments
@@ -42,6 +77,6 @@ be devirtuallized at runtime</li></ul></section><section><h2 id=transpiler>Trans
 collection and most of the standard library of the language.</p></section><section><h3 id=vms>VMs</h3><ul><li>stack based<ul><li>all computations are done with operands pushed onto a stack, then popped
 and the result is pushed back</li><li>simple, but inefficient</li></ul></li><li>register based<ul><li>some of the computations are using registers (generally each local
 variable gets a register)</li><li>code generation is a bit harder, but the machine is more efficient</li></ul></li></ul></section><section><h3 id=rpn-as-an-interperter>RPN as an interperter</h3><p>Calculating an expression using postfix notation is actually an interpreter for
-expressions.</p><ul><li>Forth is a complete programming language based on that.</li></ul></section><section><h2 id=what-is-a-machine>What is a machine?</h2><ul><li>x86 is a virtual machine</li><li>the CPU is an interpreter with microcode</li></ul></section><section><h1 id=tools>Tools</h1><ul><li>lex / flex</li><li>re2c</li><li>yacc / bison</li><li>lemon</li><li>antlr</li></ul></section><section><h1 id=heading>?</h1></section><section></section></div></div><script type=text/javascript src=/IPL/reveal-hugo/object-assign.js></script><a href=/IPL/reveal-js/css/print/ id=print-location style=display:none></a><script type=text/javascript>var printLocationElement=document.getElementById('print-location');var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=printLocationElement.href+(window.location.search.match(/print-pdf/gi)?'pdf.css':'paper.css');document.getElementsByTagName('head')[0].appendChild(link);</script><script type=application/json id=reveal-hugo-site-params>{"highlight_theme":"monokai","slide_number":true,"transition":"none"}</script><script type=application/json id=reveal-hugo-page-params>null</script><script src=/IPL/reveal-js/js/reveal.js></script><script type=text/javascript>function camelize(map){if(map){Object.keys(map).forEach(function(k){newK=k.replace(/(\_\w)/g,function(m){return m[1].toUpperCase()});if(newK!=k){map[newK]=map[k];delete map[k];}});}
+expressions.</p><ul><li>Forth is a complete programming language based on that.</li></ul></section><section><h2 id=what-is-a-machine>What is a machine?</h2><ul><li>x86 is a virtual machine</li><li>the CPU is an interpreter with microcode</li></ul></section><section><h1 id=tools>Tools</h1><ul><li>lex / flex</li><li>re2c</li><li>yacc / bison</li><li>lemon</li><li>antlr</li></ul></section><section><h3 id=crash-course-in-jsimpl>Crash course in JSImpl</h3><ul><li>repository organization</li><li>continous integration</li><li>pull requests</li></ul></section><section><h3 id=crash-course-in-jsimpl-1>Crash course in JSImpl</h3><ul><li>projects</li><li>allocators</li><li>tests</li></ul></section><section><h1 id=heading>?</h1></section><section></section></div></div><script type=text/javascript src=/IPL/reveal-hugo/object-assign.js></script><a href=/IPL/reveal-js/css/print/ id=print-location style=display:none></a><script type=text/javascript>var printLocationElement=document.getElementById('print-location');var link=document.createElement('link');link.rel='stylesheet';link.type='text/css';link.href=printLocationElement.href+(window.location.search.match(/print-pdf/gi)?'pdf.css':'paper.css');document.getElementsByTagName('head')[0].appendChild(link);</script><script type=application/json id=reveal-hugo-site-params>{"highlight_theme":"monokai","slide_number":true,"transition":"none"}</script><script type=application/json id=reveal-hugo-page-params>null</script><script src=/IPL/reveal-js/js/reveal.js></script><script type=text/javascript>function camelize(map){if(map){Object.keys(map).forEach(function(k){newK=k.replace(/(\_\w)/g,function(m){return m[1].toUpperCase()});if(newK!=k){map[newK]=map[k];delete map[k];}});}
 return map;}
 var revealHugoDefaults={center:true,controls:true,history:true,progress:true,transition:"slide"};var revealHugoSiteParams=JSON.parse(document.getElementById('reveal-hugo-site-params').innerHTML);var revealHugoPageParams=JSON.parse(document.getElementById('reveal-hugo-page-params').innerHTML);var options=Object.assign({},camelize(revealHugoDefaults),camelize(revealHugoSiteParams),camelize(revealHugoPageParams));Reveal.initialize(options);</script><script type=text/javascript src=/IPL/reveal-js/plugin/markdown/marked.js></script><script type=text/javascript src=/IPL/reveal-js/plugin/markdown/markdown.js></script><script type=text/javascript src=/IPL/reveal-js/plugin/highlight/highlight.js></script><script type=text/javascript src=/IPL/reveal-js/plugin/zoom-js/zoom.js></script><script type=text/javascript src=/IPL/reveal-js/plugin/notes/notes.js></script></body></html>
