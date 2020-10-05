@@ -65,6 +65,7 @@ We are going to study and enhance a JavaScript interpreter.
 - understandable
 - working
 - extensible
+- embeddable
 
 ---
 ## How you are going to be graded?
@@ -210,6 +211,7 @@ Virtual machines
     - Library - arrays, hash maps, etc
     - OOP
     - Exception handling
+3. Communicating with the "real" machine
 
 ---
 ## 7. GC
@@ -250,6 +252,16 @@ Garbage collection
 - https://sofiacpp.github.io/IPL
 
 - Links to resources will be there too!
+
+---
+## Resources
+
+Real world virtual machines:
+
+- V8, SpiderMonkey, JavaScriptCore, ChakraCore and many more
+- duktape
+- lua, luajit
+- cPython, PyPy, ...
 
 ---
 # ?
