@@ -229,6 +229,18 @@ Garbage collection
 3. Ahead of Time
 
 ---
+# Plan for the course
+
+1. Introduction - week 1
+2. Lexers - week 2
+3. Parser - week 2
+4. AST - week 3, 4
+5. Bytecode - weeks 5, 6
+6. VMs - weeks 7, 8, 10
+7. GC - weeks 10, 11
+8. JIT & AOT code generation - weeks 11, 12, 13
+
+---
 ## Resources
 
 - https://github.com/SofiaCPP/IPL
