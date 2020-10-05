@@ -133,6 +133,7 @@ contribution.
 
 - Follow the pull request template
 - Add your faculty number in the description
+---
 
 ## What are the requirements?
 
