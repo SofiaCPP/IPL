@@ -386,5 +386,20 @@ expressions.
 - antlr
 
 ---
+### Crash course in JSImpl
+
+- repository organization
+- continous integration
+- pull requests
+
+---
+### Crash course in JSImpl
+
+- projects
+- allocators
+- tests
+
+
+---
 # ?
 ---
