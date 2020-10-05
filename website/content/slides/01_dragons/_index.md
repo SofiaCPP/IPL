@@ -197,7 +197,26 @@ LR(n) and LALR(n) are family of parsing algorithms for CFG
 ---
 ###### AST
 
-# TODO: use JavaScript AST dumper
+https://esprima.org/demo/parse.html?code=function%20answer()%20%7B%0A%20%20%20%20return%206%20*%207%3B%0A%7D
+
+    {
+      "type": "FunctionDeclaration",
+      "id": { "type": "Identifier", "name": "answer" },
+      "body": {
+        "type": "BlockStatement",
+        "body": [
+          {
+            "type": "ReturnStatement",
+            "argument": {
+              "type": "BinaryExpression",
+              "operator": "*",
+              "left": { "type": "Literal", "value": 6 },
+              "right": { "type": "Literal", "value": 7 }
+            }
+          }
+        ]
+      },
+    }
 
 ---
 ### Middle
