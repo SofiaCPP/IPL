@@ -137,12 +137,12 @@ contribution.
 
 ## What are the requirements?
 
-1. {{< frag c="Will to learn and time to experiment and write code" >}}
-2. {{< frag c="Programming with C++, fluent in C++ will be better" >}}
-2. {{< frag c="Programming with JavaScript or other dynamic language" >}}
-3. {{< frag c="Data structures" >}}
-4. {{< frag c="Languages, Finite Automata, Computability" >}}
-5. {{< frag c="How computers work - CPU, memory hierarchy, etc" >}}
+1. Will to learn and time to experiment and write code
+2. Programming with C++, fluent in C++ will be better
+2. Programming with JavaScript or other dynamic language
+3. Data structures
+4. Languages, Finite Automata, Computability
+5. How computers work - CPU, memory hierarchy, etc
 
 ---
 # Contents of the course
