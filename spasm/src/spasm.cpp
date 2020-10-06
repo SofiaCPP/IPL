@@ -331,7 +331,7 @@ void Spasm::gotrue(reg_t a0, reg_t a1)
 {
     if (get_local(a0))
     {
-        m_PC = a1;
+        go(a1);
     }
 }
 
@@ -344,7 +344,7 @@ void Spasm::gofalse(reg_t a0, reg_t a1)
 {
     if (!get_local(a0))
     {
-        m_PC = a1;
+        go(a1);
     }
 }
 
@@ -354,7 +354,7 @@ void Spasm::gofalse(reg_t a0, reg_t a1)
 */
 void Spasm::go(reg_t a0)
 {
-    m_PC = a0;
+    m_PC = PC_t(a0);
 }
 
 /*!
@@ -507,7 +507,7 @@ int64_t Spasm::read_integer(size_t size)
 
 data_t Spasm::read_string(size_t size)
 {
-    const auto length = read_integer(size);
+    const auto length = size_t(read_integer(size));
     const auto s = reinterpret_cast<const char*>(&m_ByteCode[m_PC]);
     m_PC += length;
     const auto value = m_Strings.Get(s, length);

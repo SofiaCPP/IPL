@@ -97,7 +97,7 @@ private:
 
 	void PushConst(double c);
 	IPLString CreateRegister();
-	bool CheckOpCode(Instruction::Type opcode) { return opcode >= Instruction::Type::FIRST && opcode <= Instruction::Type::LAST; }
+	bool CheckOpCode(int opcode) { return opcode >= Instruction::Type::FIRST && opcode <= Instruction::Type::LAST; }
 private:
 	IPLVector<IPLString> m_RegisterTable;
 	IPLVector<Instruction> m_Code;
@@ -646,8 +646,8 @@ IPLString ByteCodeGenerator::GetCode()
 			break;
 		case ByteCodeGenerator::Instruction::DEBUG:
 			{
-			auto line = i.Values.Int[0];
-			auto column = i.Values.Int[1];
+			auto line = int(i.Values.Int[0]);
+			auto column = int(i.Values.Int[1]);
 			result += "D: " + m_Source[line].substr(0, column) + "@@=>" + m_Source[line].substr(column, m_Source[line].size()) + '\n';
 			}
 			break;

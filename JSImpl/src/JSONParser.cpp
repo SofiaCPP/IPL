@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <cstdlib>
+#include <cstring>
 
 void SkipWhitespaces(const char*& json)
 {
@@ -71,7 +72,7 @@ ExpressionPtr JSONParseWrap(const char*& json, const char* eName)
 template <>																						\
 ExpressionPtr JSONParseWrap<ClassName##Type>(const char*& json, const char* eName)				\
 {																								\
-	auto ptr = IPLMakeSharePtr<::##ClassName>();												\
+	auto ptr = IPLMakeSharePtr<::ClassName>();													\
 	int membersCount = 0, currentVisitCount = 0;												\
 	(void)currentVisitCount;																	\
 	json += strlen("{");																		\
