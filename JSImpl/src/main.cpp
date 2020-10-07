@@ -117,7 +117,7 @@ void Generate()
 int main()
 {
 	//RunParseCalc();
-	//InteractiveInterpreter();
+	InteractiveInterpreter();
 	Generate();
 #if defined(_WIN32)
 	//std::system("pause");
