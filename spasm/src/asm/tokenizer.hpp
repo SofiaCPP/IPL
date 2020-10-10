@@ -19,7 +19,7 @@ class Tokenizer : public TokenStream
    public:
     Tokenizer(std::istream&);
 
-    virtual void push_token(const Token&);
+    void push_token(const Token&) override;
     Token next_token();
 
    private:
