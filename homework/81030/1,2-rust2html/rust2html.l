@@ -1,7 +1,12 @@
-%option nounistd
 %option noyywrap
 
 %{
+#ifdef _WIN32
+#define isatty _isatty
+#else
+#include <unistd.h>
+#endif
+
 #define PRINT_HIGHLIGHTED_TOKEN(type) \
     printf("<span class=\"" #type "\">%s</span>", yytext)
 %}
