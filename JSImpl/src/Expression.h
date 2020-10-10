@@ -45,7 +45,7 @@ class Expression : public IPLEnableShared<Expression>
 		MEMBERS_ITERATOR(GENERATE_GETTERS)                                     \
 		private:                                                               \
 		MEMBERS_ITERATOR(GENERATE_MEMBER_DEFINITIONS)                          \
-		bool m_dummy;                                                          \
+		bool m_dummy; /* NOLINT */                                             \
 	};
 
 EXPRESSION_DEFINITION_ITERATOR(GENERATE_EXPRESSION);

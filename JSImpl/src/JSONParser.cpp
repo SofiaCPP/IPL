@@ -55,7 +55,7 @@ EXPRESSION_DEFINITION_ITERATOR(GENERATE_EXPRESSION_TYPE_ENUMS);
 #undef GENERATE_EXPRESSION_TYPE_ENUM_MEMBERS
 
 template <typename T>
-ExpressionPtr JSONParseWrap(const char*& json, const char* eName)
+ExpressionPtr JSONParseWrap(const char*&, const char*)
 {
 	assert(false);
 	return nullptr;
