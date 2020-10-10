@@ -1,6 +1,10 @@
 solution 'JSImpl'
-    configurations {'Debug', 'Release'}
-    platforms { 'x32', 'x64' }
+    if _ACTION ~= 'jcdb' then
+        platforms { 'x32', 'x64' }
+        configurations {'Debug', 'Release'}
+    else
+        configurations {'Debug'}
+    end
     flags {
         'FatalWarnings',
         'ExtraWarnings',
