@@ -157,7 +157,7 @@ be stored.
 - *re2c* - generates code for the automaton in *C*
     - claims easier debuggability, but still the generated code is pretty
       complex
-- some parser generators have built-in lexer as well
+- some parser generators have a built-in lexer as well
 
 ---
 ### Flex
