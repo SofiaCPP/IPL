@@ -396,9 +396,22 @@ expressions.
 ### Crash course in JSImpl
 
 - projects
+- project generation
 - allocators
 - tests
 
+---
+### Architecture of JSImpl
+
+- frontend
+  - Lexer - text -> `vector<Token>`
+  - Parser - `vector<Token>` -> AST
+- middle
+  - AST
+  - JSON
+  - Bytecode
+- backend
+  - spasm
 
 ---
 # ?
