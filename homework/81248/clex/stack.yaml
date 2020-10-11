@@ -1,7 +1,0 @@
-resolver: lts-12.13
-
-packages:
-- .
-
-extra-deps:
-- bytestring-arbitrary-0.1.2
