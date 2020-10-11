@@ -2,7 +2,8 @@
 title: "Homeworks"
 date: 2018-11-17T19:01:49+02:00
 draft: false
-edition: 2018
+expiryDate: 2020-09-30
+
 ---
 # Virtual Machine and JSImpl related homeworks
 

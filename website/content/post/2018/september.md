@@ -2,6 +2,7 @@
 title: "September Session Exam 2018 edition"
 date: 2019-08-22T19:01:49+02:00
 edition: 2018
+expiryDate: 2020-09-30
 draft: false
 ---
 

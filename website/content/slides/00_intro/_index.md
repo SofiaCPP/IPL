@@ -65,6 +65,7 @@ We are going to study and enhance a JavaScript interpreter.
 - understandable
 - working
 - extensible
+- embeddable
 
 ---
 ## How you are going to be graded?
@@ -133,15 +134,16 @@ contribution.
 
 - Follow the pull request template
 - Add your faculty number in the description
+---
 
 ## What are the requirements?
 
-1. {{< frag c="Will to learn and time to experiment and write code" >}}
-2. {{< frag c="Programming with C++, fluent in C++ will be better" >}}
-2. {{< frag c="Programming with JavaScript or other dynamic language" >}}
-3. {{< frag c="Data structures" >}}
-4. {{< frag c="Languages, Finite Automata, Computability" >}}
-5. {{< frag c="How computers work - CPU, memory hierarchy, etc" >}}
+1. Will to learn and time to experiment and write code
+2. Programming with C++, fluent in C++ will be better
+2. Programming with JavaScript or other dynamic language
+3. Data structures
+4. Languages, Finite Automata, Computability
+5. How computers work - CPU, memory hierarchy, etc
 
 ---
 # Contents of the course
@@ -182,6 +184,7 @@ Abstract Syntax Tree
 1. How to grow one?
 2. What to do with it?
 3. Evaluating the syntax tree
+4. Transforming the syntax tree
 
 {{% note %}}
 - language transformation at syntax level
@@ -205,8 +208,10 @@ Virtual machines
 
 1. What is a virtual machine?
 2. Implementing the language features in the VM
+    - Library - arrays, hash maps, etc
     - OOP
     - Exception handling
+3. Communicating with the "real" machine
 
 ---
 ## 7. GC
@@ -228,6 +233,18 @@ Garbage collection
 3. Ahead of Time
 
 ---
+# Plan for the course
+
+1. Introduction - week 1
+2. Lexers - week 2
+3. Parser - week 2
+4. AST - week 3, 4
+5. Bytecode - weeks 5, 6
+6. VMs - weeks 7, 8, 10
+7. GC - weeks 10, 11
+8. JIT & AOT code generation - weeks 11, 12, 13
+
+---
 ## Resources
 
 - https://github.com/SofiaCPP/IPL
@@ -235,6 +252,16 @@ Garbage collection
 - https://sofiacpp.github.io/IPL
 
 - Links to resources will be there too!
+
+---
+## Resources
+
+Real world virtual machines:
+
+- V8, SpiderMonkey, JavaScriptCore, ChakraCore and many more
+- duktape
+- lua, luajit
+- cPython, PyPy, ...
 
 ---
 # ?
