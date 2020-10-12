@@ -35,7 +35,7 @@ inline bool IsStringBound(char c)
 
 inline bool IsWhiteSpace(char c)
 {
-	return c == ' ' || c == '\t';
+	return c == ' ';
 }
 
 inline bool IsNewLine(char c)
@@ -72,7 +72,7 @@ class Tokenizer
 {
 public:
 	Tokenizer(const char* code, const LexerSettings& settings);
-	LexerResult Tokenize(IPLVector<Token>& tokens);
+	LexerResult Tokenize();
 
 private:
 	Token NextToken();
@@ -81,9 +81,11 @@ private:
 	inline Token ProduceToken(TokenType type);
 	inline Token ProduceToken(TokenType type, IPLString lexeme, double number);
 	inline Token ProduceErrorToken();
+	inline Token ProduceInvalidToken();
+
+	bool FilterToken(TokenType type);
 
 	IPLString ParseComment();
-	IPLString ParseWhitespaces();
 	double ParseNumber();
 	IPLString ParseString();
 	Keyword ParseKeyword();
@@ -94,8 +96,6 @@ private:
 
 	void SetError(const IPLString& what);
 
-	bool SkipWhiteSpaces();
-	bool SkipNewLine();
 	bool Match(const char c);
 
 	inline void NextSymbol();
@@ -112,21 +112,19 @@ private:
 	State m_GenerationState;
 
 	LexerSettings m_Settings;
-	bool m_SkipNextToken;
 
 	IPLUnorderedMap<IPLString, TokenType> m_KeyWordsTable;
 };
 
-LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings)
+LexerResult Tokenize(const char* code, const LexerSettings& settings)
 {
 	Tokenizer tokenizer(code, settings);
-
-	return tokenizer.Tokenize(tokens);
+	return tokenizer.Tokenize();
 }
 
-LexerResult Tokenize(const char * code, IPLVector<Token>& tokens)
+LexerResult Tokenize(const char * code)
 {
-	return Tokenize(code, tokens, { false, false });
+	return Tokenize(code, { false, false });
 }
 
 Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
@@ -138,7 +136,6 @@ Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 	, m_Error()
 	, m_GenerationState(State::Success)
 	, m_Settings(settings)
-	, m_SkipNextToken(false)
 {
 	m_KeyWordsTable["break"] = TokenType::Break;
 	m_KeyWordsTable["case"] = TokenType::Case;
@@ -180,60 +177,49 @@ Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 	m_KeyWordsTable["false"] = TokenType::False;
 }
 
-LexerResult Tokenizer::Tokenize(IPLVector<Token>& tokens)
+LexerResult Tokenizer::Tokenize()
 {
+	LexerResult result{ true, IPLError() };
+	Token token;
 	do
 	{
-		Token token;
-		do
-		{
-			token = NextToken();
-		} while (m_SkipNextToken);
+		token = NextToken();
 
 		if (m_GenerationState == State::Error)
 		{
-			return LexerResult{ false, IPLError(m_Error) };
+			result.IsSuccessful = false;
+			result.Error = IPLError(m_Error);
+			return result;
 		}
+		if (FilterToken(token.Type))
+		{
+			result.tokens.emplace_back(token);
+		}
+	} while (token.Type != TokenType::Eof);
 
-		tokens.emplace_back(token);
-	} while (tokens.back().Type != TokenType::Eof);
-
-	return LexerResult{ true, IPLError() };
+	return result;
 }
 
-bool Tokenizer::SkipWhiteSpaces()
+bool Tokenizer::FilterToken(TokenType type)
 {
-	const auto old = m_Current;
-	while (IsWhiteSpace(m_Code[m_Current]))
+	if (type == TokenType::Comment)
 	{
-		NextSymbol();
+		return m_Settings.CreateCommentTokens;
 	}
-	return old != m_Current;
-}
-
-bool Tokenizer::SkipNewLine()
-{
-	const auto old = m_Current;
-	while (IsNewLine(m_Code[m_Current]))
+	else if (type == TokenType::Whitespace ||
+		type == TokenType::Tab ||
+		type == TokenType::NewLine)
 	{
-		NextLine();
+		return m_Settings.CreateWhitespaceTokens;
 	}
-	return old != m_Current;
+	return true;
 }
 
 bool Tokenizer::Match(const char c)
 {
 	if (c == m_Code[m_Current])
 	{
-		if (!IsNewLine(m_Code[m_Current]))
-		{
-			NextSymbol();
-		}
-		else
-		{
-			NextLine();
-		}
-
+		NextSymbol();
 		return true;
 	}
 	return false;
@@ -359,6 +345,11 @@ inline Token Tokenizer::ProduceErrorToken()
 	return ProduceToken(TokenType::Invalid, "");
 }
 
+inline Token Tokenizer::ProduceInvalidToken()
+{
+	return ProduceToken(TokenType::Invalid, "");
+}
+
 IPLString Tokenizer::ParseComment()
 {
 	auto start = m_Current;
@@ -393,33 +384,6 @@ IPLString Tokenizer::ParseComment()
 
 	SetError("unterminated comment");
 	RETURN_ERROR(IPLString());
-}
-
-IPLString Tokenizer::ParseWhitespaces()
-{
-	if (!IsWhiteSpace(m_Code[m_Current]) && !IsNewLine(m_Code[m_Current]))
-	{
-		RETURN_FAIL(IPLString());
-	}
-
-	auto start = m_Current;
-	while (1)
-	{
-		if (IsWhiteSpace(m_Code[m_Current]))
-		{
-			NextSymbol();
-		}
-		else if (IsNewLine(m_Code[m_Current]))
-		{
-			NextLine();
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	RETURN_SUCCESS(IPLString(m_Code + start, m_Code + m_Current));
 }
 
 double Tokenizer::ParseNumber()
@@ -531,8 +495,6 @@ void Tokenizer::SetError(const IPLString& what)
 
 Token Tokenizer::NextToken()
 {
-	m_SkipNextToken = false;
-
 	if (IsEnd(m_Code[m_Current]))
 	{
 		return ProduceToken(TokenType::Eof);
@@ -545,23 +507,7 @@ Token Tokenizer::NextToken()
 	}
 	if (IsStateSuccess())
 	{
-		if (!m_Settings.CreateCommentTokens)
-		{
-			m_SkipNextToken = true;
-			return ProduceSkipToken();
-		}
 		return ProduceToken(TokenType::Comment, comment);
-	}
-
-	const auto& spaces = ParseWhitespaces();
-	if (IsStateSuccess())
-	{
-		if (!m_Settings.CreateWhitespaceTokens)
-		{
-			m_SkipNextToken = true;
-			return ProduceSkipToken();
-		}
-		return ProduceToken(TokenType::Whitespace, spaces);
 	}
 
 	// Single Char
@@ -592,6 +538,9 @@ Token Tokenizer::NextToken()
 	case '[': NextSymbol(); return ProduceToken(TokenType::LeftSquareBracket);
 	case ']': NextSymbol(); return ProduceToken(TokenType::RightSquareBracket);
 	case '\\': NextSymbol(); return ProduceToken(TokenType::Backslash);
+	case '\n': NextLine(); return ProduceToken(TokenType::NewLine);
+	case ' ': NextSymbol(); return ProduceToken(TokenType::Whitespace);
+	case '\t': NextSymbol(); return ProduceToken(TokenType::Tab);
 	default:
 		break;
 	}

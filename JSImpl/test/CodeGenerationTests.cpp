@@ -9,9 +9,8 @@
 
 TEST(CodeGen, Empty)
 {
-	IPLVector<Token> tokens;
 	IPLString source = "";
-	Tokenize(source.c_str(), tokens);
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
 	auto ast = Parse(tokens);
 	auto asmb = GenerateByteCode(ast, source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
@@ -23,9 +22,8 @@ TEST(CodeGen, Empty)
 
 TEST(CodeGen, VarDeclations)
 {
-	IPLVector<Token> tokens;
 	IPLString source = "var a;";
-	Tokenize(source.c_str(), tokens);
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
 	auto ast = Parse(tokens);
 	auto asmb = GenerateByteCode(ast, source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
@@ -37,9 +35,8 @@ TEST(CodeGen, VarDeclations)
 
 TEST(CodeGen, VarDeclationsWithValue)
 {
-	IPLVector<Token> tokens;
 	IPLString source = "var a = 5;";
-	Tokenize(source.c_str(), tokens);
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
 	auto ast = Parse(tokens);
 	auto asmb = GenerateByteCode(ast, source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
@@ -53,9 +50,8 @@ TEST(CodeGen, VarDeclationsWithValue)
 
 TEST(CodeGen, VarDeclationsBinaryExpre)
 {
-	IPLVector<Token> tokens;
 	IPLString source = "var a = 5 + 6;";
-	Tokenize(source.c_str(), tokens);
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
 	auto ast = Parse(tokens);
 	auto asmb = GenerateByteCode(ast, source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
@@ -72,9 +68,8 @@ TEST(CodeGen, VarDeclationsBinaryExpre)
 
 TEST(CodeGen, VariableAssignment)
 {
-	IPLVector<Token> tokens;
 	IPLString source = "var a; a = 5;";
-	Tokenize(source.c_str(), tokens);
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
 	auto ast = Parse(tokens);
 	auto asmb = GenerateByteCode(ast, source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
@@ -89,9 +84,8 @@ TEST(CodeGen, VariableAssignment)
 
 TEST(CodeGen, MultiVariableAssignment)
 {
-	IPLVector<Token> tokens;
 	IPLString source = "var a; var b = 6; a = b;";
-	Tokenize(source.c_str(), tokens);
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
 	auto ast = Parse(tokens);
 	auto asmb = GenerateByteCode(ast, source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
@@ -107,9 +101,8 @@ TEST(CodeGen, MultiVariableAssignment)
 
 TEST(CodeGen, SimpleIf)
 {
-	IPLVector<Token> tokens;
 	IPLString source = "var a = 5; if (a < 1) { a = 7}";
-	Tokenize(source.c_str(), tokens);
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
 	auto ast = Parse(tokens);
 	auto asmb = GenerateByteCode(ast, source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
@@ -129,9 +122,8 @@ TEST(CodeGen, SimpleIf)
 
 TEST(CodeGen, SimpleIfElse)
 {
-	IPLVector<Token> tokens;
 	IPLString source = "var a = 5; if (a < 1) { a = 3; } else { a = 7; }";
-	Tokenize(source.c_str(), tokens);
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
 	auto ast = Parse(tokens);
 	auto asmb = GenerateByteCode(ast, source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
@@ -154,9 +146,8 @@ TEST(CodeGen, SimpleIfElse)
 
 TEST(CodeGen, SimpleFor)
 {
-	IPLVector<Token> tokens;
 	IPLString source = "var a = 0; for (var i = 0; i < 5; i++ ){ a =  a + i; }";
-	Tokenize(source.c_str(), tokens);
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
 	auto ast = Parse(tokens);
 	auto asmb = GenerateByteCode(ast, source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
