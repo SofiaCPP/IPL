@@ -32,7 +32,7 @@ if x0 { if x1 s1 else s2 } // 2
     return 6*7;
 }
 </code></pre></section><section><h6 id=tokens>Tokens</h6><ul><li>keyword: <code>function</code></li><li>identifier: <code>answer</code></li><li>symbol: <code>(</code></li><li>symbol: <code>)</code></li><li>symbol: <code>{</code></li><li>keyword: <code>return</code></li><li>number: 6</li><li>symbol: <code>*</code></li><li>number: 7</li><li>symbol: <code>;</code></li><li>symbol: <code>}</code></li></ul></section><section><h2 id=abstract-syntax-tree-ast>Abstract Syntax Tree (AST)</h2></section><section><h3 id=concrete-syntax-tree-cst>Concrete Syntax tree (CST)</h3><ul><li>aka Parse Tree</li><li>aka Derivation Tree</li></ul><blockquote><p>The tree that starts from the grammar inital non-terminal and generates
-a string in the language.</p></blockquote></section><section><h3 id=abstract-vs-concrete>Abstract vs Concrete</h3><blockquote><p>AST differ from CST because superficial distinctions of from, unimportant for
+a string in the language.</p></blockquote></section><section><h3 id=abstract-vs-concrete>Abstract vs Concrete</h3><blockquote><p>AST differ from CST because superficial distinctions of form, unimportant for
 translation, do not appear in AST.</p></blockquote></section><section><p>We will be focusing solely on AST, since it is used for translation and it
 easy to skip the CST and generate directly AST.</p></section><section><h3 id=creating-an-ast>Creating an AST</h3><ul><li><p>Most implementations use a common base class for each Node type and a derived
 class for each specific node</p><p>struct Node {
