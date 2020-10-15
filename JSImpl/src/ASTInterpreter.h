@@ -16,6 +16,8 @@ public:
 
     ValueStack Run(Expression* program);
 
+	virtual bool IsInSkipMode() override;
+
     virtual void Visit(LiteralNull* e) override;
     virtual void Visit(LiteralUndefined* e) override;
     virtual void Visit(LiteralString* e) override;
@@ -52,6 +54,7 @@ public:
 private:
     void RunExpression(const ExpressionPtr& e);
     bool EvalToBool(const ExpressionPtr& e);
+    bool EvalIsEqual(const ExpressionPtr& e);
 
     void EnterScope();
     void LeaveScope();
@@ -63,4 +66,8 @@ private:
 
     typedef IPLVector<IPLString> Scope;
     IPLStack<Scope> m_Scopes;
+
+    bool m_Fallthrough;
+    bool m_Break;
+    bool m_Continue;
 };

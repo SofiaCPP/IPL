@@ -1,10 +1,13 @@
 #include "ASTInterpreter.h"
 #include "Expression.h"
 #include <iostream>
+#include <limits>
 #include <math.h>
 
 #undef NOT_IMPLEMENTED
 #define NOT_IMPLEMENTED (void)e; assert(0 && "not-implemented")
+
+#define FLOAT_EQUALS(first, second) fabs(first - second) < std::numeric_limits<double>::epsilon()
 
 struct LValueExtractor : public ExpressionVisitor
 {
@@ -70,6 +73,9 @@ struct StackScope
 };
 
 ASTInterpreter::ASTInterpreter()
+    : m_Fallthrough(false)
+    , m_Break(false)
+    , m_Continue(false)
 {
     // Allow globals
     EnterScope();
@@ -99,6 +105,15 @@ bool ASTInterpreter::EvalToBool(const ExpressionPtr& e)
     auto result = m_Evaluation.back();
     m_Evaluation.pop_back();
     return result != 0.0;
+}
+
+bool ASTInterpreter::EvalIsEqual(const ExpressionPtr& e)
+{
+    e->Accept(*this);
+    auto second = m_Evaluation.back();
+    m_Evaluation.pop_back();
+    auto first = m_Evaluation.back();
+    return FLOAT_EQUALS(first, second);
 }
 
 void ASTInterpreter::EnterScope()
@@ -137,15 +152,20 @@ bool ASTInterpreter::HasVariable(const IPLString& name)
     return m_Variables.find(name) != m_Variables.end();
 }
 
+bool ASTInterpreter::IsInSkipMode()
+{
+    return m_Break || m_Continue;
+}
+
 void ASTInterpreter::Visit(LiteralNull* e) {
-   NOT_IMPLEMENTED; 
+   NOT_IMPLEMENTED;
 }
 
 void ASTInterpreter::Visit(LiteralUndefined* e) {
-   NOT_IMPLEMENTED; 
+   NOT_IMPLEMENTED;
 }
 void ASTInterpreter::Visit(LiteralString* e) {
-   NOT_IMPLEMENTED; 
+   NOT_IMPLEMENTED;
 }
 
 void ASTInterpreter::Visit(LiteralObject* e)
@@ -198,10 +218,10 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
             m_Evaluation.push_back(right);
             break;
         case TokenType::EqualEqual:
-            m_Evaluation.push_back(fabs(left - right) < 0.0001);
+            m_Evaluation.push_back(FLOAT_EQUALS(left, right));
             break;
         case TokenType::BangEqual:
-            m_Evaluation.push_back(fabs(left - right) > 0.0001);
+            m_Evaluation.push_back(FLOAT_EQUALS(left, right));
             break;
         case TokenType::Equal:
         {
@@ -216,6 +236,18 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
 }
 
 void ASTInterpreter::Visit(UnaryExpression* e) {
+    switch (e->GetOperator())
+    {
+    case TokenType::Break:
+        m_Break = true;
+        return;
+    case TokenType::Continue:
+        m_Continue = true;
+        return;
+    default:
+        ;
+    }
+
     LValueExtractor extractor(this);
     auto lvalue = extractor.Run(e->GetExpr().get());
     if (e->GetSuffix())
@@ -278,19 +310,45 @@ void ASTInterpreter::Visit(IfStatement* e) {
     }
 }
 
-void ASTInterpreter::Visit(SwitchStatement* e) { NOT_IMPLEMENTED;}
-void ASTInterpreter::Visit(CaseStatement *e) { NOT_IMPLEMENTED;}
+void ASTInterpreter::Visit(SwitchStatement* e)
+{
+    VariableScope scope(this);
+    e->GetCondition()->Accept(*this);
+    for (const auto& stmt : e->GetCases())
+        stmt->Accept(*this);
+    RunExpression(e->GetDefaultCase());
+    m_Evaluation.pop_back();
+
+    m_Fallthrough = false;
+    m_Break = false;
+}
+
+void ASTInterpreter::Visit(CaseStatement *e)
+{
+    if (m_Break)
+        return;
+
+    if (m_Fallthrough || EvalIsEqual(e->GetCondition()))
+    {
+        RunExpression(e->GetBody());
+        m_Fallthrough = true;
+    }
+}
 
 void ASTInterpreter::Visit(WhileStatement* e) {
     VariableScope scope(this);
     if (e->GetDoWhile()) {
         VariableScope bodyScope(this);
         RunExpression(e->GetBody());
+        m_Continue = false;
     }
     while (EvalToBool(e->GetCondition())) {
         VariableScope bodyScope(this);
         RunExpression(e->GetBody());
+        m_Continue = false;
     }
+
+    m_Break = false;
 }
 
 void ASTInterpreter::Visit(ForStatement* e) {
@@ -305,12 +363,15 @@ void ASTInterpreter::Visit(ForStatement* e) {
         {
             VariableScope bodyScope(this);
             RunExpression(e->GetBody());
+            m_Continue = false;
         }
         {
             StackScope stackScope(this);
             RunExpression(e->GetIteration());
         }
     }
+
+    m_Break = false;
 }
 
 void ASTInterpreter::Visit(FunctionDeclaration* e) { NOT_IMPLEMENTED;}

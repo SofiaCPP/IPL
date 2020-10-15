@@ -7,6 +7,8 @@ class ExpressionVisitor
 public:
 	~ExpressionVisitor() {}
 
+	virtual bool IsInSkipMode() { return false; }
+
 	virtual void Visit(LiteralNull* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(LiteralUndefined* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(LiteralString* e) { (void)e; NOT_IMPLEMENTED; }
