@@ -179,7 +179,7 @@ Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 
 LexerResult Tokenizer::Tokenize()
 {
-	LexerResult result{ true, IPLError() };
+	LexerResult result{ true, IPLError(), IPLVector<Token>() };
 	Token token;
 	do
 	{
