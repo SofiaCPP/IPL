@@ -2,6 +2,7 @@
 title: "Project Presentations - 2018 edition"
 date: 2019-01-25T19:01:49+02:00
 edition: 2018
+expiryDate: 2020-09-30
 draft: false
 ---
 

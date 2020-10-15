@@ -100,6 +100,8 @@ enum class TokenType
 	False,
 
 	Whitespace,
+	Tab,
+	NewLine,
 	Comment,
 
 	Eof,
@@ -119,6 +121,7 @@ struct LexerResult
 {
 	bool IsSuccessful;
 	IPLError Error;
+	IPLVector<Token> tokens;
 };
 
 struct LexerSettings
@@ -127,5 +130,5 @@ struct LexerSettings
 	bool CreateCommentTokens;
 };
 
-LexerResult Tokenize(const char* code, IPLVector<Token>& tokens, const LexerSettings& settings);
-LexerResult Tokenize(const char* code, IPLVector<Token>& tokens);
+LexerResult Tokenize(const char* code, const LexerSettings& settings);
+LexerResult Tokenize(const char* code);

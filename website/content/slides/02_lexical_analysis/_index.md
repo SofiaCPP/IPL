@@ -62,7 +62,7 @@ Typical tokens are:
 - number - integer - 42, double - 3.14, float - 3.14f
 - string
 - operator - `==`, `+`,
-- symbol - `(`, `)`, 
+- symbol - `(`, `)`,
     - it might be easier to split these into *LPAREN*, *RPAREN*.
 - identifier - starts with a [a-zA-Z_]. Why?
 
@@ -137,6 +137,7 @@ regexes that define the language.
 - write one by hand
 - for an existing language
     - search in google: "Lexical grammar for *language you prefer*"
+    - find an open-source implementation of the language
     - it might be in a format ready for some tool
 - for a custom language write down on paper the lexical grammar
     - define your keywords
@@ -157,7 +158,7 @@ be stored.
 - *re2c* - generates code for the automaton in *C*
     - claims easier debuggability, but still the generated code is pretty
       complex
-- some parser generators have built-in lexer as well
+- some parser generators have a built-in lexer as well
 
 ---
 ### Flex
@@ -197,17 +198,17 @@ be stored.
     {ID}        printf("An identifier:%s\n", yytext);
 
 ---
-### Input
+#### Input
 
 https://github.com/SofiaCPP/IPL/blob/master/demo/flex/JavaScript.flex
 
 ---
-### Output
+#### Output
 
 https://github.com/SofiaCPP/IPL/blob/master/demo/flex/lex.yy.c
 
 ---
-### Disclaimer
+#### Disclaimer
 
 > Default options used!
 
@@ -215,7 +216,15 @@ https://github.com/SofiaCPP/IPL/blob/master/demo/flex/lex.yy.c
 We have used the default options for simplicity.
 
 ---
-### Debugging tool generated code
+### re2c
+
+- re2c.org
+- https://github.com/SofiaCPP/IPL/tree/master/spasm/src/asm
+  - lexer.re
+  - dfa.svg
+
+---
+## Debugging tool generated code
 
 - pretty much impossible in the generated code
 - the tool is created to allow defining the lexer in high-level language
@@ -261,7 +270,12 @@ For our sample lexical grammar:
 - use a good data-structure that will allow for very fast look-up
 
 ---
-### Note
+#### Demo for gperf
+
+https://github.com/SofiaCPP/IPL/tree/master/demo/gperf
+
+---
+# Note
 
 Some languages do not have/need grammar for compilation
 
@@ -270,7 +284,15 @@ Some languages do not have/need grammar for compilation
 - Forth
 
 ---
-### Homework
+# Lexer in JSImpl
+
+`Lexer.cpp`
+- by hand
+- `std::unordered_map` to recognize keywords
+
+
+---
+# Homework
 
 Create a xxx2html syntax highlighter for a language of your choice.
 

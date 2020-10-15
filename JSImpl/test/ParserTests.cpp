@@ -10,8 +10,7 @@
 
 TEST(Parser, ParseUnaryExpr)
 {
-	IPLVector<Token> tokens;
-	Tokenize("function pesho() { var a = 0; return a; } var a = \"3\";", tokens);
+	IPLVector<Token> tokens = Tokenize("function pesho() { var a = 0; return a; } var a = \"3\";").tokens;
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
@@ -23,8 +22,7 @@ TEST(Parser, ParseUnaryExpr)
 
 TEST(Parser, VariableDeclaration)
 {
-	IPLVector<Token> tokens;
-	Tokenize("var s = 0;", tokens);
+	IPLVector<Token> tokens = Tokenize("var s = 0;").tokens;
 
 	auto expr = Parse(tokens);
 	std::ostringstream output;
@@ -36,8 +34,7 @@ TEST(Parser, VariableDeclaration)
 
 TEST(Parser, Assignment)
 {
-	IPLVector<Token> tokens;
-	Tokenize("var s = 0; s = 100;", tokens);
+	IPLVector<Token> tokens = Tokenize("var s = 0; s = 100;").tokens;
 
 	auto expr = Parse(tokens);
 	std::ostringstream output;
@@ -49,8 +46,7 @@ TEST(Parser, Assignment)
 
 TEST(Parser, VariableDeclarationAdditionOfLiterals)
 {
-	IPLVector<Token> tokens;
-	Tokenize("var s = 5 + 6;", tokens);
+	IPLVector<Token> tokens = Tokenize("var s = 5 + 6;").tokens;
 
 	auto expr = Parse(tokens);
 	std::ostringstream output;
@@ -62,8 +58,7 @@ TEST(Parser, VariableDeclarationAdditionOfLiterals)
 
 TEST(Parser, VariableDeclarationAdditionOfVariables)
 {
-	IPLVector<Token> tokens;
-	Tokenize("var a = 5; var b = 4; var c = a + b;", tokens);
+	IPLVector<Token> tokens = Tokenize("var a = 5; var b = 4; var c = a + b;").tokens;
 
 	auto expr = Parse(tokens);
 	std::ostringstream output;
@@ -79,8 +74,7 @@ TEST(Parser, VariableDeclarationAdditionOfVariables)
 
 TEST(Parser, VariableDeclarationMultiplicationOfLiterals)
 {
-	IPLVector<Token> tokens;
-	Tokenize("var s = 5 * 6;", tokens);
+	IPLVector<Token> tokens = Tokenize("var s = 5 * 6;").tokens;
 
 	auto expr = Parse(tokens);
 	std::ostringstream output;
@@ -92,8 +86,7 @@ TEST(Parser, VariableDeclarationMultiplicationOfLiterals)
 
 TEST(Parser, VariableDeclarationMultiplicationOfVariables)
 {
-	IPLVector<Token> tokens;
-	Tokenize("var a = 5; var b = 4; var c = a * b;", tokens);
+	IPLVector<Token> tokens = Tokenize("var a = 5; var b = 4; var c = a * b;").tokens;
 
 	auto expr = Parse(tokens);
 	std::ostringstream output;
@@ -110,8 +103,7 @@ TEST(Parser, VariableDeclarationMultiplicationOfVariables)
 
 TEST(Parser, Unary)
 {
-	IPLVector<Token> tokens;
-	Tokenize("var a = 5; a++; var b = 6; --b; var minusB = -b; var plusB = +b;", tokens);
+	IPLVector<Token> tokens = Tokenize("var a = 5; a++; var b = 6; --b; var minusB = -b; var plusB = +b;").tokens;
 
 	auto expr = Parse(tokens);
 	std::ostringstream output;
@@ -129,8 +121,7 @@ TEST(Parser, Unary)
 TEST(Parser, If)
 {
 	{
-		IPLVector<Token> tokens;
-		Tokenize("var a = 5; var b = 3; if(a == 5){a++; b++;} b++;", tokens);
+		IPLVector<Token> tokens = Tokenize("var a = 5; var b = 3; if(a == 5){a++; b++;} b++;").tokens;
 
 		auto expr = Parse(tokens);
 		std::ostringstream output;
@@ -142,8 +133,7 @@ TEST(Parser, If)
 		ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 5.0);
 	}
 	{
-		IPLVector<Token> tokens;
-		Tokenize("var a = 5; var b = 3; if(a == 5)a++; b++; b++;", tokens);
+		IPLVector<Token> tokens = Tokenize("var a = 5; var b = 3; if(a == 5)a++; b++; b++;").tokens;
 
 		auto expr = Parse(tokens);
 		std::ostringstream output;
@@ -156,8 +146,7 @@ TEST(Parser, If)
 	}
 
 	{
-		IPLVector<Token> tokens;
-		Tokenize("var a = 5; var b = 3; if(a != 5)a++; b++; b++;", tokens);
+		IPLVector<Token> tokens = Tokenize("var a = 5; var b = 3; if(a != 5)a++; b++; b++;").tokens;
 
 		auto expr = Parse(tokens);
 		std::ostringstream output;
@@ -170,8 +159,7 @@ TEST(Parser, If)
 	}
 
 	{
-		IPLVector<Token> tokens;
-		Tokenize("var a = 5; var b = 3; if(a != 5){a++;} else { b++;}b++;", tokens);
+		IPLVector<Token> tokens = Tokenize("var a = 5; var b = 3; if(a != 5){a++;} else { b++;}b++;").tokens;
 
 		auto expr = Parse(tokens);
 		std::ostringstream output;
@@ -184,8 +172,7 @@ TEST(Parser, If)
 	}
 
 	{
-		IPLVector<Token> tokens;
-		Tokenize("var a = 5; var b = 3; if(a == 5){a++;} else { b++;}b++;", tokens);
+		IPLVector<Token> tokens = Tokenize("var a = 5; var b = 3; if(a == 5){a++;} else { b++;}b++;").tokens;
 
 		auto expr = Parse(tokens);
 		std::ostringstream output;
@@ -201,8 +188,7 @@ TEST(Parser, If)
 TEST(Parser, For)
 {
 	{
-		IPLVector<Token> tokens;
-		Tokenize("var i = 0; for (var j = 0; j < 10; j++) { i = i + j; }", tokens);
+		IPLVector<Token> tokens = Tokenize("var i = 0; for (var j = 0; j < 10; j++) { i = i + j; }").tokens;
 
 		auto expr = Parse(tokens);
 		std::ostringstream output;
@@ -212,8 +198,7 @@ TEST(Parser, For)
 		ASSERT_DOUBLE_EQ(i.ModifyVariable("i"), 45.0);
 	}
 	{
-		IPLVector<Token> tokens;
-		Tokenize("var i = 0; for (var j = 0; j < 10; j++) i = i + j;", tokens);
+		IPLVector<Token> tokens = Tokenize("var i = 0; for (var j = 0; j < 10; j++) i = i + j;").tokens;
 		auto expr = Parse(tokens);
 		std::ostringstream output;
 		ASTInterpreter i;

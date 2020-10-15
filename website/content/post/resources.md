@@ -1,14 +1,15 @@
 ---
 title: "Resources"
 date: 2018-09-29T00:24:06+03:00
-edition: 2018
 draft: false
+
 ---
 
 A general collection of resources on implementing programming languages and
 virtual machines.
 
 <!--more-->
+
 
 ## General
 

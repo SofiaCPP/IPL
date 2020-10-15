@@ -161,7 +161,7 @@ Where the `else` goes?
 ---
 ### Abstract vs Concrete
 
-> AST differ from CST because superficial distinctions of from, unimportant for
+> AST differ from CST because superficial distinctions of form, unimportant for
 > translation, do not appear in AST.
 
 ---

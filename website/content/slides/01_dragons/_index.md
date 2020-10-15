@@ -197,7 +197,26 @@ LR(n) and LALR(n) are family of parsing algorithms for CFG
 ---
 ###### AST
 
-# TODO: use JavaScript AST dumper
+https://esprima.org/demo/parse.html?code=function%20answer()%20%7B%0A%20%20%20%20return%206%20*%207%3B%0A%7D
+
+    {
+      "type": "FunctionDeclaration",
+      "id": { "type": "Identifier", "name": "answer" },
+      "body": {
+        "type": "BlockStatement",
+        "body": [
+          {
+            "type": "ReturnStatement",
+            "argument": {
+              "type": "BinaryExpression",
+              "operator": "*",
+              "left": { "type": "Literal", "value": 6 },
+              "right": { "type": "Literal", "value": 7 }
+            }
+          }
+        ]
+      },
+    }
 
 ---
 ### Middle
@@ -230,6 +249,37 @@ that is convenient for:
       %tmp = mul i32 %x, %y
       %tmp2 = add i32 %tmp, %z
       ret i32 %tmp2
+    }
+
+---
+### WebAssembly
+
+WebAssembly is actually an IR.
+
+    (module
+      (func (export "add") (param $n1 i32) (param $n2 i32) (result i32)
+        get_local $n1
+        get_local $n2
+        i32.add
+      )
+    )
+
+---
+### .NET CIL
+
+- C#, F#, Basic (some versions), etc target the .NET virtual machine
+- Common Intermediate Language
+
+    .class public Foo
+    {
+        .method public static int32 Add(int32, int32) cil managed
+        {
+            .maxstack 2
+            ldarg.0 // load the first argument;
+            ldarg.1 // load the second argument;
+            add     // add them;
+            ret     // return the result;
+        }
     }
 
 ---
@@ -334,6 +384,34 @@ expressions.
 - yacc / bison
 - lemon
 - antlr
+
+---
+### Crash course in JSImpl
+
+- repository organization
+- continous integration
+- pull requests
+
+---
+### Crash course in JSImpl
+
+- projects
+- project generation
+- allocators
+- tests
+
+---
+### Architecture of JSImpl
+
+- frontend
+  - Lexer - text -> `vector<Token>`
+  - Parser - `vector<Token>` -> AST
+- middle
+  - AST
+  - JSON
+  - Bytecode
+- backend
+  - spasm
 
 ---
 # ?

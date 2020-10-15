@@ -15,9 +15,8 @@
 
 void RunParseCalc()
 {
-	IPLVector<Token> tokens;
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
-	Tokenize("var a = 5; if(a == 5){a++;}", tokens);
+	auto tokens = Tokenize("var a = 5; if(a == 5){a++;}").tokens;
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
@@ -60,8 +59,7 @@ void InteractiveInterpreter()
 			i.Print(p);
 			continue;
 		}
-		IPLVector<Token> tokens;
-		Tokenize(command, tokens);
+		auto tokens = Tokenize(command).tokens;
 		auto result = i.Run(Parse(tokens).get());
 		while (!result.empty()) {
 			std::cout << result.back() << std::endl;
@@ -72,7 +70,6 @@ void InteractiveInterpreter()
 
 void Generate()
 {
-	IPLVector<Token> tokens;
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
 	/*Tokenize("var a; if(a < 4) { a = 8; if(a < 7) {var b = 4;}} else { a = 2} ", tokens);*/
 	IPLString source =  "var i = 0; \n"
@@ -80,7 +77,7 @@ void Generate()
 						"{\n"
 						"	i = i + j;\n"
 						"}";
-	Tokenize(source.c_str(), tokens);
+	auto tokens = Tokenize(source.c_str()).tokens;
 
 	auto asmb = GenerateByteCode(Parse(tokens), source,
 		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, true));
