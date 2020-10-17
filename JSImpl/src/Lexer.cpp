@@ -179,7 +179,8 @@ Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 
 LexerResult Tokenizer::Tokenize()
 {
-	LexerResult result{ true, IPLError() };
+	LexerResult result;
+	result.IsSuccessful = true;
 	Token token;
 	do
 	{
