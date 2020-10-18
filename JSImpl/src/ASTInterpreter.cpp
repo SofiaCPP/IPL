@@ -229,6 +229,7 @@ struct LValueExtractor : public ExpressionVisitor
 public:
     LValueExtractor(ASTInterpreter* interpreter)
         : m_Interpreter(interpreter)
+        , m_LValue(nullptr)
     {}
     ~LValueExtractor() {}
 
