@@ -18,8 +18,8 @@ outputs: ["Reveal"]
 ---
 ### Parser
 
-> Recognizes the rules from stream of tokens and builds the Abstract Syntax Tree
-> (AST) of the program.
+> Recognizes the rules of the language and builds the Abstract Syntax Tree
+> (AST) of the program from the stream of tokens.
 
 ---
 ### Grammars
@@ -89,12 +89,14 @@ specifications for EBNF, but they have the same power, just different syntax.
 #### PEG
 
 Parser Expression Grammars are similar to CFG, but are more convenient for
-parsing, since the `/` (note not `|`) operator is not ambiguous.
+parsing, since the choice operator is not ambiguous.
 
+- the choice operator is `/` (not `|`) and it is not commutative
 - CFG allows selecting any matching variant and can have more than one parse
   tree.
     - parsing algorithms try to resolve this by extra rules
 - PEG prioritizes the variants in the order that they are written.
+
 
 ---
 #### PEG
@@ -170,7 +172,7 @@ We will be focusing solely on AST, since it is used for translation and it
   easy to skip the CST and generate directly AST.
 
 ---
-### Creating an AST
+## Creating an AST
 
 - Most implementations use a common base class for each Node type and a derived
   class for each specific node
@@ -182,7 +184,7 @@ We will be focusing solely on AST, since it is used for translation and it
     typedef std::unique_ptr<Node> NodePtr;
 
 ---
-#### Node for a `for` cycle
+### Node for a `for` cycle
 
     struct ForNode : Node {
         virtual ~ForNode() override = default;
@@ -193,7 +195,7 @@ We will be focusing solely on AST, since it is used for translation and it
     };
 
 ---
-#### Using the AST
+### Using the AST
 
 - Compilers use the AST a lot to:
     - remove syntactic sugar
@@ -202,7 +204,7 @@ We will be focusing solely on AST, since it is used for translation and it
 - It makes sense to be able to execute different code on the AST
 
 ---
-#### How?
+#### How to work with the AST?
 
 - a `virtual` method for each operation?
 - a recursive function (or a stack) with `switch` for each node type?
@@ -210,7 +212,7 @@ We will be focusing solely on AST, since it is used for translation and it
 > No, adding a new algorithm or a node will be difficult in both cases.
 
 ---
-#### Visitor pattern
+## Visitor pattern
 
 > Represent an operation to be performed on elements of an object structure.
 
@@ -257,6 +259,21 @@ We will be focusing solely on AST, since it is used for translation and it
     };
 
 ---
+## AST in JSImpl
+
+- Macro iterators
+- Variadic Templates
+- C++Future - metaclasses
+
+- [`Expression.h`](https://github.com/SofiaCPP/IPL/blob/master/JSImpl/src/Expression.h)
+- [`Expression.cpp`](https://github.com/SofiaCPP/IPL/blob/master/JSImpl/src/Expression.cpp)
+- [`ExpressionDefinitions.h`](https://github.com/SofiaCPP/IPL/blob/master/JSImpl/src/ExpressionDefinitions.h)
+
+
+---
+### Visitor in JSImpl
+
+- [`ExpressionVisitor.h`](https://github.com/SofiaCPP/IPL/blob/master/JSImpl/src/ExpressionVisitor.h)
 
 ---
 ### Parsing algorithms
@@ -286,7 +303,7 @@ exactly the same in terms of algorithms and power.
 
 {{<  note >}}
 
-- First three are easy to implement manual, the second three are better
+- First three are easy to implement by hand, the second three are better
   generated.
 - Pratt parsing is a mix between recursive descent and operator-precedence.
 
