@@ -33,11 +33,6 @@ inline bool IsStringBound(char c)
 	return c == '\'' || c == '"';
 }
 
-inline bool IsWhiteSpace(char c)
-{
-	return c == ' ';
-}
-
 inline bool IsNewLine(char c)
 {
 	return c == '\n';
