@@ -1,8 +1,8 @@
 ---
 title: "Course Contents"
-date: 2018-08-02T17:45:53+03:00
+date: 2020-10-02T17:45:53+03:00
 draft: false
-expiryDate: 2020-09-30
+featured: true
 
 ---
 
@@ -11,13 +11,15 @@ Table of contents for the course.
 <!--more-->
 
 0. Course introduction - [slides]({{< ref "/slides/00_intro" >}}),
-   [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/00_intro/_index.md)
+   [doc]({{< ref "/intro" >}})
 
 0. Introduction - [slides]({{< ref "/slides/01_dragons" >}}),
-   [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/01_dragons/_index.md)
+   [doc]({{< ref "/dragons" >}})
 
 0. Lexical analysis - [slides]({{< ref "/slides/02_lexical_analysis" >}}),
-   [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/02_lexical_analysis/_index.md)
+   [doc]({{< ref "/lexer" >}})
+
+<!--
 
 0. Parsing - [slides]({{< ref "/slides/03_parsing" >}}),
    [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/03_parsing/_index.md)
@@ -45,3 +47,5 @@ Table of contents for the course.
 
 0. Garbage Collection in Spasm - [slides]({{< ref "/slides/10_vm_gc" >}}),
    [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/10_vm_gc/_index.md)
+
+-->
