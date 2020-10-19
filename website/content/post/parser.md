@@ -4,7 +4,9 @@ date: 2020-10-18
 draft: false
 ---
 
-Overview of parsers and how to use them
+Overview of parsers and how to use them.
+
+This lecture will be entirely online - see the {{< ref "/facebook" >}}
 
 <!--more-->
 
