@@ -373,12 +373,12 @@ ExpressionPtr Parser::LeftSideExpression(NormalType a)
 {
 	ExpressionPtr result;
 	auto ss = Snapshot();
-	if (result = CallExpression(a))
+	if ((result = CallExpression(a)))
 	{
 		return result;
 	}
 	Restore(ss);
-	if (result = ShortNewExpression())
+	if ((result = ShortNewExpression()))
 	{
 		return result;
 	}
@@ -464,12 +464,12 @@ ExpressionPtr Parser::ShortNewSubexpression()
 {
 	ExpressionPtr result;
 	auto ss = Snapshot();
-	if (result = FullNewSubexpression())
+	if ((result = FullNewSubexpression()))
 	{
 		return result;
 	}
 	Restore(ss);
-	if (result = ShortNewExpression())
+	if ((result = ShortNewExpression()))
 	{
 		return result;
 	}
@@ -490,7 +490,7 @@ ExpressionPtr Parser::FullNewExpression()
 ExpressionPtr Parser::FullNewSubexpression()
 {
 	ExpressionPtr result;
-	if (result = PrimaryExpression(NormalType::Normal))
+	if ((result = PrimaryExpression(NormalType::Normal)))
 	{
 		return result;
 	}
@@ -764,22 +764,22 @@ ExpressionPtr Parser::Expression(NormalType a, AllowType b)
 ExpressionPtr Parser::Statement()
 {
 	ExpressionPtr result;
-	if (result = EmptyStatement()) return result;
-	if (result = Expression(NormalType::Initial, AllowType::AllowIn)) return result;
-	if (result = VariableDefinition(AllowType::AllowIn)) return result;
-	if (result = Block()) return result;
-	if (result = LabeledStatement()) return result;
-	if (result = IfStatementfull()) return result;
-	if (result = SwitchStatement()) return result;
-	if (result = DoStatement()) return result;
-	if (result = WhileStatement()) return result;
-	if (result = ForStatement()) return result;
-	if (result = WithStatement()) return result;
-	if (result = ContinueStatement()) return result;
-	if (result = BreakStatement()) return result;
-	if (result = OptionalLabel()) return result;
-	if (result = ReturnStatement()) return result;
-	if (result = TryStatement()) return result;
+	if ((result = EmptyStatement())) return result;
+	if ((result = Expression(NormalType::Initial, AllowType::AllowIn))) return result;
+	if ((result = VariableDefinition(AllowType::AllowIn))) return result;
+	if ((result = Block())) return result;
+	if ((result = LabeledStatement())) return result;
+	if ((result = IfStatementfull())) return result;
+	if ((result = SwitchStatement())) return result;
+	if ((result = DoStatement())) return result;
+	if ((result = WhileStatement())) return result;
+	if ((result = ForStatement())) return result;
+	if ((result = WithStatement())) return result;
+	if ((result = ContinueStatement())) return result;
+	if ((result = BreakStatement())) return result;
+	if ((result = OptionalLabel())) return result;
+	if ((result = ReturnStatement())) return result;
+	if ((result = TryStatement())) return result;
 	return result;
 }
 
