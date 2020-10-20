@@ -79,7 +79,7 @@ private:
 
 	inline Token ProduceSkipToken();
 	inline Token ProduceToken(TokenType type);
-	inline Token ProduceToken(TokenType type, IPLString lexeme, double number);
+	inline Token ProduceToken(TokenType type, const IPLString& lexeme, double number);
 	inline Token ProduceErrorToken();
 	inline Token ProduceInvalidToken();
 
@@ -186,7 +186,7 @@ LexerResult Tokenizer::Tokenize()
 	{
 		token = NextToken();
 
-		if (m_GenerationState == State::Error)
+		if (m_GenerationState == State::Error )
 		{
 			result.IsSuccessful = false;
 			result.Error = IPLError(m_Error);
@@ -196,7 +196,7 @@ LexerResult Tokenizer::Tokenize()
 		{
 			result.tokens.emplace_back(token);
 		}
-	} while (token.Type != TokenType::Eof);
+	} while (token.Type != TokenType::Eof  && token.Type != TokenType::Invalid);
 
 	return result;
 }
@@ -245,7 +245,7 @@ inline void Tokenizer::NextLine()
 	m_LastTokenPozition = m_Column = 0;
 }
 
-inline Token Tokenizer::ProduceToken(TokenType type, IPLString lexeme, double number = 0.0)
+inline Token Tokenizer::ProduceToken(TokenType type,const IPLString& lexeme, double number = 0.0)
 {
 	auto token = Token{ type, m_Line, m_LastTokenPozition, lexeme, number };
 	m_LastTokenPozition = m_Column;
@@ -348,7 +348,8 @@ inline Token Tokenizer::ProduceErrorToken()
 
 inline Token Tokenizer::ProduceInvalidToken()
 {
-	return ProduceToken(TokenType::Invalid, "");
+	SetError("Invalid or unexpected token");
+	RETURN_ERROR(ProduceToken(TokenType::Invalid, ""));
 }
 
 IPLString Tokenizer::ParseComment()
@@ -574,5 +575,5 @@ Token Tokenizer::NextToken()
 		return ProduceToken(identifier.Type, identifier.Content);
 	}
 
-	return ProduceErrorToken();
+	return ProduceInvalidToken();
 }

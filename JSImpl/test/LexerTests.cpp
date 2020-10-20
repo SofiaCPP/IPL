@@ -212,3 +212,10 @@ TEST(Lexer, CommentError)
 				res.Error.Column == 3);
 }
 
+TEST(Lexer, UnexpectedToken)
+{
+	auto res = Tokenize("a#4");
+	ASSERT_TRUE(!res.IsSuccessful &&
+		res.Error.Column == 1);
+}
+
