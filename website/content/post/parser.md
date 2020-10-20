@@ -6,7 +6,7 @@ draft: false
 
 Overview of parsers and how to use them.
 
-This lecture will be entirely online - see the {{< ref "/facebook" >}}
+This lecture will be entirely online - see the [Facebook group]({{< ref "/facebook" >}})
 
 <!--more-->
 
