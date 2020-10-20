@@ -7,7 +7,7 @@ class ASTPrinter : public ExpressionVisitor
 {
 public:
 	ASTPrinter(std::ostream& os);
-	~ASTPrinter() {}
+	virtual ~ASTPrinter() {}
 	virtual void Visit(LiteralNull* e) override;
 	virtual void Visit(LiteralUndefined* e) override;
 	virtual void Visit(LiteralString* e) override;

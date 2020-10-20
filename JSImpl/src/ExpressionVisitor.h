@@ -5,7 +5,7 @@
 class ExpressionVisitor
 {
 public:
-	~ExpressionVisitor() {}
+	virtual ~ExpressionVisitor() {}
 
 	virtual void Visit(LiteralNull* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(LiteralUndefined* e) { (void)e; NOT_IMPLEMENTED; }
