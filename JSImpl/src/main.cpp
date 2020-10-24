@@ -20,17 +20,16 @@ void RunParseCalc()
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
-	//ASTPrinter p(std::cout);
-	//expr->Accept(p);
-	ASTInterpreter i;
-    std::cout << "Running" << std::endl;
-	auto result = i.Run(expr.get());
-    std::cout << "Stack after run, top to bottom:" << std::endl;
-    while (!result.empty()) {
-        std::cout << result.back() << std::endl;
-        result.pop_back();
-    }
-	std::cout << "S = " << i.ModifyVariable("a") << std::endl;
+	PrintAST(expr, std::cout);
+	//ASTInterpreter i;
+    //std::cout << "Running" << std::endl;
+	//auto result = i.Run(expr.get());
+    //std::cout << "Stack after run, top to bottom:" << std::endl;
+    //while (!result.empty()) {
+    //    std::cout << result.back() << std::endl;
+    //    result.pop_back();
+    //}
+	//std::cout << "S = " << i.ModifyVariable("a") << std::endl;
 }
 
 class InterpreterPrinter : public ASTInterpreter::Printer
@@ -113,9 +112,8 @@ void Generate()
 
 int main()
 {
-	//RunParseCalc();
-	InteractiveInterpreter();
-	Generate();
+	auto r = Tokenize("a#4", {true ,true});
+	RunParseCalc();
 #if defined(_WIN32)
 	//std::system("pause");
 #endif

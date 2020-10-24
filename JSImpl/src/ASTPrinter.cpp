@@ -2,111 +2,7 @@
 #include "Expression.h"
 
 #include <iostream>
-
-ASTPrinter::ASTPrinter(std::ostream& os)
-	: os(os)
-	, nest_level(0)
-	, indent_next_accept(true)
-{}
-
-void PrepNextElem(std::ostream& os, bool isLast)
-{
-	if (!isLast)
-	{
-		os << ",";
-	}
-	os << "\n";
-}
-
-void Print(std::ostream& os, ASTPrinter &printer, const char* name, const ExpressionPtr& expr, bool isLast)
-{
-	printer.InsertIndent();
-	os << "\"" << name << "\": ";
-	printer.NoIndentNextAccept();
-	expr->Accept(printer);
-	PrepNextElem(os, isLast);
-}
-
-void Print(std::ostream& os, ASTPrinter &printer, const char* name, const IPLVector<ExpressionPtr>& list, bool isLast)
-{
-	printer.InsertIndent();
-	os << "\"" << name << "\": [";
-	if (list.empty())
-	{
-		os << "]";
-		PrepNextElem(os, isLast);
-		return;
-	}
-
-	printer.Enter();
-	for (auto i = 0u; i < list.size(); ++i)
-	{
-		printer.IndentNextAccept();
-		list[i]->Accept(printer);
-		if (i + 1 != list.size())
-		{
-			os << ",\n";
-		}
-	}
-	printer.Exit();
-	os << "\n";
-	printer.InsertIndent();
-	os << "]";
-	PrepNextElem(os, isLast);
-}
-
-void Print(std::ostream& os, ASTPrinter& printer, const char* name, const IPLVector<IPLString>& list, bool isLast)
-{
-	printer.InsertIndent();
-	os << "\"" << name << "\": [";
-	if (list.empty())
-	{
-		os << "]";
-		PrepNextElem(os, isLast);
-		return;
-	}
-
-	printer.Enter();
-	for (auto i = 0u; i < list.size(); ++i)
-	{
-		printer.InsertIndent();
-		os << "\"" << list[i] << "\"";
-		if (i + 1 != list.size())
-		{
-			os << ",\n";
-		}
-	}
-	printer.Exit();
-	os << "\n";
-	printer.InsertIndent();
-	os << "]";
-	PrepNextElem(os, isLast);
-}
-
-template<typename T>
-void Print(std::ostream& os, ASTPrinter& printer, const char* name, T member, bool isLast)
-{
-	printer.InsertIndent();
-	os << "\"" << name << "\": " << member;
-	PrepNextElem(os, isLast);
-}
-
-IPLString StripString(const IPLString& str)
-{
-	if (str.front() == '\"')
-	{
-		return str.substr(1, str.length() - 2);
-	}
-	return str;
-}
-
-template<>
-void Print<IPLString>(std::ostream& os, ASTPrinter& printer, const char* name, IPLString member, bool isLast)
-{
-	printer.InsertIndent();
-	os << "\"" << name << "\": \"" << StripString(member) << "\"";
-	PrepNextElem(os, isLast);
-}
+#include <iosfwd>
 
 std::ostream& operator<<(std::ostream& os, const TokenType& t)
 {
@@ -206,61 +102,231 @@ std::ostream& operator<<(std::ostream& os, const TokenType& t)
 	return os;
 }
 
+class ASTToJsonPrinter : public ExpressionVisitor
+{
+public:
+	ASTToJsonPrinter(std::ostream& os);
+	virtual ~ASTToJsonPrinter() {}
+	virtual void Visit(LiteralNull* e) override;
+	virtual void Visit(LiteralUndefined* e) override;
+	virtual void Visit(LiteralString* e) override;
+	virtual void Visit(LiteralNumber* e) override;
+	virtual void Visit(LiteralBoolean* e) override;
+	virtual void Visit(LiteralObject* e) override;
+	virtual void Visit(BinaryExpression* e) override;
+	virtual void Visit(UnaryExpression* e) override;
+	virtual void Visit(IdentifierExpression* e) override;
+	virtual void Visit(ListExpression* e) override;
+	virtual void Visit(VariableDefinitionExpression* e) override;
+	virtual void Visit(BlockStatement* e) override;
+	virtual void Visit(LabeledStatement* e) override;
+	virtual void Visit(IfStatement* e) override;
+	virtual void Visit(SwitchStatement* e) override;
+	virtual void Visit(CaseStatement *) override;
+	virtual void Visit(WhileStatement* e) override;
+	virtual void Visit(ForStatement* e) override;
+	virtual void Visit(FunctionDeclaration* e) override;
+	virtual void Visit(TopStatements* e) override;
+	virtual void Visit(EmptyExpression* e) override;
+	virtual void Visit(CallExpression* e) override;
+
+	void Print( const char* name, const ExpressionPtr& expr, bool isLast);
+	void Print( const char* name, const IPLVector<ExpressionPtr>& list, bool isLast);
+	void Print( const char* name, const IPLVector<IPLString>& list, bool isLast);
+	void Print( const char* name, const IPLString& member, bool isLast);
+	void Print( const char* name, bool member, bool isLast);
+	void Print( const char* name, const TokenType& member, bool isLast);
+
+	inline void Enter();
+	inline void Exit();
+	inline void NoIndentNextAccept();
+	inline void IndentNextAccept();
+	inline void InsertIndent();
+private:
+	std::ostream& m_Output;
+	unsigned m_Level;
+	bool m_IndentNext;
+};
+
+ASTToJsonPrinter::ASTToJsonPrinter(std::ostream& os)
+	: m_Output(os)
+	, m_Level(0)
+	, m_IndentNext(true)
+{}
+
+void PrepNextElement(std::ostream& os, bool isLast)
+{
+	if (!isLast)
+	{
+		os << ",";
+	}
+	os << "\n";
+}
+
+void ASTToJsonPrinter::Print(const char* name, const ExpressionPtr& expr, bool isLast)
+{
+	if (!expr)
+	{
+		return;
+	}
+	InsertIndent();
+	m_Output << "\"" << name << "\": ";
+	NoIndentNextAccept();
+	expr->Accept(*this);
+	PrepNextElement(m_Output, isLast);
+}
+
+void ASTToJsonPrinter::Print(const char* name, const IPLVector<ExpressionPtr>& list, bool isLast)
+{
+	InsertIndent();
+	m_Output << "\"" << name << "\": [";
+	if (list.empty())
+	{
+		m_Output << "]";
+		PrepNextElement(m_Output, isLast);
+		return;
+	}
+
+	Enter();
+	for (auto i = 0u; i < list.size(); ++i)
+	{
+		IndentNextAccept();
+		list[i]->Accept(*this);
+		if (i + 1 != list.size())
+		{
+			m_Output << ",\n";
+		}
+	}
+	Exit();
+	m_Output << "\n";
+	InsertIndent();
+	m_Output << "]";
+	PrepNextElement(m_Output, isLast);
+}
+
+void ASTToJsonPrinter::Print(const char* name, const IPLVector<IPLString>& list, bool isLast)
+{
+	InsertIndent();
+	m_Output << "\"" << name << "\": [";
+	if (list.empty())
+	{
+		m_Output << "]";
+		PrepNextElement(m_Output, isLast);
+		return;
+	}
+
+	Enter();
+	for (auto i = 0u; i < list.size(); ++i)
+	{
+		InsertIndent();
+		m_Output << "\"" << list[i] << "\"";
+		if (i + 1 != list.size())
+		{
+			m_Output << ",\n";
+		}
+	}
+	Exit();
+	m_Output << "\n";
+	InsertIndent();
+	m_Output << "]";
+	PrepNextElement(m_Output, isLast);
+}
+
+void ASTToJsonPrinter::Print(const char* name, bool member, bool isLast)
+{
+	InsertIndent();
+	m_Output << "\"" << name << "\": " << member;
+	PrepNextElement(m_Output, isLast);
+}
+
+void ASTToJsonPrinter::Print(const char* name, const TokenType& member, bool isLast)
+{
+	InsertIndent();
+	m_Output << "\"" << name << "\": " << member;
+	PrepNextElement(m_Output, isLast);
+}
+
+
+IPLString StripString(const IPLString& str)
+{
+	if (str.front() == '\"')
+	{
+		return str.substr(1, str.length() - 2);
+	}
+	return str;
+}
+
+void ASTToJsonPrinter::Print(const char* name, const IPLString& member, bool isLast)
+{
+	InsertIndent();
+	m_Output << "\"" << name << "\": \"" << StripString(member) << "\"";
+	PrepNextElement(m_Output, isLast);
+}
+
+
+
 #define MEMBERS_COUNT(type, name, def) ++membersCount;
-#define VISIT_MEMBER(type, name, def) ++currentVisitCount; Print(os, *this, #name, e->Get##name(), currentVisitCount == membersCount);
+#define VISIT_MEMBER(type, name, def) ++currentVisitCount; Print(#name, e->Get##name(), currentVisitCount == membersCount);
 
 #define GENERATE_AST_PRINTER_FUNCTION(ClassName, MEMBERS_ITERATOR)           \
-	void ASTPrinter::Visit(ClassName* e)                                     \
+	void ASTToJsonPrinter::Visit(ClassName* e)                               \
 	{                                                                        \
 		int membersCount = 0, currentVisitCount = 0;                         \
 		(void)currentVisitCount;(void)e;                                     \
 		MEMBERS_ITERATOR(MEMBERS_COUNT);                                     \
-		if (indent_next_accept)                                              \
+		if (m_Level)                                                         \
 		{                                                                    \
 			InsertIndent();                                                  \
 		}                                                                    \
-		os << "{";                                                           \
+		m_Output << "{";                                                     \
 		Enter();                                                             \
 		InsertIndent();                                                      \
-		os << "\"ExpressionType\": \"" << #ClassName "\"";                    \
+		m_Output << "\"ExpressionType\": \"" << #ClassName "\"";             \
 		if (membersCount)                                                    \
 		{                                                                    \
-			os << ",";                                                       \
+			m_Output << ",";                                                 \
 		}                                                                    \
-		os << "\n";                                                          \
+		m_Output << "\n";                                                    \
 		MEMBERS_ITERATOR(VISIT_MEMBER);                                      \
 		Exit();                                                              \
 		InsertIndent();                                                      \
-		os << "}";                                                           \
+		m_Output << "}";                                                    \
 	}
 
 EXPRESSION_DEFINITION_ITERATOR(GENERATE_AST_PRINTER_FUNCTION);
 
-void ASTPrinter::Enter()
+void ASTToJsonPrinter::Enter()
 {
-	os << "\n";
-	++nest_level;
+	m_Output << "\n";
+	++m_Level;
 }
 
-void ASTPrinter::Exit()
+void ASTToJsonPrinter::Exit()
 {
-	--nest_level;
+	--m_Level;
 }
 
-void ASTPrinter::IndentNextAccept()
+void ASTToJsonPrinter::IndentNextAccept()
 {
-	indent_next_accept = true;
+	m_IndentNext = true;
 }
 
-void ASTPrinter::InsertIndent()
+void ASTToJsonPrinter::InsertIndent()
 {
-	for (unsigned i = 0; i < nest_level; ++i)
+	for (unsigned i = 0; i < m_Level; ++i)
 	{
-		os << "  ";
+		m_Output << "  ";
 	}
 }
 
-void ASTPrinter::NoIndentNextAccept()
+void ASTToJsonPrinter::NoIndentNextAccept()
 {
-	indent_next_accept = false;
+	m_IndentNext = false;
+}
+
+
+void PrintAST(const ExpressionPtr& ast, std::ostream& where)
+{
+	ASTToJsonPrinter p(where);
+	ast->Accept(p);
 }
