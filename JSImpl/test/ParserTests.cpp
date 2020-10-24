@@ -14,10 +14,9 @@ TEST(Parser, ParseUnaryExpr)
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
-        std::ostringstream output;
-	ASTPrinter p(output);
-	expr->Accept(p);
-        ASSERT_TRUE(!output.str().empty());
+    std::ostringstream output;
+	PrintAST(expr, output);
+	ASSERT_TRUE(!output.str().empty());
 }
 
 TEST(Parser, VariableDeclaration)
