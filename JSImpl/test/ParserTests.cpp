@@ -14,10 +14,9 @@ TEST(Parser, ParseUnaryExpr)
 
 	// TODO make actual test :D
 	auto expr = Parse(tokens);
-        std::ostringstream output;
-	ASTPrinter p(output);
-	expr->Accept(p);
-        ASSERT_TRUE(!output.str().empty());
+    std::ostringstream output;
+	PrintAST(expr, output);
+	ASSERT_TRUE(!output.str().empty());
 }
 
 TEST(Parser, VariableDeclaration)
@@ -103,7 +102,7 @@ TEST(Parser, VariableDeclarationMultiplicationOfVariables)
 
 TEST(Parser, Unary)
 {
-	IPLVector<Token> tokens = Tokenize("var a = 5; a++; var b = 6; --b;").tokens;
+	IPLVector<Token> tokens = Tokenize("var a = 5; a++; var b = 6; --b; var minusB = -b; var plusB = +b;").tokens;
 
 	auto expr = Parse(tokens);
 	std::ostringstream output;
@@ -113,6 +112,8 @@ TEST(Parser, Unary)
 	ASSERT_TRUE(i.HasVariable("b"));
 	ASSERT_DOUBLE_EQ(i.ModifyVariable("a"), 6.0);
 	ASSERT_DOUBLE_EQ(i.ModifyVariable("b"), 5.0);
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("minusB"), -5.0);
+	ASSERT_DOUBLE_EQ(i.ModifyVariable("plusB"),  +5.0);
 }
 
 

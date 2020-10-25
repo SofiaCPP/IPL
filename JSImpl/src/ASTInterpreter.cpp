@@ -216,27 +216,41 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
 }
 
 void ASTInterpreter::Visit(UnaryExpression* e) {
-    LValueExtractor extractor(this);
-    auto lvalue = extractor.Run(e->GetExpr().get());
-    if (e->GetSuffix())
-    {
-        m_Evaluation.push_back(*lvalue);
-    }
     switch (e->GetOperator())
     {
-    case TokenType::PlusPlus:
-        ++(*lvalue);
-        break;
-    case TokenType::MinusMinus:
-        --(*lvalue);
-        break;
-    default:
-        NOT_IMPLEMENTED;
+        case TokenType::Minus:
+        {
+            e->GetExpr()->Accept(*this);
+            m_Evaluation.back() *= -1;
+            break;
+        }
+        case TokenType::Plus:
+        {
+            e->GetExpr()->Accept(*this);
+            break;
+        }
+        case TokenType::PlusPlus: // FALLTHROUGH
+        case TokenType::MinusMinus:
+        {
+            LValueExtractor extractor(this);
+            auto lvalue = extractor.Run(e->GetExpr().get());
+            if (e->GetSuffix())
+            {
+                m_Evaluation.push_back(*lvalue);
+            }
+            *lvalue += e->GetOperator() == TokenType::PlusPlus ? 1 : -1;
+            if (!e->GetSuffix())
+            {
+                m_Evaluation.push_back(*lvalue);
+            }
+            break;
+        }
+        default:
+        {
+            NOT_IMPLEMENTED;
+        }
     }
-    if (!e->GetSuffix())
-    {
-        m_Evaluation.push_back(*lvalue);
-    }
+
 }
 
 void ASTInterpreter::Visit(IdentifierExpression* e) {
