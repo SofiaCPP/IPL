@@ -67,7 +67,7 @@
 #include <stdio.h>
 int yylex();
 int yyerror(const char* error);
-#define YYDEBUG 1
+
 
 #line 73 "parser.tab.c" /* yacc.c:339  */
 
