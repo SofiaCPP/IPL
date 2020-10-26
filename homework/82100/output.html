@@ -1,0 +1,7 @@
+<!doctype><html><head>    <title>example.scm</title>    <style>        .keyword {            color: red;        }        .identifier {            color: green;        }        .special-function {            color: orange;        }        .number {            color: blue;        }        .string {            color: purple;        }        .operator {            color: blue;            font-style: bold;        }        .comment {            color: grey;        }    </style></head><body>    <pre class="code">
+
+(<span class="keyword">define</span> (<span class="identifier">example</span> <span class="identifier">arg1</span> <span class="identifier">arg2</span>)
+  (<span class="keyword">if</span> ((<span class="operator"><</span> <span class="identifier">arg1</span> <span class="identifier">arg2</span>) <span class="keyword">and</span> (<span class="identifier">even?</span> <span class="identifier">arg1</span>))
+    <span class="identifier">arg1</span>
+    <span class="identifier">arg2</span>))
+
