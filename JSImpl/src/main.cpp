@@ -227,6 +227,9 @@ private:
 
 int main(int argc, char* argv[])
 {
+	// You can try =>
+	// Working dir: $(ProjectDir)
+	// Command arguments: --input ./../examples/code.js --output ./../examples/some.ast --ast
 	CammandLineApp cmd;
 	cmd.RunAsCommandLine(argc, argv);
 	//auto r = Tokenize("a#4", {true ,true});
