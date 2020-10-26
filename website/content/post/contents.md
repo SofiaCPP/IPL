@@ -10,6 +10,8 @@ Table of contents for the course.
 
 <!--more-->
 
+## Contents
+
 0. Course introduction - [slides]({{< ref "/slides/00_intro" >}}),
    [doc]({{< ref "/intro" >}})
 
@@ -19,10 +21,10 @@ Table of contents for the course.
 0. Lexical analysis - [slides]({{< ref "/slides/02_lexical_analysis" >}}),
    [doc]({{< ref "/lexer" >}})
 
-<!--
-
 0. Parsing - [slides]({{< ref "/slides/03_parsing" >}}),
-   [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/03_parsing/_index.md)
+   [doc]({{< ref "/parser" >}})
+
+<!--
 
 0. Parser generators - [slides]({{< ref "/slides/04_parser_generators" >}}),
    [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/04_parser_generators/_index.md)
@@ -49,3 +51,25 @@ Table of contents for the course.
    [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/10_vm_gc/_index.md)
 
 -->
+
+## Timeline
+
+
+| Week |    Date    | Topic  |
+|------|------------|--------|
+|  1   | 06.10.2020 | Intro  |
+|  2   | 13.10.2020 | Lexers |
+|  3   | 20.10.2020 | Parser |
+|  4   | 27.10.2020 | Parser |
+|  5   | 03.11.2020 | AST |
+|  6   | 10.11.2020 | Bytecode |
+|  7   | 17.11.2020 | Bytecode |
+|  8   | 24.11.2020 | VM |
+|  9   | 01.12.2020 | VM |
+| 10   | 15.12.2020 | VM |
+| 11   | 05.01.2021 | GC |
+| 12   | 12.01.2021 | GC |
+| 13   | 19.01.2021 | JIT |
+| 14   | 26.01.2021 | JIT |
+| 15   | 02.02.2021 | AOT |
+
