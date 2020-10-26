@@ -27,6 +27,7 @@ outputs: ["Reveal"]
 - Implement a computational model
 - Just like real machines AKA computers
 - run on top of the real machine
+- you can have a hardware implementation of VM
 
 ---
 
@@ -282,6 +283,7 @@ Instructions will be between 1 and 25 bytes.
 - 6 bits for OpCode - we have up to 64 opcodes
 - 2 bits - n - length of the arguments
     - 2^n bytes per agrument
+    - up to 3 arguments per instruction
 
 ---
 ### Instruction set
@@ -297,7 +299,7 @@ https://docs.google.com/spreadsheets/d/1Q90x60BF-7T0jqPngScsjlaGBXXHRx4tszwCTSRY
     - 0 - count of arguments
     - -1 - first argument
     - -n - n-th argument
-4. caller calls `ret reg`, which removes all locals and arguments and leaves
+4. callee calls `ret reg`, which removes all locals and arguments and leaves
    `reg` on top of the stack
 5. caller pops the result from the stack
 
