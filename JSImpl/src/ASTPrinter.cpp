@@ -136,6 +136,7 @@ public:
 	void Print( const char* name, const IPLString& member, bool isLast);
 	void Print( const char* name, bool member, bool isLast);
 	void Print( const char* name, const TokenType& member, bool isLast);
+	void Print( const char* name, const double& member, bool isLast);
 
 	inline void Enter();
 	inline void Exit();
@@ -260,6 +261,13 @@ void ASTToJsonPrinter::Print(const char* name, const IPLString& member, bool isL
 {
 	InsertIndent();
 	m_Output << "\"" << name << "\": \"" << StripString(member) << "\"";
+	PrepNextElement(m_Output, isLast);
+}
+
+void ASTToJsonPrinter::Print(const char* name, const double& member, bool isLast)
+{
+	InsertIndent();
+	m_Output << "\"" << name << "\": " << member;
 	PrepNextElement(m_Output, isLast);
 }
 
