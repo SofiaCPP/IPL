@@ -14,6 +14,7 @@ struct token_type_hash
 
 const unordered_map<token_type, string, token_type_hash> colors{
     {token_type::TT_KEYWORD, "#0000ff"},
+    {token_type::TT_STANDARD_TYPEDEF, "#00ffee"},
     {token_type::TT_LITERAL_TEXT, "#f06c6c"},
     {token_type::TT_LITERAL_NUMERIC, "#c421bf"},
     {token_type::TT_UNKNOWN, "#000000"},
