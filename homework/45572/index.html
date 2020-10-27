@@ -1,0 +1,702 @@
+<!doctype>
+<html>
+<head>
+    <title>hello.js</title>
+    <style>
+        .keyword {
+            color: purple;
+        }
+        .number {
+            color: blue;
+        }
+        .string {
+            color: red;
+        }
+		.one-line-comment{
+			color:green		
+		}
+		.multi-line-comment{
+			color:green		
+		}
+        .operator {
+            font-style: bold;
+        }
+    </style>
+</head>
+<body>
+    <pre class="code">
+<span class="one-line-comment">// "Asdasdasd "</span>
+<span class="multi-line-comment">/* this is a testing*/</span>
+	<span class="multi-line-comment">/*comment
+	on
+	more 'than'
+	one "line some text" *on it
+	citation
+	xD*********/
+	*/</span>
+
+<span class="keyword">var</span> <span class="identifier">fs</span> <span class="operator">=</span> <span class="identifier">require</span>(<span class="string">'fs'</span>),
+    <span class="identifier">http</span> <span class="operator">=</span> <span class="identifier">require</span>(<span class="string">'http'</span>),
+    <span class="identifier">URL</span> <span class="operator">=</span> <span class="identifier">require</span>(<span class="string">'url'</span>),
+    <span class="identifier">crypto</span><span class="operator">=</span><span class="identifier">require</span>(<span class="string">'crypto'</span>);
+
+<span class="keyword">var</span> <span class="identifier">currentPageName</span> <span class="operator">=</span> <span class="string">'./CardGame/pages/index.html'</span>;
+
+<span class="one-line-comment">//deleting the magic numbers</span>
+<span class="keyword">var</span> <span class="identifier">battleIndex</span> <span class="operator">=</span> <span class="number">5</span>,
+    <span class="identifier">boonIndex</span> <span class="operator">=</span> <span class="number">6</span>,
+    <span class="identifier">castIndex</span> <span class="operator">=</span> <span class="number">7</span>,
+    <span class="identifier">modIndex</span> <span class="operator">=</span> <span class="number">9</span>,
+    <span class="identifier">updateIndex</span> <span class="operator">=</span> <span class="number">10</span>,
+    <span class="identifier">uniqCardsIndex</span> <span class="operator">=</span> <span class="number">11</span>;
+
+<span class="keyword">function</span> <span class="identifier">main</span>(){ 
+ <span class="keyword">var</span> <span class="identifier">server</span> <span class="operator">=</span> <span class="identifier">http</span><span class="number">.</span><span class="identifier">createServer</span>(<span class="keyword">function</span>(<span class="identifier">req</span>, <span class="identifier">res</span>){
+        <span class="keyword">var</span> <span class="identifier">headers</span>  <span class="operator">=</span> <span class="identifier">req</span><span class="number">.</span><span class="identifier">headers</span>,
+            <span class="identifier">method</span> <span class="operator">=</span> <span class="identifier">req</span><span class="number">.</span><span class="identifier">method</span>,
+            <span class="identifier">url</span> <span class="operator">=</span> <span class="identifier">req</span><span class="number">.</span><span class="identifier">url</span>,
+            <span class="identifier">body</span> <span class="operator">=</span> <span class="array">[]</span>;
+
+        <span class="keyword">var</span> <span class="identifier">pathName</span> <span class="operator">=</span> <span class="identifier">URL</span><span class="number">.</span><span class="identifier">parse</span>(<span class="identifier">url</span>)<span class="number">.</span><span class="identifier">pathname</span>;
+   <span class="one-line-comment">//     console.log('Request for ' + pathName + ' recieved');</span>
+        <span class="keyword">if</span>(<span class="identifier">pathName</span> <span class="operator">=</span><span class="operator">=</span> <span class="string">'/'</span>)
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">pathName</span>);
+
+        <span class="identifier">req</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'error'</span>, <span class="keyword">function</span>(<span class="identifier">err</span>){
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">error</span>(<span class="identifier">err</span>);
+        })<span class="number">.</span><span class="identifier">on</span>(<span class="string">'data'</span>, <span class="keyword">function</span>(<span class="identifier">chunk</span>){
+            <span class="identifier">body</span><span class="number">.</span><span class="identifier">push</span>(<span class="identifier">chunk</span>);
+            
+        })<span class="number">.</span><span class="identifier">on</span>(<span class="string">'end'</span>, <span class="keyword">function</span>(){
+            <span class="identifier">body</span> <span class="operator">=</span> <span class="identifier">Buffer</span><span class="number">.</span><span class="identifier">concat</span>(<span class="identifier">body</span>)<span class="number">.</span><span class="identifier">toString</span>();
+        
+            <span class="identifier">res</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'error'</span>, <span class="keyword">function</span>(<span class="identifier">err</span>) {
+                <span class="identifier">console</span><span class="number">.</span><span class="identifier">error</span>(<span class="identifier">err</span>);
+            });
+            
+            <span class="identifier">res</span><span class="number">.</span><span class="identifier">statusCode</span> <span class="operator">=</span> <span class="number">200</span>;
+            <span class="identifier">res</span><span class="number">.</span><span class="identifier">setHeader</span>(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);
+
+            <span class="keyword">if</span>(<span class="identifier">pathName</span> <span class="operator">=</span><span class="operator">=</span> <span class="string">'/'</span>){
+                <span class="identifier">fs</span><span class="number">.</span><span class="identifier">readFile</span>(<span class="identifier">currentPageName</span>, <span class="keyword">function</span> (<span class="identifier">err</span>, <span class="identifier">html</span>) {
+                    <span class="keyword">if</span>(<span class="identifier">err</span>)
+                        <span class="keyword">throw</span> <span class="identifier">err</span>;
+
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">writeHeader</span>(<span class="number">200</span>, {<span class="string">'Content-Type'</span>: <span class="string">'text/html'</span>});
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">write</span>(<span class="identifier">html</span>);
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">end</span>();
+                });
+            }
+
+            <span class="keyword">if</span>(<span class="identifier">pathName</span><span class="number">.</span><span class="identifier">substring</span>(<span class="identifier">pathName</span><span class="number">.</span><span class="identifier">length</span><span class="operator">-</span> <span class="number">5</span>) <span class="operator">=</span><span class="operator">=</span> <span class="string">'.html'</span>){
+                <span class="identifier">fs</span><span class="number">.</span><span class="identifier">readFile</span>(<span class="string">'./CardGame/pages'</span> <span class="operator">+</span> <span class="identifier">pathName</span>, <span class="keyword">function</span> (<span class="identifier">err</span>, <span class="identifier">html</span>) {
+                    <span class="keyword">if</span>(<span class="identifier">err</span>)
+                        <span class="keyword">throw</span> <span class="identifier">err</span>;
+
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">writeHeader</span>(<span class="number">200</span>, {<span class="string">'Content-Type'</span>: <span class="string">'text/html'</span>});
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">write</span>(<span class="identifier">html</span>);
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">end</span>();
+                });
+            }
+
+            <span class="keyword">if</span>(<span class="identifier">pathName</span><span class="number">.</span><span class="identifier">substring</span>(<span class="identifier">pathName</span><span class="number">.</span><span class="identifier">length</span><span class="operator">-</span><span class="number">3</span>) <span class="operator">=</span><span class="operator">=</span> <span class="string">'.js'</span>){
+                <span class="identifier">fs</span><span class="number">.</span><span class="identifier">readFile</span>(<span class="string">'./CardGame/'</span> <span class="operator">+</span> <span class="identifier">pathName</span>, <span class="keyword">function</span> (<span class="identifier">err</span>, <span class="identifier">data</span>){
+                    <span class="keyword">if</span>(<span class="identifier">err</span>)
+                        <span class="keyword">throw</span> <span class="identifier">err</span>;
+
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">write</span>(<span class="identifier">data</span>);
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">end</span>();
+                });
+            }
+
+            <span class="keyword">if</span>(<span class="identifier">pathName</span><span class="number">.</span><span class="identifier">substring</span>(<span class="identifier">pathName</span><span class="number">.</span><span class="identifier">length</span><span class="operator">-</span><span class="number">4</span>) <span class="operator">=</span><span class="operator">=</span> <span class="string">'.png'</span> || <span class="identifier">pathName</span><span class="number">.</span><span class="identifier">substring</span>(<span class="identifier">pathName</span><span class="number">.</span><span class="identifier">length</span><span class="operator">-</span><span class="number">4</span>) <span class="operator">=</span><span class="operator">=</span> <span class="string">'.jpg'</span>){
+                <span class="identifier">fs</span><span class="number">.</span><span class="identifier">readFile</span>(<span class="string">'./CardGame'</span><span class="operator">+</span><span class="identifier">pathName</span>, <span class="keyword">function</span>(<span class="identifier">err</span>,<span class="identifier">data</span>){
+                    <span class="keyword">if</span>(<span class="identifier">err</span>)
+                        <span class="keyword">throw</span> <span class="identifier">err</span>;
+
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">write</span>(<span class="identifier">data</span>);
+                    <span class="identifier">res</span><span class="number">.</span><span class="identifier">end</span>();
+                });
+            }
+        });
+    })<span class="number">.</span><span class="identifier">listen</span>(<span class="number">1234</span>); 
+    
+    <span class="keyword">var</span> <span class="identifier">io</span> <span class="operator">=</span> <span class="identifier">require</span>(<span class="string">'socket.io'</span>)(<span class="identifier">server</span>),
+        <span class="identifier">sequence</span> <span class="operator">=</span> <span class="number">1</span>,
+        <span class="identifier">clients</span> <span class="operator">=</span> <span class="array">[]</span>;
+        
+    <span class="keyword">var</span> <span class="identifier">database</span> <span class="operator">=</span> <span class="identifier">JSON</span><span class="number">.</span><span class="identifier">parse</span>(<span class="identifier">fs</span><span class="number">.</span><span class="identifier">readFileSync</span>(<span class="string">'betaDummy.JSON'</span>));
+    <span class="keyword">var</span> <span class="identifier">decks</span> <span class="operator">=</span> <span class="identifier">JSON</span><span class="number">.</span><span class="identifier">parse</span>(<span class="identifier">fs</span><span class="number">.</span><span class="identifier">readFileSync</span>(<span class="string">'decks.JSON'</span>));
+    <span class="keyword">var</span> <span class="identifier">characters</span> <span class="operator">=</span> <span class="identifier">JSON</span><span class="number">.</span><span class="identifier">parse</span>(<span class="identifier">fs</span><span class="number">.</span><span class="identifier">readFileSync</span>(<span class="string">'characters.json'</span>));
+    <span class="keyword">var</span> <span class="identifier">playGame</span> <span class="operator">=</span> <span class="array">[]</span>;
+    <span class="keyword">var</span> <span class="identifier">inGame</span><span class="operator">=</span><span class="array">[]</span>;
+    
+    <span class="identifier">io</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'connection'</span>, <span class="keyword">function</span> (<span class="identifier">socket</span>){
+        <span class="identifier">console</span><span class="number">.</span><span class="identifier">info</span>(<span class="string">'New client connected (id= '</span><span class="operator">+</span> <span class="identifier">socket</span><span class="number">.</span><span class="identifier">id</span> <span class="operator">+</span> <span class="string">').'</span>);
+        <span class="identifier">clients</span><span class="number">.</span><span class="identifier">push</span>(<span class="identifier">socket</span>);
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'disconnect'</span>, <span class="keyword">function</span>(){
+            <span class="one-line-comment">// remove from connected clients</span>
+            <span class="keyword">var</span> <span class="identifier">index</span> <span class="operator">=</span> <span class="identifier">clients</span><span class="number">.</span><span class="identifier">indexOf</span>(<span class="identifier">socket</span>);
+            <span class="keyword">if</span>(<span class="identifier">index</span> <span class="operator">!</span><span class="operator">=</span> <span class="operator">-</span><span class="number">1</span>){
+                <span class="identifier">clients</span><span class="number">.</span><span class="identifier">splice</span>(<span class="identifier">index</span>, <span class="number">1</span>);
+                <span class="identifier">console</span><span class="number">.</span><span class="identifier">info</span>(<span class="string">'Client gone (id= '</span> <span class="operator">+</span> <span class="identifier">socket</span><span class="number">.</span><span class="identifier">id</span><span class="operator">+</span><span class="string">').'</span>);
+
+                <span class="one-line-comment">// look if he is in game or in queue</span>
+                
+                <span class="keyword">for</span>(<span class="keyword">var</span> <span class="identifier">i</span> <span class="operator">=</span> <span class="number">0</span>; <span class="identifier">i</span> <span class="operator"><</span> <span class="identifier">inGame</span><span class="number">.</span><span class="identifier">length</span>; <span class="identifier">i</span><span class="operator">+</span><span class="operator">=</span><span class="number">1</span>){
+                    <span class="keyword">if</span>(<span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[2]</span><span class="number">.</span><span class="identifier">socket</span> <span class="operator">=</span><span class="operator">=</span> <span class="identifier">socket</span>){
+                        <span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[3]</span><span class="number">.</span><span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'enemySurrendered'</span>);
+                        <span class="identifier">inGame</span><span class="number">.</span><span class="identifier">splice</span>(<span class="identifier">i</span>, <span class="number">1</span>);
+                        <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">"yo left someone"</span>);
+                        <span class="keyword">break</span>;
+                    }
+                    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[3]</span><span class="number">.</span><span class="identifier">socket</span> <span class="operator">=</span><span class="operator">=</span> <span class="identifier">socket</span>){
+                        <span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[2]</span><span class="number">.</span><span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'enemySurrendered'</span>);
+                        <span class="identifier">inGame</span><span class="number">.</span><span class="identifier">splice</span>(<span class="identifier">i</span>, <span class="number">1</span>);
+                        <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">"Yo left someone"</span>);
+                        <span class="keyword">break</span>;
+                    }
+                }
+            }
+
+            <span class="one-line-comment">// update database</span>
+            <span class="identifier">fs</span><span class="number">.</span><span class="identifier">writeFileSync</span>(<span class="string">'betaDummy.json'</span>, <span class="identifier">JSON</span><span class="number">.</span><span class="identifier">stringify</span>(<span class="identifier">database</span>));
+            <span class="identifier">fs</span><span class="number">.</span><span class="identifier">writeFileSync</span>(<span class="string">'decks.json'</span>, <span class="identifier">JSON</span><span class="number">.</span><span class="identifier">stringify</span>(<span class="identifier">decks</span>));
+            <span class="identifier">fs</span><span class="number">.</span><span class="identifier">writeFileSync</span>(<span class="string">'characters.json'</span>, <span class="identifier">JSON</span><span class="number">.</span><span class="identifier">stringify</span>(<span class="identifier">characters</span>));
+        });
+
+        <span class="keyword">var</span> <span class="identifier">isLoggedIn</span>;
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'serverMessage'</span>, {<span class="identifier">message</span>:<span class="string">'message is this'</span>});
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'LogIn'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'LOGGGING.........'</span>);
+            <span class="keyword">var</span> <span class="identifier">emailIndex</span> <span class="operator">=</span><span class="identifier">findElement</span>(<span class="identifier">database</span>[<span class="string">'email'</span>],<span class="identifier">data</span><span class="number">.</span><span class="identifier">email</span>),
+                <span class="identifier">emailPassword</span> <span class="operator">=</span> <span class="identifier">database</span>[<span class="string">'password'</span>][<span class="identifier">emailIndex</span>],
+                <span class="identifier">username</span> <span class="operator">=</span> <span class="identifier">database</span>[<span class="string">'username'</span>][<span class="identifier">emailIndex</span>];
+            
+            <span class="one-line-comment">// the email does not exist return login has failed</span>
+            <span class="keyword">if</span>(<span class="identifier">emailIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="identifier">undefined</span>){
+;                <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">email</span> <span class="operator">+</span> <span class="string">' - '</span> <span class="operator">+</span> <span class="identifier">emailIndex</span>);
+                <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'LogConfirm'</span>, {<span class="identifier">isLoggedIn</span>: <span class="identifier">isLoggedIn</span>});
+                <span class="keyword">return</span>;
+            }
+            
+            <span class="identifier">crypto</span><span class="number">.</span><span class="identifier">pbkdf2</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">password</span>,<span class="identifier">emailPassword</span><span class="number">.</span><span class="identifier">salt</span>,
+                               <span class="identifier">emailPassword</span><span class="number">.</span><span class="identifier">iterations</span>, <span class="number">512</span>, <span class="string">'sha512'</span>,
+                              <span class="keyword">function</span>(<span class="identifier">err</span>, <span class="identifier">key</span>){
+                <span class="keyword">if</span>(<span class="identifier">key</span><span class="number">.</span><span class="identifier">toString</span>(<span class="string">'hex'</span>) <span class="operator">=</span><span class="operator">=</span> <span class="identifier">emailPassword</span><span class="number">.</span><span class="identifier">hash</span>){
+                    <span class="identifier">isLoggedIn</span> <span class="operator">=</span> <span class="identifier">true</span>;
+                    <span class="keyword">var</span> <span class="identifier">userId</span> <span class="operator">=</span> <span class="string">'#'</span> <span class="operator">+</span> <span class="identifier">database</span>[<span class="string">'uid'</span>][<span class="identifier">emailIndex</span>];
+                
+                    <span class="identifier">database</span>[<span class="identifier">username</span><span class="operator">+</span><span class="identifier">userId</span>][<span class="string">'state'</span>]<span class="operator">=</span>
+                        <span class="identifier">database</span>[<span class="identifier">username</span><span class="operator">+</span><span class="identifier">userId</span>][<span class="string">'lastState'</span>];
+            
+                    <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'LogConfirm'</span>, {<span class="identifier">isLogged</span>: <span class="identifier">isLoggedIn</span>});
+                    <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'userData'</span>, {<span class="identifier">state</span>:<span class="identifier">database</span>[<span class="identifier">username</span><span class="operator">+</span><span class="identifier">userId</span>][<span class="string">'lastState'</span>],
+                                <span class="identifier">username</span>: <span class="identifier">username</span>, <span class="identifier">userID</span>: <span class="identifier">userId</span>,
+                                <span class="identifier">profile</span>: <span class="identifier">database</span>[<span class="identifier">username</span><span class="operator">+</span><span class="identifier">userId</span>],
+                                <span class="identifier">chars</span>: <span class="identifier">characters</span>[<span class="identifier">username</span><span class="operator">+</span><span class="identifier">userId</span>],
+                                <span class="identifier">createdDecks</span>: <span class="identifier">decks</span>[<span class="identifier">username</span><span class="operator">+</span><span class="identifier">userId</span>]});
+                }
+                
+                <span class="keyword">else</span>
+                    <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'LogConfirm'</span>, {<span class="identifier">isLogged</span>: <span class="identifier">isLoggedIn</span>});
+            });
+            
+            <span class="keyword">if</span>(<span class="operator">!</span><span class="identifier">isLoggedIn</span>)  
+                <span class="keyword">return</span>;
+        });
+                
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'Register'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="keyword">var</span> <span class="identifier">emailIndex</span> <span class="operator">=</span><span class="identifier">findElement</span>(<span class="identifier">database</span>[<span class="string">'email'</span>],<span class="identifier">data</span><span class="number">.</span><span class="identifier">email</span>); 
+            
+            <span class="one-line-comment">// check if email already exists if it does register has failed</span>
+            <span class="keyword">if</span>(<span class="identifier">emailIndex</span> || <span class="identifier">emailIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>){<span class="one-line-comment">//because 0 is false </span>
+               <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'registerFailed'</span>, {});
+                <span class="keyword">return</span>;
+            }
+            <span class="one-line-comment">// 1) generate the salt</span>
+            <span class="one-line-comment">// 2) decide how much iterations the new hash is</span>
+            <span class="one-line-comment">// 3) save the salt, iterations and the created hash</span>
+            <span class="keyword">var</span> <span class="identifier">salt</span> <span class="operator">=</span> <span class="identifier">crypto</span><span class="number">.</span><span class="identifier">randomBytes</span>(<span class="number">128</span>)<span class="number">.</span><span class="identifier">toString</span>(<span class="string">'base64'</span>);
+            <span class="keyword">var</span> <span class="identifier">iterations</span> <span class="operator">=</span> <span class="number">10000</span>;
+            <span class="identifier">crypto</span><span class="number">.</span><span class="identifier">pbkdf2</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">password</span>, <span class="identifier">salt</span>,<span class="identifier">iterations</span>,<span class="number">512</span>, <span class="string">'sha512'</span>, 
+                          <span class="keyword">function</span>(<span class="identifier">err</span>, <span class="identifier">key</span>){
+                <span class="keyword">if</span>(<span class="identifier">err</span>)
+                    <span class="keyword">throw</span> <span class="identifier">err</span>;
+                <span class="identifier">database</span>[<span class="string">'password'</span>]<span class="number">.</span><span class="identifier">push</span>({<span class="identifier">salt</span>:<span class="identifier">salt</span>,<span class="identifier">iterations</span>:<span class="identifier">iterations</span>,
+                                           <span class="identifier">hash</span>:<span class="identifier">key</span><span class="number">.</span><span class="identifier">toString</span>(<span class="string">'hex'</span>)});
+            }); 
+            
+            <span class="identifier">database</span>[<span class="string">'email'</span>]<span class="number">.</span><span class="identifier">push</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">email</span>);
+            <span class="identifier">database</span>[<span class="string">'username'</span>]<span class="number">.</span><span class="identifier">push</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span>);
+            <span class="identifier">database</span>[<span class="string">'secretQuestion'</span>]<span class="number">.</span><span class="identifier">push</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">secretQuestion</span>);          
+            <span class="keyword">var</span> <span class="identifier">userId</span>;
+                   
+            <span class="keyword">while</span>(<span class="operator">!</span><span class="identifier">userId</span> || <span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span> <span class="operator">+</span> <span class="string">'#'</span> <span class="operator">+</span> <span class="identifier">userId</span>]){
+                    <span class="identifier">userId</span> <span class="operator">=</span> 
+                        <span class="identifier">Math</span><span class="number">.</span><span class="identifier">round</span>(<span class="identifier">Math</span><span class="number">.</span><span class="identifier">random</span>()<span class="operator">*</span> <span class="number">9</span>) <span class="operator">+</span>
+                        <span class="identifier">Math</span><span class="number">.</span><span class="identifier">round</span>(<span class="identifier">Math</span><span class="number">.</span><span class="identifier">random</span>()<span class="operator">*</span> <span class="number">9</span>) <span class="operator">*</span> <span class="number">10</span> <span class="operator">+</span> 
+                        <span class="identifier">Math</span><span class="number">.</span><span class="identifier">round</span>(<span class="identifier">Math</span><span class="number">.</span><span class="identifier">random</span>()<span class="operator">*</span> <span class="number">9</span>) <span class="operator">*</span> <span class="number">100</span> <span class="operator">+</span> 
+                        <span class="identifier">Math</span><span class="number">.</span><span class="identifier">round</span>(<span class="identifier">Math</span><span class="number">.</span><span class="identifier">random</span>()<span class="operator">*</span> <span class="number">9</span>) <span class="operator">*</span> <span class="number">1000</span>;
+            }
+               
+            <span class="identifier">database</span>[<span class="string">'uid'</span>]<span class="number">.</span><span class="identifier">push</span>(<span class="identifier">userId</span>);
+            <span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span> <span class="operator">+</span> <span class="string">'#'</span> <span class="operator">+</span> <span class="identifier">userId</span>] <span class="operator">=</span> {<span class="identifier">friends</span>:<span class="array">[]</span>, <span class="identifier">requestsFrom</span>:<span class="array">[]</span>, 
+                                <span class="identifier">level</span>:<span class="number">0</span>, <span class="identifier">wins</span>:<span class="number">0</span>, <span class="identifier">state</span>:<span class="string">'offline'</span>,<span class="identifier">lastState</span>:<span class="string">''</span>};
+            <span class="identifier">characters</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span> <span class="operator">+</span> <span class="string">'#'</span><span class="operator">+</span> <span class="identifier">userId</span>] <span class="operator">=</span> <span class="array">[]</span>;
+            <span class="identifier">decks</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span> <span class="operator">+</span> <span class="string">'#'</span><span class="operator">+</span> <span class="identifier">userId</span>] <span class="operator">=</span> <span class="array">[]</span>;
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">email</span> <span class="operator">+</span> <span class="string">' EM_PAS '</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">password</span>);
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'changeHtmlPage'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'switch to '</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">pageName</span>);
+            <span class="identifier">currentPageName</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">pageName</span>;
+        });
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'updateUserData'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'newUserData'</span>, {<span class="identifier">profile</span>:<span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>]});
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'CreatedDeck'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">deck</span>);
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">deckIndex</span>);
+            
+                <span class="identifier">decks</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>]<span class="number">.</span><span class="identifier">push</span>({<span class="identifier">name</span>: <span class="identifier">data</span><span class="number">.</span><span class="identifier">deckName</span>, <span class="identifier">deck</span>: <span class="identifier">data</span><span class="number">.</span><span class="identifier">deck</span>, <span class="identifier">isUsable</span>: <span class="identifier">data</span><span class="number">.</span><span class="identifier">isUsable</span>});
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'CH01'</span>, <span class="keyword">function</span>(<span class="identifier">from</span>, <span class="identifier">msg</span>){
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'MSG'</span>, <span class="identifier">from</span>, <span class="string">' saying '</span> , <span class="identifier">msg</span>);
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'CreatedCharacters'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span> <span class="operator">+</span> <span class="string">' '</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>);    
+            
+            <span class="identifier">characters</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>]<span class="number">.</span><span class="identifier">push</span>({<span class="identifier">name</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">name</span>,<span class="identifier">level</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">level</span>,<span class="identifier">exp</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">exp</span>, <span class="identifier">spells</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">spells</span>});
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'changedCharacter'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">newCharacter</span>);
+            <span class="identifier">characters</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>][<span class="identifier">data</span><span class="number">.</span><span class="identifier">charIndex</span>]<span class="operator">=</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">newCharacter</span>;
+        });
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'changedDeck'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">decks</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>][<span class="identifier">data</span><span class="number">.</span><span class="identifier">deckIndex</span>]<span class="operator">=</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">deck</span>;
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">deck</span>);
+        });
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'SendMessage'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+           <span class="keyword">var</span> <span class="identifier">chatDb</span> <span class="operator">=</span> <span class="identifier">database</span>[<span class="string">'chat'</span>],
+               <span class="identifier">chatHeading</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">sender</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">senderID</span> <span class="operator">+</span> <span class="string">'-'</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">deliverTo</span>;
+            
+           <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'1)'</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">sender</span> <span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">senderID</span> <span class="operator">+</span> <span class="string">'-'</span> <span class="operator">+</span> 
+                       <span class="identifier">data</span><span class="number">.</span><span class="identifier">deliverTo</span>);
+           <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'2)'</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">deliverTo</span> <span class="operator">+</span> <span class="string">'-'</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">sender</span><span class="operator">+</span> 
+                       <span class="identifier">data</span><span class="number">.</span><span class="identifier">senderID</span>);
+            
+           <span class="keyword">if</span>(<span class="operator">!</span><span class="identifier">chatDb</span>[<span class="identifier">chatHeading</span>]){
+               <span class="identifier">chatHeading</span> <span class="operator">=</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">deliverTo</span><span class="operator">+</span> <span class="string">'-'</span> <span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">sender</span> <span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">senderID</span>; 
+               <span class="identifier">chatDb</span>[<span class="identifier">chatHeading</span>]<span class="number">.</span><span class="identifier">push</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">sender</span> <span class="operator">+</span> <span class="string">': '</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">message</span>);
+           }
+            
+           <span class="keyword">else</span>{
+               <span class="identifier">chatDb</span>[<span class="identifier">chatHeading</span>]<span class="number">.</span><span class="identifier">push</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">sender</span><span class="operator">+</span><span class="string">': '</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">message</span>);
+           }
+            
+            <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'AllChats'</span>, {<span class="identifier">chat</span>:<span class="identifier">chatDb</span>[<span class="identifier">chatHeading</span>]});
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'RequestFriendProfile'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">friend</span>]);
+            <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'FriendProfile'</span>, {<span class="identifier">friendProfile</span>:<span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">friend</span>]});
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'SendFriendRequest'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+        <span class="keyword">var</span> <span class="identifier">hasAlreadySent</span> <span class="operator">=</span> <span class="identifier">findElement</span>(<span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">reciever</span>][<span class="string">'requestsFrom'</span>],   
+                                         <span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>);
+            
+          <span class="keyword">if</span>(<span class="operator">!</span><span class="identifier">hasAlreadySent</span> && <span class="identifier">hasAlreadySent</span> <span class="operator">!</span><span class="operator">=</span> <span class="number">0</span>){
+              <span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">reciever</span>][<span class="string">'requestsFrom'</span>]<span class="number">.</span><span class="identifier">push</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>);
+          }
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'AcceptFriendRequest'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="keyword">var</span> <span class="identifier">nameAt</span> <span class="operator">=</span> <span class="identifier">findElement</span>(<span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">concordant</span>]
+                                     [<span class="string">'requestsFrom'</span>], <span class="identifier">data</span><span class="number">.</span><span class="identifier">requester</span>);
+             <span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">concordant</span>][<span class="string">'requestsFrom'</span>]<span class="number">.</span><span class="identifier">splice</span>(<span class="identifier">nameAt</span>, <span class="number">1</span>);
+             <span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">concordant</span>][<span class="string">'friends'</span>]<span class="number">.</span><span class="identifier">push</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">requester</span>);
+             <span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">requester</span>][<span class="string">'friends'</span>]<span class="number">.</span><span class="identifier">push</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">concordant</span>);
+             <span class="identifier">database</span>[<span class="string">'chat'</span>][<span class="identifier">data</span><span class="number">.</span><span class="identifier">requester</span> <span class="operator">+</span> <span class="string">'-'</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">concordant</span>] <span class="operator">=</span> <span class="array">[]</span>;    
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'ChangeState'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>][<span class="string">'state'</span>]<span class="operator">=</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">state</span>;
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'StateLoggedOut'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            
+            <span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>][<span class="string">'state'</span>]<span class="operator">=</span> <span class="string">'offline'</span>;
+            <span class="identifier">database</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>][<span class="string">'lastState'</span>] <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">state</span>;
+        });
+        
+        <span class="one-line-comment">//play Game</span>
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'QueuePlayGame'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="one-line-comment">//add the player to the queue and after an interval search for an opponent</span>
+            <span class="identifier">playGame</span><span class="number">.</span><span class="identifier">push</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>);
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'QUEUED '</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>);
+            <span class="one-line-comment">// after the interval the queue takes actions</span>
+            <span class="identifier">setInterval</span>(<span class="keyword">function</span>(){
+                <span class="keyword">var</span> <span class="identifier">isOpponentFound</span> <span class="operator">=</span> <span class="identifier">false</span>,
+                    <span class="identifier">length</span> <span class="operator">=</span> <span class="identifier">playGame</span><span class="number">.</span><span class="identifier">length</span>,
+                    <span class="identifier">user</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>,
+                    <span class="identifier">queueIndex</span> <span class="operator">=</span> <span class="identifier">findElement</span>(<span class="identifier">playGame</span>, <span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>);
+
+                    <span class="one-line-comment">// if he is not found in the queue, he is inGame</span>
+                    <span class="keyword">if</span>(<span class="identifier">queueIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="identifier">undefined</span>){
+                        <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'he is inGame'</span>);
+                        <span class="keyword">for</span>(<span class="keyword">var</span> <span class="identifier">i</span> <span class="operator">=</span> <span class="number">0</span>; <span class="identifier">i</span><span class="operator"><</span><span class="identifier">inGame</span><span class="number">.</span><span class="identifier">length</span>; <span class="identifier">i</span><span class="operator">+</span><span class="operator">=</span><span class="number">1</span>){
+                            <span class="keyword">if</span>(<span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[0]</span> <span class="operator">=</span><span class="operator">=</span> <span class="identifier">user</span> || <span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[1]</span> <span class="operator">=</span><span class="operator">=</span> <span class="identifier">user</span>){
+                                <span class="identifier">isOpponentFound</span> <span class="operator">=</span> <span class="identifier">true</span>;
+
+                                <span class="keyword">if</span>(<span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[0]</span> <span class="operator">=</span><span class="operator">=</span> <span class="identifier">user</span>)
+                                    <span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[2]</span><span class="number">.</span><span class="identifier">socket</span> <span class="operator">=</span> <span class="identifier">socket</span>;
+                                <span class="keyword">else</span>
+                                    <span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[3]</span><span class="number">.</span><span class="identifier">socket</span> <span class="operator">=</span> <span class="identifier">socket</span>;
+                                    
+                                
+                                <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[2]</span><span class="number">.</span><span class="identifier">socket</span><span class="number">.</span><span class="identifier">id</span> <span class="operator">+</span> <span class="string">' vs '</span> <span class="operator">+</span> <span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[3]</span><span class="number">.</span><span class="identifier">socket</span><span class="number">.</span><span class="identifier">id</span>);
+                                <span class="one-line-comment">// there is a gurantee that this is the late arival player</span>
+                            }
+                        }
+                    }
+                
+                    <span class="one-line-comment">// if the user if the only one queued he is kicked out</span>
+                    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="identifier">length</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">1</span>){
+                        <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'was only'</span>);
+                        <span class="identifier">isOpponentFound</span> <span class="operator">=</span> <span class="identifier">false</span>;
+                        <span class="identifier">playGame</span><span class="number">.</span><span class="identifier">pop</span>();
+                    }
+
+                    <span class="one-line-comment">// if there is another user, start a game with him</span>
+                    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="identifier">length</span> <span class="operator">></span> <span class="number">1</span>){
+                        <span class="identifier">isOpponentFound</span> <span class="operator">=</span> <span class="identifier">true</span>;
+                        <span class="keyword">var</span> <span class="identifier">p1Data</span> <span class="operator">=</span> {<span class="identifier">playerFields</span>:[<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>],<span class="identifier">playerHand</span>:<span class="array">[]</span>, <span class="identifier">socket</span>,
+                                         <span class="identifier">characterClass</span>:<span class="string">''</span>, <span class="identifier">deck</span>:<span class="array">[]</span>, <span class="identifier">fieldIndex</span>:<span class="identifier">NaN</span>, <span class="identifier">handIndex</span>:<span class="identifier">NaN</span>, <span class="identifier">cardName</span>:<span class="string">''</span>},
+                            <span class="identifier">p2Data</span> <span class="operator">=</span> {<span class="identifier">playerFields</span>:[<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>], <span class="identifier">playerHand</span>:<span class="array">[]</span>, <span class="identifier">socket</span>,
+                                         <span class="identifier">characterClass</span>:<span class="string">''</span>, <span class="identifier">deck</span>:<span class="array">[]</span>, <span class="identifier">fieldIndex</span>:<span class="identifier">NaN</span>, <span class="identifier">handIndex</span>:<span class="identifier">NaN</span>, <span class="identifier">cardName</span>:<span class="string">''</span>};
+                                
+                        <span class="one-line-comment">// to determine xthe first Player</span>
+                        <span class="keyword">var</span> <span class="identifier">coinFlip</span> <span class="operator">=</span> <span class="identifier">Math</span><span class="number">.</span><span class="identifier">round</span>(<span class="identifier">Math</span><span class="number">.</span><span class="identifier">random</span>() <span class="operator">*</span> <span class="number">100</span>);
+                        <span class="keyword">if</span>(<span class="identifier">coinFlip</span> <span class="operator">></span> <span class="number">50</span>){
+                            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'inGame n'</span>);
+                            <span class="keyword">var</span> <span class="identifier">randomMode</span> <span class="operator">=</span> <span class="identifier">Math</span><span class="number">.</span><span class="identifier">round</span>(<span class="identifier">Math</span><span class="number">.</span><span class="identifier">random</span>() <span class="operator">*</span> <span class="number">1</span>);
+                            <span class="keyword">var</span> <span class="identifier">playMode</span> <span class="operator">=</span> <span class="string">'Normal'</span>;                            
+                            <span class="one-line-comment">// 0 is for normal</span>
+
+                            <span class="keyword">if</span>(<span class="identifier">randomMode</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">1</span>)
+                                <span class="identifier">playMode</span> <span class="operator">=</span> <span class="string">'Dominion'</span>;
+
+                            <span class="identifier">inGame</span><span class="number">.</span><span class="identifier">push</span>([<span class="identifier">playGame</span>[<span class="identifier">queueIndex</span><span class="operator">+</span><span class="number">1</span>],<span class="identifier">user</span>,<span class="identifier">p1Data</span>,<span class="identifier">p2Data</span>,<span class="identifier">true</span>, {}, 
+                            {<span class="identifier">cardCan</span>:<span class="string">''</span>,<span class="identifier">onField</span>:<span class="identifier">NaN</span>, <span class="identifier">onIndex</span>:<span class="identifier">NaN</span>,<span class="identifier">changingFieldIndex</span>:<span class="identifier">NaN</span>},{},<span class="string">'Main Battle'</span>, <span class="identifier">playMode</span>,
+                        {<span class="identifier">updateCounter</span>:<span class="number">0</span>,<span class="identifier">updateUniqCounter</span>:<span class="number">0</span>}, <span class="array">[]</span>]);
+
+                             <span class="one-line-comment">// add to p2Data user's socketw</span>
+                             <span class="identifier">p2Data</span><span class="number">.</span><span class="identifier">socket</span> <span class="operator">=</span> <span class="identifier">socket</span>;
+                        }
+                        
+                        <span class="one-line-comment">// true stands for playerOne is on turn</span>
+                        <span class="keyword">else</span>{ <span class="one-line-comment">//0,1:names; 2,3:datas; 4:isP1turn; 5:battles; 6:cardSpecial; 7:spells, 8:Battle's Location</span>
+                            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'inGame y'</span>);
+                            <span class="keyword">var</span> <span class="identifier">randomMode</span> <span class="operator">=</span> <span class="identifier">Math</span><span class="number">.</span><span class="identifier">round</span>(<span class="identifier">Math</span><span class="number">.</span><span class="identifier">random</span>() <span class="operator">*</span> <span class="number">0</span>);
+                            <span class="keyword">var</span> <span class="identifier">playMode</span> <span class="operator">=</span> <span class="string">'Normal'</span>;
+                            <span class="one-line-comment">// 0 is for normal</span>
+                            <span class="keyword">if</span>(<span class="identifier">randomMode</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">1</span>)
+                                <span class="identifier">playMode</span> <span class="operator">=</span> <span class="string">'Dominion'</span>;
+
+                            <span class="identifier">inGame</span><span class="number">.</span><span class="identifier">push</span>([<span class="identifier">playGame</span>[<span class="identifier">queueIndex</span><span class="operator">+</span><span class="number">1</span>],<span class="identifier">user</span>,<span class="identifier">p1Data</span>,<span class="identifier">p2Data</span>,<span class="identifier">true</span>, {}, 
+                                {<span class="identifier">cardCan</span>:<span class="string">''</span>,<span class="identifier">onField</span>:<span class="identifier">NaN</span>, <span class="identifier">onIndex</span>:<span class="identifier">NaN</span>,<span class="identifier">changingFieldIndex</span>:<span class="identifier">NaN</span>},{},<span class="string">'Main Battle'</span>, <span class="identifier">playMode</span>,
+                            {<span class="identifier">updateCounter</span>:<span class="number">0</span>, <span class="identifier">updateUniqCounter</span>:<span class="number">0</span>}, <span class="array">[]</span>]);
+
+                             <span class="one-line-comment">// add to p1Data user's socket</span>
+                             <span class="identifier">p1Data</span><span class="number">.</span><span class="identifier">socket</span> <span class="operator">=</span> <span class="identifier">socket</span>;
+                        }
+                        <span class="identifier">playGame</span><span class="number">.</span><span class="identifier">splice</span>(<span class="identifier">queueIndex</span>, <span class="number">2</span>);
+                    }
+                    
+                <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'matchFound'</span>,{<span class="identifier">isFound</span>: <span class="identifier">isOpponentFound</span>});
+                <span class="identifier">clearInterval</span>(<span class="keyword">this</span>);
+            }, <span class="number">10000</span>);
+            
+            <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'initGame'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+                    <span class="identifier">index</span><span class="operator">=</span>{<span class="identifier">gameOrder</span>:<span class="identifier">undefined</span>,<span class="identifier">player</span>:<span class="identifier">undefined</span>},
+                    <span class="identifier">user</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">username</span><span class="operator">+</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">userID</span>;
+                
+                <span class="keyword">for</span>(<span class="keyword">var</span> <span class="identifier">i</span> <span class="operator">=</span> <span class="number">0</span>; <span class="identifier">i</span> <span class="operator"><</span> <span class="identifier">inGame</span><span class="number">.</span><span class="identifier">length</span>; <span class="identifier">i</span><span class="operator">+</span><span class="operator">=</span><span class="number">1</span>){
+                    <span class="keyword">if</span>(<span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[0]</span> <span class="operator">=</span><span class="operator">=</span> <span class="identifier">user</span>){
+                        <span class="identifier">index</span><span class="number">.</span><span class="identifier">gameOrder</span> <span class="operator">=</span> <span class="identifier">i</span>;
+                        <span class="identifier">index</span><span class="number">.</span><span class="identifier">player</span> <span class="operator">=</span> <span class="number">0</span>;
+                        <span class="keyword">break</span>;
+                    }
+                    
+                    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="identifier">inGame</span>[<span class="identifier">i</span>]<span class="array">[1]</span> <span class="operator">=</span><span class="operator">=</span> <span class="identifier">user</span>){
+                        <span class="identifier">index</span><span class="number">.</span><span class="identifier">gameOrder</span> <span class="operator">=</span> <span class="identifier">i</span>;
+                        <span class="identifier">index</span><span class="number">.</span><span class="identifier">player</span> <span class="operator">=</span> <span class="number">1</span>;
+                        <span class="keyword">break</span>;
+                    }
+                }
+                
+                <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">index</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+                
+                <span class="identifier">currentGame</span>[<span class="identifier">index</span><span class="number">.</span><span class="identifier">player</span><span class="operator">+</span><span class="number">2</span>][<span class="string">'characterClass'</span>] <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">characterClass</span>;
+                <span class="identifier">currentGame</span>[<span class="identifier">index</span><span class="number">.</span><span class="identifier">player</span><span class="operator">+</span><span class="number">2</span>][<span class="string">'deck'</span>] <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">deck</span>;
+                <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'placement'</span>, {<span class="identifier">gameOrder</span>:<span class="identifier">index</span><span class="number">.</span><span class="identifier">gameOrder</span>,<span class="identifier">player</span>:<span class="identifier">index</span><span class="number">.</span><span class="identifier">player</span>, <span class="identifier">playMode</span>:<span class="identifier">currentGame</span>[<span class="identifier">modIndex</span>]});
+            });
+        });
+        
+        <span class="keyword">var</span> <span class="identifier">isChanged</span>;
+        <span class="one-line-comment">// read the gameDatas, find playerData and add his card</span>
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'spawnCard'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">isChanged</span> <span class="operator">=</span> <span class="identifier">true</span>;
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+            <span class="identifier">currentGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span><span class="operator">+</span><span class="number">2</span>]<span class="number">.</span><span class="identifier">playerFields</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">fieldIndex</span>] <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">cardName</span>;
+            <span class="identifier">currentGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span><span class="operator">+</span><span class="number">2</span>]<span class="number">.</span><span class="identifier">fieldIndex</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">fieldIndex</span>;
+            <span class="identifier">currentGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span><span class="operator">+</span><span class="number">2</span>]<span class="number">.</span><span class="identifier">cardName</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">cardName</span>
+            <span class="identifier">currentGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span><span class="operator">+</span><span class="number">2</span>]<span class="number">.</span><span class="identifier">handIndex</span><span class="operator">=</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">handIndex</span>;
+            
+            <span class="keyword">var</span> <span class="identifier">enemyData</span>;
+            <span class="keyword">if</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>)
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">3</span>;
+            <span class="keyword">else</span>
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">2</span>;
+            
+            <span class="identifier">currentGame</span>[<span class="identifier">updateIndex</span>]<span class="number">.</span><span class="identifier">updateCounter</span><span class="operator">++</span>;                            
+        <span class="one-line-comment">//    console.log('Enemy socket: ' + currentGame[enemyData].socket.id  + '\n' +</span>
+          <span class="one-line-comment">//  'Player socket: ' + currentGame[data.playerIndex+2].socket.id); </span>
+        });
+        
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'battle'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">isChanged</span> <span class="operator">=</span> <span class="identifier">true</span>;
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+            <span class="keyword">var</span> <span class="identifier">battleInfo</span> <span class="operator">=</span> {<span class="identifier">defenderIndex</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">defenderIndex</span>,<span class="identifier">attackerIndex</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">attackerIndex</span>,
+                <span class="identifier">defenderField</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">defenderField</span>};
+            <span class="identifier">currentGame</span>[<span class="identifier">battleIndex</span>]<span class="operator">=</span><span class="identifier">battleInfo</span>;
+
+
+            <span class="keyword">var</span> <span class="identifier">enemyData</span>;
+            <span class="keyword">if</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>)
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">3</span>;
+            <span class="keyword">else</span>
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">2</span>;
+
+            <span class="identifier">currentGame</span>[<span class="identifier">updateIndex</span>]<span class="number">.</span><span class="identifier">updateCounter</span><span class="operator">++</span>;                
+       <span class="one-line-comment">//      currentGame[enemyData].socket.emit('enemyBattle',{battleInfo});</span>
+          });
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'setPrisoner'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+            <span class="keyword">var</span> <span class="identifier">enemyData</span>;
+
+            <span class="keyword">if</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>)
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">3</span>;
+            <span class="keyword">else</span>
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">2</span>;
+
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'GAMEORDer'</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>);
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'PRISONER: '</span> <span class="operator">+</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">prisonerIndex</span>);
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">currentGame</span><span class="number">.</span><span class="identifier">length</span>);
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'Enemy socket: '</span> <span class="operator">+</span> <span class="identifier">currentGame</span>[<span class="identifier">enemyData</span>]<span class="number">.</span><span class="identifier">socket</span><span class="number">.</span><span class="identifier">id</span>  <span class="operator">+</span> <span class="string">'\n'</span> <span class="operator">+</span>
+             <span class="string">'Player socket: '</span> <span class="operator">+</span> <span class="identifier">currentGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span><span class="operator">+</span><span class="number">2</span>]<span class="number">.</span><span class="identifier">socket</span><span class="number">.</span><span class="identifier">id</span>);
+
+            <span class="identifier">currentGame</span>[<span class="identifier">enemyData</span>]<span class="number">.</span><span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'enemySetPrisoner'</span>, {<span class="identifier">prisonerIndex</span>: <span class="identifier">data</span><span class="number">.</span><span class="identifier">prisonerIndex</span>}, <span class="keyword">function</span>(<span class="identifier">fn</span>){
+                <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'sent'</span>);
+            });
+        });
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'spellCasted'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+            <span class="keyword">var</span> <span class="identifier">spellInfo</span> <span class="operator">=</span> {<span class="identifier">markedCursor</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">markedCursor</span>, <span class="identifier">character</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">character</span>,
+                <span class="identifier">cursorPosition</span>:<span class="identifier">data</span><span class="number">.</span><span class="identifier">cursorPosition</span>, <span class="identifier">spellIndex</span>: <span class="identifier">data</span><span class="number">.</span><span class="identifier">spellIndex</span>};
+            <span class="identifier">currentGame</span>[<span class="identifier">castIndex</span>]<span class="operator">=</span><span class="identifier">spellInfo</span>;
+ 
+
+            <span class="keyword">var</span> <span class="identifier">enemyData</span>;
+            <span class="keyword">if</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>)
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">3</span>;
+            <span class="keyword">else</span>
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">2</span>;
+
+            <span class="identifier">currentGame</span>[<span class="identifier">updateIndex</span>]<span class="number">.</span><span class="identifier">updateCounter</span><span class="operator">++</span>;            
+      <span class="one-line-comment">//      currentGame[enemyData].socket.emit('enemySpellsCasted', {enemySpellsCasted:spellInfo});     </span>
+        });
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'cardCan'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">isChanged</span> <span class="operator">=</span> <span class="identifier">true</span>;
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+            <span class="identifier">currentGame</span>[<span class="identifier">boonIndex</span>]<span class="number">.</span><span class="identifier">cardCan</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">cardCan</span>;
+            <span class="identifier">currentGame</span>[<span class="identifier">boonIndex</span>]<span class="number">.</span><span class="identifier">onField</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">onField</span>;
+            <span class="identifier">currentGame</span>[<span class="identifier">boonIndex</span>]<span class="number">.</span><span class="identifier">onIndex</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">onIndex</span>;
+            <span class="identifier">currentGame</span>[<span class="identifier">boonIndex</span>]<span class="number">.</span><span class="identifier">changingFieldIndex</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">changingFieldIndex</span>;
+
+            <span class="keyword">var</span> <span class="identifier">enemyData</span>;
+            <span class="keyword">if</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>)
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">3</span>;
+            <span class="keyword">else</span>
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="number">2</span>;
+                
+            <span class="identifier">currentGame</span>[<span class="identifier">updateIndex</span>]<span class="number">.</span><span class="identifier">updateCounter</span><span class="operator">++</span>;            
+       <span class="multi-line-comment">/*     currentGame[enemyData].socket.emit('enemyCardEffect', {
+                                onField:currentGame[boonIndex].onField,
+                                 onIndex:currentGame[boonIndex].onIndex,  cardCan:currentGame[boonIndex].cardCan,
+                                changingFieldIndex:currentGame[boonIndex].changingFieldIndex});     
+       */</span>});
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'uniqActions'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+            <span class="keyword">var</span> <span class="identifier">playerIndex</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span>;
+
+            <span class="identifier">currentGame</span>[<span class="identifier">uniqCardsIndex</span>] <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">uniqActions</span>;
+            <span class="identifier">currentGame</span>[<span class="identifier">updateIndex</span>]<span class="number">.</span><span class="identifier">updateUniqCounter</span><span class="operator">++</span>;
+
+        });
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'playerRequestData'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+            <span class="keyword">var</span> <span class="identifier">playerIndex</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span>;
+            <span class="keyword">var</span> <span class="identifier">enemyIndex</span> <span class="operator">=</span> <span class="number">0</span>;
+            <span class="keyword">if</span>(<span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>)
+                <span class="identifier">enemyIndex</span> <span class="operator">=</span> <span class="number">1</span>;
+
+            <span class="keyword">if</span>(<span class="operator">!</span><span class="identifier">currentGame</span>[<span class="identifier">enemyIndex</span>])
+                <span class="keyword">return</span>;
+
+            <span class="keyword">var</span> <span class="identifier">playerData</span> <span class="operator">=</span> <span class="identifier">currentGame</span>[<span class="identifier">enemyIndex</span><span class="operator">+</span><span class="number">2</span>];
+            
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">inGame</span><span class="number">.</span><span class="identifier">length</span>);
+
+            <span class="keyword">if</span>(<span class="identifier">currentGame</span>[<span class="identifier">playerIndex</span><span class="operator">+</span><span class="number">2</span>]<span class="number">.</span><span class="identifier">socket</span>){
+               <span class="one-line-comment">// console.log("UpdateIndex " + currentGame[updateIndex].updateCounter);</span>
+
+                <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'battleReport'</span><span class="operator">+</span><span class="identifier">currentGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span>], {<span class="identifier">enemyFields</span>:<span class="identifier">playerData</span><span class="number">.</span><span class="identifier">playerFields</span>,
+                    <span class="identifier">shandIndex</span>:<span class="identifier">playerData</span><span class="number">.</span><span class="identifier">handIndex</span>,
+                    <span class="identifier">fieldIndex</span>:<span class="identifier">playerData</span><span class="number">.</span><span class="identifier">fieldIndex</span>, <span class="identifier">cardName</span>:<span class="identifier">playerData</span><span class="number">.</span><span class="identifier">cardName</span>, <span class="multi-line-comment">/*<-spawnCard*/</span>
+                <span class="identifier">defenderIndex</span>:<span class="identifier">currentGame</span>[<span class="identifier">battleIndex</span>]<span class="number">.</span><span class="identifier">defenderIndex</span>, <span class="identifier">attackerIndex</span>:<span class="identifier">currentGame</span>[<span class="identifier">battleIndex</span>]<span class="number">.</span><span class="identifier">attackerIndex</span>,
+                <span class="identifier">defenderField</span>:<span class="identifier">currentGame</span>[<span class="identifier">battleIndex</span>]<span class="number">.</span><span class="identifier">defenderField</span>, <span class="multi-line-comment">/*<-battle*/</span> <span class="identifier">markedCursor</span>:<span class="identifier">currentGame</span>[<span class="identifier">castIndex</span>]<span class="number">.</span><span class="identifier">markedCursor</span>,
+                <span class="identifier">character</span>:<span class="identifier">currentGame</span>[<span class="identifier">castIndex</span>]<span class="number">.</span><span class="identifier">character</span>, <span class="identifier">cursorPosition</span>:<span class="identifier">currentGame</span>[<span class="identifier">castIndex</span>]<span class="number">.</span><span class="identifier">cursorPosition</span>, 
+                <span class="identifier">spellIndex</span>:<span class="identifier">currentGame</span>[<span class="identifier">castIndex</span>]<span class="number">.</span><span class="identifier">spellIndex</span>, <span class="multi-line-comment">/*<-spellCast*/</span> <span class="identifier">cardCan</span>:<span class="identifier">currentGame</span>[<span class="identifier">boonIndex</span>]<span class="number">.</span><span class="identifier">cardCan</span>,
+                <span class="identifier">onField</span>:<span class="identifier">currentGame</span>[<span class="identifier">boonIndex</span>]<span class="number">.</span><span class="identifier">onField</span>, <span class="identifier">onIndex</span>: <span class="identifier">currentGame</span>[<span class="identifier">boonIndex</span>]<span class="number">.</span><span class="identifier">onIndex</span>, 
+                <span class="identifier">changingFieldIndex</span>:<span class="identifier">currentGame</span>[<span class="identifier">boonIndex</span>]<span class="number">.</span><span class="identifier">changingFieldIndex</span>, <span class="multi-line-comment">/*updateCounter->*/</span>
+                 <span class="identifier">updateCounter</span>:<span class="identifier">currentGame</span>[<span class="identifier">updateIndex</span>]<span class="number">.</span><span class="identifier">updateCounter</span>
+                }, <span class="keyword">function</span>(<span class="identifier">data</span>){
+                    <span class="identifier">data</span><span class="number">.</span><span class="identifier">enemyFields</span> <span class="operator">=</span> [<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>];
+                    <span class="identifier">data</span><span class="number">.</span><span class="identifier">playerFields</span> <span class="operator">=</span> [<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>,<span class="string">''</span>];
+                    <span class="identifier">playerData</span><span class="number">.</span><span class="identifier">fieldIndex</span> <span class="operator">=</span> <span class="identifier">NaN</span>;
+                    <span class="identifier">currentGame</span>[<span class="identifier">battleIndex</span>] <span class="operator">=</span> {};
+                    <span class="identifier">currentGame</span>[<span class="identifier">boonIndex</span>] <span class="operator">=</span> {};
+                    <span class="identifier">currentGame</span>[<span class="identifier">castIndex</span>]<span class="operator">=</span>{};
+                });
+
+                <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'updateBattlefield'</span>, <span class="keyword">function</span>(){
+                    <span class="one-line-comment">// data.enemyFields = ['','','','','',''];</span>
+                    <span class="one-line-comment">// data.playerFields = ['','','','','',''];</span>
+                    <span class="one-line-comment">// playerData.fieldIndex = NaN;</span>
+                })
+            }
+        });
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'checkUniqActions'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+            <span class="keyword">var</span> <span class="identifier">playerIndex</span> <span class="operator">=</span> <span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span>;
+        
+            <span class="keyword">if</span>(<span class="operator">!</span><span class="identifier">currentGame</span>)
+                <span class="keyword">return</span>;
+
+                <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'recieveUniqActions'</span>, {<span class="identifier">uniqActions</span>:<span class="identifier">currentGame</span>[<span class="identifier">uniqCardsIndex</span>], 
+                    <span class="identifier">updateCounter</span>:<span class="identifier">currentGame</span>[<span class="identifier">updateIndex</span>]<span class="number">.</span><span class="identifier">updateUniqCounter</span>});
+        });
+
+        <span class="one-line-comment">// add ended Player data and get game[4](isPlayer's one turn)</span>
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'endTurn'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){ 
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>];
+            
+            <span class="keyword">if</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>)
+                <span class="identifier">currentGame</span><span class="array">[4]</span><span class="operator">=</span><span class="identifier">false</span>;
+            <span class="keyword">else</span>
+                <span class="identifier">currentGame</span><span class="array">[4]</span><span class="operator">=</span><span class="identifier">true</span>;
+         
+            <span class="identifier">currentGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span><span class="operator">+</span><span class="number">2</span>]<span class="number">.</span><span class="identifier">playerTauntsOnFiled</span><span class="operator">=</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">playerTauntsOfFiled</span>;
+            <span class="identifier">currentGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span><span class="operator">+</span><span class="number">2</span>]<span class="number">.</span><span class="identifier">playerHand</span><span class="operator">=</span><span class="identifier">data</span><span class="number">.</span><span class="identifier">playerHand</span>;      
+            <span class="identifier">currentGame</span>[<span class="identifier">battleIndex</span>] <span class="operator">=</span> <span class="array">[]</span>;
+            <span class="identifier">currentGame</span>[<span class="identifier">castIndex</span>] <span class="operator">=</span> <span class="array">[]</span>;
+        });
+        <span class="one-line-comment">// recieve ended player data</span>
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'requestStartTurn'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+           <span class="one-line-comment">// console.log(data.gameOrder);</span>
+
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>]; 
+            
+            <span class="keyword">if</span>(<span class="operator">!</span><span class="identifier">currentGame</span>)
+                <span class="keyword">return</span>;
+
+            <span class="keyword">var</span> <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="identifier">currentGame</span><span class="array">[2]</span>;
+            <span class="keyword">var</span> <span class="identifier">enemyIndex</span> <span class="operator">=</span> <span class="number">0</span>;
+            
+            <span class="keyword">if</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>){
+                <span class="identifier">enemyData</span> <span class="operator">=</span> <span class="identifier">currentGame</span><span class="array">[3]</span>;
+                <span class="identifier">enemyIndex</span><span class="operator">=</span><span class="number">1</span>;
+            }
+            
+            <span class="keyword">if</span>((<span class="identifier">currentGame</span><span class="array">[4]</span> && <span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>) ||
+               (<span class="operator">!</span><span class="identifier">currentGame</span><span class="array">[4]</span> && <span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">1</span>)){
+
+                <span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'startTurn'</span><span class="operator">+</span><span class="identifier">currentGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span>], 
+                    {<span class="identifier">attackedFromFields</span>:<span class="identifier">currentGame</span>[<span class="identifier">enemyIndex</span>]<span class="number">.</span><span class="identifier">attackedFromFields</span>,
+                        <span class="identifier">playerHand</span>:<span class="identifier">currentGame</span>[<span class="identifier">enemyIndex</span>]<span class="number">.</span><span class="identifier">playerHand</span>, 
+                        <span class="identifier">updateCounter</span>:<span class="identifier">currentGame</span>[<span class="identifier">updateIndex</span>]<span class="number">.</span><span class="identifier">updateCounter</span>});
+            }
+        });
+
+        <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'surrender'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="keyword">var</span> <span class="identifier">enemyIndex</span>;
+
+            <span class="keyword">if</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>)
+                <span class="identifier">enemyIndex</span> <span class="operator">=</span> <span class="number">1</span>;
+            <span class="keyword">else</span>
+                <span class="identifier">enemyIndex</span> <span class="operator">=</span> <span class="number">0</span>;
+    
+            <span class="keyword">if</span>(<span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>] <span class="operator">=</span><span class="operator">=</span> <span class="identifier">undefined</span>)
+                <span class="keyword">return</span>;
+                
+            <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>][<span class="identifier">enemyIndex</span><span class="operator">+</span><span class="number">2</span>]<span class="number">.</span><span class="identifier">socket</span><span class="number">.</span><span class="identifier">emit</span>(<span class="string">'enemySurrendered'</span>);
+         });
+  
+         <span class="identifier">socket</span><span class="number">.</span><span class="identifier">on</span>(<span class="string">'recievedSurrender'</span>, <span class="keyword">function</span>(<span class="identifier">data</span>){
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'Calling  to shut down the game server'</span>);
+            <span class="keyword">var</span> <span class="identifier">currentGame</span> <span class="operator">=</span> <span class="identifier">inGame</span>[<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>]; 
+            <span class="keyword">var</span> <span class="identifier">enemyIndex</span>;
+
+            <span class="keyword">if</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">playerIndex</span> <span class="operator">=</span><span class="operator">=</span> <span class="number">0</span>)
+                <span class="identifier">enemyIndex</span> <span class="operator">=</span> <span class="number">1</span>;
+            <span class="keyword">else</span>
+                <span class="identifier">enemyIndex</span> <span class="operator">=</span> <span class="number">0</span>;
+
+            <span class="identifier">inGame</span><span class="number">.</span><span class="identifier">splice</span>(<span class="identifier">data</span><span class="number">.</span><span class="identifier">gameOrder</span>, <span class="number">1</span>); 
+            <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="identifier">inGame</span><span class="number">.</span><span class="identifier">length</span> <span class="operator">+</span> <span class="string">' inGameLength'</span>);
+        }); 
+    });
+    <span class="identifier">console</span><span class="number">.</span><span class="identifier">log</span>(<span class="string">'Server is running on port 1234'</span>);
+}
+
+<span class="keyword">function</span> <span class="identifier">endGame</span>(<span class="identifier">data</span>){
+}
+
+<span class="keyword">function</span> <span class="identifier">findElement</span>(<span class="identifier">array</span>, <span class="identifier">element</span>){
+    <span class="keyword">var</span> <span class="identifier">i</span>,
+        <span class="identifier">length</span> <span class="operator">=</span> <span class="identifier">array</span><span class="number">.</span><span class="identifier">length</span>;
+    
+    <span class="keyword">for</span>(<span class="identifier">i</span> <span class="operator">=</span> <span class="number">0</span>; <span class="identifier">i</span> <span class="operator"><</span> <span class="identifier">length</span>; <span class="identifier">i</span><span class="operator">+</span><span class="operator">=</span><span class="number">1</span>){
+        <span class="keyword">if</span>(<span class="identifier">array</span>[<span class="identifier">i</span>] <span class="operator">=</span><span class="operator">=</span> <span class="identifier">element</span>)
+            <span class="keyword">return</span> <span class="identifier">i</span>;
+    }
+}</pre></body></html>
