@@ -112,6 +112,7 @@ public:
 	virtual void Visit(LiteralString* e) override;
 	virtual void Visit(LiteralNumber* e) override;
 	virtual void Visit(LiteralBoolean* e) override;
+	virtual void Visit(LiteralField* e) override;
 	virtual void Visit(LiteralObject* e) override;
 	virtual void Visit(BinaryExpression* e) override;
 	virtual void Visit(UnaryExpression* e) override;
