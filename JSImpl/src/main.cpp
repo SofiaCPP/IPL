@@ -5,8 +5,9 @@
 #include "ByteCodeGenerator.h"
 #include <iostream>
 #include <cstring>
-
+#include <unordered_map>
 #include <sstream>
+#include <fstream>
 #include <iterator>
 
 #if defined(_WIN32)
@@ -110,10 +111,129 @@ void Generate()
 #endif
 }
 
-int main()
+
+class CammandLineApp 
 {
-	auto r = Tokenize("a#4", {true ,true});
-	RunParseCalc();
+public:
+	CammandLineApp()
+		: m_PrintAst(false)
+		, m_PrintTokens(false)
+	{
+		m_CommandMapping["--output"] = CommandType::Output;
+		m_CommandMapping["--input"] = CommandType::Input;
+		m_CommandMapping["--ast"] = CommandType::PrintAST;
+		m_CommandMapping["--tokens"] = CommandType::PrintTokens;
+		m_CommandMapping["--help"] = CommandType::Help;
+	}
+
+	enum class CommandType
+	{
+		Output,
+		Input,
+		PrintAST,
+		PrintTokens,
+		Help
+	};
+
+	void PrintHelp()
+	{
+		std::cout << "Supports following arguments:" << std::endl
+			<< "--output - output file path" << std::endl
+			<< "--input - input file path" << std::endl
+			<< "--ast - will write ast of the input in the output" << std::endl
+			<< "--tokens - will tokenize input file and will write the result as json in the output" << std::endl
+			<< "--help - this message" << std::endl;
+	}
+
+	void ParseArguments(int argcount, char* arguments[])
+	{
+		for (int i = 1; i < argcount; )
+		{
+			auto it = m_CommandMapping.find(arguments[i]);
+			if (it == m_CommandMapping.end())
+			{
+				PrintHelp();
+			}
+			auto command = it->second;
+			++i;
+			switch (command)
+			{
+			case CommandType::Output:
+				assert(i < argcount);
+				m_Output = arguments[i];
+				++i;
+				break;
+			case CommandType::Input:
+				assert(i < argcount);
+				m_Input = arguments[i];
+				++i;
+				break;
+			case CommandType::PrintAST:
+				m_PrintAst = true;
+				break;
+			case CommandType::PrintTokens:
+				m_PrintTokens = true;
+				break;
+			case CommandType::Help:
+			default:
+				PrintHelp();
+				return;
+			}
+		}
+	}
+
+	void ExecuteCommands()
+	{
+		std::ifstream input(m_Input.c_str());
+		input.seekg(0, std::ios::end);
+		std::string code;
+		int size = (int)input.tellg();
+		code.resize(size);
+		input.seekg(0, std::ios::beg);
+		input.read(&code[0], code.size());
+		input.close();
+
+		auto tokenizationResult = Tokenize(code.c_str());
+		if (!tokenizationResult.IsSuccessful)
+		{
+			return;
+		}
+		auto programAst = Parse(tokenizationResult.tokens);
+		if (m_PrintAst)
+		{
+			std::ofstream output(m_Output, std::ofstream::trunc);
+			PrintAST(programAst, output);
+			output.close();
+		}
+
+		if (m_PrintTokens)
+		{
+
+		}
+	}
+
+	void RunAsCommandLine(int argcount, char* arguments[])
+	{
+		ParseArguments(argcount, arguments);
+		ExecuteCommands();
+	}
+private:
+	std::string m_Output;
+	std::string m_Input;
+	bool m_PrintAst;
+	bool m_PrintTokens;
+	std::unordered_map<std::string, CommandType> m_CommandMapping;
+};
+
+int main(int argc, char* argv[])
+{
+	// You can try =>
+	// Working dir: $(ProjectDir)
+	// Command arguments: --input ./../examples/code.js --output ./../examples/some.ast --ast
+	CammandLineApp cmd;
+	cmd.RunAsCommandLine(argc, argv);
+	//auto r = Tokenize("a#4", {true ,true});
+	//RunParseCalc();
 #if defined(_WIN32)
 	//std::system("pause");
 #endif
