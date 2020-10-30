@@ -11,6 +11,10 @@
 #define LITERAL_STRING_MEMBERS(MACRO)\
 		MACRO(IPLString, Value, "")
 
+#define LITERAL_FIELD_MEMBERS(MACRO)\
+		MACRO(ExpressionPtr, Identifier, nullptr)\
+		MACRO(ExpressionPtr, Value, nullptr)
+
 #define LITERAL_OBJECT_MEMBERS(MACRO)\
 		MACRO(IPLVector<ExpressionPtr>, Values, IPLVector<ExpressionPtr>())
 
@@ -84,6 +88,7 @@
 		MACRO(LiteralBoolean, LITERAL_BOOLEAN_MEMBERS)\
 		MACRO(LiteralNumber, LITERAL_NUMBER_MEMBERS)\
 		MACRO(LiteralString, LITERAL_STRING_MEMBERS)\
+		MACRO(LiteralField, LITERAL_FIELD_MEMBERS)\
 		MACRO(LiteralObject, LITERAL_OBJECT_MEMBERS)\
 		MACRO(BinaryExpression, BINARY_EXPRESSION_MEMBERS)\
 		MACRO(UnaryExpression, UNARY_EXPRESSION_MEMBERS)\

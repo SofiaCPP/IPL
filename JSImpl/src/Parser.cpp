@@ -6,40 +6,55 @@ public:
 	Parser(const IPLVector<Token>& tokens, const std::function<void()>& onError = {});
 	ExpressionPtr Parse();
 private:
+	enum NormalType {
+		Initial,
+		Normal,
+	};
+
+	enum AllowType {
+		AllowIn,
+		NoIn,
+	};
+
+	enum CompletenessType {
+		NoShortIf,
+		Full
+	};
+
 	bool MatchOneOf(IPLVector<TokenType> types);
 	bool Match(TokenType type);
 	ExpressionPtr RegularExpression();
 	ExpressionPtr ParenthesizedExpression();
-	ExpressionPtr PrimaryExpression();
+	ExpressionPtr PrimaryExpression(NormalType a);
 	ExpressionPtr FunctionExpression();
 	ExpressionPtr ObjectLiteral();
 	ExpressionPtr ArrayLiteral();
-	ExpressionPtr Unary();
-	ExpressionPtr LeftSideExpression();
-	ExpressionPtr CallExpression();
-	ExpressionPtr CallExpressionHelper();
+	ExpressionPtr Unary(NormalType a);
+	ExpressionPtr LeftSideExpression(NormalType a);
+	ExpressionPtr CallExpression(NormalType a);
+	ExpressionPtr CallExpressionHelper(NormalType a);
 	ExpressionPtr ShortNewExpression();
 	ExpressionPtr ShortNewSubexpression();
 	ExpressionPtr FullNewExpression();
 	ExpressionPtr FullNewSubexpression();
 	ExpressionPtr SimpleExpression();
-	ExpressionPtr MultiplicativeExpression();
-	ExpressionPtr AdditiveExpression();
-	ExpressionPtr ShiftExpression();
-	ExpressionPtr RelationalExpression();
-	ExpressionPtr EqualityExpression();
-	ExpressionPtr BitwiseExpression();
-	ExpressionPtr LogicalExpression();
-	ExpressionPtr ConditionalExpression();
-	ExpressionPtr AssignmentExpression();
-	ExpressionPtr Expression();
+	ExpressionPtr MultiplicativeExpression(NormalType a);
+	ExpressionPtr AdditiveExpression(NormalType a);
+	ExpressionPtr ShiftExpression(NormalType a);
+	ExpressionPtr RelationalExpression(NormalType a, AllowType b);
+	ExpressionPtr EqualityExpression(NormalType a, AllowType b);
+	ExpressionPtr BitwiseExpression(NormalType a, AllowType b);
+	ExpressionPtr LogicalExpression(NormalType a, AllowType b);
+	ExpressionPtr ConditionalExpression(NormalType a, AllowType b);
+	ExpressionPtr AssignmentExpression(NormalType a, AllowType b);
+	ExpressionPtr Expression(NormalType a, AllowType b);
 	ExpressionPtr OptionalExpression();
 	ExpressionPtr Arguments();
 
 	//Statements
 	ExpressionPtr Statement();
 	ExpressionPtr EmptyStatement();
-	ExpressionPtr VariableDefinition();
+	ExpressionPtr VariableDefinition(AllowType b);
 	ExpressionPtr Block();
 	ExpressionPtr LabeledStatement();
 	ExpressionPtr IfStatementfull();
@@ -115,13 +130,18 @@ ExpressionPtr Parser::RegularExpression()
 	return nullptr;
 }
 
-ExpressionPtr Parser::PrimaryExpression()
+ExpressionPtr Parser::PrimaryExpression(NormalType a)
 {
+	if (a == NormalType::Initial)
+	{
+		return SimpleExpression();
+	}
+
 	if (auto simple = SimpleExpression())
 	{
 		return simple;
 	}
-	else if(auto  function = FunctionExpression())
+	else if(auto function = FunctionExpression())
 	{
 		return function;
 	}
@@ -136,7 +156,7 @@ ExpressionPtr Parser::ParenthesizedExpression()
 {
 	if (Match(TokenType::LeftParen))
 	{
-		auto ex = Parser::Expression();
+		auto ex = Parser::Expression(NormalType::Normal, AllowType::AllowIn);
 		if (Match(TokenType::RightParen))
 		{
 			return ex;
@@ -210,49 +230,54 @@ ExpressionPtr Parser::FunctionExpression()
 
 ExpressionPtr Parser::ObjectLiteral()
 {
-	//if (Match(TokenType::LeftBrace))
-	//{
-	//	auto LiteralField = [&]() -> ExpressionPtr {
-	//		if (Match(TokenType::Identifier))
-	//		{
-	//			auto id = Prev().Lexeme;
-	//			ExpressionPtr ae;
-	//			if (Match(TokenType::Colon))
-	//			{
-	//				ae = AssignmentExpression();
-	//			}
-	//			return IPLMakeSharePtr<VariableDefinitionExpression>(id, ae);
-	//		}
-	//		return nullptr;
-	//	};
+	if (Match(TokenType::LeftBrace))
+	{
+		using FieldList = IPLVector<ExpressionPtr>;
+		auto MatchLiteralField = [&]() ->ExpressionPtr {
+			if (!Match(TokenType::Identifier))
+			{
+				return nullptr;
+			}
+			auto id = IPLMakeSharePtr<IdentifierExpression>(Prev().Lexeme);
+			if (!Match(TokenType::Colon))
+			{
+				return nullptr;
+			}
+			auto ae = AssignmentExpression(NormalType::Normal, AllowType::AllowIn);
+			return IPLMakeSharePtr<LiteralField>(id, ae);
+		};
 
-	//	auto FieldList = [&]() -> ExpressionPtr {
-	//		auto result = IPLMakeSharePtr<LiteralObject>();
-	//		auto lf = LiteralField();
-	//		while (lf)
-	//		{
-	//			result->GetValuesByRef().push_back(lf);
-	//			if (!Match(TokenType::Comma))
-	//			{
-	//				break;
-	//			}
-	//			lf = LiteralField();
-	//			if (lf)
-	//			{
-	//				// TODO log error
-	//				return nullptr;
-	//			}
-	//		}
-	//		return result;
-	//	};
-	//	auto fl = FieldList();
-	//	if (Match(TokenType::RightBrace))
-	//	{
-	//		return fl;
-	//	}
-	//	// TODO Add error loging
-	//	assert(false);
-	//}
+		auto MatchFieldList = [&](FieldList& result) -> bool {
+			auto lf = MatchLiteralField();
+			while (lf)
+			{
+				result.push_back(lf);
+				if (!Match(TokenType::Comma))
+				{
+					break;
+				}
+				lf = MatchLiteralField();
+				if (!lf)
+				{
+					// TODO log error
+					return false;
+				}
+			}
+			return true;
+		};
+		FieldList fl;
+		if (!MatchFieldList(fl))
+		{
+			return nullptr;
+		}
+		auto ol = IPLMakeSharePtr<LiteralObject>(fl);
+		if (Match(TokenType::RightBrace))
+		{
+			return ol;
+		}
+		// TODO Add error loging
+		assert(false);
+	}
 	return nullptr;
 }
 
@@ -261,7 +286,7 @@ ExpressionPtr Parser::ArrayLiteral()
 	if (Match(TokenType::LeftSquareBracket))
 	{
 		auto LiteralElement = [&]() -> ExpressionPtr {
-			return AssignmentExpression();
+			return AssignmentExpression(NormalType::Normal, AllowType::AllowIn);
 		};
 
 		auto ElementList = [&]() -> ExpressionPtr {
@@ -334,11 +359,11 @@ ExpressionPtr Parser::SimpleExpression()
 	}
 }
 
-ExpressionPtr Parser::LeftSideExpression()
+ExpressionPtr Parser::LeftSideExpression(NormalType a)
 {
 	ExpressionPtr result;
 	auto ss = Snapshot();
-	if (result = CallExpression())
+	if (result = CallExpression(a))
 	{
 		return result;
 	}
@@ -351,11 +376,11 @@ ExpressionPtr Parser::LeftSideExpression()
 	return nullptr;
 }
 
-ExpressionPtr Parser::CallExpression()
+ExpressionPtr Parser::CallExpression(NormalType a)
 {
 	ExpressionPtr result;
 	auto ss = Snapshot();
-	if (result = PrimaryExpression())
+	if (result = PrimaryExpression(a))
 	{
 		return result;
 	}
@@ -365,7 +390,7 @@ ExpressionPtr Parser::CallExpression()
 		return result;
 	}
 
-	if (result = CallExpressionHelper())
+	if (result = CallExpressionHelper(a))
 	{
 		return result;
 	}
@@ -373,15 +398,15 @@ ExpressionPtr Parser::CallExpression()
 	return nullptr;
 }
 
-ExpressionPtr Parser::CallExpressionHelper()
+ExpressionPtr Parser::CallExpressionHelper(NormalType a)
 {
 	if (Match(TokenType::LeftSquareBracket))
 	{
-		auto expr = Expression();
+		auto expr = Expression(NormalType::Normal, AllowType::AllowIn);
 		if (Match(TokenType::RightSquareBracket))
 		{
 			// return  meaningfull expr
-			auto next = CallExpressionHelper();
+			auto next = CallExpressionHelper(a);
 			return nullptr;
 		}
 		// TODO error
@@ -391,7 +416,7 @@ ExpressionPtr Parser::CallExpressionHelper()
 	{
 		if (Match(TokenType::Identifier))
 		{
-			auto next = CallExpressionHelper();
+			auto next = CallExpressionHelper(a);
 			// return  meaningfull expr
 			return nullptr;
 		}
@@ -402,7 +427,7 @@ ExpressionPtr Parser::CallExpressionHelper()
 	if (auto args = Arguments())
 	{
 		// return  meaningfull expr
-		auto next = CallExpressionHelper();
+		auto next = CallExpressionHelper(a);
 		return nullptr;
 	}
 
@@ -448,7 +473,7 @@ ExpressionPtr Parser::FullNewExpression()
 ExpressionPtr Parser::FullNewSubexpression()
 {
 	ExpressionPtr result;
-	if (result = PrimaryExpression())
+	if (result = PrimaryExpression(NormalType::Normal))
 	{
 		return result;
 	}
@@ -456,7 +481,7 @@ ExpressionPtr Parser::FullNewSubexpression()
 	return nullptr;
 }
 
-ExpressionPtr Parser::Unary()
+ExpressionPtr Parser::Unary(NormalType a)
 {
 	if (MatchOneOf({
 		TokenType::Delete,
@@ -465,7 +490,7 @@ ExpressionPtr Parser::Unary()
 		}))
 	{
 		auto op = Prev().Type;
-		auto ls = LeftSideExpression();
+		auto ls = LeftSideExpression(NormalType::Normal);
 		auto suffix = false;
 		return IPLMakeSharePtr<UnaryExpression>(ls, op, suffix);
 	}
@@ -479,13 +504,13 @@ ExpressionPtr Parser::Unary()
 	}))
 	{
 		auto type = Prev().Type;
-		auto ls = Unary();
+		auto ls = Unary(NormalType::Normal);
 		auto suffix = false;
 		return IPLMakeSharePtr<UnaryExpression>(ls, type, suffix);
 	}
 	else
 	{
-		auto leftSide = LeftSideExpression();
+		auto leftSide = LeftSideExpression(a);
 		if (MatchOneOf({ TokenType::PlusPlus, TokenType::MinusMinus }))
 		{
 			auto suffix = true;
@@ -495,46 +520,46 @@ ExpressionPtr Parser::Unary()
 	}
 }
 
-ExpressionPtr Parser::MultiplicativeExpression()
+ExpressionPtr Parser::MultiplicativeExpression(NormalType a)
 {
-	auto left = Unary();
+	auto left = Unary(a);
 
 	while(MatchOneOf({ TokenType::Star, TokenType::Division, TokenType::Modulo }))
 	{
 		auto type = Prev().Type;
-		auto right = Unary();
+		auto right = Unary(a);
 		left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 	}
 	return left;
 }
 
-ExpressionPtr Parser::AdditiveExpression()
+ExpressionPtr Parser::AdditiveExpression(NormalType a)
 {
-	auto left = MultiplicativeExpression();
+	auto left = MultiplicativeExpression(a);
 	while (MatchOneOf({ TokenType::Plus, TokenType::Minus}))
 	{
 		auto type = Prev().Type;
-		auto right = MultiplicativeExpression();
+		auto right = MultiplicativeExpression(a);
 		left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 	}
 	return left;
 }
 
-ExpressionPtr Parser::ShiftExpression()
+ExpressionPtr Parser::ShiftExpression(NormalType a)
 {
-	auto left = AdditiveExpression();
+	auto left = AdditiveExpression(a);
 	while (MatchOneOf({ TokenType::LeftShift, TokenType::RightShift }))
 	{
 		auto type = Prev().Type;
-		auto right = AdditiveExpression();
+		auto right = AdditiveExpression(a);
 		left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 	}
 	return left;
 }
 
-ExpressionPtr Parser::RelationalExpression()
+ExpressionPtr Parser::RelationalExpression(NormalType a, AllowType)
 {
-	auto left = ShiftExpression();
+	auto left = ShiftExpression(a);
 	while (MatchOneOf({ TokenType::Less,
 		TokenType::Greater,
 		TokenType::LessEqual,
@@ -544,15 +569,15 @@ ExpressionPtr Parser::RelationalExpression()
 	}))
 	{
 		auto type = Prev().Type;
-		auto right = ShiftExpression();
+		auto right = ShiftExpression(a);
 		left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 	}
 	return left;
 }
 
-ExpressionPtr Parser::EqualityExpression()
+ExpressionPtr Parser::EqualityExpression(NormalType a, AllowType b)
 {
-	auto left = RelationalExpression();
+	auto left = RelationalExpression(a, b);
 	while (MatchOneOf({TokenType::EqualEqual,
 		TokenType::BangEqual,
 		TokenType::StrictEqual,
@@ -561,90 +586,88 @@ ExpressionPtr Parser::EqualityExpression()
 	}))
 	{
 		auto type = Prev().Type;
-		auto right = RelationalExpression();
+		auto right = RelationalExpression(a, b);
 		left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 	}
 	return left;
 }
 
-ExpressionPtr Parser::BitwiseExpression()
+ExpressionPtr Parser::BitwiseExpression(NormalType a, AllowType b)
 {
-	auto BitwiseAndExpression = [&]() -> ExpressionPtr {
-		auto left = EqualityExpression();
+	auto BitwiseAndExpression = [&](NormalType _a, AllowType _b) -> ExpressionPtr {
+		auto left = EqualityExpression(_a, _b);
 		while (Match(TokenType::BitwiseAnd))
 		{
 			auto type = Prev().Type;
-			auto right = EqualityExpression();
+			auto right = EqualityExpression(_a, _b);
 			left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 		}
 		return left;
 	};
 
-	auto BitwiseXorExpression = [&]() -> ExpressionPtr {
-		auto left = BitwiseAndExpression();
+	auto BitwiseXorExpression = [&](NormalType _a, AllowType _b) -> ExpressionPtr {
+		auto left = BitwiseAndExpression(_a, _b);
 		while (Match(TokenType::BitwiseXor))
 		{
 			auto type = Prev().Type;
-			auto right = BitwiseAndExpression();
+			auto right = BitwiseAndExpression(_a, _b);
 			left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 		}
 		return left;
 	};
 
-	std::function<ExpressionPtr()> BitwiseOrExpression;
-	BitwiseOrExpression = [&]() -> ExpressionPtr {
-		auto left = BitwiseXorExpression();
+	auto BitwiseOrExpression = [&](NormalType _a, AllowType _b) -> ExpressionPtr {
+		auto left = BitwiseXorExpression(_a, _b);
 		while (Match(TokenType::BitwiseOr))
 		{
 			auto type = Prev().Type;
-			auto right = BitwiseXorExpression();
+			auto right = BitwiseXorExpression(_a, _b);
 			left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 		}
 		return left;
 	};
 
-	return BitwiseOrExpression();
+	return BitwiseOrExpression(a, b);
 }
 
 
-ExpressionPtr Parser::LogicalExpression()
+ExpressionPtr Parser::LogicalExpression(NormalType a, AllowType b)
 {
-	std::function<ExpressionPtr()> LogicalAndExpression;
-	LogicalAndExpression = [&]() -> ExpressionPtr {
-		auto left = BitwiseExpression();
+	std::function<ExpressionPtr(NormalType a, AllowType b)> LogicalAndExpression;
+	LogicalAndExpression = [&](NormalType a, AllowType b) -> ExpressionPtr {
+		auto left = BitwiseExpression(a, b);
 		while (Match(TokenType::LogicalAnd))
 		{
 			auto type = Prev().Type;
-			auto right = BitwiseExpression();
+			auto right = BitwiseExpression(a, b);
 			left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 		}
 		return left;
 	};
 
-	std::function<ExpressionPtr()> LogicalOrExpression;
-	LogicalOrExpression = [&]() -> ExpressionPtr {
-		auto left = LogicalAndExpression();
+	auto LogicalOrExpression = [&](NormalType a, AllowType b) -> ExpressionPtr {
+		auto left = LogicalAndExpression(a, b);
 		while (Match(TokenType::LogicalAnd))
 		{
 			auto type = Prev().Type;
-			auto right = LogicalAndExpression();
+			auto right = LogicalAndExpression(a, b);
 			left = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 		}
 		return left;
 	};
 
-	return LogicalOrExpression();
+	return LogicalOrExpression(a, b);
 }
 
-ExpressionPtr Parser::ConditionalExpression()
+ExpressionPtr Parser::ConditionalExpression(NormalType a, AllowType b)
 {
-	auto condition = LogicalExpression();
+	auto condition = LogicalExpression(a, b);
 	if (Match(TokenType::QuestionMark))
 	{
-		auto trueExpr= AssignmentExpression();
+		auto trueExpr= AssignmentExpression(NormalType::Normal, b);
 		if (Match(TokenType::Colon))
 		{
-			auto falseExpr = AssignmentExpression();
+			auto falseExpr = AssignmentExpression(NormalType::Normal, b);
 			// TODO implement trinary operator
 			assert(false);
 			return ExpressionPtr();
@@ -655,11 +678,20 @@ ExpressionPtr Parser::ConditionalExpression()
 	return condition;
 }
 
-ExpressionPtr Parser::AssignmentExpression()
+ExpressionPtr Parser::AssignmentExpression(NormalType a, AllowType b)
 {
 	auto location = GetLocation();
-	auto snapShot = m_Current;
-	auto left = LeftSideExpression();
+
+	auto left = ConditionalExpression(a, b);
+	if (!left)
+	{
+		left = LeftSideExpression(a);
+	}
+
+	if (!left)
+	{
+		return nullptr;
+	}
 	if (MatchOneOf({ TokenType::Equal,
 		TokenType::StarEqual,
 		TokenType::DivideEqual,
@@ -673,7 +705,7 @@ ExpressionPtr Parser::AssignmentExpression()
 		TokenType::BitwiseOrEqual }))
 	{
 		auto type = Prev().Type;
-		auto right = AssignmentExpression();
+		auto right = AssignmentExpression(NormalType::Normal, b);
 		auto be = IPLMakeSharePtr<BinaryExpression>(left, right, type);
 		if (be)
 		{
@@ -681,23 +713,23 @@ ExpressionPtr Parser::AssignmentExpression()
 		}
 		return be;
 	}
-	// revert state;
-	m_Current = snapShot;
-	auto ce = ConditionalExpression();
-	if (ce)
-	{
-		ce->SetLocation(location.Line, location.Column);
-	}
-	return ce;
+
+	return left;
 }
 
-ExpressionPtr Parser::Expression()
+ExpressionPtr Parser::Expression(NormalType a, AllowType b)
 {
-	auto ae = AssignmentExpression();
+	auto ae = AssignmentExpression(a, b);
 	while (Match(TokenType::Comma))
 	{
 		auto type = Prev().Type;
-		auto next = AssignmentExpression();
+
+		auto next = AssignmentExpression(a, b);
+		if (!next)
+		{
+			next = AssignmentExpression(NormalType::Normal, b);
+		}
+
 		if (next)
 		{
 			ae = IPLMakeSharePtr<BinaryExpression>(ae, next, type);
@@ -716,8 +748,8 @@ ExpressionPtr Parser::Statement()
 {
 	ExpressionPtr result;
 	if (result = EmptyStatement()) return result;
-	if (result = Expression()) return result;
-	if (result = VariableDefinition()) return result;
+	if (result = Expression(NormalType::Initial, AllowType::AllowIn)) return result;
+	if (result = VariableDefinition(AllowType::AllowIn)) return result;
 	if (result = Block()) return result;
 	if (result = LabeledStatement()) return result;
 	if (result = IfStatementfull()) return result;
@@ -745,7 +777,7 @@ ExpressionPtr Parser::EmptyStatement()
 	return nullptr;
 }
 
-ExpressionPtr Parser::VariableDefinition()
+ExpressionPtr Parser::VariableDefinition(AllowType b)
 {
 	auto VariableDeclaration = [&]() -> ExpressionPtr {
 		auto location = GetLocation();
@@ -755,7 +787,7 @@ ExpressionPtr Parser::VariableDefinition()
 			auto ae = CreateEmptyExpression();
 			if (Match(TokenType::Equal))
 			{
-				ae = AssignmentExpression();
+				ae = AssignmentExpression(NormalType::Normal, b);
 			}
 			auto vd = IPLMakeSharePtr<VariableDefinitionExpression>(id, ae);
 			vd->SetLocation(location.Line, location.Column);
@@ -857,7 +889,7 @@ ExpressionPtr Parser::SwitchStatement()
 			{
 				if (Match(TokenType::Case))
 				{
-					auto expr = Expression();
+					auto expr = Expression(NormalType::Normal, AllowType::AllowIn);
 					if (Match(TokenType::Colon))
 					{
 						auto statement = Statement();
@@ -918,22 +950,22 @@ ExpressionPtr Parser::ForStatement()
 		{
 			assert(false);
 		}
-		auto initializer = Expression();
+		auto initializer = Expression(NormalType::Normal, AllowType::AllowIn);
 		if (!initializer)
 		{
-			initializer = VariableDefinition();
+			initializer = VariableDefinition(AllowType::AllowIn);
 		}
 		if (!Match(TokenType::Semicolon))
 		{
 			assert(false);
 		}
 
-		auto cond = Expression();
+		auto cond = OptionalExpression();
 		if (!Match(TokenType::Semicolon))
 		{
 			assert(false);
 		}
-		auto iteration = Expression();
+		auto iteration = OptionalExpression();
 		if (!Match(TokenType::RightParen))
 		{
 			assert(false);
@@ -1003,7 +1035,7 @@ ExpressionPtr Parser::TryStatement()
 
 ExpressionPtr Parser::OptionalExpression()
 {
-	return Parser::Expression();
+	return Parser::Expression(NormalType::Normal, AllowType::AllowIn);
 }
 
 ExpressionPtr Parser::Arguments()
@@ -1011,13 +1043,13 @@ ExpressionPtr Parser::Arguments()
 	if (Match(TokenType::LeftParen))
 	{
 		auto result = IPLMakeSharePtr<ListExpression>();
-		auto current = AssignmentExpression();
+		auto current = AssignmentExpression(NormalType::Normal, AllowType::AllowIn);
 		while (current)
 		{
 			result->GetValuesByRef().push_back(current);
 			if (Match(TokenType::Comma))
 			{
-				current = AssignmentExpression();
+				current = AssignmentExpression(NormalType::Normal, AllowType::AllowIn);
 				if (current)
 				{
 					// TODO error

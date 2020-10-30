@@ -10,6 +10,9 @@ template<typename T>
 using IPLVector = std::vector<T>;
 using IPLString = std::string;
 
+template<typename T, typename K>
+using IPLPair = std::pair<T, K>;
+
 template <typename T>
 using IPLStack = std::stack<T>;
 
