@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use syntax_highlighter::lexer::token_type::TokenType;
-    use syntax_highlighter::lexer::tokenizer::{Token, Tokenizer};
+    use rust2html::lexer::token_type::TokenType;
+    use rust2html::lexer::tokenizer::{Token, Tokenizer};
 
     #[test]
     fn empty_test() {

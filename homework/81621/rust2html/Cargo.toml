@@ -1,5 +1,5 @@
 [package]
-name = "syntax_highlighter"
+name = "rust2html"
 version = "0.1.0"
 authors = ["frostblooded <frostblooded@yahoo.com>"]
 edition = "2018"
