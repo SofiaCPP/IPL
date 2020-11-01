@@ -11,7 +11,7 @@ public:
 
     // TODO: Changing this to a shared_ptr<Value> (or GC-enabled value*) will
     // allow for much simpler implementation of all varible assignments.
-    typedef double value_type;
+    typedef IPLSharedPtr<double> value_type;
     typedef IPLVector<value_type> ValueStack;
 
     ValueStack Run(Expression* program);

@@ -6,6 +6,21 @@
 #undef NOT_IMPLEMENTED
 #define NOT_IMPLEMENTED (void)e; assert(0 && "not-implemented")
 
+namespace
+{
+    template <typename T>
+    ASTInterpreter::value_type MakeValue(T&& v)
+    {
+        return IPLMakeSharePtr<double>(v);
+    }
+
+    template <typename T>
+    ASTInterpreter::value_type MakeValue(const T& v)
+    {
+        return IPLMakeSharePtr<double>(v);
+    }
+}
+
 struct LValueExtractor : public ExpressionVisitor
 {
 public:
@@ -14,17 +29,17 @@ public:
     {}
     ~LValueExtractor() {}
 
-    ASTInterpreter::value_type* Run(Expression* program)
+    ASTInterpreter::value_type Run(Expression* program)
     {
         m_LValue = nullptr;
         program->Accept(*this);
         return m_LValue;
     }
 
-    virtual void Visit(IdentifierExpression* e) override { m_LValue = &m_Interpreter->ModifyVariable(e->GetName()); }
+    virtual void Visit(IdentifierExpression* e) override { m_LValue = m_Interpreter->ModifyVariable(e->GetName()); }
 
     ASTInterpreter* m_Interpreter;
-    ASTInterpreter::value_type* m_LValue;
+    ASTInterpreter::value_type m_LValue;
 };
 
 
@@ -98,7 +113,7 @@ bool ASTInterpreter::EvalToBool(const ExpressionPtr& e)
     e->Accept(*this);
     auto result = m_Evaluation.back();
     m_Evaluation.pop_back();
-    return result != 0.0;
+    return *result != 0.0;
 }
 
 void ASTInterpreter::EnterScope()
@@ -154,54 +169,54 @@ void ASTInterpreter::Visit(LiteralObject* e)
 }
 
 void ASTInterpreter::Visit(LiteralNumber* e) {
-    m_Evaluation.push_back(e->GetValue());
+    m_Evaluation.push_back(MakeValue(e->GetValue()));
 }
 void ASTInterpreter::Visit(LiteralBoolean* e) {
-    m_Evaluation.push_back(e->GetValue());
+    m_Evaluation.push_back(MakeValue(e->GetValue()));
 }
 
 void ASTInterpreter::Visit(BinaryExpression* e) {
     e->GetLeft()->Accept(*this);
     e->GetRight()->Accept(*this);
-    auto right = m_Evaluation.back();
+    auto right = *m_Evaluation.back();
     m_Evaluation.pop_back();
 
-    auto left = m_Evaluation.back();
+    auto left = *m_Evaluation.back();
     m_Evaluation.pop_back();
 
     switch (e->GetOperator()) {
         case TokenType::Plus:
-            m_Evaluation.push_back(left + right);
+            m_Evaluation.push_back(MakeValue(left + right));
             break;
         case TokenType::Minus:
-            m_Evaluation.push_back(left - right);
+            m_Evaluation.push_back(MakeValue(left - right));
             break;
         case TokenType::Star:
-            m_Evaluation.push_back(left * right);
+            m_Evaluation.push_back(MakeValue(left * right));
             break;
         case TokenType::Division:
-            m_Evaluation.push_back(left / right);
+            m_Evaluation.push_back(MakeValue(left / right));
             break;
         case TokenType::Less:
-            m_Evaluation.push_back(left < right);
+            m_Evaluation.push_back(MakeValue(left < right));
             break;
-		case TokenType::LessEqual:
-			m_Evaluation.push_back(left <= right);
-			break;
-		case TokenType::Greater:
-			m_Evaluation.push_back(left > right);
-			break;
-		case TokenType::GreaterEqual:
-			m_Evaluation.push_back(left >= right);
-			break;
+        case TokenType::LessEqual:
+            m_Evaluation.push_back(MakeValue(left <= right));
+            break;
+        case TokenType::Greater:
+            m_Evaluation.push_back(MakeValue(left > right));
+            break;
+        case TokenType::GreaterEqual:
+            m_Evaluation.push_back(MakeValue(left >= right));
+            break;
         case TokenType::Comma:
-            m_Evaluation.push_back(right);
+            m_Evaluation.push_back(MakeValue(std::move(right)));
             break;
         case TokenType::EqualEqual:
-            m_Evaluation.push_back(fabs(left - right) < 0.0001);
+            m_Evaluation.push_back(MakeValue(fabs(left - right) < 0.0001));
             break;
         case TokenType::BangEqual:
-            m_Evaluation.push_back(fabs(left - right) > 0.0001);
+            m_Evaluation.push_back(MakeValue(fabs(left - right) > 0.0001));
             break;
         case TokenType::Equal:
         {
@@ -221,7 +236,9 @@ void ASTInterpreter::Visit(UnaryExpression* e) {
         case TokenType::Minus:
         {
             e->GetExpr()->Accept(*this);
-            m_Evaluation.back() *= -1;
+            auto v = m_Evaluation.back();
+            m_Evaluation.pop_back();
+            m_Evaluation.push_back(MakeValue(-(*v)));
             break;
         }
         case TokenType::Plus:
@@ -236,12 +253,12 @@ void ASTInterpreter::Visit(UnaryExpression* e) {
             auto lvalue = extractor.Run(e->GetExpr().get());
             if (e->GetSuffix())
             {
-                m_Evaluation.push_back(*lvalue);
+                m_Evaluation.push_back(MakeValue(*lvalue));
             }
             *lvalue += e->GetOperator() == TokenType::PlusPlus ? 1 : -1;
             if (!e->GetSuffix())
             {
-                m_Evaluation.push_back(*lvalue);
+                m_Evaluation.push_back(MakeValue(*lvalue));
             }
             break;
         }
@@ -347,6 +364,6 @@ void ASTInterpreter::Print(Printer& p)
 {
     for (auto& it : m_Variables)
     {
-        p.PrintVariable(it.first.c_str(), ModifyVariable(it.first));
+        p.PrintVariable(it.first.c_str(), *ModifyVariable(it.first));
     }
 }
