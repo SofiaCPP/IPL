@@ -11,14 +11,135 @@ namespace
     template <typename T>
     ASTInterpreter::ValuePtr MakeValue(T&& v)
     {
-        return IPLMakeSharePtr<double>(v);
+        return IPLMakeSharePtr<ASTInterpreter::Value>(v);
     }
 
     template <typename T>
     ASTInterpreter::ValuePtr MakeValue(const T& v)
     {
-        return IPLMakeSharePtr<double>(v);
+        return IPLMakeSharePtr<ASTInterpreter::Value>(v);
     }
+
+    struct ValueToBool
+    {
+        bool operator()(double d) const
+        {
+            return d != 0.0;
+        }
+    };
+
+    struct ValueAdd
+    {
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l + r);
+        }
+    };
+
+    struct ValueMinus
+    {
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l - r);
+        }
+    };
+    struct ValueProduct
+    {
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l * r);
+        }
+    };
+    struct ValueDivide
+    {
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l / r);
+        }
+    };
+    struct ValueLess
+    {
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l < r);
+        }
+    };
+    struct ValueLessEqual
+    {
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l <= r);
+        }
+    };
+    struct ValueGreater
+    {
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l > r);
+        }
+    };
+    struct ValueGreaterEqual
+    {
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l >= r);
+        }
+    };
+
+    struct ValueEqualEqual
+    {
+        ASTInterpreter::ValuePtr operator()(double left, double right) const
+        {
+            return MakeValue(fabs(left - right) <= 0.0001);
+        }
+    };
+
+    struct ValueBangEqual
+    {
+        ASTInterpreter::ValuePtr operator()(double left, double right) const
+        {
+            return MakeValue(fabs(left - right) > 0.0001);
+        }
+    };
+
+    struct ValueUnaryMinus
+    {
+        ASTInterpreter::ValuePtr operator()(double v) const
+        {
+            return MakeValue(-v);
+        }
+    };
+    struct ValueIncrement
+    {
+        void operator()(double& v) const
+        {
+            v += 1;
+        }
+    };
+
+    struct ValueDecrement
+    {
+        void operator()(double& v) const
+        {
+            v -= 1;
+        }
+    };
+
+    struct ValuePrint
+    {
+        ValuePrint(const char* name, ASTInterpreter::Printer* printer)
+            : Name(name)
+            , Printer(printer)
+        {}
+
+        void operator()(double value) const
+        {
+            Printer->PrintVariable(Name, value);
+        }
+
+        const char* Name;
+        ASTInterpreter::Printer* Printer;
+    };
 }
 
 struct LValueExtractor : public ExpressionVisitor
@@ -113,7 +234,7 @@ bool ASTInterpreter::EvalToBool(const ExpressionPtr& e)
     e->Accept(*this);
     auto result = m_Evaluation.back();
     m_Evaluation.pop_back();
-    return *result != 0.0;
+    return std::visit(ValueToBool(), *result);
 }
 
 void ASTInterpreter::EnterScope()
@@ -186,37 +307,37 @@ void ASTInterpreter::Visit(BinaryExpression* e) {
 
     switch (e->GetOperator()) {
         case TokenType::Plus:
-            m_Evaluation.push_back(MakeValue(left + right));
+            m_Evaluation.push_back(std::visit(ValueAdd(), left, right));
             break;
         case TokenType::Minus:
-            m_Evaluation.push_back(MakeValue(left - right));
+            m_Evaluation.push_back(std::visit(ValueMinus(), left, right));
             break;
         case TokenType::Star:
-            m_Evaluation.push_back(MakeValue(left * right));
+            m_Evaluation.push_back(std::visit(ValueProduct(), left, right));
             break;
         case TokenType::Division:
-            m_Evaluation.push_back(MakeValue(left / right));
+            m_Evaluation.push_back(std::visit(ValueDivide(), left, right));
             break;
         case TokenType::Less:
-            m_Evaluation.push_back(MakeValue(left < right));
+            m_Evaluation.push_back(std::visit(ValueLess(), left, right));
             break;
         case TokenType::LessEqual:
-            m_Evaluation.push_back(MakeValue(left <= right));
+            m_Evaluation.push_back(std::visit(ValueLessEqual(), left, right));
             break;
         case TokenType::Greater:
-            m_Evaluation.push_back(MakeValue(left > right));
+            m_Evaluation.push_back(std::visit(ValueGreater(), left, right));
             break;
         case TokenType::GreaterEqual:
-            m_Evaluation.push_back(MakeValue(left >= right));
+            m_Evaluation.push_back(std::visit(ValueGreaterEqual(), left, right));
             break;
         case TokenType::Comma:
             m_Evaluation.push_back(MakeValue(std::move(right)));
             break;
         case TokenType::EqualEqual:
-            m_Evaluation.push_back(MakeValue(fabs(left - right) < 0.0001));
+            m_Evaluation.push_back(std::visit(ValueEqualEqual(), left, right));
             break;
         case TokenType::BangEqual:
-            m_Evaluation.push_back(MakeValue(fabs(left - right) > 0.0001));
+            m_Evaluation.push_back(std::visit(ValueBangEqual(), left, right));
             break;
         case TokenType::Equal:
         {
@@ -238,7 +359,7 @@ void ASTInterpreter::Visit(UnaryExpression* e) {
             e->GetExpr()->Accept(*this);
             auto v = m_Evaluation.back();
             m_Evaluation.pop_back();
-            m_Evaluation.push_back(MakeValue(-(*v)));
+            m_Evaluation.push_back(std::visit(ValueUnaryMinus(), *v));
             break;
         }
         case TokenType::Plus:
@@ -255,7 +376,14 @@ void ASTInterpreter::Visit(UnaryExpression* e) {
             {
                 m_Evaluation.push_back(MakeValue(*lvalue));
             }
-            *lvalue += e->GetOperator() == TokenType::PlusPlus ? 1 : -1;
+            if (e->GetOperator() == TokenType::PlusPlus)
+            {
+                std::visit(ValueIncrement(), *lvalue);
+            }
+            else
+            {
+                std::visit(ValueDecrement(), *lvalue);
+            }
             if (!e->GetSuffix())
             {
                 m_Evaluation.push_back(MakeValue(*lvalue));
@@ -364,6 +492,7 @@ void ASTInterpreter::Print(Printer& p)
 {
     for (auto& it : m_Variables)
     {
-        p.PrintVariable(it.first.c_str(), *ModifyVariable(it.first));
+        auto& value = ModifyVariable(it.first);
+        std::visit(ValuePrint(it.first.c_str(), &p), *value);
     }
 }
