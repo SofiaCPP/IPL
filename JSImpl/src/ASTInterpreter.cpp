@@ -9,13 +9,13 @@
 namespace
 {
     template <typename T>
-    ASTInterpreter::value_type MakeValue(T&& v)
+    ASTInterpreter::ValuePtr MakeValue(T&& v)
     {
         return IPLMakeSharePtr<double>(v);
     }
 
     template <typename T>
-    ASTInterpreter::value_type MakeValue(const T& v)
+    ASTInterpreter::ValuePtr MakeValue(const T& v)
     {
         return IPLMakeSharePtr<double>(v);
     }
@@ -29,7 +29,7 @@ public:
     {}
     ~LValueExtractor() {}
 
-    ASTInterpreter::value_type Run(Expression* program)
+    ASTInterpreter::ValuePtr Run(Expression* program)
     {
         m_LValue = nullptr;
         program->Accept(*this);
@@ -39,7 +39,7 @@ public:
     virtual void Visit(IdentifierExpression* e) override { m_LValue = m_Interpreter->ModifyVariable(e->GetName()); }
 
     ASTInterpreter* m_Interpreter;
-    ASTInterpreter::value_type m_LValue;
+    ASTInterpreter::ValuePtr m_LValue;
 };
 
 
@@ -134,7 +134,7 @@ void ASTInterpreter::LeaveScope()
     m_Scopes.pop();
 }
 
-ASTInterpreter::value_type& ASTInterpreter::ModifyVariable(const IPLString& name)
+ASTInterpreter::ValuePtr& ASTInterpreter::ModifyVariable(const IPLString& name)
 {
     auto values = m_Variables.find(name);
     if (values != m_Variables.end()) {
@@ -143,7 +143,7 @@ ASTInterpreter::value_type& ASTInterpreter::ModifyVariable(const IPLString& name
     else {
         assert(0 && "not-defined");
     }
-    static value_type undefined;
+    static ValuePtr undefined;
     return undefined;
 }
 
