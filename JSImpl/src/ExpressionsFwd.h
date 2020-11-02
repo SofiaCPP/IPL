@@ -6,6 +6,7 @@ class LiteralUndefined;
 class LiteralNumber;
 class LiteralString;
 class LiteralBoolean;
+class LiteralField;
 class LiteralObject;
 class Expression;
 class BinaryExpression;
