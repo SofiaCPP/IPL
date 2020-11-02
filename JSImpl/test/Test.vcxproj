@@ -123,6 +123,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ASTInterpreterTests.cpp">
+    </ClCompile>
     <ClCompile Include="LexerTests.cpp">
     </ClCompile>
     <ClCompile Include="CodeGenerationTests.cpp">

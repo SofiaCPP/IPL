@@ -65,6 +65,7 @@ ifeq ($(config),debug)
   LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
+	$(OBJDIR)/ASTInterpreterTests.o \
 	$(OBJDIR)/CodeGenerationTests.o \
 	$(OBJDIR)/LexerTests.o \
 	$(OBJDIR)/ParserTests.o \
@@ -102,6 +103,7 @@ ifeq ($(config),release)
   LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
+	$(OBJDIR)/ASTInterpreterTests.o \
 	$(OBJDIR)/CodeGenerationTests.o \
 	$(OBJDIR)/LexerTests.o \
 	$(OBJDIR)/ParserTests.o \
@@ -177,6 +179,10 @@ $(LDRESP): $(LDDEPS) | $(TARGETDIR) $(OBJDIRS)
 	$(SILENT) echo $^
 	$(SILENT) echo $^ > $@
 endif
+
+$(OBJDIR)/ASTInterpreterTests.o: ASTInterpreterTests.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/.
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 
 $(OBJDIR)/CodeGenerationTests.o: CodeGenerationTests.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/.
 	@echo $(notdir $<)
