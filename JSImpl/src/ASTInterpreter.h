@@ -11,7 +11,7 @@ public:
     ~ASTInterpreter();
 
 
-    typedef std::variant<double> Value;
+    typedef std::variant<double, IPLString> Value;
     typedef IPLSharedPtr<Value> ValuePtr;
     typedef IPLVector<ValuePtr> ValueStack;
 
@@ -47,6 +47,7 @@ public:
 	{
 	public:
 		virtual void PrintVariable(const char* name, double value) = 0;
+		virtual void PrintVariable(const char* name, const IPLString& value) = 0;
 	};
 
     void Print(Printer& p);

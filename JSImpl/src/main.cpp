@@ -38,7 +38,11 @@ class InterpreterPrinter : public ASTInterpreter::Printer
 public:
 	virtual void PrintVariable(const char* name, double value) override
 	{
-		std::cout << name << ": " << value << std::endl;
+		std::cout << name << ": number : " << value << std::endl;
+	}
+	virtual void PrintVariable(const char* name, const IPLString& value) override
+	{
+		std::cout << name << ": string : " << value << std::endl;
 	}
 };
 

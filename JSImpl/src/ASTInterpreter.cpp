@@ -26,94 +26,165 @@ namespace
         {
             return d != 0.0;
         }
+        bool operator()(const IPLString&) const
+        {
+            return true;
+        }
     };
 
-    struct ValueAdd
+    struct UnsupportedOpReport
     {
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(V) const
+        {
+            throw std::runtime_error("unsupported operation");
+        }
+
+        template <typename L, typename R>
+        ASTInterpreter::ValuePtr operator()(L, R) const
+        {
+            throw std::runtime_error("unsupported operation");
+        }
+    };
+
+    struct ValueAdd : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
         ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l + r);
+        }
+
+        ASTInterpreter::ValuePtr operator()(const IPLString& l, const IPLString& r) const
         {
             return MakeValue(l + r);
         }
     };
 
-    struct ValueMinus
+    struct ValueMinus : UnsupportedOpReport
     {
+        using UnsupportedOpReport::operator();
+
         ASTInterpreter::ValuePtr operator()(double l, double r) const
         {
             return MakeValue(l - r);
         }
     };
-    struct ValueProduct
+
+    struct ValueProduct : UnsupportedOpReport
     {
+        using UnsupportedOpReport::operator();
+
         ASTInterpreter::ValuePtr operator()(double l, double r) const
         {
             return MakeValue(l * r);
         }
     };
-    struct ValueDivide
+
+    struct ValueDivide : UnsupportedOpReport
     {
+        using UnsupportedOpReport::operator();
+
         ASTInterpreter::ValuePtr operator()(double l, double r) const
         {
             return MakeValue(l / r);
         }
     };
-    struct ValueLess
+
+    struct ValueLess : UnsupportedOpReport
     {
-        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        using UnsupportedOpReport::operator();
+
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(const V& l, const V& r) const
         {
             return MakeValue(l < r);
         }
     };
-    struct ValueLessEqual
+    struct ValueLessEqual : UnsupportedOpReport
     {
-        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        using UnsupportedOpReport::operator();
+
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(V l, V r) const
         {
             return MakeValue(l <= r);
         }
     };
-    struct ValueGreater
+
+    struct ValueGreater : UnsupportedOpReport
     {
-        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        using UnsupportedOpReport::operator();
+
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(V l, V r) const
         {
             return MakeValue(l > r);
         }
     };
-    struct ValueGreaterEqual
+
+    struct ValueGreaterEqual : UnsupportedOpReport
     {
-        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        using UnsupportedOpReport::operator();
+
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(V l, V r) const
         {
             return MakeValue(l >= r);
         }
     };
 
-    struct ValueEqualEqual
+    struct ValueEqualEqual : UnsupportedOpReport
     {
+        using UnsupportedOpReport::operator();
+
         ASTInterpreter::ValuePtr operator()(double left, double right) const
         {
             return MakeValue(fabs(left - right) <= 0.0001);
         }
+
+        ASTInterpreter::ValuePtr operator()(const IPLString& left, const IPLString& right) const
+        {
+            return MakeValue(left == right);
+        }
     };
 
-    struct ValueBangEqual
+    struct ValueBangEqual : UnsupportedOpReport
     {
+        using UnsupportedOpReport::operator();
+
         ASTInterpreter::ValuePtr operator()(double left, double right) const
         {
             return MakeValue(fabs(left - right) > 0.0001);
         }
+        ASTInterpreter::ValuePtr operator()(const IPLString& left, const IPLString& right) const
+        {
+            return MakeValue(left != right);
+        }
     };
 
-    struct ValueUnaryMinus
+    struct ValueUnaryMinus : UnsupportedOpReport
     {
+        using UnsupportedOpReport::operator();
+
         ASTInterpreter::ValuePtr operator()(double v) const
         {
             return MakeValue(-v);
         }
     };
+
     struct ValueIncrement
     {
         void operator()(double& v) const
         {
             v += 1;
+        }
+
+        template <typename V>
+        void operator()(V&) const
+        {
+            throw std::runtime_error("unsupported operation");
         }
     };
 
@@ -122,6 +193,12 @@ namespace
         void operator()(double& v) const
         {
             v -= 1;
+        }
+
+        template <typename V>
+        void operator()(V&) const
+        {
+            throw std::runtime_error("unsupported operation");
         }
     };
 
@@ -133,6 +210,11 @@ namespace
         {}
 
         void operator()(double value) const
+        {
+            Printer->PrintVariable(Name, value);
+        }
+
+        void operator()(const IPLString& value) const
         {
             Printer->PrintVariable(Name, value);
         }
@@ -281,7 +363,7 @@ void ASTInterpreter::Visit(LiteralUndefined* e) {
    NOT_IMPLEMENTED; 
 }
 void ASTInterpreter::Visit(LiteralString* e) {
-   NOT_IMPLEMENTED; 
+    m_Evaluation.push_back(MakeValue(e->GetValue()));
 }
 
 void ASTInterpreter::Visit(LiteralObject* e)
