@@ -56,3 +56,22 @@ TEST_F(ASTInterpret, StringMinusString)
 {
 	ASSERT_THROW(Run("var data = 'John' - 'Doe'"), std::runtime_error);
 }
+
+TEST_F(ASTInterpret, LessNumber)
+{
+	Run("var answer = 6 < 7");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_DOUBLE_EQ(ValueAsNumber("answer"), 1.0);
+}
+
+TEST_F(ASTInterpret, LessString)
+{
+	Run("var name = 'John' < 'Doe'");
+	ASSERT_TRUE(HasVariable("name"));
+	ASSERT_DOUBLE_EQ(ValueAsNumber("name"), 0.0);
+}
+
+TEST_F(ASTInterpret, StringLessNumber)
+{
+	ASSERT_THROW(Run("var data = 'John' < 42"), std::runtime_error);
+}
