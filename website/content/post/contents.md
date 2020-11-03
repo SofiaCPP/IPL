@@ -27,11 +27,11 @@ Table of contents for the course.
 0. Parser generators - [slides]({{< ref "/slides/04_parser_generators" >}}),
    [doc]({{< ref "/parser_generators" >}})
 
-<!--
 
 0. Intro to virtual machines - [slides]({{< ref "/slides/05_vm_intro" >}}),
-   [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/05_vm_intro/_index.md)
+   [doc]({{< ref "/vm_intro" >}})
 
+<!--
 0. Values in VMs - [slides]({{< ref "/slides/06_vm_values" >}}),
    [doc](https://github.com/SofiaCPP/IPL/blob/master/website/content/slides/06_vm_values/_index.md)
 
