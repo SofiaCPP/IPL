@@ -1371,7 +1371,7 @@ static void yy_load_buffer_state  (void)
         b->yy_bs_column = 0;
     }
 
-        b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
+        b->yy_is_interactive = 0;//file ? (isatty( fileno(file) ) > 0) : 0;
     
 	errno = oerrno;
 }
