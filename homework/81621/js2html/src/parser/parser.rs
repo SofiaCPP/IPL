@@ -138,21 +138,63 @@ impl<'a> Parser<'a> {
     }
 
     fn function_call(&mut self) -> Option<Box<FunctionCall>> {
+        dbg!("Trying function call");
         let mut member: Box<dyn Expression> = Box::new(Identifier::new("".to_string()));
 
         if self.member(&mut member) {
-            if self.matches(TokenType::LParenthesis) {
-                let mut arg = String::new();
-
-                if self.identifier(&mut arg) {
-                    if self.matches(TokenType::RParenthesis) {
-                        return Some(Box::new(FunctionCall::new(member, vec![arg])));
-                    }
-                }
+            if let Some(func_args) = self.function_call_args() {
+                return Some(Box::new(FunctionCall::new(member, func_args)));
             }
         }
 
         None
+    }
+
+    fn simple_expression(&mut self) -> Option<Box<dyn Expression>> {
+        let mut member: Box<dyn Expression> = Box::new(Identifier::new("".to_string()));
+
+        if self.member(&mut member) {
+            if let Some(func_args) = self.function_call_args() {
+                return Some(Box::new(FunctionCall::new(member, func_args)));
+            } else {
+                return Some(member);
+            }
+        }
+
+        None
+    }
+
+    fn function_call_args(&mut self) -> Option<Vec<Box<dyn Expression>>> {
+        let mut args: Vec<Box<dyn Expression>> = vec![];
+
+        if !self.matches(TokenType::LParenthesis) {
+            return None;
+        }
+
+        loop {
+            if self.matches(TokenType::RParenthesis) {
+                break;
+            }
+
+            if let Some(expr) = self.simple_expression() {
+                args.push(expr);
+            }
+
+            // Consume comma if there is one
+            self.matches(TokenType::Comma);
+        }
+
+        Some(args)
+    }
+
+    fn expression(&mut self) -> Option<Box<dyn Expression>> {
+        let mut res: Option<Box<dyn Expression>> = None;
+
+        if let Some(funct_call) = self.function_call() {
+            res = Some(funct_call);
+        }
+
+        res
     }
 
     fn top_level_expression(&mut self) -> Option<Box<dyn Expression>> {
@@ -160,14 +202,10 @@ impl<'a> Parser<'a> {
 
         if let Some(func_def) = self.function_declaration() {
             res = Some(func_def);
-        }
-
-        if let Some(var_decl) = self.variable_declaration() {
+        } else if let Some(var_decl) = self.variable_declaration() {
             res = Some(var_decl);
-        }
-
-        if let Some(funct_call) = self.function_call() {
-            res = Some(funct_call);
+        } else if let Some(exp) = self.expression() {
+            res = Some(exp);
         }
 
         // Consume semicolon if there is one

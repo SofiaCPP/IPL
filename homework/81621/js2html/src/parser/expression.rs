@@ -85,7 +85,7 @@ define_all_expressions! {
     (FunctionDeclaration, name: String, args: Vec<String>, body: TopLevelExpressions),
     (TopLevelExpressions, statements: Vec<Box<dyn Expression>>),
     (VariableDeclaration, name: String, initial_value: Option<f64>),
-    (FunctionCall, member: Box<dyn Expression>, args: Vec<String>),
+    (FunctionCall, member: Box<dyn Expression>, args: Vec<Box<dyn Expression>>),
     (Identifier, name: String),
     (Member, object: Box<dyn Expression>, property: Identifier)
 }
