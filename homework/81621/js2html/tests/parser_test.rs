@@ -43,13 +43,9 @@ mod tests {
 
         let mut parser = Parser::new(&input_tokens);
         let top_level_expression = parser.parse();
-        let expected_expression = Rc::new(TopLevelExpressions::new(vec![Rc::new(
-            FunctionDeclaration::new(
-                "foo".to_string(),
-                vec![],
-                Rc::new(TopLevelExpressions::new(vec![])),
-            ),
-        )]));
+        let expected_expression = TopLevelExpressions::new(vec![Box::new(
+            FunctionDeclaration::new("foo".to_string(), vec![], TopLevelExpressions::new(vec![])),
+        )]);
         assert_eq!(top_level_expression, expected_expression);
     }
 }

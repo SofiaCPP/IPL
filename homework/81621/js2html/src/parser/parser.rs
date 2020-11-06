@@ -2,8 +2,6 @@ use crate::lexer::token_type::TokenType;
 use crate::lexer::tokenizer::Token;
 use crate::parser::expression::*;
 
-use std::rc::Rc;
-
 pub struct Parser<'a> {
     tokens: &'a Vec<Token>,
     pos: u32,
@@ -22,7 +20,7 @@ impl<'a> Parser<'a> {
         self.tokens.get((self.pos - 1) as usize)
     }
 
-    pub fn parse(&mut self) -> Rc<TopLevelExpressions> {
+    pub fn parse(&mut self) -> TopLevelExpressions {
         self.top_level_expressions()
     }
 
@@ -48,6 +46,34 @@ impl<'a> Parser<'a> {
         true
     }
 
+    fn member(&mut self, member: &mut Box<dyn Expression>) -> bool {
+        let mut object_name = String::new();
+
+        if self.identifier(&mut object_name) {
+            let mut object: Box<dyn Expression> = Box::new(Identifier::new(object_name));
+            let mut property_name = String::new();
+
+            if self.matches(TokenType::Dot) {
+                loop {
+                    if self.identifier(&mut property_name) {
+                        let property = Identifier::new(property_name.clone());
+                        object = Box::new(Member::new(object, property));
+                    }
+
+                    if !self.matches(TokenType::Dot) {
+                        *member = object;
+                        return true;
+                    }
+                }
+            } else {
+                *member = object;
+                return true;
+            }
+        }
+
+        false
+    }
+
     fn parenthesized_args_defintion(&mut self, args: &mut Vec<String>) -> bool {
         args.clear();
 
@@ -64,7 +90,7 @@ impl<'a> Parser<'a> {
         self.matches(TokenType::RParenthesis)
     }
 
-    fn function_declaration(&mut self) -> Option<Rc<FunctionDeclaration>> {
+    fn function_declaration(&mut self) -> Option<Box<FunctionDeclaration>> {
         if self.matches(TokenType::Function) {
             let mut function_name: String = String::new();
 
@@ -76,7 +102,7 @@ impl<'a> Parser<'a> {
                         let body = self.top_level_expressions();
 
                         if self.matches(TokenType::RCurlyBrace) {
-                            return Some(Rc::new(FunctionDeclaration::new(
+                            return Some(Box::new(FunctionDeclaration::new(
                                 function_name,
                                 args,
                                 body,
@@ -90,7 +116,7 @@ impl<'a> Parser<'a> {
         None
     }
 
-    fn variable_declaration(&mut self) -> Option<Rc<VariableDeclaration>> {
+    fn variable_declaration(&mut self) -> Option<Box<VariableDeclaration>> {
         if self.matches(TokenType::Var) || self.matches(TokenType::Let) {
             let mut identifier = String::new();
 
@@ -99,11 +125,11 @@ impl<'a> Parser<'a> {
                     if self.matches(TokenType::Number) {
                         let number = self.prev().unwrap().number.unwrap();
 
-                        return Some(Rc::new(VariableDeclaration::new(identifier, Some(number))));
+                        return Some(Box::new(VariableDeclaration::new(identifier, Some(number))));
                     }
                 }
                 if self.matches(TokenType::Semicolon) {
-                    return Some(Rc::new(VariableDeclaration::new(identifier, None)));
+                    return Some(Box::new(VariableDeclaration::new(identifier, None)));
                 }
             }
         }
@@ -111,25 +137,16 @@ impl<'a> Parser<'a> {
         None
     }
 
-    fn function_call(&mut self) -> Option<Rc<FunctionCall>> {
-        let mut identifier = String::new();
+    fn function_call(&mut self) -> Option<Box<FunctionCall>> {
+        let mut member: Box<dyn Expression> = Box::new(Identifier::new("".to_string()));
 
-        if self.identifier(&mut identifier) {
-            if self.matches(TokenType::Dot) {
-                let mut function_ident = String::new();
+        if self.member(&mut member) {
+            if self.matches(TokenType::LParenthesis) {
+                let mut arg = String::new();
 
-                if self.identifier(&mut function_ident) {
-                    if self.matches(TokenType::LParenthesis) {
-                        let mut a = String::new();
-
-                        if self.identifier(&mut a) {
-                            if self.matches(TokenType::RParenthesis) {
-                                return Some(Rc::new(FunctionCall::new(
-                                    format!("{}.{}", identifier, function_ident),
-                                    vec![a],
-                                )));
-                            }
-                        }
+                if self.identifier(&mut arg) {
+                    if self.matches(TokenType::RParenthesis) {
+                        return Some(Box::new(FunctionCall::new(member, vec![arg])));
                     }
                 }
             }
@@ -138,8 +155,8 @@ impl<'a> Parser<'a> {
         None
     }
 
-    fn top_level_expression(&mut self) -> Option<Rc<dyn Expression>> {
-        let mut res: Option<Rc<dyn Expression>> = None;
+    fn top_level_expression(&mut self) -> Option<Box<dyn Expression>> {
+        let mut res: Option<Box<dyn Expression>> = None;
 
         if let Some(func_def) = self.function_declaration() {
             res = Some(func_def);
@@ -159,13 +176,13 @@ impl<'a> Parser<'a> {
         res
     }
 
-    fn top_level_expressions(&mut self) -> Rc<TopLevelExpressions> {
-        let mut statements: Vec<Rc<dyn Expression>> = vec![];
+    fn top_level_expressions(&mut self) -> TopLevelExpressions {
+        let mut statements: Vec<Box<dyn Expression>> = vec![];
 
         while let Some(expr) = self.top_level_expression() {
             statements.push(expr);
         }
 
-        Rc::new(TopLevelExpressions::new(statements))
+        TopLevelExpressions::new(statements)
     }
 }

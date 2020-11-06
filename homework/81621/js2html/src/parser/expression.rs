@@ -6,7 +6,8 @@ use std::rc::Rc;
 
 macro_rules! define_expression {
     ($name: ident$(, $element: ident: $ty: ty)* $(,)?) => {
-        #[derive(Debug, PartialEq, Clone)]
+        #[derive(Debug, ::derivative::Derivative)]
+        #[derivative(PartialEq)]
         pub struct $name {
             $(pub $element: $ty),*
         }
@@ -81,8 +82,10 @@ impl PartialEq for dyn Expression {
 }
 
 define_all_expressions! {
-    (FunctionDeclaration, name: String, args: Vec<String>, body: Rc<TopLevelExpressions>),
-    (TopLevelExpressions, statements: Vec<Rc<dyn Expression>>),
+    (FunctionDeclaration, name: String, args: Vec<String>, body: TopLevelExpressions),
+    (TopLevelExpressions, statements: Vec<Box<dyn Expression>>),
     (VariableDeclaration, name: String, initial_value: Option<f64>),
-    (FunctionCall, name: String, args: Vec<String>)
+    (FunctionCall, member: Box<dyn Expression>, args: Vec<String>),
+    (Identifier, name: String),
+    (Member, object: Box<dyn Expression>, property: Identifier)
 }
