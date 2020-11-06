@@ -115,14 +115,6 @@ impl Tokenizer {
                 });
 
                 chars.next();
-            } else if *character == '#' {
-                self.tokens.push(Token {
-                    r#type: TokenType::Hash,
-                    string: Some(character.to_string()),
-                    number: None,
-                });
-
-                chars.next();
             } else if *character == ';' {
                 self.tokens.push(Token {
                     r#type: TokenType::Semicolon,
@@ -158,19 +150,6 @@ impl Tokenizer {
             } else if *character == '-' {
                 let char_string = character.to_string();
                 chars.next();
-
-                if let Some(next_char) = chars.peek() {
-                    if *next_char == '>' {
-                        self.tokens.push(Token {
-                            r#type: TokenType::SmallArrow,
-                            string: Some("->".to_string()),
-                            number: None,
-                        });
-
-                        chars.next();
-                        continue;
-                    }
-                }
 
                 self.tokens.push(Token {
                     r#type: TokenType::Minus,
@@ -241,15 +220,6 @@ impl Tokenizer {
                         self.tokens.push(Token {
                             r#type: TokenType::And,
                             string: Some("&&".to_string()),
-                            number: None,
-                        });
-
-                        chars.next();
-                        continue;
-                    } else if *next_char == '\'' {
-                        self.tokens.push(Token {
-                            r#type: TokenType::LifetimePrefix,
-                            string: Some("&'".to_string()),
                             number: None,
                         });
 
@@ -330,7 +300,7 @@ impl Tokenizer {
                 if let Some(next_char) = chars.peek() {
                     if *next_char == '>' {
                         self.tokens.push(Token {
-                            r#type: TokenType::BigArrow,
+                            r#type: TokenType::Arrow,
                             string: Some("=>".to_string()),
                             number: None,
                         });
@@ -443,36 +413,11 @@ impl Tokenizer {
     fn read_word(chars: &mut Peekable<Chars>) -> String {
         let mut word = String::new();
 
-        // In Rust it is allowed for variables to have the same name
-        // as a reserved word if they start with r#. For example,
-        // type is a reserved word, but you can have a variable, named
-        // r#type.
-        if let Some(first_char) = chars.peek() {
-            if *first_char == 'r' {
-                word.push(*first_char);
-                chars.next();
-
-                if let Some(second_char) = chars.peek() {
-                    if *second_char == '#' {
-                        word.push(*second_char);
-                        chars.next();
-                    }
-                }
-            }
-        }
-
         while let Some(peeked_character) = chars.peek() {
             if peeked_character.is_alphanumeric() || *peeked_character == '_' {
                 word.push(chars.next().unwrap());
             } else {
                 break;
-            }
-        }
-
-        if let Some(peeked_character) = chars.peek() {
-            if *peeked_character == '!' {
-                word.push(*peeked_character);
-                chars.next();
             }
         }
 

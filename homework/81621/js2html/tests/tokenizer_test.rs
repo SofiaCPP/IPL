@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use rust2html::lexer::token_type::TokenType;
-    use rust2html::lexer::tokenizer::{Token, Tokenizer};
+    use js2html::lexer::token_type::TokenType;
+    use js2html::lexer::tokenizer::{Token, Tokenizer};
 
     #[test]
     fn empty_test() {

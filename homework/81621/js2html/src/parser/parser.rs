@@ -46,7 +46,7 @@ impl<'a> Parser<'a> {
         true
     }
 
-    fn parenthesized_args_defintion(&mut self, args: &mut Vec<(String, String)>) -> bool {
+    fn parenthesized_args_defintion(&mut self, args: &mut Vec<String>) -> bool {
         args.clear();
 
         if !self.matches(TokenType::LParenthesis) {
@@ -54,25 +54,20 @@ impl<'a> Parser<'a> {
         }
 
         let mut identifier: String = String::new();
-        let mut arg_type: String = String::new();
 
         while self.identifier(&mut identifier) {
             if !self.matches(TokenType::Colon) {
                 break;
             }
 
-            if !self.identifier(&mut arg_type) {
-                break;
-            }
-
-            args.push((identifier.clone(), arg_type.clone()));
+            args.push(identifier.clone());
         }
 
         self.matches(TokenType::RParenthesis)
     }
 
     fn function_definition(&mut self) {
-        if self.matches(TokenType::Fn) {
+        if self.matches(TokenType::Function) {
             let mut function_name: String = String::new();
 
             if self.identifier(&mut function_name) {
@@ -86,14 +81,4 @@ impl<'a> Parser<'a> {
             }
         }
     }
-}
-
-impl<'a> Visitor for Parser<'a> {
-    fn visit_body_expression(&mut self, body_expression: &BodyExpression) {
-        BodyExpression::new(vec![Rc::new(FunctionExpression::new(
-            "test".to_string(),
-            vec![],
-        ))]);
-    }
-    fn visit_function_expression(&mut self, function_expression: &FunctionExpression) {}
 }
