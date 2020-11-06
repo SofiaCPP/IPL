@@ -2,7 +2,8 @@ use paste::paste;
 
 use core::fmt::Debug;
 use std::any::Any;
-use std::rc::Rc;
+
+use crate::lexer::token_type::TokenType;
 
 macro_rules! define_expression {
     ($name: ident$(, $element: ident: $ty: ty)* $(,)?) => {
@@ -87,5 +88,7 @@ define_all_expressions! {
     (VariableDeclaration, name: String, initial_value: Option<f64>),
     (FunctionCall, member: Box<dyn Expression>, args: Vec<Box<dyn Expression>>),
     (Identifier, name: String),
-    (Member, object: Box<dyn Expression>, property: Identifier)
+    (Member, object: Box<dyn Expression>, property: Identifier),
+    (BinaryExpression, lhs: Box<dyn Expression>, operation: TokenType, rhs: Box<dyn Expression>),
+    (LiteralNumber, value: f64)
 }

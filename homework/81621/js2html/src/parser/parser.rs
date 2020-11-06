@@ -37,6 +37,16 @@ impl<'a> Parser<'a> {
         }
     }
 
+    fn matches_one_of(&mut self, types: Vec<TokenType>) -> bool {
+        for t in types {
+            if self.matches(t) {
+                return true;
+            }
+        }
+
+        false
+    }
+
     fn identifier(&mut self, identifier: &mut String) -> bool {
         if !self.matches(TokenType::Identifier) {
             return false;
@@ -137,13 +147,27 @@ impl<'a> Parser<'a> {
         None
     }
 
-    fn function_call(&mut self) -> Option<Box<FunctionCall>> {
-        dbg!("Trying function call");
-        let mut member: Box<dyn Expression> = Box::new(Identifier::new("".to_string()));
+    fn binary_expression_helper(
+        &mut self,
+        lhs: Box<dyn Expression>,
+    ) -> Option<Box<dyn Expression>> {
+        if self.matches_one_of(vec![TokenType::Plus]) {
+            let operator = self.prev().unwrap().r#type;
+            let mut identifier = String::new();
 
-        if self.member(&mut member) {
-            if let Some(func_args) = self.function_call_args() {
-                return Some(Box::new(FunctionCall::new(member, func_args)));
+            if self.matches(TokenType::Number) {
+                let num = self.prev().unwrap().number.unwrap();
+                return Some(Box::new(BinaryExpression::new(
+                    lhs,
+                    operator,
+                    Box::new(LiteralNumber::new(num)),
+                )));
+            } else if self.identifier(&mut identifier) {
+                return Some(Box::new(BinaryExpression::new(
+                    lhs,
+                    operator,
+                    Box::new(Identifier::new(identifier)),
+                )));
             }
         }
 
@@ -157,7 +181,18 @@ impl<'a> Parser<'a> {
             if let Some(func_args) = self.function_call_args() {
                 return Some(Box::new(FunctionCall::new(member, func_args)));
             } else {
-                return Some(member);
+                if let Some(bin_expr) = self.binary_expression_helper(member) {
+                    return Some(bin_expr);
+                }
+            }
+        }
+
+        if self.matches(TokenType::Number) {
+            let num = self.prev().unwrap().number.unwrap();
+
+            if let Some(bin_expr) = self.binary_expression_helper(Box::new(LiteralNumber::new(num)))
+            {
+                return Some(bin_expr);
             }
         }
 
@@ -187,16 +222,6 @@ impl<'a> Parser<'a> {
         Some(args)
     }
 
-    fn expression(&mut self) -> Option<Box<dyn Expression>> {
-        let mut res: Option<Box<dyn Expression>> = None;
-
-        if let Some(funct_call) = self.function_call() {
-            res = Some(funct_call);
-        }
-
-        res
-    }
-
     fn top_level_expression(&mut self) -> Option<Box<dyn Expression>> {
         let mut res: Option<Box<dyn Expression>> = None;
 
@@ -204,7 +229,7 @@ impl<'a> Parser<'a> {
             res = Some(func_def);
         } else if let Some(var_decl) = self.variable_declaration() {
             res = Some(var_decl);
-        } else if let Some(exp) = self.expression() {
+        } else if let Some(exp) = self.simple_expression() {
             res = Some(exp);
         }
 
