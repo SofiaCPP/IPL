@@ -99,12 +99,7 @@ impl<'a> Parser<'a> {
                     if self.matches(TokenType::Number) {
                         let number = self.prev().unwrap().number.unwrap();
 
-                        if self.matches(TokenType::Semicolon) {
-                            return Some(Rc::new(VariableDeclaration::new(
-                                identifier,
-                                Some(number),
-                            )));
-                        }
+                        return Some(Rc::new(VariableDeclaration::new(identifier, Some(number))));
                     }
                 }
                 if self.matches(TokenType::Semicolon) {
@@ -116,16 +111,52 @@ impl<'a> Parser<'a> {
         None
     }
 
-    fn top_level_expression(&mut self) -> Option<Rc<dyn Expression>> {
-        if let Some(func_def) = self.function_declaration() {
-            return Some(func_def);
-        }
+    fn function_call(&mut self) -> Option<Rc<FunctionCall>> {
+        let mut identifier = String::new();
 
-        if let Some(var_decl) = self.variable_declaration() {
-            return Some(var_decl);
+        if self.identifier(&mut identifier) {
+            if self.matches(TokenType::Dot) {
+                let mut function_ident = String::new();
+
+                if self.identifier(&mut function_ident) {
+                    if self.matches(TokenType::LParenthesis) {
+                        let mut a = String::new();
+
+                        if self.identifier(&mut a) {
+                            if self.matches(TokenType::RParenthesis) {
+                                return Some(Rc::new(FunctionCall::new(
+                                    format!("{}.{}", identifier, function_ident),
+                                    vec![a],
+                                )));
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         None
+    }
+
+    fn top_level_expression(&mut self) -> Option<Rc<dyn Expression>> {
+        let mut res: Option<Rc<dyn Expression>> = None;
+
+        if let Some(func_def) = self.function_declaration() {
+            res = Some(func_def);
+        }
+
+        if let Some(var_decl) = self.variable_declaration() {
+            res = Some(var_decl);
+        }
+
+        if let Some(funct_call) = self.function_call() {
+            res = Some(funct_call);
+        }
+
+        // Consume semicolon if there is one
+        self.matches(TokenType::Semicolon);
+
+        res
     }
 
     fn top_level_expressions(&mut self) -> Rc<TopLevelExpressions> {

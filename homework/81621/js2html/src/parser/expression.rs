@@ -83,5 +83,6 @@ impl PartialEq for dyn Expression {
 define_all_expressions! {
     (FunctionDeclaration, name: String, args: Vec<String>, body: Rc<TopLevelExpressions>),
     (TopLevelExpressions, statements: Vec<Rc<dyn Expression>>),
-    (VariableDeclaration, name: String, initial_value: Option<f64>)
+    (VariableDeclaration, name: String, initial_value: Option<f64>),
+    (FunctionCall, name: String, args: Vec<String>)
 }
