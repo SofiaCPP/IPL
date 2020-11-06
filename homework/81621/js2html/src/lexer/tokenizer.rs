@@ -20,6 +20,7 @@ impl Token {
 pub struct Tokenizer {
     pub input: String,
     pub tokens: Vec<Token>,
+    pub tokenize_whitespace: bool,
 }
 
 impl Tokenizer {
@@ -27,6 +28,7 @@ impl Tokenizer {
         Tokenizer {
             input: input_string,
             tokens: Vec::new(),
+            tokenize_whitespace: false,
         }
     }
 
@@ -391,6 +393,11 @@ impl Tokenizer {
                     number: None,
                 });
             } else if character.is_whitespace() {
+                if !self.tokenize_whitespace {
+                    chars.next();
+                    continue;
+                }
+
                 let whitespace = Tokenizer::read_whitespace(&mut chars);
 
                 self.tokens.push(Token {

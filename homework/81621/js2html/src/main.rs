@@ -19,6 +19,7 @@ fn main() {
     dbg!(&lexer.tokens);
 
     let mut parser = Parser::new(&lexer.tokens);
+    dbg!(parser.parse());
 
     let html = tokens_to_html(lexer.tokens);
     println!("{}", html);

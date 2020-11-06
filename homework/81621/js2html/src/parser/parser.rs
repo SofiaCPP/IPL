@@ -22,7 +22,9 @@ impl<'a> Parser<'a> {
         self.tokens.get((self.pos - 1) as usize)
     }
 
-    pub fn parse(&self) {}
+    pub fn parse(&mut self) -> Rc<TopLevelExpression> {
+        self.top_level_expression()
+    }
 
     fn matches(&mut self, token_type: TokenType) -> bool {
         if let Some(token) = self.current() {
@@ -56,17 +58,13 @@ impl<'a> Parser<'a> {
         let mut identifier: String = String::new();
 
         while self.identifier(&mut identifier) {
-            if !self.matches(TokenType::Colon) {
-                break;
-            }
-
             args.push(identifier.clone());
         }
 
         self.matches(TokenType::RParenthesis)
     }
 
-    fn function_definition(&mut self) {
+    fn function_definition(&mut self) -> Option<Rc<FunctionExpression>> {
         if self.matches(TokenType::Function) {
             let mut function_name: String = String::new();
 
@@ -75,10 +73,24 @@ impl<'a> Parser<'a> {
 
                 if self.parenthesized_args_defintion(&mut args) {
                     if self.matches(TokenType::LCurlyBrace) {
-                        self.matches(TokenType::RCurlyBrace);
+                        if self.matches(TokenType::RCurlyBrace) {
+                            return Some(Rc::new(FunctionExpression::new(function_name, args)));
+                        }
                     }
                 }
             }
         }
+
+        None
+    }
+
+    fn top_level_expression(&mut self) -> Rc<TopLevelExpression> {
+        let mut statements: Vec<Rc<dyn Expression>> = vec![];
+
+        if let Some(def) = self.function_definition() {
+            statements.push(def);
+        }
+
+        Rc::new(TopLevelExpression::new(statements))
     }
 }

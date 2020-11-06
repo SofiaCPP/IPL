@@ -5,21 +5,16 @@ mod tests {
 
     #[test]
     fn empty_test() {
-        let mut lexer = Tokenizer::new("fn main() {}".to_string());
+        let mut lexer = Tokenizer::new("function main() {}".to_string());
         lexer.populate_tokens();
 
         assert_eq!(
             lexer.tokens,
             vec![
                 Token {
-                    r#type: TokenType::Fn,
+                    r#type: TokenType::Function,
                     number: None,
-                    string: Some("fn".to_string())
-                },
-                Token {
-                    r#type: TokenType::Whitespace,
-                    number: None,
-                    string: Some(" ".to_string())
+                    string: Some("function".to_string())
                 },
                 Token {
                     r#type: TokenType::Identifier,
@@ -35,11 +30,6 @@ mod tests {
                     r#type: TokenType::RParenthesis,
                     number: None,
                     string: Some(")".to_string())
-                },
-                Token {
-                    r#type: TokenType::Whitespace,
-                    number: None,
-                    string: Some(" ".to_string())
                 },
                 Token {
                     r#type: TokenType::LCurlyBrace,
@@ -59,14 +49,14 @@ mod tests {
     fn simple_test() {
         let mut lexer = Tokenizer::new(
             "
-fn main() {
-    let a: u32 = 123;
-    println!(\"Nice one: {}\", a);
-    0
+function main() {
+    var a = 123;
+    console.log(a);
 }"
             .to_string(),
         );
 
+        lexer.tokenize_whitespace = true;
         lexer.populate_tokens();
 
         assert_eq!(
@@ -78,9 +68,9 @@ fn main() {
                     string: Some("\n".to_string())
                 },
                 Token {
-                    r#type: TokenType::Fn,
+                    r#type: TokenType::Function,
                     number: None,
-                    string: Some("fn".to_string())
+                    string: Some("function".to_string())
                 },
                 Token {
                     r#type: TokenType::Whitespace,
@@ -118,9 +108,9 @@ fn main() {
                     string: Some("\n    ".to_string())
                 },
                 Token {
-                    r#type: TokenType::Let,
+                    r#type: TokenType::Var,
                     number: None,
-                    string: Some("let".to_string())
+                    string: Some("var".to_string())
                 },
                 Token {
                     r#type: TokenType::Whitespace,
@@ -131,21 +121,6 @@ fn main() {
                     r#type: TokenType::Identifier,
                     number: None,
                     string: Some("a".to_string())
-                },
-                Token {
-                    r#type: TokenType::Colon,
-                    number: None,
-                    string: Some(":".to_string())
-                },
-                Token {
-                    r#type: TokenType::Whitespace,
-                    number: None,
-                    string: Some(" ".to_string())
-                },
-                Token {
-                    r#type: TokenType::Identifier,
-                    number: None,
-                    string: Some("u32".to_string())
                 },
                 Token {
                     r#type: TokenType::Whitespace,
@@ -180,27 +155,22 @@ fn main() {
                 Token {
                     r#type: TokenType::Identifier,
                     number: None,
-                    string: Some("println!".to_string())
+                    string: Some("console".to_string())
+                },
+                Token {
+                    r#type: TokenType::Dot,
+                    number: None,
+                    string: Some(".".to_string())
+                },
+                Token {
+                    r#type: TokenType::Identifier,
+                    number: None,
+                    string: Some("log".to_string())
                 },
                 Token {
                     r#type: TokenType::LParenthesis,
                     number: None,
                     string: Some("(".to_string())
-                },
-                Token {
-                    r#type: TokenType::String,
-                    number: None,
-                    string: Some("\"Nice one: {}\"".to_string())
-                },
-                Token {
-                    r#type: TokenType::Comma,
-                    number: None,
-                    string: Some(",".to_string())
-                },
-                Token {
-                    r#type: TokenType::Whitespace,
-                    number: None,
-                    string: Some(" ".to_string())
                 },
                 Token {
                     r#type: TokenType::Identifier,
@@ -216,16 +186,6 @@ fn main() {
                     r#type: TokenType::Semicolon,
                     number: None,
                     string: Some(";".to_string())
-                },
-                Token {
-                    r#type: TokenType::Whitespace,
-                    number: None,
-                    string: Some("\n    ".to_string())
-                },
-                Token {
-                    r#type: TokenType::Number,
-                    number: Some(0f64),
-                    string: None
                 },
                 Token {
                     r#type: TokenType::Whitespace,
@@ -336,58 +296,6 @@ fn main() {
                 string: Some("nice_var".to_string()),
                 number: None
             }]
-        );
-
-        lexer = Tokenizer::new("nice#var".to_string());
-        lexer.populate_tokens();
-        assert_eq!(
-            lexer.tokens,
-            vec![
-                Token {
-                    r#type: TokenType::Identifier,
-                    string: Some("nice".to_string()),
-                    number: None
-                },
-                Token {
-                    r#type: TokenType::Hash,
-                    string: Some("#".to_string()),
-                    number: None
-                },
-                Token {
-                    r#type: TokenType::Identifier,
-                    string: Some("var".to_string()),
-                    number: None
-                }
-            ]
-        );
-
-        lexer = Tokenizer::new("&'var".to_string());
-        lexer.populate_tokens();
-        assert_eq!(
-            lexer.tokens,
-            vec![
-                Token {
-                    r#type: TokenType::LifetimePrefix,
-                    string: Some("&'".to_string()),
-                    number: None
-                },
-                Token {
-                    r#type: TokenType::Identifier,
-                    string: Some("var".to_string()),
-                    number: None
-                }
-            ]
-        );
-
-        lexer = Tokenizer::new("r#type".to_string());
-        lexer.populate_tokens();
-        assert_eq!(
-            lexer.tokens,
-            vec![Token {
-                r#type: TokenType::Identifier,
-                string: Some("r#type".to_string()),
-                number: None
-            },]
         );
     }
 
@@ -573,18 +481,8 @@ fn main() {
                     number: None
                 },
                 Token {
-                    r#type: TokenType::Whitespace,
-                    string: Some(" ".to_string()),
-                    number: None
-                },
-                Token {
                     r#type: TokenType::NotEquals,
                     string: Some("!=".to_string()),
-                    number: None
-                },
-                Token {
-                    r#type: TokenType::Whitespace,
-                    string: Some(" ".to_string()),
                     number: None
                 },
                 Token {
@@ -722,7 +620,7 @@ fn main() {
                     number: None
                 },
                 Token {
-                    r#type: TokenType::BigArrow,
+                    r#type: TokenType::Arrow,
                     string: Some("=>".to_string()),
                     number: None
                 },
@@ -878,30 +776,6 @@ fn main() {
             ]
         );
 
-        lexer = Tokenizer::new("test->a".to_string());
-        lexer.populate_tokens();
-
-        assert_eq!(
-            lexer.tokens,
-            vec![
-                Token {
-                    r#type: TokenType::Identifier,
-                    string: Some("test".to_string()),
-                    number: None
-                },
-                Token {
-                    r#type: TokenType::SmallArrow,
-                    string: Some("->".to_string()),
-                    number: None
-                },
-                Token {
-                    r#type: TokenType::Identifier,
-                    string: Some("a".to_string()),
-                    number: None
-                }
-            ]
-        );
-
         lexer = Tokenizer::new("b=='a'".to_string());
         lexer.populate_tokens();
         assert_eq!(
@@ -1010,11 +884,6 @@ fn main() {
                 Token {
                     r#type: TokenType::Semicolon,
                     string: Some(";".to_string()),
-                    number: None
-                },
-                Token {
-                    r#type: TokenType::Whitespace,
-                    string: Some(" ".to_string()),
                     number: None
                 },
                 Token {
