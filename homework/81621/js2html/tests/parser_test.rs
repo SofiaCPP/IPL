@@ -2,7 +2,7 @@
 mod tests {
     use js2html::lexer::token_type::TokenType;
     use js2html::lexer::tokenizer::Token;
-    use js2html::parser::expression::{BodyExpression, FunctionExpression, TopLevelExpression};
+    use js2html::parser::expression::*;
     use js2html::parser::parser::Parser;
     use std::rc::Rc;
 
@@ -43,8 +43,12 @@ mod tests {
 
         let mut parser = Parser::new(&input_tokens);
         let top_level_expression = parser.parse();
-        let expected_expression = Rc::new(TopLevelExpression::new(vec![Rc::new(
-            FunctionExpression::new("foo".to_string(), vec![]),
+        let expected_expression = Rc::new(TopLevelExpressions::new(vec![Rc::new(
+            FunctionDeclaration::new(
+                "foo".to_string(),
+                vec![],
+                Rc::new(TopLevelExpressions::new(vec![])),
+            ),
         )]));
         assert_eq!(top_level_expression, expected_expression);
     }
