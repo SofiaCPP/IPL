@@ -12,6 +12,7 @@ public:
 	virtual void Visit(LiteralString* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(LiteralNumber* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(LiteralBoolean* e) { (void)e; NOT_IMPLEMENTED; }
+	virtual void Visit(LiteralField* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(LiteralObject* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(BinaryExpression* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(UnaryExpression* e) { (void)e; NOT_IMPLEMENTED; }
@@ -29,5 +30,6 @@ public:
 	virtual void Visit(TopStatements* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(EmptyExpression* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(CallExpression* e) { (void)e; NOT_IMPLEMENTED; }
+	virtual void Visit(Expression* e) { (void)e; NOT_IMPLEMENTED; } // Unkown case
 
 };

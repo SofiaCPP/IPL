@@ -20,7 +20,7 @@ class Expression : public IPLEnableShared<Expression>
 };
 
 #define EXPAND_ARGUMENT(type, name, def)\
-		type name = def,
+		const type& name = def,
 
 #define EXPAND_INITIALIZER_LIST(type, name, def)\
 		m_##name(name),
