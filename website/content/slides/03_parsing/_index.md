@@ -81,7 +81,7 @@ specifications for EBNF, but they have the same power, just different syntax.
 
         expr  = expr , op , expr | "(" , expr ,  ")" | term
         op    = "+" | "-" | "*" | "/"
-        term  = { digit }
+        term  = digit , term | digit 
         digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 
 
@@ -522,6 +522,8 @@ Extend the xxx2html tool to:
 2. Produce html where functions have their background colored depending on
    cyclomatic complexity ranging from light green to light read.
 3. Produce html where control structures can be collapsed.
+
+Do only one of these.
 
 ---
 # ?
