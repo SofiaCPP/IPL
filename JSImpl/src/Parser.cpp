@@ -6,7 +6,7 @@ public:
 	Parser(const IPLVector<Token>& tokens, const std::function<void()>& onError = {});
 	ExpressionPtr Parse();
 private:
-	bool MatchOneOf(IPLVector<TokenType> types);
+	bool MatchOneOf(const IPLVector<TokenType>& types);
 	bool Match(TokenType type);
 	ExpressionPtr RegularExpression();
 	ExpressionPtr ParenthesizedExpression();
@@ -87,7 +87,7 @@ Parser::Parser(const IPLVector<Token>& tokens, const std::function<void()>& onEr
 {
 }
 
-bool Parser::MatchOneOf(IPLVector<TokenType> types)
+bool Parser::MatchOneOf(const IPLVector<TokenType>& types)
 {
 	for (auto t : types)
 	{
