@@ -320,7 +320,11 @@ ExpressionPtr Parser::SimpleExpression()
 	}
 	else if (Match(TokenType::String))
 	{
-		return IPLMakeSharePtr<LiteralString>(Prev().Lexeme);
+		const auto& lexeme = Prev().Lexeme;
+		const auto length = lexeme.length();
+		assert(length >= 2);
+		auto value = lexeme.substr(1, length-2);
+		return IPLMakeSharePtr<LiteralString>(value);
 	}
 	else if (Match(TokenType::Null))
 	{

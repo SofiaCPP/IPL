@@ -6,6 +6,224 @@
 #undef NOT_IMPLEMENTED
 #define NOT_IMPLEMENTED (void)e; assert(0 && "not-implemented")
 
+namespace
+{
+    template <typename T>
+    ASTInterpreter::ValuePtr MakeValue(T&& v)
+    {
+        return IPLMakeSharePtr<ASTInterpreter::Value>(v);
+    }
+
+    template <typename T>
+    ASTInterpreter::ValuePtr MakeValue(const T& v)
+    {
+        return IPLMakeSharePtr<ASTInterpreter::Value>(v);
+    }
+
+    struct ValueToBool
+    {
+        bool operator()(double d) const
+        {
+            return d != 0.0;
+        }
+        bool operator()(const IPLString& s) const
+        {
+            return !s.empty();
+        }
+    };
+
+    struct UnsupportedOpReport
+    {
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(V) const
+        {
+            throw std::runtime_error("unsupported operation");
+        }
+
+        template <typename L, typename R>
+        ASTInterpreter::ValuePtr operator()(L, R) const
+        {
+            throw std::runtime_error("unsupported operation");
+        }
+    };
+
+    struct ValueAdd : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l + r);
+        }
+
+        ASTInterpreter::ValuePtr operator()(const IPLString& l, const IPLString& r) const
+        {
+            return MakeValue(l + r);
+        }
+    };
+
+    struct ValueMinus : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l - r);
+        }
+    };
+
+    struct ValueProduct : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l * r);
+        }
+    };
+
+    struct ValueDivide : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        ASTInterpreter::ValuePtr operator()(double l, double r) const
+        {
+            return MakeValue(l / r);
+        }
+    };
+
+    struct ValueLess : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(const V& l, const V& r) const
+        {
+            return MakeValue(l < r);
+        }
+    };
+    struct ValueLessEqual : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(V l, V r) const
+        {
+            return MakeValue(l <= r);
+        }
+    };
+
+    struct ValueGreater : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(V l, V r) const
+        {
+            return MakeValue(l > r);
+        }
+    };
+
+    struct ValueGreaterEqual : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        template <typename V>
+        ASTInterpreter::ValuePtr operator()(V l, V r) const
+        {
+            return MakeValue(l >= r);
+        }
+    };
+
+    struct ValueEqualEqual : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        ASTInterpreter::ValuePtr operator()(double left, double right) const
+        {
+            return MakeValue(fabs(left - right) <= 0.0001);
+        }
+
+        ASTInterpreter::ValuePtr operator()(const IPLString& left, const IPLString& right) const
+        {
+            return MakeValue(left == right);
+        }
+    };
+
+    struct ValueBangEqual : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        ASTInterpreter::ValuePtr operator()(double left, double right) const
+        {
+            return MakeValue(fabs(left - right) > 0.0001);
+        }
+        ASTInterpreter::ValuePtr operator()(const IPLString& left, const IPLString& right) const
+        {
+            return MakeValue(left != right);
+        }
+    };
+
+    struct ValueUnaryMinus : UnsupportedOpReport
+    {
+        using UnsupportedOpReport::operator();
+
+        ASTInterpreter::ValuePtr operator()(double v) const
+        {
+            return MakeValue(-v);
+        }
+    };
+
+    struct ValueIncrement
+    {
+        void operator()(double& v) const
+        {
+            v += 1;
+        }
+
+        template <typename V>
+        void operator()(V&) const
+        {
+            throw std::runtime_error("unsupported operation");
+        }
+    };
+
+    struct ValueDecrement
+    {
+        void operator()(double& v) const
+        {
+            v -= 1;
+        }
+
+        template <typename V>
+        void operator()(V&) const
+        {
+            throw std::runtime_error("unsupported operation");
+        }
+    };
+
+    struct ValuePrint
+    {
+        ValuePrint(const char* name, ASTInterpreter::Printer* printer)
+            : Name(name)
+            , Printer(printer)
+        {}
+
+        void operator()(double value) const
+        {
+            Printer->PrintVariable(Name, value);
+        }
+
+        void operator()(const IPLString& value) const
+        {
+            Printer->PrintVariable(Name, value);
+        }
+
+        const char* Name;
+        ASTInterpreter::Printer* Printer;
+    };
+}
+
 struct LValueExtractor : public ExpressionVisitor
 {
 public:
@@ -14,17 +232,17 @@ public:
     {}
     ~LValueExtractor() {}
 
-    ASTInterpreter::value_type* Run(Expression* program)
+    ASTInterpreter::ValuePtr Run(Expression* program)
     {
         m_LValue = nullptr;
         program->Accept(*this);
         return m_LValue;
     }
 
-    virtual void Visit(IdentifierExpression* e) override { m_LValue = &m_Interpreter->ModifyVariable(e->GetName()); }
+    virtual void Visit(IdentifierExpression* e) override { m_LValue = m_Interpreter->ModifyVariable(e->GetName()); }
 
     ASTInterpreter* m_Interpreter;
-    ASTInterpreter::value_type* m_LValue;
+    ASTInterpreter::ValuePtr m_LValue;
 };
 
 
@@ -98,7 +316,7 @@ bool ASTInterpreter::EvalToBool(const ExpressionPtr& e)
     e->Accept(*this);
     auto result = m_Evaluation.back();
     m_Evaluation.pop_back();
-    return result != 0.0;
+    return std::visit(ValueToBool(), *result);
 }
 
 void ASTInterpreter::EnterScope()
@@ -119,7 +337,7 @@ void ASTInterpreter::LeaveScope()
     m_Scopes.pop();
 }
 
-ASTInterpreter::value_type& ASTInterpreter::ModifyVariable(const IPLString& name)
+ASTInterpreter::ValuePtr& ASTInterpreter::ModifyVariable(const IPLString& name)
 {
     auto values = m_Variables.find(name);
     if (values != m_Variables.end()) {
@@ -128,7 +346,7 @@ ASTInterpreter::value_type& ASTInterpreter::ModifyVariable(const IPLString& name
     else {
         assert(0 && "not-defined");
     }
-    static value_type undefined;
+    static ValuePtr undefined;
     return undefined;
 }
 
@@ -145,7 +363,7 @@ void ASTInterpreter::Visit(LiteralUndefined* e) {
    NOT_IMPLEMENTED; 
 }
 void ASTInterpreter::Visit(LiteralString* e) {
-   NOT_IMPLEMENTED; 
+    m_Evaluation.push_back(MakeValue(e->GetValue()));
 }
 
 void ASTInterpreter::Visit(LiteralObject* e)
@@ -154,54 +372,54 @@ void ASTInterpreter::Visit(LiteralObject* e)
 }
 
 void ASTInterpreter::Visit(LiteralNumber* e) {
-    m_Evaluation.push_back(e->GetValue());
+    m_Evaluation.push_back(MakeValue(e->GetValue()));
 }
 void ASTInterpreter::Visit(LiteralBoolean* e) {
-    m_Evaluation.push_back(e->GetValue());
+    m_Evaluation.push_back(MakeValue(e->GetValue()));
 }
 
 void ASTInterpreter::Visit(BinaryExpression* e) {
     e->GetLeft()->Accept(*this);
     e->GetRight()->Accept(*this);
-    auto right = m_Evaluation.back();
+    auto right = *m_Evaluation.back();
     m_Evaluation.pop_back();
 
-    auto left = m_Evaluation.back();
+    auto left = *m_Evaluation.back();
     m_Evaluation.pop_back();
 
     switch (e->GetOperator()) {
         case TokenType::Plus:
-            m_Evaluation.push_back(left + right);
+            m_Evaluation.push_back(std::visit(ValueAdd(), left, right));
             break;
         case TokenType::Minus:
-            m_Evaluation.push_back(left - right);
+            m_Evaluation.push_back(std::visit(ValueMinus(), left, right));
             break;
         case TokenType::Star:
-            m_Evaluation.push_back(left * right);
+            m_Evaluation.push_back(std::visit(ValueProduct(), left, right));
             break;
         case TokenType::Division:
-            m_Evaluation.push_back(left / right);
+            m_Evaluation.push_back(std::visit(ValueDivide(), left, right));
             break;
         case TokenType::Less:
-            m_Evaluation.push_back(left < right);
+            m_Evaluation.push_back(std::visit(ValueLess(), left, right));
             break;
-		case TokenType::LessEqual:
-			m_Evaluation.push_back(left <= right);
-			break;
-		case TokenType::Greater:
-			m_Evaluation.push_back(left > right);
-			break;
-		case TokenType::GreaterEqual:
-			m_Evaluation.push_back(left >= right);
-			break;
+        case TokenType::LessEqual:
+            m_Evaluation.push_back(std::visit(ValueLessEqual(), left, right));
+            break;
+        case TokenType::Greater:
+            m_Evaluation.push_back(std::visit(ValueGreater(), left, right));
+            break;
+        case TokenType::GreaterEqual:
+            m_Evaluation.push_back(std::visit(ValueGreaterEqual(), left, right));
+            break;
         case TokenType::Comma:
-            m_Evaluation.push_back(right);
+            m_Evaluation.push_back(MakeValue(std::move(right)));
             break;
         case TokenType::EqualEqual:
-            m_Evaluation.push_back(fabs(left - right) < 0.0001);
+            m_Evaluation.push_back(std::visit(ValueEqualEqual(), left, right));
             break;
         case TokenType::BangEqual:
-            m_Evaluation.push_back(fabs(left - right) > 0.0001);
+            m_Evaluation.push_back(std::visit(ValueBangEqual(), left, right));
             break;
         case TokenType::Equal:
         {
@@ -221,7 +439,9 @@ void ASTInterpreter::Visit(UnaryExpression* e) {
         case TokenType::Minus:
         {
             e->GetExpr()->Accept(*this);
-            m_Evaluation.back() *= -1;
+            auto v = m_Evaluation.back();
+            m_Evaluation.pop_back();
+            m_Evaluation.push_back(std::visit(ValueUnaryMinus(), *v));
             break;
         }
         case TokenType::Plus:
@@ -236,12 +456,19 @@ void ASTInterpreter::Visit(UnaryExpression* e) {
             auto lvalue = extractor.Run(e->GetExpr().get());
             if (e->GetSuffix())
             {
-                m_Evaluation.push_back(*lvalue);
+                m_Evaluation.push_back(MakeValue(*lvalue));
             }
-            *lvalue += e->GetOperator() == TokenType::PlusPlus ? 1 : -1;
+            if (e->GetOperator() == TokenType::PlusPlus)
+            {
+                std::visit(ValueIncrement(), *lvalue);
+            }
+            else
+            {
+                std::visit(ValueDecrement(), *lvalue);
+            }
             if (!e->GetSuffix())
             {
-                m_Evaluation.push_back(*lvalue);
+                m_Evaluation.push_back(MakeValue(*lvalue));
             }
             break;
         }
@@ -347,6 +574,7 @@ void ASTInterpreter::Print(Printer& p)
 {
     for (auto& it : m_Variables)
     {
-        p.PrintVariable(it.first.c_str(), ModifyVariable(it.first));
+        auto& value = ModifyVariable(it.first);
+        std::visit(ValuePrint(it.first.c_str(), &p), *value);
     }
 }
