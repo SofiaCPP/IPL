@@ -2,9 +2,9 @@
 ---
 ## How to use
 1. `> flex Scheme.flex`
-2. `> g++ lex.yy.c -o lexer.out`
-3. `> lexer.out <scheme_file> <html_output_filename>`
-The output of the program will be located in `<html_output_filename>.html`.
+2. `> g++ AST.cpp lex.yy.c -o lexer.out`
+3. `> lexer.out <scheme_file>`
+The output of the program will be located in `output.html`.
 ---
 ### Notes
 Highlight support for all numeric Scheme types (complex, real, rational...), strings, comments, keywords, boolean values and identifiers. 

@@ -1,16 +1,17 @@
 %{
-#include<iostream>
-#include<cstring>
-#include "scheme2html.cpp"
-#define WHITESPACE 1
-#define COMMENT 2
-#define KEYWORD 3
-#define NUMBER 4
-#define IDENTIFIER 5
-#define UNKNOWN 6
-#define BOOLEAN 7
+#include <cstring>
+#include "scheme2html.hpp"
+#define WHITESPACE 1000
+#define COMMENT 2000
+#define KEYWORD 3000
+#define NUMBER 4000
+#define IDENTIFIER 5000
+#define UNKNOWN 6000
+#define TRUE 7000
+#define FALSE 8000
 %}
-BOOLEAN             (#t|#f)
+TRUE                (#t)
+FALSE               (#f)
 WHITESPACE          (" "|"\n")
 COMMENT             ;.*
 STRING              "([^"\\]|\\"|\\\\)*"
@@ -62,12 +63,15 @@ NUMBER_DECIMAL      ({PREFIX_DECIMAL})({COMPLEX_DECIMAL})
 NUMBER              ({NUMBER_BINARY})|({NUMBER_OCTAL})|({NUMBER_HEX})|({NUMBER_DECIMAL})
 UNKNOWN             (.)
 %%
-{BOOLEAN}           {return BOOLEAN;}
+{FALSE}             {return FALSE;}
+{TRUE}              {return TRUE;}
 {COMMENT}           {return COMMENT;}
 {KEYWORD}           {return KEYWORD;}
 {NUMBER}            {return NUMBER;}
 {WHITESPACE}        {return WHITESPACE;}
 {IDENTIFIER}        {return IDENTIFIER;}
+"("                 {return '(';}
+")"                 {return ')';}
 {UNKNOWN}           {return UNKNOWN;}
 %%
 
@@ -84,13 +88,16 @@ int main(int argc, char* argv[])
     else
             yyin = stdin;
     int tokenType;
-    char * file = strcat(argv[1], ".html");
-    FILE* out = fopen(file, "w");
-    fputs("<!DOCTYPE html>\n<html>\n<body>", out);
+    FILE* out = fopen("output.html", "w");
+    fputs("<!DOCTYPE html>\n<html>\n<head>\n", out);
+    fputs("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js\"></script>\n", out);
+    fputs("<script src=\"./click-service.js\"></script>", out);
+    fputs("</head><body style=\"background-color:#1e1e1e\">", out);
     while(tokenType = yylex())
     {
-        print_token(tokenType, yytext, out);
+        put_token(tokenType, yytext);
     }
+    print(out);
     fputs("</body>\n</html>", out);
     fclose(out);
 }
