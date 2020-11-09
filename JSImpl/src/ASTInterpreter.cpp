@@ -26,9 +26,9 @@ namespace
         {
             return d != 0.0;
         }
-        bool operator()(const IPLString&) const
+        bool operator()(const IPLString& s) const
         {
-            return true;
+            return !s.empty();
         }
     };
 
