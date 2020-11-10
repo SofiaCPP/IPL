@@ -3,7 +3,7 @@ solution 'JSImpl'
     flags {
         'FatalWarnings',
         'ExtraWarnings',
-        'Cpp14',
+        'Cpp17',
         'Symbols',
     }
     defines {
