@@ -1,5 +1,6 @@
 solution 'JSImpl'
     configurations {'Debug', 'Release'}
+    platforms { 'x32', 'x64' }
     flags {
         'FatalWarnings',
         'ExtraWarnings',
