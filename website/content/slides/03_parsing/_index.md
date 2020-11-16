@@ -523,5 +523,7 @@ Extend the xxx2html tool to:
    cyclomatic complexity ranging from light green to light read.
 3. Produce html where control structures can be collapsed.
 
+Do only one of these.
+
 ---
 # ?
