@@ -170,3 +170,69 @@ TEST(CodeGen, SimpleFor)
 
 	ASSERT_TRUE(asmb == expected);
 }
+
+TEST(CodeGen, EmptyObject)
+{
+	IPLString source = "var a = {}";
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
+	auto ast = Parse(tokens);
+	auto asmb = GenerateByteCode(ast, source,
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
+	IPLString expected = "0: push 2\n"
+						 "1: mov r0 r1\n"
+						 "2: pop 2\n"
+						 "3: halt\n";
+
+	ASSERT_TRUE(asmb == expected);
+}
+
+
+TEST(CodeGen, ObjectWithFlatProps)
+{
+	IPLString source = "var a = {a: 5, n: \"pesho\"}";
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
+	auto ast = Parse(tokens);
+	auto asmb = GenerateByteCode(ast, source,
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
+	IPLString expected = "0: push 6\n"
+						 "1: const r2 5.000000\n"
+						 "2: string r3 a\n"
+						 "3: set r1 r3 r2\n"
+						 "4: string r4 pesho\n"
+						 "5: string r5 n\n"
+						 "6: set r1 r5 r4\n"
+						 "7: mov r0 r1\n"
+						 "8: pop 6\n"
+						 "9: halt\n";
+
+	ASSERT_TRUE(asmb == expected);
+}
+
+TEST(CodeGen, NestedObjects)
+{
+	IPLString source = "var a = {a: 5, n: \"pesho\", obj1: {a: 4, b: 5}}\n";
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
+	auto ast = Parse(tokens);
+	auto asmb = GenerateByteCode(ast, source,
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
+	IPLString expected = "0: push 12\n"
+						 "1: const r2 5.000000\n"
+						 "2: string r3 a\n"
+						 "3: set r1 r3 r2\n"
+						 "4: string r4 pesho\n"
+						 "5: string r5 n\n"
+						 "6: set r1 r5 r4\n"
+						 "7: const r7 4.000000\n"
+						 "8: string r8 a\n"
+						 "9: set r6 r8 r7\n"
+						 "10: const r9 5.000000\n"
+						 "11: string r10 b\n"
+						 "12: set r6 r10 r9\n"
+						 "13: string r11 obj1\n"
+						 "14: set r1 r11 r6\n"
+						 "15: mov r0 r1\n"
+						 "16: pop 12\n"
+						 "17: halt\n";
+
+	ASSERT_TRUE(asmb == expected);
+}
