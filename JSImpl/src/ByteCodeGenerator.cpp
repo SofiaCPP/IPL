@@ -26,6 +26,7 @@ public:
 	virtual void Visit(LiteralField* e) override;
 	virtual void Visit(LiteralObject* e) override;
 	virtual void Visit(LiteralString* e) override;
+	virtual void Visit(MemberAccess* e) override;
 
 	IPLString GetCode();
 	unsigned ResolveRegisterName(IPLString& name);
@@ -483,6 +484,20 @@ void ByteCodeGenerator::Visit(LiteralString* e)
 	auto stringReg = CreateRegister();
 	PushInstruction(Instruction::Type::STRING, stringReg, e->GetValue());
 	m_RegisterStack.push(stringReg);
+}
+
+void ByteCodeGenerator::Visit(MemberAccess* e)
+{
+	auto objectReg = m_RegisterStack.top();
+	m_RegisterStack.pop();
+
+	auto identifierNameReg = CreateRegister();
+	PushInstruction(Instruction::Type::STRING, identifierNameReg, e->GetName());
+
+	auto resultReg = CreateRegister();
+	PushInstruction(Instruction::Type::GET, objectReg,  identifierNameReg, resultReg);
+
+	m_RegisterStack.push(resultReg);
 }
 
 unsigned ByteCodeGenerator::ResolveRegisterName(IPLString& name)

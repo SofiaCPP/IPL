@@ -420,9 +420,7 @@ ExpressionPtr Parser::CallExpressionHelper(NormalType a)
 	{
 		if (Match(TokenType::Identifier))
 		{
-			auto next = CallExpressionHelper(a);
-			// return  meaningfull expr
-			return nullptr;
+			return IPLMakeSharePtr<MemberAccess>(Prev().Lexeme);
 		}
 		// TODO error
 		return nullptr;

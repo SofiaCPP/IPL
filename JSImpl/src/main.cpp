@@ -76,11 +76,12 @@ void Generate()
 {
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
 	/*Tokenize("var a; if(a < 4) { a = 8; if(a < 7) {var b = 4;}} else { a = 2} ", tokens);*/
-	IPLString source =  "var i = 0; \n"
-						"for (var j = 0; j < 10; j++)\n"
-						"{\n"
-						"	i = i + j;\n"
-						"}";
+	//IPLString source =  "var i = 0; \n"
+	//					"for (var j = 0; j < 10; j++)\n"
+	//					"{\n"
+	//					"	i = i + j;\n"
+	//					"}";
+	IPLString source = "var a = {c: 3}; var k = a.c;\n";
 	auto tokens = Tokenize(source.c_str()).tokens;
 
 	auto asmb = GenerateByteCode(Parse(tokens), source,
@@ -231,13 +232,16 @@ private:
 
 int main(int argc, char* argv[])
 {
+	(void)argv;
+	(void)argc;
 	// You can try =>
 	// Working dir: $(ProjectDir)
 	// Command arguments: --input ./../examples/code.js --output ./../examples/some.ast --ast
-	CammandLineApp cmd;
-	cmd.RunAsCommandLine(argc, argv);
+	//CammandLineApp cmd;
+	//cmd.RunAsCommandLine(argc, argv);
 	//auto r = Tokenize("a#4", {true ,true});
 	//RunParseCalc();
+	Generate();
 #if defined(_WIN32)
 	//std::system("pause");
 #endif

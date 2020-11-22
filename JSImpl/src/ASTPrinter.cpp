@@ -130,7 +130,8 @@ public:
 	virtual void Visit(TopStatements* e) override;
 	virtual void Visit(EmptyExpression* e) override;
 	virtual void Visit(CallExpression* e) override;
-
+	virtual void Visit(MemberAccess* e) override;
+	
 	void Print( const char* name, const ExpressionPtr& expr, bool isLast);
 	void Print( const char* name, const IPLVector<ExpressionPtr>& list, bool isLast);
 	void Print( const char* name, const IPLVector<IPLString>& list, bool isLast);
