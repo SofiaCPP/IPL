@@ -81,7 +81,7 @@ void Generate()
 	//					"{\n"
 	//					"	i = i + j;\n"
 	//					"}";
-	IPLString source = "var a = {c: 3}; var k = a.c;\n";
+	IPLString source = "var a = {c: 3}; var k = a.c.t;\n";
 	auto tokens = Tokenize(source.c_str()).tokens;
 
 	auto asmb = GenerateByteCode(Parse(tokens), source,

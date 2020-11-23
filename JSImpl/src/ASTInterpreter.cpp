@@ -565,7 +565,7 @@ void ASTInterpreter::Visit(EmptyExpression* e) {
     NOT_IMPLEMENTED;
 }
 
-void ASTInterpreter::Visit(CallExpression* e)
+void ASTInterpreter::Visit(Call* e)
 {
     NOT_IMPLEMENTED;
 }

@@ -29,7 +29,7 @@ public:
 	virtual void Visit(FunctionDeclaration* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(TopStatements* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(EmptyExpression* e) { (void)e; NOT_IMPLEMENTED; }
-	virtual void Visit(CallExpression* e) { (void)e; NOT_IMPLEMENTED; }
+	virtual void Visit(Call* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(MemberAccess* e) { (void)e; NOT_IMPLEMENTED; }
 	
 	virtual void Visit(Expression* e) { (void)e; NOT_IMPLEMENTED; } // Unkown case
