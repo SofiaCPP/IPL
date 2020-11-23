@@ -22,6 +22,7 @@ public:
 	virtual void Visit(EmptyExpression* e) override { (void)e; }
 	virtual void Visit(IfStatement* e) override;
 	virtual void Visit(ForStatement* e) override;
+	virtual void Visit(WhileStatement* e) override;
 	virtual void Visit(UnaryExpression* e) override;
 	virtual void Visit(LiteralField* e) override;
 	virtual void Visit(LiteralObject* e) override;
@@ -348,6 +349,26 @@ void ByteCodeGenerator::Visit(ForStatement* e)
 	e->GetIteration()->Accept(*this);
 	PushInstruction(Instruction::Type::JMP, compareAddress);
 	m_Code[endAddress].Values.Address[0] = m_Code.size();
+}
+
+void ByteCodeGenerator::Visit(WhileStatement* e)
+{
+	auto compareAddress = m_Code.size();
+
+	if (e->GetDoWhile())
+	{
+		e->GetBody()->Accept(*this);
+		e->GetCondition()->Accept(*this);
+		PushInstruction(Instruction::Type::JMPT, m_RegisterStack.top(), compareAddress);
+	}
+	else {
+		e->GetCondition()->Accept(*this);
+		auto endAddress = PushInstruction(Instruction::Type::JMPF, m_RegisterStack.top(), (size_t)0);
+		m_RegisterStack.pop();
+		e->GetBody()->Accept(*this);
+		PushInstruction(Instruction::Type::JMP, compareAddress);
+		m_Code[endAddress].Values.Address[0] = m_Code.size();
+	}
 }
 
 void ByteCodeGenerator::Visit(IdentifierExpression* e)

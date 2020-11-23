@@ -283,3 +283,50 @@ TEST(CodeGen, ObjectSetter)
 	ASSERT_TRUE(asmb == expected);
 }
 
+
+TEST(CodeGen, BasicDoWhile)
+{
+	IPLString source = "var a = 5; do{ a--; }while(a != 0)\n";
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
+	auto ast = Parse(tokens);
+	auto asmb = GenerateByteCode(ast, source,
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
+	IPLString expected = "0: push 6\n"
+		"1: const r1 5.000000\n"
+		"2: mov r0 r1\n"
+		"3: const r2 1.000000\n"
+		"4: mov r3 r0\n"
+		"5: sub r0 r0 r2\n"
+		"6: const r4 0.000000\n"
+		"7: neq r5 r0 r4\n"
+		"8: jmpt r5 3\n"
+		"9: pop 6\n"
+		"10: halt\n";
+
+	ASSERT_TRUE(asmb == expected);
+}
+
+
+TEST(CodeGen, BasicWhile)
+{
+	IPLString source = "var a = 5; while(a != 0){ a--; }\n";
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
+	auto ast = Parse(tokens);
+	auto asmb = GenerateByteCode(ast, source,
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
+	IPLString expected = "0: push 6\n"
+		"1: const r1 5.000000\n"
+		"2: mov r0 r1\n"
+		"3: const r2 0.000000\n"
+		"4: neq r3 r0 r2\n"
+		"5: jmpf r3 10\n"
+		"6: const r4 1.000000\n"
+		"7: mov r5 r0\n"
+		"8: sub r0 r0 r4\n"
+		"9: jmp 3\n"
+		"10: pop 6\n"
+		"11: halt\n";
+
+	ASSERT_TRUE(asmb == expected);
+}
+
