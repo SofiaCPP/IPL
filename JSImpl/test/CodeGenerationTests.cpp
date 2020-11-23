@@ -260,3 +260,26 @@ TEST(CodeGen, ObjectGetters)
 
 	ASSERT_TRUE(asmb == expected);
 }
+
+TEST(CodeGen, ObjectSetter)
+{
+	IPLString source = "var a = {c: 3}; a.c = 5;\n";
+	IPLVector<Token> tokens = Tokenize(source.c_str()).tokens;
+	auto ast = Parse(tokens);
+	auto asmb = GenerateByteCode(ast, source,
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
+	IPLString expected = "0: push 7\n"
+		"1: const r2 3.000000\n"
+		"2: string r3 c\n"
+		"3: set r1 r3 r2\n"
+		"4: mov r0 r1\n"
+		"5: const r4 5.000000\n"
+		"6: string r5 c\n"
+		"7: get r0 r5 r6\n"
+		"8: mov r6 r4\n"
+		"9: pop 7\n"
+		"10: halt\n";
+
+	ASSERT_TRUE(asmb == expected);
+}
+
