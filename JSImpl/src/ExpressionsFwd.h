@@ -27,5 +27,7 @@ class TopStatements;
 class EmptyExpression;
 class Call;
 class MemberAccess;
+class Break;
+class Continue;
 
 using ExpressionPtr = IPLSharedPtr<Expression>;

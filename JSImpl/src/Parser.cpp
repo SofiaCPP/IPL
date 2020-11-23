@@ -1004,10 +1004,8 @@ ExpressionPtr Parser::ContinueStatement()
 {
 	if (Match(TokenType::Continue))
 	{
-		auto type = TokenType::Continue;
 		ExpressionPtr expr = OptionalLabel();
-		bool suffix = true;
-		return IPLMakeSharePtr<UnaryExpression>(expr, type, suffix);
+		return IPLMakeSharePtr<Continue>();
 	}
 	return nullptr;
 }
@@ -1016,10 +1014,8 @@ ExpressionPtr Parser::BreakStatement()
 {
 	if (Match(TokenType::Break))
 	{
-		auto type = TokenType::Break;
 		ExpressionPtr expr = OptionalLabel();
-		bool suffix = true;
-		return IPLMakeSharePtr<UnaryExpression>(expr, type, suffix);
+		return IPLMakeSharePtr<Break>();
 	}
 	return nullptr;
 }

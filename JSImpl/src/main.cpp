@@ -81,11 +81,11 @@ void Generate()
 	//					"{\n"
 	//					"	i = i + j;\n"
 	//					"}";
-	IPLString source = "var a = {c: 3}; var k = a.c.t;\n";
+	IPLString source = "var a = 5; do{ a--; if(a == 4) continue; }while(a != 0)\n";
 	auto tokens = Tokenize(source.c_str()).tokens;
 
 	auto asmb = GenerateByteCode(Parse(tokens), source,
-		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, true));
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
 
 	//sets the color to intense red on blue background
 #if defined(_WIN32)

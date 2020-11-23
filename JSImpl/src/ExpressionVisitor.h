@@ -26,6 +26,8 @@ public:
 	virtual void Visit(CaseStatement *e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(WhileStatement* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(ForStatement* e) { (void)e; NOT_IMPLEMENTED; }
+	virtual void Visit(Break* e) { (void)e; NOT_IMPLEMENTED; }
+	virtual void Visit(Continue* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(FunctionDeclaration* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(TopStatements* e) { (void)e; NOT_IMPLEMENTED; }
 	virtual void Visit(EmptyExpression* e) { (void)e; NOT_IMPLEMENTED; }

@@ -126,6 +126,8 @@ public:
 	virtual void Visit(CaseStatement *) override;
 	virtual void Visit(WhileStatement* e) override;
 	virtual void Visit(ForStatement* e) override;
+	virtual void Visit(Break* e) override;
+	virtual void Visit(Continue* e) override;
 	virtual void Visit(FunctionDeclaration* e) override;
 	virtual void Visit(TopStatements* e) override;
 	virtual void Visit(EmptyExpression* e) override;
