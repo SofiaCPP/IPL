@@ -55,5 +55,6 @@ int main()
     std::getline(std::cin, filename);
     std::ifstream file(filename);
     std::string code_str((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+    //
     Brainfuck().interpret(code_str.c_str(), std::cin, std::cout);
 }   
