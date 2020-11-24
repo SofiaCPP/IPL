@@ -1,5 +1,3 @@
-#include "brainfuck.h"
-
 #include <iostream>
 #include <fstream>
 #include <stack>
