@@ -23,6 +23,9 @@ public:
 	virtual void Visit(IfStatement* e) override;
 	virtual void Visit(ForStatement* e) override;
 	virtual void Visit(UnaryExpression* e) override;
+	virtual void Visit(LiteralField* e) override;
+	virtual void Visit(LiteralObject* e) override;
+	virtual void Visit(LiteralString* e) override;
 
 	IPLString GetCode();
 	unsigned ResolveRegisterName(IPLString& name);
@@ -447,6 +450,41 @@ void ByteCodeGenerator::Visit(UnaryExpression* e)
 	}
 }
 
+void ByteCodeGenerator::Visit(LiteralField* e)
+{
+	e->GetValue()->Accept(*this);
+	e->GetIdentifier()->Accept(*this);
+}
+
+void ByteCodeGenerator::Visit(LiteralObject* e)
+{
+	auto initialSize = m_RegisterStack.size();
+	auto objReg = CreateRegister();
+
+	for (const auto& field : e->GetValues())
+	{
+		field->Accept(*this);
+		auto fieldName = m_RegisterStack.top();
+		m_RegisterStack.pop();
+
+		auto fieldNameReg = CreateRegister();
+		PushInstruction(Instruction::Type::STRING, fieldNameReg, fieldName);
+
+		auto valueReg = m_RegisterStack.top();
+		m_RegisterStack.pop();
+		PushInstruction(Instruction::Type::SET, objReg, fieldNameReg, valueReg);
+	}
+	assert(m_RegisterStack.size() == initialSize);
+	m_RegisterStack.push(objReg);
+}
+
+void ByteCodeGenerator::Visit(LiteralString* e)
+{
+	auto stringReg = CreateRegister();
+	PushInstruction(Instruction::Type::STRING, stringReg, e->GetValue());
+	m_RegisterStack.push(stringReg);
+}
+
 unsigned ByteCodeGenerator::ResolveRegisterName(IPLString& name)
 {
 	auto it = std::find_if(m_RegisterTable.begin(), m_RegisterTable.end(), [&](IPLString& current) {
@@ -592,20 +630,22 @@ IPLString ByteCodeGenerator::GetCode()
 			NOT_IMPLEMENTED;
 			break;
 		case ByteCodeGenerator::Instruction::GET:
-			result += "get";
-			NOT_IMPLEMENTED;
+			result += "get r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::SET:
-			result += "set";
-			NOT_IMPLEMENTED;
+			result += "set r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::INC:
-			result += "inc";
-			NOT_IMPLEMENTED;
+			result += "inc r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(i.Values.Int[0]) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::DEC:
-			result += "dec";
-			NOT_IMPLEMENTED;
+			result += "dec r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(i.Values.Int[0]) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::AND:
 			result += "and r" + std::to_string(ResolveRegisterName(i.Args[0]))
@@ -623,7 +663,8 @@ IPLString ByteCodeGenerator::GetCode()
 				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::NOT:
-			result += "not";
+			result += "not r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1])) + '\n';
 			NOT_IMPLEMENTED;
 			break;
 		case ByteCodeGenerator::Instruction::THROW:
@@ -638,8 +679,7 @@ IPLString ByteCodeGenerator::GetCode()
 			result += "const r" + std::to_string(ResolveRegisterName(i.Args[0])) + " " + std::to_string(i.Values.Double[0]) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::STRING:
-			result += "string";
-			NOT_IMPLEMENTED;
+			result += "string r" + std::to_string(ResolveRegisterName(i.Args[0])) + " " + i.Args[1] + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::HALT:
 			result += "halt\n";
