@@ -38,7 +38,7 @@ public:
     virtual void Visit(FunctionDeclaration* e) override;
     virtual void Visit(TopStatements* e) override;
     virtual void Visit(EmptyExpression* e) override;
-    virtual void Visit(CallExpression* e) override;
+    virtual void Visit(Call* e) override;
 
     ValuePtr& ModifyVariable(const IPLString& name);
     bool HasVariable(const IPLString& name);

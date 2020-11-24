@@ -23,6 +23,7 @@ private:
 
 	bool MatchOneOf(IPLVector<TokenType> types);
 	bool Match(TokenType type);
+	bool Peek(TokenType type);
 	ExpressionPtr RegularExpression();
 	ExpressionPtr ParenthesizedExpression();
 	ExpressionPtr PrimaryExpression(NormalType a);
@@ -123,6 +124,11 @@ bool Parser::Match(TokenType type)
 		return true;
 	}
 	return false;
+}
+
+bool Parser::Peek(TokenType type)
+{
+	return type == m_Tokens[m_Current].Type;
 }
 
 ExpressionPtr Parser::RegularExpression()
@@ -383,23 +389,32 @@ ExpressionPtr Parser::LeftSideExpression(NormalType a)
 ExpressionPtr Parser::CallExpression(NormalType a)
 {
 	ExpressionPtr result;
+
 	auto ss = Snapshot();
-	if (result = PrimaryExpression(a))
+	if (auto pe = PrimaryExpression(a))
 	{
-		return result;
+		result = IPLMakeSharePtr<Call>(pe);
 	}
-	Restore(ss);
-	if (result = FullNewExpression())
+	else
 	{
-		return result;
+		Restore(ss);
+	}
+	if (auto fne = FullNewExpression())
+	{
+		result = IPLMakeSharePtr<::Call>(fne);
 	}
 
-	if (result = CallExpressionHelper(a))
+	ExpressionPtr right;
+	do
 	{
-		return result;
-	}
-	// TODO error
-	return nullptr;
+		right = CallExpressionHelper(a);
+		if (right)
+		{
+			result = IPLMakeSharePtr<::Call>(result, right);
+		}
+	} while (right);
+
+	return result;
 }
 
 ExpressionPtr Parser::CallExpressionHelper(NormalType a)
@@ -420,9 +435,7 @@ ExpressionPtr Parser::CallExpressionHelper(NormalType a)
 	{
 		if (Match(TokenType::Identifier))
 		{
-			auto next = CallExpressionHelper(a);
-			// return  meaningfull expr
-			return nullptr;
+			return IPLMakeSharePtr<MemberAccess>(Prev().Lexeme);
 		}
 		// TODO error
 		return nullptr;
@@ -991,10 +1004,8 @@ ExpressionPtr Parser::ContinueStatement()
 {
 	if (Match(TokenType::Continue))
 	{
-		auto type = TokenType::Continue;
 		ExpressionPtr expr = OptionalLabel();
-		bool suffix = true;
-		return IPLMakeSharePtr<UnaryExpression>(expr, type, suffix);
+		return IPLMakeSharePtr<Continue>();
 	}
 	return nullptr;
 }
@@ -1003,10 +1014,8 @@ ExpressionPtr Parser::BreakStatement()
 {
 	if (Match(TokenType::Break))
 	{
-		auto type = TokenType::Break;
 		ExpressionPtr expr = OptionalLabel();
-		bool suffix = true;
-		return IPLMakeSharePtr<UnaryExpression>(expr, type, suffix);
+		return IPLMakeSharePtr<Break>();
 	}
 	return nullptr;
 }

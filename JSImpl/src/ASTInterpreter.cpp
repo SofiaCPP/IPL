@@ -240,6 +240,7 @@ public:
     }
 
     virtual void Visit(IdentifierExpression* e) override { m_LValue = m_Interpreter->ModifyVariable(e->GetName()); }
+    virtual void Visit(Call* e) override { e->GetObjectOrCall()->Accept(*this); }
 
     ASTInterpreter* m_Interpreter;
     ASTInterpreter::ValuePtr m_LValue;
@@ -565,9 +566,13 @@ void ASTInterpreter::Visit(EmptyExpression* e) {
     NOT_IMPLEMENTED;
 }
 
-void ASTInterpreter::Visit(CallExpression* e)
+void ASTInterpreter::Visit(Call* e)
 {
-    NOT_IMPLEMENTED;
+    e->GetObjectOrCall()->Accept(*this);
+    if (e->GetMember())
+    {
+        e->GetMember()->Accept(*this);
+    }
 }
 
 void ASTInterpreter::Print(Printer& p)

@@ -76,15 +76,16 @@ void Generate()
 {
 	//Tokenize("var a = 0;  var b = a + 123;a+b;", tokens);
 	/*Tokenize("var a; if(a < 4) { a = 8; if(a < 7) {var b = 4;}} else { a = 2} ", tokens);*/
-	IPLString source =  "var i = 0; \n"
-						"for (var j = 0; j < 10; j++)\n"
-						"{\n"
-						"	i = i + j;\n"
-						"}";
+	//IPLString source =  "var i = 0; \n"
+	//					"for (var j = 0; j < 10; j++)\n"
+	//					"{\n"
+	//					"	i = i + j;\n"
+	//					"}";
+	IPLString source = "var a = 5; do{ a--; if(a == 4) continue; }while(a != 0)\n";
 	auto tokens = Tokenize(source.c_str()).tokens;
 
 	auto asmb = GenerateByteCode(Parse(tokens), source,
-		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, true));
+		ByteCodeGeneratorOptions(ByteCodeGeneratorOptions::OptimizationsType::None, false));
 
 	//sets the color to intense red on blue background
 #if defined(_WIN32)
@@ -231,13 +232,16 @@ private:
 
 int main(int argc, char* argv[])
 {
+	(void)argv;
+	(void)argc;
 	// You can try =>
 	// Working dir: $(ProjectDir)
 	// Command arguments: --input ./../examples/code.js --output ./../examples/some.ast --ast
-	CammandLineApp cmd;
-	cmd.RunAsCommandLine(argc, argv);
+	//CammandLineApp cmd;
+	//cmd.RunAsCommandLine(argc, argv);
 	//auto r = Tokenize("a#4", {true ,true});
 	//RunParseCalc();
+	Generate();
 #if defined(_WIN32)
 	//std::system("pause");
 #endif

@@ -25,6 +25,9 @@ class ForStatement;
 class FunctionDeclaration;
 class TopStatements;
 class EmptyExpression;
-class CallExpression;
+class Call;
+class MemberAccess;
+class Break;
+class Continue;
 
 using ExpressionPtr = IPLSharedPtr<Expression>;

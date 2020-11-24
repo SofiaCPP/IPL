@@ -126,11 +126,14 @@ public:
 	virtual void Visit(CaseStatement *) override;
 	virtual void Visit(WhileStatement* e) override;
 	virtual void Visit(ForStatement* e) override;
+	virtual void Visit(Break* e) override;
+	virtual void Visit(Continue* e) override;
 	virtual void Visit(FunctionDeclaration* e) override;
 	virtual void Visit(TopStatements* e) override;
 	virtual void Visit(EmptyExpression* e) override;
-	virtual void Visit(CallExpression* e) override;
-
+	virtual void Visit(Call* e) override;
+	virtual void Visit(MemberAccess* e) override;
+	
 	void Print( const char* name, const ExpressionPtr& expr, bool isLast);
 	void Print( const char* name, const IPLVector<ExpressionPtr>& list, bool isLast);
 	void Print( const char* name, const IPLVector<IPLString>& list, bool isLast);
