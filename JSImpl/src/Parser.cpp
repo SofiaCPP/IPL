@@ -140,7 +140,8 @@ ExpressionPtr Parser::PrimaryExpression(NormalType a)
 {
 	if (a == NormalType::Initial)
 	{
-		return SimpleExpression();
+		auto simple = SimpleExpression();
+		return simple;
 	}
 
 	if (auto simple = SimpleExpression())
@@ -682,9 +683,11 @@ ExpressionPtr Parser::ConditionalExpression(NormalType a, AllowType b)
 	if (Match(TokenType::QuestionMark))
 	{
 		auto trueExpr= AssignmentExpression(NormalType::Normal, b);
+		(void)trueExpr;
 		if (Match(TokenType::Colon))
 		{
 			auto falseExpr = AssignmentExpression(NormalType::Normal, b);
+			(void)falseExpr;
 			// TODO implement trinary operator
 			assert(false);
 			return ExpressionPtr();
