@@ -38,14 +38,17 @@ class Expression : public IPLEnableShared<Expression>
 		public:                                                                \
 		ClassName(MEMBERS_ITERATOR(EXPAND_ARGUMENT) bool __dummy = 0)          \
 		:                                                                      \
-		MEMBERS_ITERATOR(EXPAND_INITIALIZER_LIST) m_dummy(__dummy) {}          \
+		MEMBERS_ITERATOR(EXPAND_INITIALIZER_LIST) m_dummy(__dummy)             \
+		{                                                                      \
+			(void)m_dummy; /* silence warning about unused private field */    \
+		}                                                                      \
 		virtual ~ClassName() {}                                                \
 		virtual void Accept(ExpressionVisitor& v) override { v.Visit(this); }  \
                                                                                \
 		MEMBERS_ITERATOR(GENERATE_GETTERS)                                     \
 		private:                                                               \
 		MEMBERS_ITERATOR(GENERATE_MEMBER_DEFINITIONS)                          \
-		bool m_dummy;                                                          \
+		bool m_dummy; /* NOLINT */                                             \
 	};
 
 EXPRESSION_DEFINITION_ITERATOR(GENERATE_EXPRESSION);

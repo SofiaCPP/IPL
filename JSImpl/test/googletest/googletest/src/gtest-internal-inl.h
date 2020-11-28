@@ -152,7 +152,7 @@ inline int GetNextRandomSeed(int seed) {
 
 // This class saves the values of all Google Test flags in its c'tor, and
 // restores them in its d'tor.
-class GTestFlagSaver {
+class GTestFlagSaver { // NOLINT - lots of padding
  public:
   // The c'tor.
   GTestFlagSaver() {
