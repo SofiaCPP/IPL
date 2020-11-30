@@ -1,9 +1,14 @@
 solution 'JSImpl'
-    configurations {'Debug', 'Release'}
+    if _ACTION ~= 'jcdb' then
+        platforms { 'x32', 'x64' }
+        configurations {'Debug', 'Release'}
+    else
+        configurations {'Debug'}
+    end
     flags {
         'FatalWarnings',
         'ExtraWarnings',
-        'Cpp14',
+        'Cpp17',
         'Symbols',
     }
     defines {

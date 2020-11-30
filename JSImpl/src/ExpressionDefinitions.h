@@ -79,8 +79,13 @@
 		MACRO(IPLVector<ExpressionPtr>, Values, IPLVector<ExpressionPtr>())
 
 #define CALL_EXPRESSION_MEMBERS(MACRO)\
-		MACRO(ExpressionPtr, Identifier, ExpressionPtr())\
-		MACRO(ExpressionPtr, Arguments, ExpressionPtr())
+		MACRO(ExpressionPtr, ObjectOrCall, ExpressionPtr())\
+		MACRO(ExpressionPtr, Member, ExpressionPtr())
+
+#define MEMBER_ACCESS_EXPRESSION_MEMBERS(MACRO)\
+		MACRO(IPLString, Name, "")
+
+#define MEMBER_NO_MEMBERS(MACRO)
 
 #define EXPRESSION_DEFINITION_ITERATOR(MACRO)\
 		MACRO(LiteralNull, NO_MEMBERS)\
@@ -105,4 +110,7 @@
 		MACRO(FunctionDeclaration, FUNCTION_EXPRESSION_MEMBERS)\
 		MACRO(TopStatements, TOP_EXPRESSION_MEMBERS)\
 		MACRO(EmptyExpression, NO_MEMBERS)\
-		MACRO(CallExpression, CALL_EXPRESSION_MEMBERS)
+		MACRO(Call, CALL_EXPRESSION_MEMBERS)\
+		MACRO(MemberAccess, MEMBER_ACCESS_EXPRESSION_MEMBERS)\
+		MACRO(Break, MEMBER_NO_MEMBERS)\
+		MACRO(Continue, MEMBER_NO_MEMBERS)

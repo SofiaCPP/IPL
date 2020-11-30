@@ -22,7 +22,15 @@ public:
 	virtual void Visit(EmptyExpression* e) override { (void)e; }
 	virtual void Visit(IfStatement* e) override;
 	virtual void Visit(ForStatement* e) override;
+	virtual void Visit(WhileStatement* e) override;
+	virtual void Visit(Break* e) override;
+	virtual void Visit(Continue* e) override;
 	virtual void Visit(UnaryExpression* e) override;
+	virtual void Visit(LiteralField* e) override;
+	virtual void Visit(LiteralObject* e) override;
+	virtual void Visit(LiteralString* e) override;
+	virtual void Visit(MemberAccess* e) override;
+	virtual void Visit(Call* e) override;
 
 	IPLString GetCode();
 	unsigned ResolveRegisterName(IPLString& name);
@@ -98,14 +106,60 @@ private:
 	void PushConst(double c);
 	IPLString CreateRegister();
 	bool CheckOpCode(int opcode) { return opcode >= Instruction::Type::FIRST && opcode <= Instruction::Type::LAST; }
+
+	void OpenBreakScope() { m_BreakScopeStack.push(IPLVector<size_t>()); };
+	void OpenContinueScope() { m_ContinueScopeStack.push(IPLVector<size_t>()); };
+	void CloseBreakScope(size_t addr);
+	void CloseContinueScope(size_t addr);
+	void PushBreak();
+	void PushContinue();
 private:
 	IPLVector<IPLString> m_RegisterTable;
 	IPLVector<Instruction> m_Code;
 	IPLVector<IPLString> m_Source;
 
+	IPLStack<IPLVector<size_t>> m_BreakScopeStack;
+	IPLStack<IPLVector<size_t>> m_ContinueScopeStack;
+
 	IPLStack<IPLString> m_RegisterStack;
 	IPLString m_OutputCode;
 	ByteCodeGeneratorOptions m_Options;
+};
+
+void ByteCodeGenerator::PushBreak()
+{
+	assert(!m_BreakScopeStack.empty());
+	auto addr = PushInstruction(Instruction::Type::JMP, 0);
+	m_BreakScopeStack.top().push_back(addr);
+}
+
+void ByteCodeGenerator::PushContinue()
+{
+	assert(!m_ContinueScopeStack.empty());
+	auto addr = PushInstruction(Instruction::Type::JMP, 0);
+	m_ContinueScopeStack.top().push_back(addr);
+}
+
+void ByteCodeGenerator::CloseBreakScope(size_t addr)
+{
+	auto currentScope = m_BreakScopeStack.top();
+	for (const auto& br : currentScope)
+	{
+		assert(m_Code[br].Descriptor == Instruction::Type::JMP);
+		m_Code[br].Values.Address[0] = addr;
+	}
+	m_BreakScopeStack.pop();
+};
+
+void ByteCodeGenerator::CloseContinueScope(size_t addr)
+{
+	auto currentScope = m_ContinueScopeStack.top();
+	for (const auto& br : currentScope)
+	{
+		assert(m_Code[br].Descriptor == Instruction::Type::JMP);
+		m_Code[br].Values.Address[0] = addr;
+	}
+	m_ContinueScopeStack.pop();
 };
 
 size_t ByteCodeGenerator::PushInstruction(Instruction::Type opcode, const IPLString& arg0, const IPLString& arg1, const IPLString& arg2)
@@ -334,15 +388,60 @@ void ByteCodeGenerator::Visit(IfStatement* e)
 
 void ByteCodeGenerator::Visit(ForStatement* e)
 {
+	OpenBreakScope();
+	OpenContinueScope();
+
 	e->GetInitialization()->Accept(*this);
 	auto compareAddress = m_Code.size();
 	e->GetCondition()->Accept(*this);
 	auto endAddress = PushInstruction(Instruction::Type::JMPF, m_RegisterStack.top(), (size_t)0);
 	m_RegisterStack.pop();
 	e->GetBody()->Accept(*this);
+
+	auto iterationAddress = m_Code.size();
 	e->GetIteration()->Accept(*this);
+	
 	PushInstruction(Instruction::Type::JMP, compareAddress);
 	m_Code[endAddress].Values.Address[0] = m_Code.size();
+
+	CloseBreakScope(m_Code.size());
+	CloseContinueScope(iterationAddress);
+}
+
+void ByteCodeGenerator::Visit(WhileStatement* e)
+{
+	auto startAddress = m_Code.size();
+
+	OpenBreakScope();
+	OpenContinueScope();
+
+	if (e->GetDoWhile())
+	{
+		e->GetBody()->Accept(*this);
+		e->GetCondition()->Accept(*this);
+		PushInstruction(Instruction::Type::JMPT, m_RegisterStack.top(), startAddress);
+	}
+	else {
+		e->GetCondition()->Accept(*this);
+		auto endAddress = PushInstruction(Instruction::Type::JMPF, m_RegisterStack.top(), (size_t)0);
+		m_RegisterStack.pop();
+		e->GetBody()->Accept(*this);
+		PushInstruction(Instruction::Type::JMP, startAddress);
+		m_Code[endAddress].Values.Address[0] = m_Code.size();
+	}
+
+	CloseBreakScope(m_Code.size());
+	CloseContinueScope(startAddress);
+}
+
+void ByteCodeGenerator::Visit(Break*)
+{
+	PushBreak();
+}
+
+void ByteCodeGenerator::Visit(Continue*)
+{
+	PushContinue();
 }
 
 void ByteCodeGenerator::Visit(IdentifierExpression* e)
@@ -445,6 +544,64 @@ void ByteCodeGenerator::Visit(UnaryExpression* e)
 			break;
 		}
 	}
+}
+
+void ByteCodeGenerator::Visit(LiteralField* e)
+{
+	e->GetValue()->Accept(*this);
+	e->GetIdentifier()->Accept(*this);
+}
+
+void ByteCodeGenerator::Visit(LiteralObject* e)
+{
+	auto initialSize = m_RegisterStack.size();
+	auto objReg = CreateRegister();
+
+	for (const auto& field : e->GetValues())
+	{
+		field->Accept(*this);
+		auto fieldName = m_RegisterStack.top();
+		m_RegisterStack.pop();
+
+		auto fieldNameReg = CreateRegister();
+		PushInstruction(Instruction::Type::STRING, fieldNameReg, fieldName);
+
+		auto valueReg = m_RegisterStack.top();
+		m_RegisterStack.pop();
+		PushInstruction(Instruction::Type::SET, objReg, fieldNameReg, valueReg);
+	}
+	assert(m_RegisterStack.size() == initialSize);
+	m_RegisterStack.push(objReg);
+}
+
+void ByteCodeGenerator::Visit(LiteralString* e)
+{
+	auto stringReg = CreateRegister();
+	PushInstruction(Instruction::Type::STRING, stringReg, e->GetValue());
+	m_RegisterStack.push(stringReg);
+}
+
+void ByteCodeGenerator::Visit(Call* e)
+{
+	e->GetObjectOrCall()->Accept(*this);
+	if (e->GetMember())
+	{
+		e->GetMember()->Accept(*this);
+	}
+}
+
+void ByteCodeGenerator::Visit(MemberAccess* e)
+{
+	auto objectReg = m_RegisterStack.top();
+	m_RegisterStack.pop();
+
+	auto identifierNameReg = CreateRegister();
+	PushInstruction(Instruction::Type::STRING, identifierNameReg, e->GetName());
+
+	auto resultReg = CreateRegister();
+	PushInstruction(Instruction::Type::GET, objectReg,  identifierNameReg, resultReg);
+
+	m_RegisterStack.push(resultReg);
 }
 
 unsigned ByteCodeGenerator::ResolveRegisterName(IPLString& name)
@@ -592,20 +749,22 @@ IPLString ByteCodeGenerator::GetCode()
 			NOT_IMPLEMENTED;
 			break;
 		case ByteCodeGenerator::Instruction::GET:
-			result += "get";
-			NOT_IMPLEMENTED;
+			result += "get r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::SET:
-			result += "set";
-			NOT_IMPLEMENTED;
+			result += "set r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::INC:
-			result += "inc";
-			NOT_IMPLEMENTED;
+			result += "inc r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(i.Values.Int[0]) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::DEC:
-			result += "dec";
-			NOT_IMPLEMENTED;
+			result += "dec r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(i.Values.Int[0]) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::AND:
 			result += "and r" + std::to_string(ResolveRegisterName(i.Args[0]))
@@ -623,7 +782,8 @@ IPLString ByteCodeGenerator::GetCode()
 				+ " r" + std::to_string(ResolveRegisterName(i.Args[2])) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::NOT:
-			result += "not";
+			result += "not r" + std::to_string(ResolveRegisterName(i.Args[0]))
+				+ " r" + std::to_string(ResolveRegisterName(i.Args[1])) + '\n';
 			NOT_IMPLEMENTED;
 			break;
 		case ByteCodeGenerator::Instruction::THROW:
@@ -638,8 +798,7 @@ IPLString ByteCodeGenerator::GetCode()
 			result += "const r" + std::to_string(ResolveRegisterName(i.Args[0])) + " " + std::to_string(i.Values.Double[0]) + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::STRING:
-			result += "string";
-			NOT_IMPLEMENTED;
+			result += "string r" + std::to_string(ResolveRegisterName(i.Args[0])) + " " + i.Args[1] + '\n';
 			break;
 		case ByteCodeGenerator::Instruction::HALT:
 			result += "halt\n";

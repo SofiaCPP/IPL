@@ -2,6 +2,8 @@
 
 #include "ExpressionVisitor.h"
 
+#include <variant>
+
 class ASTInterpreter : public ExpressionVisitor
 {
 public:
@@ -9,10 +11,9 @@ public:
     ~ASTInterpreter();
 
 
-    // TODO: Changing this to a shared_ptr<Value> (or GC-enabled value*) will
-    // allow for much simpler implementation of all varible assignments.
-    typedef double value_type;
-    typedef IPLVector<value_type> ValueStack;
+    typedef std::variant<double, IPLString> Value;
+    typedef IPLSharedPtr<Value> ValuePtr;
+    typedef IPLVector<ValuePtr> ValueStack;
 
     ValueStack Run(Expression* program);
 
@@ -37,15 +38,16 @@ public:
     virtual void Visit(FunctionDeclaration* e) override;
     virtual void Visit(TopStatements* e) override;
     virtual void Visit(EmptyExpression* e) override;
-    virtual void Visit(CallExpression* e) override;
+    virtual void Visit(Call* e) override;
 
-    value_type& ModifyVariable(const IPLString& name);
+    ValuePtr& ModifyVariable(const IPLString& name);
     bool HasVariable(const IPLString& name);
 
 	class Printer
 	{
 	public:
 		virtual void PrintVariable(const char* name, double value) = 0;
+		virtual void PrintVariable(const char* name, const IPLString& value) = 0;
 	};
 
     void Print(Printer& p);

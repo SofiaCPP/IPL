@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
-MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spasm", "Spasm", "{9892E17D-8434-0C54-6DEF-1FA8593093A4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gtest", "gtest", "{1BAF0A7D-0751-3553-F00B-49A7DC4CBCA3}"
@@ -148,8 +146,5 @@ Global
 		{AE0A9E7C-9A41-9F0D-432E-85102F441B0F} = {9892E17D-8434-0C54-6DEF-1FA8593093A4}
 		{3F16CDE1-AB80-8158-F4BE-32FE60685FAD} = {9892E17D-8434-0C54-6DEF-1FA8593093A4}
 		{69185F10-D52C-87C1-9EAE-2A210A8283F2} = {9892E17D-8434-0C54-6DEF-1FA8593093A4}
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B9E3E8B3-5BA4-4521-B598-F1EF432D2126}
 	EndGlobalSection
 EndGlobal

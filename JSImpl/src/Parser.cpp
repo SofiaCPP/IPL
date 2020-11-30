@@ -23,6 +23,7 @@ private:
 
 	bool MatchOneOf(IPLVector<TokenType> types);
 	bool Match(TokenType type);
+	bool Peek(TokenType type);
 	ExpressionPtr RegularExpression();
 	ExpressionPtr ParenthesizedExpression();
 	ExpressionPtr PrimaryExpression(NormalType a);
@@ -125,6 +126,11 @@ bool Parser::Match(TokenType type)
 	return false;
 }
 
+bool Parser::Peek(TokenType type)
+{
+	return type == m_Tokens[m_Current].Type;
+}
+
 ExpressionPtr Parser::RegularExpression()
 {
 	return nullptr;
@@ -134,7 +140,8 @@ ExpressionPtr Parser::PrimaryExpression(NormalType a)
 {
 	if (a == NormalType::Initial)
 	{
-		return SimpleExpression();
+		auto simple = SimpleExpression();
+		return simple;
 	}
 
 	if (auto simple = SimpleExpression())
@@ -320,7 +327,11 @@ ExpressionPtr Parser::SimpleExpression()
 	}
 	else if (Match(TokenType::String))
 	{
-		return IPLMakeSharePtr<LiteralString>(Prev().Lexeme);
+		const auto& lexeme = Prev().Lexeme;
+		const auto length = lexeme.length();
+		assert(length >= 2);
+		auto value = lexeme.substr(1, length-2);
+		return IPLMakeSharePtr<LiteralString>(value);
 	}
 	else if (Match(TokenType::Null))
 	{
@@ -363,12 +374,12 @@ ExpressionPtr Parser::LeftSideExpression(NormalType a)
 {
 	ExpressionPtr result;
 	auto ss = Snapshot();
-	if (result = CallExpression(a))
+	if ((result = CallExpression(a)))
 	{
 		return result;
 	}
 	Restore(ss);
-	if (result = ShortNewExpression())
+	if ((result = ShortNewExpression()))
 	{
 		return result;
 	}
@@ -379,23 +390,32 @@ ExpressionPtr Parser::LeftSideExpression(NormalType a)
 ExpressionPtr Parser::CallExpression(NormalType a)
 {
 	ExpressionPtr result;
+
 	auto ss = Snapshot();
-	if (result = PrimaryExpression(a))
+	if (auto pe = PrimaryExpression(a))
 	{
-		return result;
+		result = IPLMakeSharePtr<Call>(pe);
 	}
-	Restore(ss);
-	if (result = FullNewExpression())
+	else
 	{
-		return result;
+		Restore(ss);
+	}
+	if (auto fne = FullNewExpression())
+	{
+		result = IPLMakeSharePtr<::Call>(fne);
 	}
 
-	if (result = CallExpressionHelper(a))
+	ExpressionPtr right;
+	do
 	{
-		return result;
-	}
-	// TODO error
-	return nullptr;
+		right = CallExpressionHelper(a);
+		if (right)
+		{
+			result = IPLMakeSharePtr<::Call>(result, right);
+		}
+	} while (right);
+
+	return result;
 }
 
 ExpressionPtr Parser::CallExpressionHelper(NormalType a)
@@ -416,9 +436,7 @@ ExpressionPtr Parser::CallExpressionHelper(NormalType a)
 	{
 		if (Match(TokenType::Identifier))
 		{
-			auto next = CallExpressionHelper(a);
-			// return  meaningfull expr
-			return nullptr;
+			return IPLMakeSharePtr<MemberAccess>(Prev().Lexeme);
 		}
 		// TODO error
 		return nullptr;
@@ -447,12 +465,12 @@ ExpressionPtr Parser::ShortNewSubexpression()
 {
 	ExpressionPtr result;
 	auto ss = Snapshot();
-	if (result = FullNewSubexpression())
+	if ((result = FullNewSubexpression()))
 	{
 		return result;
 	}
 	Restore(ss);
-	if (result = ShortNewExpression())
+	if ((result = ShortNewExpression()))
 	{
 		return result;
 	}
@@ -473,7 +491,7 @@ ExpressionPtr Parser::FullNewExpression()
 ExpressionPtr Parser::FullNewSubexpression()
 {
 	ExpressionPtr result;
-	if (result = PrimaryExpression(NormalType::Normal))
+	if ((result = PrimaryExpression(NormalType::Normal)))
 	{
 		return result;
 	}
@@ -665,9 +683,11 @@ ExpressionPtr Parser::ConditionalExpression(NormalType a, AllowType b)
 	if (Match(TokenType::QuestionMark))
 	{
 		auto trueExpr= AssignmentExpression(NormalType::Normal, b);
+		(void)trueExpr;
 		if (Match(TokenType::Colon))
 		{
 			auto falseExpr = AssignmentExpression(NormalType::Normal, b);
+			(void)falseExpr;
 			// TODO implement trinary operator
 			assert(false);
 			return ExpressionPtr();
@@ -747,22 +767,22 @@ ExpressionPtr Parser::Expression(NormalType a, AllowType b)
 ExpressionPtr Parser::Statement()
 {
 	ExpressionPtr result;
-	if (result = EmptyStatement()) return result;
-	if (result = Expression(NormalType::Initial, AllowType::AllowIn)) return result;
-	if (result = VariableDefinition(AllowType::AllowIn)) return result;
-	if (result = Block()) return result;
-	if (result = LabeledStatement()) return result;
-	if (result = IfStatementfull()) return result;
-	if (result = SwitchStatement()) return result;
-	if (result = DoStatement()) return result;
-	if (result = WhileStatement()) return result;
-	if (result = ForStatement()) return result;
-	if (result = WithStatement()) return result;
-	if (result = ContinueStatement()) return result;
-	if (result = BreakStatement()) return result;
-	if (result = OptionalLabel()) return result;
-	if (result = ReturnStatement()) return result;
-	if (result = TryStatement()) return result;
+	if ((result = EmptyStatement())) return result;
+	if ((result = Expression(NormalType::Initial, AllowType::AllowIn))) return result;
+	if ((result = VariableDefinition(AllowType::AllowIn))) return result;
+	if ((result = Block())) return result;
+	if ((result = LabeledStatement())) return result;
+	if ((result = IfStatementfull())) return result;
+	if ((result = SwitchStatement())) return result;
+	if ((result = DoStatement())) return result;
+	if ((result = WhileStatement())) return result;
+	if ((result = ForStatement())) return result;
+	if ((result = WithStatement())) return result;
+	if ((result = ContinueStatement())) return result;
+	if ((result = BreakStatement())) return result;
+	if ((result = OptionalLabel())) return result;
+	if ((result = ReturnStatement())) return result;
+	if ((result = TryStatement())) return result;
 	return result;
 }
 
@@ -987,10 +1007,8 @@ ExpressionPtr Parser::ContinueStatement()
 {
 	if (Match(TokenType::Continue))
 	{
-		auto type = TokenType::Continue;
 		ExpressionPtr expr = OptionalLabel();
-		bool suffix = true;
-		return IPLMakeSharePtr<UnaryExpression>(expr, type, suffix);
+		return IPLMakeSharePtr<Continue>();
 	}
 	return nullptr;
 }
@@ -999,10 +1017,8 @@ ExpressionPtr Parser::BreakStatement()
 {
 	if (Match(TokenType::Break))
 	{
-		auto type = TokenType::Break;
 		ExpressionPtr expr = OptionalLabel();
-		bool suffix = true;
-		return IPLMakeSharePtr<UnaryExpression>(expr, type, suffix);
+		return IPLMakeSharePtr<Break>();
 	}
 	return nullptr;
 }
