@@ -342,10 +342,11 @@ How to handle vararg functions?
 #### Code generators
 
 - [LLVM](https://llvm.org/docs/ORCv2.html)
+- [PeachPy](https://pypi.org/project/PeachPy/)
+- [DynASM](https://corsix.github.io/dynasm-doc/index.html)
 - [GNU lightning](https://www.gnu.org/software/lightning/)
   - [docs](https://www.gnu.org/software/lightning/manual/lightning.html)
 - [LibJIT](https://www.gnu.org/software/libjit/)
-- [PeachPy](https://pypi.org/project/PeachPy/)
 
 ---
 # ?
