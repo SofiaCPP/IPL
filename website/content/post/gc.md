@@ -11,7 +11,7 @@ This lecture will be entirely online - see the [Facebook group]({{< ref "/facebo
 
 <!--more-->
 
-[Slideshow]({{< ref "/slides/06_vm_values" >}})
+[Slideshow]({{< ref "/slides/10_vm_gc" >}})
 
 ---
 
