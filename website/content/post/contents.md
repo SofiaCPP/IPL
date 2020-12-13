@@ -50,6 +50,9 @@ Table of contents for the course.
 0. Garbage Collection in Spasm - [slides]({{< ref "/slides/10_vm_gc" >}}),
    [doc]({{< ref "/gc" >}})
 
+0. Just-In-Time Compilation - [slides]({{< ref "/slides/11_jit" >}}),
+   [doc]({{< ref "/jit" >}})
+
 ## Timeline
 
 
