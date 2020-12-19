@@ -63,13 +63,13 @@ All is actually 2 instructions on a x86_64 CPU
 ---
 ### Create executable memory Linux
 
-virtualCodeAddress = mmap(
-       NULL,
-       codeBytes,
-       PROT_READ | PROT_WRITE | PROT_EXEC,
-       MAP_ANONYMOUS | MAP_PRIVATE,
-       0,
-       0);
+    virtualCodeAddress = mmap(
+           NULL,
+           codeBytes,
+           PROT_READ | PROT_WRITE | PROT_EXEC,
+           MAP_ANONYMOUS | MAP_PRIVATE,
+           0,
+           0);
 
 ---
 ### Create executable memory Windows
@@ -87,16 +87,16 @@ virtualCodeAddress = mmap(
 ---
 ### How to create and execute code
 
-   typedef unsigned (*asmFunc)(void);
-   ....
-   unsigned char * memory = (unsigned char *) (virtualCodeAddress);
-   // mov %rdi, %rax
-   memory[i++] = 0x48;           // REX.W prefix
-   memory[i++] = 0x8b;           // MOV opcode, register/register
-   memory[i++] = 0xc7;           // MOD/RM byte for %rdi -> %rax
-   // ret
-   memory[i++] = 0xc3;           // RET opcode
-   ((asmFunc) (virtualCodeAddress))();
+    typedef unsigned (*asmFunc)(void);
+
+    unsigned char * memory = (unsigned char *) (virtualCodeAddress);
+    // mov %rdi, %rax
+    memory[i++] = 0x48;           // REX.W prefix
+    memory[i++] = 0x8b;           // MOV opcode, register/register
+    memory[i++] = 0xc7;           // MOD/RM byte for %rdi -> %rax
+    // ret
+    memory[i++] = 0xc3;           // RET opcode
+    ((asmFunc) (virtualCodeAddress))();
 
 ---
 ### Generate code
