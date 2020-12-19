@@ -19,11 +19,15 @@ add_answer:
     push    rcx
     push    rdx
     push    rsi
-; Handle Win64 calling convention
+; "Handle" Win64 calling convention
 ;    push    rdi ; used by System V
     push    rcx ; used by Win64
     push    1
     mov     rdi, rsp
+
+    ; Make sure that we commit the stack space we are going to use with the
+    ; registers
+    sub rsp, 24
 
     mov [rdi - 8], byte 42
 
@@ -33,9 +37,9 @@ add_answer:
     mov rcx, r8
     add rcx, r9
 
-    mov [rdi + 16], rcx
+    mov [rdi - 16], rcx
 
-    mov eax, [rdi + 16]
+    mov eax, [rdi - 16]
     mov rsp, r15
     pop r15
     pop rbp
