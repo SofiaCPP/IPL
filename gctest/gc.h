@@ -17,7 +17,8 @@ class ObjectVisitor
 public:
     virtual ~ObjectVisitor() {}
 
-    virtual void VisitReference(Object* from, Object* to, void* state) = 0;
+    // Object** to allows the reference to be moved
+    virtual void VisitReference(Object* from, Object** to, void* state) = 0;
 };
 
 class GarbageCollector : public ObjectVisitor
@@ -25,7 +26,8 @@ class GarbageCollector : public ObjectVisitor
 public:
     virtual void* Allocate(size_t size) = 0;
 
-    virtual void SetRoot(Object* root) = 0;
+    // Object** to allows the root to be moved
+    virtual void SetRoot(Object** root) = 0;
 
     virtual void Shutdown() = 0;
 };
@@ -43,11 +45,11 @@ public:
         }
     }
 
-    void VisitReference(Object*, Object* to, void*) override
+    void VisitReference(Object*, Object** to, void*) override
     {
-        if (to)
+        if (*to)
         {
-            Destroy(to);
+            Destroy(*to);
         }
     }
     std::unordered_set<Object*> m_Visited;
