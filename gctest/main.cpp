@@ -57,9 +57,15 @@ private:
     uint8_t m_Extra[1];
 };
 
+void* AllocateGCMemory(GarbageCollector* gc, size_t size)
+{
+    MTR_SCOPE_I("GC", "Allocate", "size", int(size));
+    return gc->Allocate(size);
+}
+
 Object* CreateLeaf(GarbageCollector* gc, unsigned extraSize)
 {
-    auto memory = gc->Allocate(sizeof(LeafObject) + extraSize);
+    auto memory = AllocateGCMemory(gc, sizeof(LeafObject) + extraSize);
     auto result = new (memory) LeafObject(extraSize);
     return result;
 }
@@ -75,10 +81,10 @@ public:
 
     void VisitReferences(ObjectVisitor* visitor, void* state) override
     {
-        for (auto i = 0u; i < m_Size; ++i)
+        auto end = m_Children + m_Size;
+        for (auto child = m_Children; child < end; ++child)
         {
-            auto child = m_Children[i];
-            if (child)
+            if (*child)
             {
                 visitor->VisitReference(this, child, state);
             }
@@ -104,7 +110,7 @@ private:
 Object* CreateScanned(GarbageCollector* gc, unsigned children)
 {
     auto extraSize = children * sizeof(Object*);
-    auto memory = gc->Allocate(sizeof(ScannedObject) + extraSize);
+    auto memory = AllocateGCMemory(gc, sizeof(ScannedObject) + extraSize);
     auto result = new (memory) ScannedObject(children);
     return result;
 }
@@ -235,9 +241,9 @@ struct HeapStatsVisitor : ObjectVisitor
         unsigned depth = 1;
         root->VisitReferences(this, &depth);
     }
-    void VisitReference(Object*, Object* to, void* state) override
+    void VisitReference(Object*, Object** to, void* state) override
     {
-        auto recycled = static_cast<RecycledObject*>(to);
+        auto recycled = static_cast<RecycledObject*>(*to);
         if (recycled->m_Generation < m_CurrentGeneration)
         {
             ++m_Reachable;
@@ -249,7 +255,7 @@ struct HeapStatsVisitor : ObjectVisitor
             {
                 m_Depth = depth;
             }
-            to->VisitReferences(this, &depth);
+            recycled->VisitReferences(this, &depth);
         }
     }
     size_t m_Reachable = 0;
@@ -294,22 +300,22 @@ int main(int argc, const char* argv[])
     create.AddAction(MakeFactory(CreateScanned, size_large, &rg, gc.get()), 20);
 
     auto root = static_cast<RecycledObject*>(CreateScanned(gc.get(), 1000));
-    gc->SetRoot(root);
+    gc->SetRoot(reinterpret_cast<Object**>(&root));
 
     WeightedActionTable<void, RandomGenerator> operations(&rg);
 
     operations.AddAction(
-        [&create, &rg, root]() { NewObject(root, create, rg); }, 30);
+        [&create, &rg, &root]() { NewObject(root, create, rg); }, 30);
 
     operations.AddAction([&create]() { NewTempObject(create); }, 40);
 
-    operations.AddAction([root, &rg]() { DeleteObject(root, rg); }, 5);
+    operations.AddAction([&root, &rg]() { DeleteObject(root, rg); }, 5);
 
-    operations.AddAction([root, &rg]() { CopyObject(root, rg); }, 20);
+    operations.AddAction([&root, &rg]() { CopyObject(root, rg); }, 20);
 
-    operations.AddAction([root, &rg]() { MoveObject(root, rg); }, 10);
+    operations.AddAction([&root, &rg]() { MoveObject(root, rg); }, 10);
 
-    operations.AddAction([root, &rg]() { SwapObjects(root, rg); }, 20);
+    operations.AddAction([&root, &rg]() { SwapObjects(root, rg); }, 20);
 
     auto initial_count = 50000u;
     auto loops = 100u;
