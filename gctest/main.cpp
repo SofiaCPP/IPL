@@ -2,6 +2,7 @@
 #include <atomic>
 #include <cassert>
 #include <cstdio>
+#include <filesystem>
 #include <memory>
 #include <random>
 #include <string>
@@ -12,10 +13,9 @@
 
 #include "gc.h"
 
-typedef std::mt19937 RandomGenerator;
+#include "cxxopts.hpp"
 
-std::unique_ptr<GarbageCollector> CreateGarbageCollector(int& argc,
-                                                         const char* argv[]);
+typedef std::mt19937 RandomGenerator;
 
 class RecycledObject : public Object
 {
@@ -189,6 +189,7 @@ SizeDistribution<Dist> MakeSizeDist(Dist d, unsigned min, unsigned max)
 }
 
 typedef WeightedActionTable<Object*, RandomGenerator> CreateTable;
+typedef WeightedActionTable<void, RandomGenerator> OperationsTable;
 
 void NewObject(RecycledObject* root, CreateTable& create, RandomGenerator& rg)
 {
@@ -264,22 +265,10 @@ struct HeapStatsVisitor : ObjectVisitor
     size_t m_UsedMemory = 0;
 };
 
-//extern std::atomic<size_t> TotalMemory;
+// extern std::atomic<size_t> TotalMemory;
 
-int main(int argc, const char* argv[])
+CreateTable GetObjectFactory(RandomGenerator& rg, GarbageCollector* gc)
 {
-    assert(argc > 0);
-    mtr_init((std::string(argv[0]) + ".json").c_str());
-    // MTR_META_PROCESS_NAME(argv[0]);
-    MTR_META_THREAD_NAME("Mutator thread");
-
-    RandomGenerator rg;
-    if (argc > 1)
-    {
-        rg.seed(std::atoi(argv[1]));
-    }
-    auto gc = CreateGarbageCollector(argc, argv);
-
     CreateTable create(&rg);
 
     std::normal_distribution<float> u_small(64, 16);
@@ -290,19 +279,65 @@ int main(int argc, const char* argv[])
     auto size_medium = MakeSizeDist(u_medium, 128, 1024);
     auto size_large = MakeSizeDist(u_large, 1024, 8192);
 
-    create.AddAction(MakeFactory(CreateLeaf, size_small, &rg, gc.get()), 20);
-    create.AddAction(MakeFactory(CreateLeaf, size_medium, &rg, gc.get()), 30);
-    create.AddAction(MakeFactory(CreateLeaf, size_large, &rg, gc.get()), 20);
+    create.AddAction(MakeFactory(CreateLeaf, size_small, &rg, gc), 20);
+    create.AddAction(MakeFactory(CreateLeaf, size_medium, &rg, gc), 30);
+    create.AddAction(MakeFactory(CreateLeaf, size_large, &rg, gc), 20);
 
-    create.AddAction(MakeFactory(CreateScanned, size_small, &rg, gc.get()), 20);
-    create.AddAction(MakeFactory(CreateScanned, size_medium, &rg, gc.get()),
-                     30);
-    create.AddAction(MakeFactory(CreateScanned, size_large, &rg, gc.get()), 20);
+    create.AddAction(MakeFactory(CreateScanned, size_small, &rg, gc), 20);
+    create.AddAction(MakeFactory(CreateScanned, size_medium, &rg, gc), 30);
+    create.AddAction(MakeFactory(CreateScanned, size_large, &rg, gc), 20);
 
-    auto root = static_cast<RecycledObject*>(CreateScanned(gc.get(), 1000));
+    return create;
+}
+
+int main(int argc, char* argv[])
+{
+    std::string process = argv[0];
+    {
+        std::filesystem::path p(process);
+        process = p.filename().string();
+    }
+    cxxopts::Options parser(process.c_str(),
+                            "Test bench for garbage collectors");
+    parser.add_options()
+        ("s,seed", "Seed for the random generator", cxxopts::value<int>())
+        ("i,initial", "Number of initial objects", cxxopts::value<unsigned>()->default_value("20000"))
+        ("l,loops", "Number of loops to run", cxxopts::value<unsigned>()->default_value("2000"))
+        ("o,ops", "Number of operations per iteration", cxxopts::value<unsigned>()->default_value("250"))
+        ("h,help", "Print the help")
+        ;
+    parser.allow_unrecognised_options();
+
+    auto options = parser.parse(argc, argv);
+
+    if (options.count("help"))
+    {
+        std::printf("%s\n", parser.help().c_str());
+        return 0;
+    }
+
+    mtr_init((process + ".json").c_str());
+    MTR_META_PROCESS_NAME(process.c_str());
+    MTR_META_THREAD_NAME("Mutator thread");
+
+    RandomGenerator rg;
+    if (options.count("seed"))
+    {
+        rg.seed(options["seed"].as<int>());
+    }
+    auto gc = CreateGarbageCollector(argc, argv);
+
+    auto create = GetObjectFactory(rg, gc.get());
+
+    auto initial_count = options["initial"].as<unsigned>();
+    auto loops = options["loops"].as<unsigned>();
+    auto operations_count = options["ops"].as<unsigned>();
+
+    auto root = static_cast<RecycledObject*>(
+        CreateScanned(gc.get(), initial_count / 10));
     gc->SetRoot(reinterpret_cast<Object**>(&root));
 
-    WeightedActionTable<void, RandomGenerator> operations(&rg);
+    OperationsTable operations(&rg);
 
     operations.AddAction(
         [&create, &rg, &root]() { NewObject(root, create, rg); }, 30);
@@ -316,10 +351,6 @@ int main(int argc, const char* argv[])
     operations.AddAction([&root, &rg]() { MoveObject(root, rg); }, 10);
 
     operations.AddAction([&root, &rg]() { SwapObjects(root, rg); }, 20);
-
-    auto initial_count = 50000u;
-    auto loops = 100u;
-    auto operations_count = 5000u;
 
     {
         MTR_SCOPE("Mutator", "Initialize Heap");
@@ -345,7 +376,7 @@ int main(int argc, const char* argv[])
         MTR_COUNTER("Heap", "Reachable", int(stats.m_Reachable));
         MTR_COUNTER("Heap", "Living", int(RecycledObject::Alive));
         MTR_COUNTER("Heap", "Depth", int(stats.m_Depth));
-        //MTR_COUNTER("Heap", "Total KB", int(TotalMemory / 1024));
+        // MTR_COUNTER("Heap", "Total KB", int(TotalMemory / 1024));
         MTR_COUNTER("Heap", "Useful KB", int(stats.m_UsedMemory / 1024));
     }
 

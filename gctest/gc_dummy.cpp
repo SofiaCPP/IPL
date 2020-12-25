@@ -65,7 +65,7 @@ public:
     unsigned m_AllocsSinceGC = 0;
 };
 
-std::unique_ptr<GarbageCollector> CreateGarbageCollector(int&, const char*[])
+std::unique_ptr<GarbageCollector> CreateGarbageCollector(int, char*[])
 {
     return std::unique_ptr<GarbageCollector>(new DummyGC(1024));
 }

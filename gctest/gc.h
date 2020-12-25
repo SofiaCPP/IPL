@@ -54,3 +54,7 @@ public:
     }
     std::unordered_set<Object*> m_Visited;
 };
+
+std::unique_ptr<GarbageCollector> CreateGarbageCollector(int argc,
+                                                         char* argv[]);
+
