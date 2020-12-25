@@ -19,7 +19,7 @@ class LeakGC : public GarbageCollector
     Object** m_Root;
 };
 
-std::unique_ptr<GarbageCollector> CreateGarbageCollector(int&, const char*[])
+std::unique_ptr<GarbageCollector> CreateGarbageCollector(int, char*[])
 {
     return std::unique_ptr<GarbageCollector>(new LeakGC());
 }
