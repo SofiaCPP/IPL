@@ -42,3 +42,9 @@ solution 'gctest'
         files 'gc_leak.cpp'
         links 'test_bench'
 
+    project 'dummy_gc'
+        kind 'ConsoleApp'
+        language 'C++'
+        files 'gc_dummy.cpp'
+        links 'test_bench'
+
