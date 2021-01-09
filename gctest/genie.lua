@@ -16,7 +16,6 @@ solution 'gctest'
         'MTR_ENABLED',
     }
 
-
     local root = './build/'
 
     configuration 'Debug'
@@ -27,6 +26,10 @@ solution 'gctest'
         flags 'OptimizeSpeed'
         targetdir(root .. 'bin/Release')
         objdir(root .. 'obj/Release')
+    -- GCC generates a warning for uninitialized data in
+    -- std::normal_distribution
+    configuration 'gcc'
+        removeflags 'ExtraWarnings'
     configuration '*'
 
     project 'test_bench'
