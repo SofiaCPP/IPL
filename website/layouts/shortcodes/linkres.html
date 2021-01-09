@@ -1,0 +1,2 @@
+{{ $resource := $.Page.Resources.GetMatch (.Get 0) }}
+<a href="{{ $resource.RelPermalink }}">{{ .Get 1 }}</a>
