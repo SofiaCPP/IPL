@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+	<html>
+		<head>
+			<title>go2html</title>
+			<style>
+.spelling-error {text-decoration-line: underline;text-decoration-style: wavy;text-decoration-color: red; color: white;}
+				.keyword {
+					color: #569CD6;
+				}
+				.number {
+					color: #b5cea8;
+				}
+				.default {
+					color: rgb(223, 235, 231);
+				}
+				.string {
+					color: #CE9178;
+				}
+				.operator {
+					font-style: bold; color: #D4D4D4
+				}
+				.comment {
+					color: #6A9955;
+				}
+				.identifier {
+					color: #9CDCFE;
+				}
+			</style>
+		</head>
+		<body style="background-color:#1e1e1e">
+			<pre class="code"><span class="comment">// Golang Program to Calculate Standard Deviation</span><span class="default">
+
+</span><span class="keyword">package</span><span class="default"> </span><span class="identifier">main</span><span class="default">
+
+</span><span class="keyword">import</span><span class="default"> </span><span class="default">(</span><span class="default">
+	</span><span class="string">"fmt"</span><span class="default">
+	</span><span class="string">"math"</span><span class="default">
+</span><span class="default">)</span><span class="default">
+
+</span><span class="keyword">func</span><span class="default"> </span><span class="identifier">main</span><span class="default">(</span><span class="default">)</span><span class="default"> </span><span class="default">{</span><span class="default">
+	</span><span class="keyword">var</span><span class="default"> </span><span class="identifier">num</span><span class="default"> </span><span class="default">[</span><span class="number">10</span><span class="default">]</span><span class="identifier">float64</span><span class="default">
+	</span><span class="keyword">var</span><span class="default"> </span><span class="identifier">sum</span><span class="default">,</span><span class="default"> </span><span class="identifier">mean</span><span class="default">,</span><span class="default"> </span><span class="identifier">sd</span><span class="default"> </span><span class="identifier">float64</span><span class="default">
+	</span><span class="identifier">fmt</span><span class="default">.</span><span class="identifier">Println</span><span class="default">(</span><span class="string">"******  Enter 10 elements  *******"</span><span class="default">)</span><span class="default">
+	</span><span class="keyword">for</span><span class="default"> </span><span class="identifier">i</span><span class="default"> </span><span class="default">:=</span><span class="default"> </span><span class="number">1</span><span class="default">;</span><span class="default"> </span><span class="identifier">i</span><span class="default"> </span><span class="default"><=</span><span class="default"> </span><span class="number">10</span><span class="default">;</span><span class="default"> </span><span class="identifier">i</span><span class="default">++</span><span class="default"> </span><span class="default">{</span><span class="default">
+		</span><span class="identifier">fmt</span><span class="default">.</span><span class="identifier">Printf</span><span class="default">(</span><span class="string">"Enter %d element : "</span><span class="default">,</span><span class="default"> </span><span class="identifier">i</span><span class="default">)</span><span class="default">
+		</span><span class="identifier">fmt</span><span class="default">.</span><span class="identifier">Scan</span><span class="default">(</span><span class="default">&</span><span class="identifier">num</span><span class="default">[</span><span class="identifier">i</span><span class="default">-</span><span class="number">1</span><span class="default">]</span><span class="default">)</span><span class="default">
+		</span><span class="identifier">sum</span><span class="default"> </span><span class="default">+=</span><span class="default"> </span><span class="identifier">num</span><span class="default">[</span><span class="identifier">i</span><span class="default">-</span><span class="number">1</span><span class="default">]</span><span class="default">
+	</span><span class="default">}</span><span class="default">
+	</span><span class="identifier">mean</span><span class="default"> </span><span class="default">=</span><span class="default"> </span><span class="identifier">sum</span><span class="default"> </span><span class="default">/</span><span class="default"> </span><span class="number">10</span><span class="default">
+
+	</span><span class="keyword">for</span><span class="default"> </span><span class="identifier">j</span><span class="default"> </span><span class="default">:=</span><span class="default"> </span><span class="number">0</span><span class="default">;</span><span class="default"> </span><span class="identifier">j</span><span class="default"> </span><span class="default"><</span><span class="default"> </span><span class="number">10</span><span class="default">;</span><span class="default"> </span><span class="identifier">j</span><span class="default">++</span><span class="default"> </span><span class="default">{</span><span class="default">
+		</span><span class="comment">// The use of Pow math function func Pow(x, y float64) float64</span><span class="default">
+		</span><span class="identifier">sd</span><span class="default"> </span><span class="default">+=</span><span class="default"> </span><span class="identifier">math</span><span class="default">.</span><span class="identifier">Pow</span><span class="default">(</span><span class="identifier">num</span><span class="default">[</span><span class="identifier">j</span><span class="default">]</span><span class="default">-</span><span class="identifier">mean</span><span class="default">,</span><span class="default"> </span><span class="number">2</span><span class="default">)</span><span class="default">
+	</span><span class="default">}</span><span class="default">
+	</span><span class="comment">// The use of Sqrt math function func Sqrt(x float64) float64</span><span class="default">
+	</span><span class="identifier">sd</span><span class="default"> </span><span class="default">=</span><span class="default"> </span><span class="identifier">math</span><span class="default">.</span><span class="identifier">Sqrt</span><span class="default">(</span><span class="identifier">sd</span><span class="default"> </span><span class="default">/</span><span class="default"> </span><span class="number">10</span><span class="default">)</span><span class="default">
+
+	</span><span class="identifier">fmt</span><span class="default">.</span><span class="identifier">Println</span><span class="default">(</span><span class="string">"The Standard Deviation is : "</span><span class="default">,</span><span class="default"> </span><span class="identifier">sd</span><span class="default">)</span><span class="default">
+
+	</span><span class="comment">//some valid numbers</span><span class="default">
+	</span><span class="number">0x12ffde</span><span class="default"> </span><span class="number">0b101001</span><span class="default"> </span><span class="number">12351</span><span class="default"> </span><span class="number">0o2451</span><span class="default">
+	
+	</span><span class="comment">//some invalid numbers</span><span class="default">
+	</span><span class="spelling-error">0x</span><span class="default"> </span><span class="spelling-error">0b</span><span class="default"> </span><span class="spelling-error">0o</span><span class="default">
+
+	</span><span class="comment">//unrecognized token</span><span class="default">
+	</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default">-</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default"> </span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="spelling-error">?</span><span class="default">
+</span><span class="default">}</span><span class="default">
+</span></pre></body></html>
