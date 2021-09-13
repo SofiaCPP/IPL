@@ -13,6 +13,7 @@ solution 'gctest'
     }
     defines {
         '_SCL_SECURE_NO_WARNINGS',
+        '_CRT_SECURE_NO_WARNINGS',
         'MTR_ENABLED',
     }
 
@@ -37,7 +38,9 @@ solution 'gctest'
         language 'C++'
         files {
             'main.cpp',
+            'minitrace.cpp',
         }
+        removeflags 'ExtraWarnings'
 
     project 'leak_gc'
         kind 'ConsoleApp'

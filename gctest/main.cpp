@@ -8,7 +8,6 @@
 #include <string>
 #include "weighted_action.h"
 
-#include "minitrace/minitrace.c"
 #include "minitrace/minitrace.h"
 
 #include "gc.h"
@@ -38,7 +37,7 @@ class LeafObject : public RecycledObject
 public:
     LeafObject(unsigned size) : m_Size(size)
     {
-        std::fill(m_Extra, m_Extra + size, 0xab);
+        std::fill(m_Extra, m_Extra + size, uint8_t(0xab));
     }
 
     ~LeafObject() {}
@@ -173,7 +172,7 @@ struct SizeDistribution
     template <typename G>
     unsigned operator()(G& g) const
     {
-        auto r = m_Dist(g);
+        auto r = unsigned(m_Dist(g));
         return (m_Min < r) ? (r < m_Max ? r : m_Max) : m_Min;
     }
 
@@ -385,7 +384,7 @@ int main(int argc, char* argv[])
     if (RecycledObject::Alive)
     {
         std::fprintf(stderr, "%lld objects leaked\n",
-                     (size_t)RecycledObject::Alive);
+                     (uint64_t)RecycledObject::Alive);
     }
 
     mtr_shutdown();

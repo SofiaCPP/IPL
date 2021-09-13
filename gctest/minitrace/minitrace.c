@@ -472,7 +472,7 @@ void internal_mtr_raw_event_arg(const char *category, const char *name, char ph,
 	switch (arg_type) {
 	case MTR_ARG_TYPE_INT: ev->a_int = (int)(uintptr_t)arg_value; break;
 	case MTR_ARG_TYPE_STRING_CONST:	ev->a_str = (const char*)arg_value; break;
-	case MTR_ARG_TYPE_STRING_COPY: ev->a_str = strdup((const char*)arg_value); break;
+	case MTR_ARG_TYPE_STRING_COPY: ev->a_str = _strdup((const char*)arg_value); break;
 	case MTR_ARG_TYPE_NONE: break;
 	}
 
