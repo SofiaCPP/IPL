@@ -43,8 +43,8 @@ endif
 MAKEFILE = test_bench.make
 
 ifeq ($(config),debug32)
-  OBJDIR              = ../build/obj/Debug/x32/Debug/test_bench
-  TARGETDIR           = ../build/bin/Debug
+  OBJDIR              = ../../JSImpl/build/obj/Debug/x32/Debug/test_bench
+  TARGETDIR           = ../../JSImpl/build/bin/Debug
   TARGET              = $(TARGETDIR)/libtest_bench.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -76,8 +76,8 @@ ifeq ($(config),debug32)
 endif
 
 ifeq ($(config),release32)
-  OBJDIR              = ../build/obj/Release/x32/Release/test_bench
-  TARGETDIR           = ../build/bin/Release
+  OBJDIR              = ../../JSImpl/build/obj/Release/x32/Release/test_bench
+  TARGETDIR           = ../../JSImpl/build/bin/Release
   TARGET              = $(TARGETDIR)/libtest_bench.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -109,8 +109,8 @@ ifeq ($(config),release32)
 endif
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../build/obj/Debug/x64/Debug/test_bench
-  TARGETDIR           = ../build/bin/Debug
+  OBJDIR              = ../../JSImpl/build/obj/Debug/x64/Debug/test_bench
+  TARGETDIR           = ../../JSImpl/build/bin/Debug
   TARGET              = $(TARGETDIR)/libtest_bench.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -142,8 +142,8 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../build/obj/Release/x64/Release/test_bench
-  TARGETDIR           = ../build/bin/Release
+  OBJDIR              = ../../JSImpl/build/obj/Release/x64/Release/test_bench
+  TARGETDIR           = ../../JSImpl/build/bin/Release
   TARGET              = $(TARGETDIR)/libtest_bench.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)

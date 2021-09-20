@@ -6,7 +6,7 @@ ifndef config
 endif
 export config
 
-PROJECTS := JSImpl JSLib Test gmock gtest gtest_main spasm spasm_lib sprt sprun
+PROJECTS := JSImpl JSLib Test dummy_gc gmock gtest gtest_main leak_gc spasm spasm_lib sprt sprun test_bench
 
 .PHONY: all clean help $(PROJECTS)
 
@@ -52,6 +52,18 @@ sprun: sprt
 	@echo "==== Building sprun ($(config)) ===="
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprun.make
 
+test_bench: 
+	@echo "==== Building test_bench ($(config)) ===="
+	@${MAKE} --no-print-directory -C ../../gctest/solution -f test_bench.make
+
+leak_gc: test_bench
+	@echo "==== Building leak_gc ($(config)) ===="
+	@${MAKE} --no-print-directory -C ../../gctest/solution -f leak_gc.make
+
+dummy_gc: test_bench
+	@echo "==== Building dummy_gc ($(config)) ===="
+	@${MAKE} --no-print-directory -C ../../gctest/solution -f dummy_gc.make
+
 clean:
 	@${MAKE} --no-print-directory -C ../test -f Test.make clean
 	@${MAKE} --no-print-directory -C ../test -f gtest.make clean
@@ -63,6 +75,9 @@ clean:
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm_lib.make clean
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm.make clean
 	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprun.make clean
+	@${MAKE} --no-print-directory -C ../../gctest/solution -f test_bench.make clean
+	@${MAKE} --no-print-directory -C ../../gctest/solution -f leak_gc.make clean
+	@${MAKE} --no-print-directory -C ../../gctest/solution -f dummy_gc.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -86,5 +101,8 @@ help:
 	@echo "   spasm_lib"
 	@echo "   spasm"
 	@echo "   sprun"
+	@echo "   test_bench"
+	@echo "   leak_gc"
+	@echo "   dummy_gc"
 	@echo ""
 	@echo "For more information, see https://github.com/bkaradzic/genie"

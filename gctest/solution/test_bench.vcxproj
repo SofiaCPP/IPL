@@ -75,26 +75,26 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\build\bin\Debug\</OutDir>
-    <IntDir>..\build\obj\Debug\x32\Debug\test_bench\</IntDir>
+    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
+    <IntDir>..\..\JSImpl\build\obj\Debug\x32\Debug\test_bench\</IntDir>
     <TargetName>test_bench</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\build\bin\Debug\</OutDir>
-    <IntDir>..\build\obj\Debug\x64\Debug\test_bench\</IntDir>
+    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
+    <IntDir>..\..\JSImpl\build\obj\Debug\x64\Debug\test_bench\</IntDir>
     <TargetName>test_bench</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\build\bin\Release\</OutDir>
-    <IntDir>..\build\obj\Release\x32\Release\test_bench\</IntDir>
+    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
+    <IntDir>..\..\JSImpl\build\obj\Release\x32\Release\test_bench\</IntDir>
     <TargetName>test_bench</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\build\bin\Release\</OutDir>
-    <IntDir>..\build\obj\Release\x64\Release\test_bench\</IntDir>
+    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
+    <IntDir>..\..\JSImpl\build\obj\Release\x64\Release\test_bench\</IntDir>
     <TargetName>test_bench</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>

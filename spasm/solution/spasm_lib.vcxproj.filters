@@ -9,22 +9,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\asm\bytecode.cpp">
-      <Filter>src\asm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\asm\symbol.cpp">
-      <Filter>src\asm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\asm\tokenizer.cpp">
-      <Filter>src\asm</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\asm\assembler.cpp">
+      <Filter>src\asm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\asm\bytecode.cpp">
       <Filter>src\asm</Filter>
     </ClCompile>
     <ClCompile Include="..\src\asm\lexer.cpp">
       <Filter>src\asm</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\asm\symbol.cpp">
+      <Filter>src\asm</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\asm\token.cpp">
+      <Filter>src\asm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\asm\tokenizer.cpp">
       <Filter>src\asm</Filter>
     </ClCompile>
   </ItemGroup>
