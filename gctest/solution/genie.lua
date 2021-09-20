@@ -17,7 +17,7 @@ solution 'gctest'
         'MTR_ENABLED',
     }
 
-    local root = './build/'
+    local root = '../build/'
 
     configuration 'Debug'
         targetdir(root .. 'bin/Debug')
@@ -37,20 +37,20 @@ solution 'gctest'
         kind 'StaticLib'
         language 'C++'
         files {
-            'main.cpp',
-            'minitrace.cpp',
+            '../src/main.cpp',
+            '../src/minitrace.cpp',
         }
         removeflags 'ExtraWarnings'
 
     project 'leak_gc'
         kind 'ConsoleApp'
         language 'C++'
-        files 'gc_leak.cpp'
+        files '../src/gc_leak.cpp'
         links 'test_bench'
 
     project 'dummy_gc'
         kind 'ConsoleApp'
         language 'C++'
-        files 'gc_dummy.cpp'
+        files '../src/gc_dummy.cpp'
         links 'test_bench'
 
