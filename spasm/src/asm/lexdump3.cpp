@@ -44,16 +44,16 @@ int main()
     Token token;
 
     token = td.next_token();
-    while (token.type() != Token::endinput)
+    while (token.type() != Token::EndInput)
     {
         token = td.next_token();
         Token::Token_type ttype = token.type();
         std::cout.width(8);
         std::cout << token.lineno();
         std::cout << ": " << token_name[ttype];
-        if (ttype == Token::integer || ttype == Token::xinteger)
+        if (ttype == Token::Integer || ttype == Token::XInteger)
             std::cout << '|' << token.value_int() << '|';
-        else if (ttype == Token::ident)
+        else if (ttype == Token::Ident)
             std::cout << '|' << token.value_str() << '|';
         std::cout << std::endl;
     }

@@ -10,10 +10,12 @@
 #include <string.h>
 
 #ifdef _WIN32
+#ifdef _MSVC
 #pragma warning (disable:4996)
+#endif
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#define __thread __declspec(thread)
+#define __thread thread_local
 #define pthread_mutex_t CRITICAL_SECTION
 #define pthread_mutex_init(a, b) InitializeCriticalSection(a)
 #define pthread_mutex_lock(a) EnterCriticalSection(a)
