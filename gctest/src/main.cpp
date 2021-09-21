@@ -383,8 +383,8 @@ int main(int argc, char* argv[])
 
     if (RecycledObject::Alive)
     {
-        std::fprintf(stderr, "%lld objects leaked\n",
-                     (uint64_t)RecycledObject::Alive);
+        std::fprintf(stderr, "%zu objects leaked\n",
+                     RecycledObject::Alive.load());
     }
 
     mtr_shutdown();

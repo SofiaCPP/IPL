@@ -35,6 +35,7 @@ function setup()
     defines {
         '_SCL_SECURE_NO_WARNINGS',
         '_CRT_SECURE_NO_WARNINGS',
+        '_CRT_NONSTDC_NO_WARNINGS', -- for strdup in minitrace.c
         'MTR_ENABLED',
     }
 

@@ -46,7 +46,7 @@ ifeq ($(config),debug32)
   OBJDIR              = ../../JSImpl/build/obj/Debug/x32/Debug/leak_gc
   TARGETDIR           = ../../JSImpl/build/bin/Debug
   TARGET              = $(TARGETDIR)/leak_gc
-  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DMTR_ENABLED
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32
@@ -78,7 +78,7 @@ ifeq ($(config),release32)
   OBJDIR              = ../../JSImpl/build/obj/Release/x32/Release/leak_gc
   TARGETDIR           = ../../JSImpl/build/bin/Release
   TARGET              = $(TARGETDIR)/leak_gc
-  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DMTR_ENABLED
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32
@@ -110,7 +110,7 @@ ifeq ($(config),debug64)
   OBJDIR              = ../../JSImpl/build/obj/Debug/x64/Debug/leak_gc
   TARGETDIR           = ../../JSImpl/build/bin/Debug
   TARGET              = $(TARGETDIR)/leak_gc
-  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DMTR_ENABLED
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64
@@ -142,7 +142,7 @@ ifeq ($(config),release64)
   OBJDIR              = ../../JSImpl/build/obj/Release/x64/Release/leak_gc
   TARGETDIR           = ../../JSImpl/build/bin/Release
   TARGET              = $(TARGETDIR)/leak_gc
-  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DMTR_ENABLED
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64
