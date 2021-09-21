@@ -2,6 +2,7 @@
 #define SPASM_IMPL_HPP
 
 #include <iostream>
+#include <cstdint>
 
 #include <unordered_set>
 #include "types.hpp"
