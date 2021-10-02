@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="test">
+      <UniqueIdentifier>{65689E7C-519F-9F0D-FA8B-8510E6A11B0F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\googletest">
+      <UniqueIdentifier>{3EADE347-AA38-510C-B349-D4001F54AD0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\googletest\googletest">
+      <UniqueIdentifier>{77982081-63A8-CC51-CC61-3170B890BBEA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\googletest\googletest\src">
+      <UniqueIdentifier>{1B674AD8-078D-143F-F0D2-990ADC97390B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\test\googletest\googletest\src\gtest_main.cc">
+      <Filter>test\googletest\googletest\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

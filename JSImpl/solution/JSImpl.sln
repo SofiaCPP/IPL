@@ -9,12 +9,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JSImpl", "JSImpl", "{C30B50
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gctest", "gctest", "{5EF0341D-CACF-B3B8-D3E7-3E8F3F461A1A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sprun", "..\..\spasm\solution\sprun.vcxproj", "{FD605F10-6975-87C1-32F7-2A219ECA83F2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sprun", "sprun.vcxproj", "{FD605F10-6975-87C1-32F7-2A219ECA83F2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AE0A9E7C-9A41-9F0D-432E-85102F441B0F} = {AE0A9E7C-9A41-9F0D-432E-85102F441B0F}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "..\test\Test.vcxproj", "{45DC8C7C-3113-8E0D-DAFF-7310C6150A0F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test.vcxproj", "{45DC8C7C-3113-8E0D-DAFF-7310C6150A0F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{19EA680D-85FE-90BE-4E80-341EBA538DEF} = {19EA680D-85FE-90BE-4E80-341EBA538DEF}
 		{30B03E7E-1C68-80CB-856F-592771461BBC} = {30B03E7E-1C68-80CB-856F-592771461BBC}
@@ -24,11 +24,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "..\test\Test.vcxpro
 		{EC34880F-5849-B0C0-21CB-53208D9EACF1} = {EC34880F-5849-B0C0-21CB-53208D9EACF1}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest", "..\test\gtest.vcxproj", "{EC34880F-5849-B0C0-21CB-53208D9EACF1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest", "gtest.vcxproj", "{EC34880F-5849-B0C0-21CB-53208D9EACF1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gmock", "..\test\gmock.vcxproj", "{B686840F-229B-ACC0-EB1C-502057F0A8F1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gmock", "gmock.vcxproj", "{B686840F-229B-ACC0-EB1C-502057F0A8F1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest_main", "..\test\gtest_main.vcxproj", "{30B03E7E-1C68-80CB-856F-592771461BBC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gtest_main", "gtest_main.vcxproj", "{30B03E7E-1C68-80CB-856F-592771461BBC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSLib", "JSLib.vcxproj", "{19EA680D-85FE-90BE-4E80-341EBA538DEF}"
 EndProject
@@ -37,23 +37,23 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSImpl", "JSImpl.vcxproj", 
 		{19EA680D-85FE-90BE-4E80-341EBA538DEF} = {19EA680D-85FE-90BE-4E80-341EBA538DEF}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sprt", "..\..\spasm\solution\sprt.vcxproj", "{AE0A9E7C-9A41-9F0D-432E-85102F441B0F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sprt", "sprt.vcxproj", "{AE0A9E7C-9A41-9F0D-432E-85102F441B0F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spasm_lib", "..\..\spasm\solution\spasm_lib.vcxproj", "{3F16CDE1-AB80-8158-F4BE-32FE60685FAD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spasm_lib", "spasm_lib.vcxproj", "{3F16CDE1-AB80-8158-F4BE-32FE60685FAD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spasm", "..\..\spasm\solution\spasm.vcxproj", "{69185F10-D52C-87C1-9EAE-2A210A8283F2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spasm", "spasm.vcxproj", "{69185F10-D52C-87C1-9EAE-2A210A8283F2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3F16CDE1-AB80-8158-F4BE-32FE60685FAD} = {3F16CDE1-AB80-8158-F4BE-32FE60685FAD}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_bench", "..\..\gctest\solution\test_bench.vcxproj", "{A41847E7-90D0-8834-F9D7-6190E5AE2325}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_bench", "test_bench.vcxproj", "{A41847E7-90D0-8834-F9D7-6190E5AE2325}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "leak_gc", "..\..\gctest\solution\leak_gc.vcxproj", "{8BDD0170-F7BC-800B-00D5-0BE26C33E76C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "leak_gc", "leak_gc.vcxproj", "{8BDD0170-F7BC-800B-00D5-0BE26C33E76C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A41847E7-90D0-8834-F9D7-6190E5AE2325} = {A41847E7-90D0-8834-F9D7-6190E5AE2325}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dummy_gc", "..\..\gctest\solution\dummy_gc.vcxproj", "{3AED02FA-26BA-5D05-4FD3-4BAD3BFF9293}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dummy_gc", "dummy_gc.vcxproj", "{3AED02FA-26BA-5D05-4FD3-4BAD3BFF9293}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A41847E7-90D0-8834-F9D7-6190E5AE2325} = {A41847E7-90D0-8834-F9D7-6190E5AE2325}
 	EndProjectSection

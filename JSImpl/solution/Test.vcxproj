@@ -102,7 +102,7 @@
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest\include;..\test\googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -119,7 +119,7 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest\include;..\test\googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,7 +135,7 @@
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest\include;..\test\googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -152,7 +152,7 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest\include;..\test\googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,7 +168,7 @@
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest\include;..\test\googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -185,7 +185,7 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest\include;..\test\googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -203,7 +203,7 @@
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest\include;..\test\googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -220,7 +220,7 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>googletest\googletest\include;googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest\include;..\test\googletest\googlemock\include;..;..\..\spasm\src;..\..\spasm\src\asm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -235,30 +235,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ASTInterpreterTests.cpp">
+    <ClCompile Include="..\test\ASTInterpreterTests.cpp">
     </ClCompile>
-    <ClCompile Include="LexerTests.cpp">
+    <ClCompile Include="..\test\LexerTests.cpp">
     </ClCompile>
-    <ClCompile Include="CodeGenerationTests.cpp">
+    <ClCompile Include="..\test\CodeGenerationTests.cpp">
     </ClCompile>
-    <ClCompile Include="ParserTests.cpp">
+    <ClCompile Include="..\test\ParserTests.cpp">
     </ClCompile>
-    <ClCompile Include="sprtTests.cpp">
+    <ClCompile Include="..\test\sprtTests.cpp">
     </ClCompile>
-    <ClCompile Include="empty.cpp">
+    <ClCompile Include="..\test\empty.cpp">
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\solution\JSLib.vcxproj">
+    <ProjectReference Include="JSLib.vcxproj">
       <Project>{19EA680D-85FE-90BE-4E80-341EBA538DEF}</Project>
     </ProjectReference>
     <ProjectReference Include="gtest_main.vcxproj">
       <Project>{30B03E7E-1C68-80CB-856F-592771461BBC}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\spasm\solution\spasm_lib.vcxproj">
+    <ProjectReference Include="spasm_lib.vcxproj">
       <Project>{3F16CDE1-AB80-8158-F4BE-32FE60685FAD}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\spasm\solution\sprt.vcxproj">
+    <ProjectReference Include="sprt.vcxproj">
       <Project>{AE0A9E7C-9A41-9F0D-432E-85102F441B0F}</Project>
     </ProjectReference>
     <ProjectReference Include="gmock.vcxproj">

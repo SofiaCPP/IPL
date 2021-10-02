@@ -40,12 +40,12 @@ ifndef RESCOMP
   endif
 endif
 
-MAKEFILE = leak_gc.make
+MAKEFILE = dummy_gc.make
 
 ifeq ($(config),debug32)
-  OBJDIR              = ../build/obj/Debug/x32/Debug/leak_gc
+  OBJDIR              = ../build/obj/Debug/x32/Debug/dummy_gc
   TARGETDIR           = ../build/bin/Debug
-  TARGET              = $(TARGETDIR)/leak_gc
+  TARGET              = $(TARGETDIR)/dummy_gc
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32
@@ -64,7 +64,7 @@ ifeq ($(config),debug32)
   LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/gc_leak.o \
+	$(OBJDIR)/gctest/src/gc_dummy.o \
 
   define PREBUILDCMDS
   endef
@@ -75,9 +75,9 @@ ifeq ($(config),debug32)
 endif
 
 ifeq ($(config),release32)
-  OBJDIR              = ../build/obj/Release/x32/Release/leak_gc
+  OBJDIR              = ../build/obj/Release/x32/Release/dummy_gc
   TARGETDIR           = ../build/bin/Release
-  TARGET              = $(TARGETDIR)/leak_gc
+  TARGET              = $(TARGETDIR)/dummy_gc
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32
@@ -96,7 +96,7 @@ ifeq ($(config),release32)
   LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/gc_leak.o \
+	$(OBJDIR)/gctest/src/gc_dummy.o \
 
   define PREBUILDCMDS
   endef
@@ -107,9 +107,9 @@ ifeq ($(config),release32)
 endif
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../build/obj/Debug/x64/Debug/leak_gc
+  OBJDIR              = ../build/obj/Debug/x64/Debug/dummy_gc
   TARGETDIR           = ../build/bin/Debug
-  TARGET              = $(TARGETDIR)/leak_gc
+  TARGET              = $(TARGETDIR)/dummy_gc
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64
@@ -128,7 +128,7 @@ ifeq ($(config),debug64)
   LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/gc_leak.o \
+	$(OBJDIR)/gctest/src/gc_dummy.o \
 
   define PREBUILDCMDS
   endef
@@ -139,9 +139,9 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../build/obj/Release/x64/Release/leak_gc
+  OBJDIR              = ../build/obj/Release/x64/Release/dummy_gc
   TARGETDIR           = ../build/bin/Release
-  TARGET              = $(TARGETDIR)/leak_gc
+  TARGET              = $(TARGETDIR)/dummy_gc
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64
@@ -160,7 +160,7 @@ ifeq ($(config),release64)
   LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/gc_leak.o \
+	$(OBJDIR)/gctest/src/gc_dummy.o \
 
   define PREBUILDCMDS
   endef
@@ -172,7 +172,7 @@ endif
 
 OBJDIRS := \
 	$(OBJDIR) \
-	$(OBJDIR)/src \
+	$(OBJDIR)/gctest/src \
 
 RESOURCES := \
 
@@ -182,7 +182,7 @@ all: $(OBJDIRS) $(TARGETDIR) prebuild prelink $(TARGET)
 	@:
 
 $(TARGET): $(GCH) $(OBJECTS) $(LIBDEPS) $(EXTERNAL_LIBS) $(RESOURCES) $(OBJRESP) $(LDRESP) | $(TARGETDIR) $(OBJDIRS)
-	@echo Linking leak_gc
+	@echo Linking dummy_gc
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
@@ -195,7 +195,7 @@ $(OBJDIRS):
 	-$(call MKDIR,$@)
 
 clean:
-	@echo Cleaning leak_gc
+	@echo Cleaning dummy_gc
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -232,7 +232,7 @@ $(LDRESP): $(LDDEPS) | $(TARGETDIR) $(OBJDIRS)
 	$(SILENT) echo $^ > $@
 endif
 
-$(OBJDIR)/src/gc_leak.o: ../src/gc_leak.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
+$(OBJDIR)/gctest/src/gc_dummy.o: ../../gctest/src/gc_dummy.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/gctest/src
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 

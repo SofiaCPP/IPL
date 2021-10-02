@@ -40,13 +40,14 @@ ifndef RESCOMP
   endif
 endif
 
-MAKEFILE = spasm.make
+MAKEFILE = gtest.make
 
 ifeq ($(config),debug32)
-  OBJDIR              = ../../JSImpl/build/obj/Debug/x32/Debug/spasm
-  TARGETDIR           = ../../JSImpl/build/bin/Debug
-  TARGET              = $(TARGETDIR)/spasm
+  OBJDIR              = ../build/obj/Debug/x32/Debug/gtest
+  TARGETDIR           = ../build/bin/Debug
+  TARGET              = $(TARGETDIR)/libgtest.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest" -I"../test/googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
@@ -54,17 +55,17 @@ ifeq ($(config),debug32)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Debug" -m32
-  LIBDEPS            += ../../JSImpl/build/bin/Debug/libspasm_lib.a
-  LDDEPS             += ../../JSImpl/build/bin/Debug/libspasm_lib.a
+  ALL_LDFLAGS        += $(LDFLAGS) -m32
+  LIBDEPS            +=
+  LDDEPS             +=
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
+  LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/asm/main.o \
+	$(OBJDIR)/test/googletest/googletest/src/gtest-all.o \
 
   define PREBUILDCMDS
   endef
@@ -75,10 +76,11 @@ ifeq ($(config),debug32)
 endif
 
 ifeq ($(config),release32)
-  OBJDIR              = ../../JSImpl/build/obj/Release/x32/Release/spasm
-  TARGETDIR           = ../../JSImpl/build/bin/Release
-  TARGET              = $(TARGETDIR)/spasm
+  OBJDIR              = ../build/obj/Release/x32/Release/gtest
+  TARGETDIR           = ../build/bin/Release
+  TARGET              = $(TARGETDIR)/libgtest.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest" -I"../test/googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
@@ -86,17 +88,17 @@ ifeq ($(config),release32)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Release" -m32
-  LIBDEPS            += ../../JSImpl/build/bin/Release/libspasm_lib.a
-  LDDEPS             += ../../JSImpl/build/bin/Release/libspasm_lib.a
+  ALL_LDFLAGS        += $(LDFLAGS) -m32
+  LIBDEPS            +=
+  LDDEPS             +=
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
+  LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/asm/main.o \
+	$(OBJDIR)/test/googletest/googletest/src/gtest-all.o \
 
   define PREBUILDCMDS
   endef
@@ -107,10 +109,11 @@ ifeq ($(config),release32)
 endif
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../../JSImpl/build/obj/Debug/x64/Debug/spasm
-  TARGETDIR           = ../../JSImpl/build/bin/Debug
-  TARGET              = $(TARGETDIR)/spasm
+  OBJDIR              = ../build/obj/Debug/x64/Debug/gtest
+  TARGETDIR           = ../build/bin/Debug
+  TARGET              = $(TARGETDIR)/libgtest.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest" -I"../test/googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
@@ -118,17 +121,17 @@ ifeq ($(config),debug64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Debug" -m64
-  LIBDEPS            += ../../JSImpl/build/bin/Debug/libspasm_lib.a
-  LDDEPS             += ../../JSImpl/build/bin/Debug/libspasm_lib.a
+  ALL_LDFLAGS        += $(LDFLAGS) -m64
+  LIBDEPS            +=
+  LDDEPS             +=
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
+  LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/asm/main.o \
+	$(OBJDIR)/test/googletest/googletest/src/gtest-all.o \
 
   define PREBUILDCMDS
   endef
@@ -139,10 +142,11 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../../JSImpl/build/obj/Release/x64/Release/spasm
-  TARGETDIR           = ../../JSImpl/build/bin/Release
-  TARGET              = $(TARGETDIR)/spasm
+  OBJDIR              = ../build/obj/Release/x64/Release/gtest
+  TARGETDIR           = ../build/bin/Release
+  TARGET              = $(TARGETDIR)/libgtest.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest" -I"../test/googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
@@ -150,17 +154,17 @@ ifeq ($(config),release64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Release" -m64
-  LIBDEPS            += ../../JSImpl/build/bin/Release/libspasm_lib.a
-  LDDEPS             += ../../JSImpl/build/bin/Release/libspasm_lib.a
+  ALL_LDFLAGS        += $(LDFLAGS) -m64
+  LIBDEPS            +=
+  LDDEPS             +=
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
+  LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/asm/main.o \
+	$(OBJDIR)/test/googletest/googletest/src/gtest-all.o \
 
   define PREBUILDCMDS
   endef
@@ -172,7 +176,7 @@ endif
 
 OBJDIRS := \
 	$(OBJDIR) \
-	$(OBJDIR)/src/asm \
+	$(OBJDIR)/test/googletest/googletest/src \
 
 RESOURCES := \
 
@@ -182,8 +186,13 @@ all: $(OBJDIRS) $(TARGETDIR) prebuild prelink $(TARGET)
 	@:
 
 $(TARGET): $(GCH) $(OBJECTS) $(LIBDEPS) $(EXTERNAL_LIBS) $(RESOURCES) $(OBJRESP) $(LDRESP) | $(TARGETDIR) $(OBJDIRS)
-	@echo Linking spasm
-	$(SILENT) $(LINKCMD)
+	@echo Archiving gtest
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) rm -f  $(TARGET)
+else
+	$(SILENT) if exist $(subst /,\\,$(TARGET)) del $(subst /,\\,$(TARGET))
+endif
+	$(SILENT) $(LINKCMD) $(LINKOBJS)
 	$(POSTBUILDCMDS)
 
 $(TARGETDIR):
@@ -195,7 +204,7 @@ $(OBJDIRS):
 	-$(call MKDIR,$@)
 
 clean:
-	@echo Cleaning spasm
+	@echo Cleaning gtest
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -232,7 +241,7 @@ $(LDRESP): $(LDDEPS) | $(TARGETDIR) $(OBJDIRS)
 	$(SILENT) echo $^ > $@
 endif
 
-$(OBJDIR)/src/asm/main.o: ../src/asm/main.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src/asm
+$(OBJDIR)/test/googletest/googletest/src/gtest-all.o: ../test/googletest/googletest/src/gtest-all.cc $(GCH) $(MAKEFILE) | $(OBJDIR)/test/googletest/googletest/src
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 

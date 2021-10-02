@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3F16CDE1-AB80-8158-F4BE-32FE60685FAD}</ProjectGuid>
-    <RootNamespace>spasm_lib</RootNamespace>
+    <ProjectGuid>{B686840F-229B-ACC0-EB1C-502057F0A8F1}</ProjectGuid>
+    <RootNamespace>gmock</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.10240.0</WindowsTargetPlatformMinVersion>
     <Keyword>Win32Proj</Keyword>
@@ -31,7 +31,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -39,7 +38,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -47,7 +45,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -55,7 +52,6 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -75,33 +71,34 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Debug\x32\Debug\spasm_lib\</IntDir>
-    <TargetName>spasm_lib</TargetName>
+    <OutDir>..\build\bin\Debug\</OutDir>
+    <IntDir>..\build\obj\Debug\x32\Debug\gmock\</IntDir>
+    <TargetName>gmock</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Debug\x64\Debug\spasm_lib\</IntDir>
-    <TargetName>spasm_lib</TargetName>
+    <OutDir>..\build\bin\Debug\</OutDir>
+    <IntDir>..\build\obj\Debug\x64\Debug\gmock\</IntDir>
+    <TargetName>gmock</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Release\x32\Release\spasm_lib\</IntDir>
-    <TargetName>spasm_lib</TargetName>
+    <OutDir>..\build\bin\Release\</OutDir>
+    <IntDir>..\build\obj\Release\x32\Release\gmock\</IntDir>
+    <TargetName>gmock</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Release\x64\Release\spasm_lib\</IntDir>
-    <TargetName>spasm_lib</TargetName>
+    <OutDir>..\build\bin\Release\</OutDir>
+    <IntDir>..\build\obj\Release\x64\Release\gmock\</IntDir>
+    <TargetName>gmock</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\test\googletest\googlemock;..\test\googletest\googlemock\include;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -113,26 +110,28 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)spasm_lib.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)gmock.pdb</ProgramDataBaseFileName>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\test\googletest\googlemock;..\test\googletest\googlemock\include;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   <Lib>
-    <OutputFile>$(OutDir)spasm_lib.lib</OutputFile>
+    <OutputFile>$(OutDir)gmock.lib</OutputFile>
     <TargetMachine>MachineX86</TargetMachine>
   </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)spasm_lib.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)gmock.pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\test\googletest\googlemock;..\test\googletest\googlemock\include;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -144,26 +143,28 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)spasm_lib.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)gmock.pdb</ProgramDataBaseFileName>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\test\googletest\googlemock;..\test\googletest\googlemock\include;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   <Lib>
-    <OutputFile>$(OutDir)spasm_lib.lib</OutputFile>
+    <OutputFile>$(OutDir)gmock.lib</OutputFile>
     <TargetMachine>MachineX64</TargetMachine>
   </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)spasm_lib.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)gmock.pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\test\googletest\googlemock;..\test\googletest\googlemock\include;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -175,20 +176,21 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)spasm_lib.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)gmock.pdb</ProgramDataBaseFileName>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\test\googletest\googlemock;..\test\googletest\googlemock\include;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   <Lib>
-    <OutputFile>$(OutDir)spasm_lib.lib</OutputFile>
+    <OutputFile>$(OutDir)gmock.lib</OutputFile>
     <TargetMachine>MachineX86</TargetMachine>
   </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)spasm_lib.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)gmock.pdb</ProgramDatabaseFile>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
@@ -197,6 +199,7 @@
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\test\googletest\googlemock;..\test\googletest\googlemock\include;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -208,36 +211,40 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(OutDir)spasm_lib.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)gmock.pdb</ProgramDataBaseFileName>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\test\googletest\googlemock;..\test\googletest\googlemock\include;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
   <Lib>
-    <OutputFile>$(OutDir)spasm_lib.lib</OutputFile>
+    <OutputFile>$(OutDir)gmock.lib</OutputFile>
     <TargetMachine>MachineX64</TargetMachine>
   </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)spasm_lib.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)gmock.pdb</ProgramDatabaseFile>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\asm\assembler.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\asm\bytecode.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\asm\lexer.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\asm\symbol.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\asm\token.cpp">
-    </ClCompile>
-    <ClCompile Include="..\src\asm\tokenizer.cpp">
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-matchers.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-generated-nice-strict.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-cardinalities.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-more-matchers.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-generated-actions.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-generated-matchers.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-more-actions.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-spec-builders.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-generated-function-mockers.h" />
+    <ClInclude Include="..\test\googletest\googlemock\include\gmock\gmock-actions.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\test\googletest\googlemock\src\gmock-all.cc">
     </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

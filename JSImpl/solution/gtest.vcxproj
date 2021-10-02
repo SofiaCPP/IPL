@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{69185F10-D52C-87C1-9EAE-2A210A8283F2}</ProjectGuid>
-    <RootNamespace>spasm</RootNamespace>
+    <ProjectGuid>{EC34880F-5849-B0C0-21CB-53208D9EACF1}</ProjectGuid>
+    <RootNamespace>gtest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.10240.0</WindowsTargetPlatformMinVersion>
     <Keyword>Win32Proj</Keyword>
@@ -28,34 +28,30 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -75,37 +71,34 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Debug\x32\Debug\spasm\</IntDir>
-    <TargetName>spasm</TargetName>
-    <TargetExt>.exe</TargetExt>
-    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\build\bin\Debug\</OutDir>
+    <IntDir>..\build\obj\Debug\x32\Debug\gtest\</IntDir>
+    <TargetName>gtest</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Debug\x64\Debug\spasm\</IntDir>
-    <TargetName>spasm</TargetName>
-    <TargetExt>.exe</TargetExt>
-    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\build\bin\Debug\</OutDir>
+    <IntDir>..\build\obj\Debug\x64\Debug\gtest\</IntDir>
+    <TargetName>gtest</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Release\x32\Release\spasm\</IntDir>
-    <TargetName>spasm</TargetName>
-    <TargetExt>.exe</TargetExt>
-    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\build\bin\Release\</OutDir>
+    <IntDir>..\build\obj\Release\x32\Release\gtest\</IntDir>
+    <TargetName>gtest</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Release\x64\Release\spasm\</IntDir>
-    <TargetName>spasm</TargetName>
-    <TargetExt>.exe</TargetExt>
-    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\build\bin\Release\</OutDir>
+    <IntDir>..\build\obj\Release\x64\Release\gtest\</IntDir>
+    <TargetName>gtest</TargetName>
+    <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -117,26 +110,28 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(IntDir)spasm.compile.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)gtest.pdb</ProgramDataBaseFileName>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+  <Lib>
+    <OutputFile>$(OutDir)gtest.lib</OutputFile>
+    <TargetMachine>MachineX86</TargetMachine>
+  </Lib>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)spasm.pdb</ProgramDatabaseFile>
-      <AdditionalLibraryDirectories>;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(OutDir)spasm.exe</OutputFile>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <TargetMachine>MachineX86</TargetMachine>
+      <ProgramDatabaseFile>$(OutDir)gtest.pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -148,26 +143,28 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(IntDir)spasm.compile.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)gtest.pdb</ProgramDataBaseFileName>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+  <Lib>
+    <OutputFile>$(OutDir)gtest.lib</OutputFile>
+    <TargetMachine>MachineX64</TargetMachine>
+  </Lib>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)spasm.pdb</ProgramDatabaseFile>
-      <AdditionalLibraryDirectories>;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(OutDir)spasm.exe</OutputFile>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <TargetMachine>MachineX64</TargetMachine>
+      <ProgramDatabaseFile>$(OutDir)gtest.pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -179,28 +176,30 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(IntDir)spasm.compile.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)gtest.pdb</ProgramDataBaseFileName>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+  <Lib>
+    <OutputFile>$(OutDir)gtest.lib</OutputFile>
+    <TargetMachine>MachineX86</TargetMachine>
+  </Lib>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)spasm.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)gtest.pdb</ProgramDatabaseFile>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(OutDir)spasm.exe</OutputFile>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalOptions>  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -212,32 +211,40 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ProgramDataBaseFileName>$(IntDir)spasm.compile.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)gtest.pdb</ProgramDataBaseFileName>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\test\googletest\googletest;..\test\googletest\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+  <Lib>
+    <OutputFile>$(OutDir)gtest.lib</OutputFile>
+    <TargetMachine>MachineX64</TargetMachine>
+  </Lib>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)spasm.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)gtest.pdb</ProgramDatabaseFile>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <OutputFile>$(OutDir)spasm.exe</OutputFile>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\asm\main.cpp">
-    </ClCompile>
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest.h" />
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest-message.h" />
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest-param-test.h" />
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest-typed-test.h" />
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest_pred_impl.h" />
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest-spi.h" />
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest-death-test.h" />
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest-printers.h" />
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest-test-part.h" />
+    <ClInclude Include="..\test\googletest\googletest\include\gtest\gtest_prod.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="spasm_lib.vcxproj">
-      <Project>{3F16CDE1-AB80-8158-F4BE-32FE60685FAD}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\test\googletest\googletest\src\gtest-all.cc">
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

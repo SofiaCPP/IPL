@@ -40,19 +40,20 @@ ifndef RESCOMP
   endif
 endif
 
-MAKEFILE = test_bench.make
+MAKEFILE = gtest_main.make
 
 ifeq ($(config),debug32)
-  OBJDIR              = ../build/obj/Debug/x32/Debug/test_bench
+  OBJDIR              = ../build/obj/Debug/x32/Debug/gtest_main
   TARGETDIR           = ../build/bin/Debug
-  TARGET              = $(TARGETDIR)/libtest_bench.a
-  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
+  TARGET              = $(TARGETDIR)/libgtest_main.a
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest" -I"../test/googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
-  ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32
-  ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32
-  ALL_CXXFLAGS       += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32 -std=c++17
-  ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32
-  ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32 -std=c++17
+  ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
+  ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
+  ALL_CXXFLAGS       += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32 -std=c++17
+  ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
+  ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   ALL_LDFLAGS        += $(LDFLAGS) -m32
   LIBDEPS            +=
@@ -64,8 +65,7 @@ ifeq ($(config),debug32)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/main.o \
-	$(OBJDIR)/src/minitrace.o \
+	$(OBJDIR)/test/googletest/googletest/src/gtest_main.o \
 
   define PREBUILDCMDS
   endef
@@ -76,16 +76,17 @@ ifeq ($(config),debug32)
 endif
 
 ifeq ($(config),release32)
-  OBJDIR              = ../build/obj/Release/x32/Release/test_bench
+  OBJDIR              = ../build/obj/Release/x32/Release/gtest_main
   TARGETDIR           = ../build/bin/Release
-  TARGET              = $(TARGETDIR)/libtest_bench.a
-  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
+  TARGET              = $(TARGETDIR)/libgtest_main.a
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest" -I"../test/googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
-  ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32
-  ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32
-  ALL_CXXFLAGS       += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32 -std=c++17
-  ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32
-  ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32 -std=c++17
+  ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
+  ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
+  ALL_CXXFLAGS       += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32 -std=c++17
+  ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
+  ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   ALL_LDFLAGS        += $(LDFLAGS) -m32
   LIBDEPS            +=
@@ -97,8 +98,7 @@ ifeq ($(config),release32)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/main.o \
-	$(OBJDIR)/src/minitrace.o \
+	$(OBJDIR)/test/googletest/googletest/src/gtest_main.o \
 
   define PREBUILDCMDS
   endef
@@ -109,16 +109,17 @@ ifeq ($(config),release32)
 endif
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../build/obj/Debug/x64/Debug/test_bench
+  OBJDIR              = ../build/obj/Debug/x64/Debug/gtest_main
   TARGETDIR           = ../build/bin/Debug
-  TARGET              = $(TARGETDIR)/libtest_bench.a
-  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
+  TARGET              = $(TARGETDIR)/libgtest_main.a
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest" -I"../test/googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
-  ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64
-  ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64
-  ALL_CXXFLAGS       += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64 -std=c++17
-  ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64
-  ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64 -std=c++17
+  ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
+  ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
+  ALL_CXXFLAGS       += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64 -std=c++17
+  ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
+  ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   ALL_LDFLAGS        += $(LDFLAGS) -m64
   LIBDEPS            +=
@@ -130,8 +131,7 @@ ifeq ($(config),debug64)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/main.o \
-	$(OBJDIR)/src/minitrace.o \
+	$(OBJDIR)/test/googletest/googletest/src/gtest_main.o \
 
   define PREBUILDCMDS
   endef
@@ -142,16 +142,17 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../build/obj/Release/x64/Release/test_bench
+  OBJDIR              = ../build/obj/Release/x64/Release/gtest_main
   TARGETDIR           = ../build/bin/Release
-  TARGET              = $(TARGETDIR)/libtest_bench.a
-  DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
+  TARGET              = $(TARGETDIR)/libgtest_main.a
+  DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest" -I"../test/googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
-  ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64
-  ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64
-  ALL_CXXFLAGS       += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64 -std=c++17
-  ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64
-  ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64 -std=c++17
+  ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
+  ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
+  ALL_CXXFLAGS       += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64 -std=c++17
+  ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
+  ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   ALL_LDFLAGS        += $(LDFLAGS) -m64
   LIBDEPS            +=
@@ -163,8 +164,7 @@ ifeq ($(config),release64)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/main.o \
-	$(OBJDIR)/src/minitrace.o \
+	$(OBJDIR)/test/googletest/googletest/src/gtest_main.o \
 
   define PREBUILDCMDS
   endef
@@ -176,7 +176,7 @@ endif
 
 OBJDIRS := \
 	$(OBJDIR) \
-	$(OBJDIR)/src \
+	$(OBJDIR)/test/googletest/googletest/src \
 
 RESOURCES := \
 
@@ -186,7 +186,7 @@ all: $(OBJDIRS) $(TARGETDIR) prebuild prelink $(TARGET)
 	@:
 
 $(TARGET): $(GCH) $(OBJECTS) $(LIBDEPS) $(EXTERNAL_LIBS) $(RESOURCES) $(OBJRESP) $(LDRESP) | $(TARGETDIR) $(OBJDIRS)
-	@echo Archiving test_bench
+	@echo Archiving gtest_main
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 else
@@ -204,7 +204,7 @@ $(OBJDIRS):
 	-$(call MKDIR,$@)
 
 clean:
-	@echo Cleaning test_bench
+	@echo Cleaning gtest_main
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -241,11 +241,7 @@ $(LDRESP): $(LDDEPS) | $(TARGETDIR) $(OBJDIRS)
 	$(SILENT) echo $^ > $@
 endif
 
-$(OBJDIR)/src/main.o: ../src/main.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
-
-$(OBJDIR)/src/minitrace.o: ../src/minitrace.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
+$(OBJDIR)/test/googletest/googletest/src/gtest_main.o: ../test/googletest/googletest/src/gtest_main.cc $(GCH) $(MAKEFILE) | $(OBJDIR)/test/googletest/googletest/src
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 

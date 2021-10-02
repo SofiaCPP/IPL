@@ -40,13 +40,14 @@ ifndef RESCOMP
   endif
 endif
 
-MAKEFILE = sprt.make
+MAKEFILE = Test.make
 
 ifeq ($(config),debug32)
-  OBJDIR              = ../../JSImpl/build/obj/Debug/x32/Debug/sprt
-  TARGETDIR           = ../../JSImpl/build/bin/Debug
-  TARGET              = $(TARGETDIR)/libsprt.a
+  OBJDIR              = ../build/obj/Debug/x32/Debug/Test
+  TARGETDIR           = ../build/bin/Debug
+  TARGET              = $(TARGETDIR)/Test
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest/include" -I"../test/googletest/googlemock/include" -I".." -I"../../spasm/src" -I"../../spasm/src/asm"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
@@ -54,17 +55,22 @@ ifeq ($(config),debug32)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -m32
-  LIBDEPS            +=
-  LDDEPS             +=
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Debug" -L"." -m32
+  LIBDEPS            += ../build/bin/Debug/libsprt.a ../build/bin/Debug/libspasm_lib.a ../build/bin/Debug/libJSLib.a ../build/bin/Debug/libgtest.a ../build/bin/Debug/libgmock.a ../build/bin/Debug/libgtest_main.a
+  LDDEPS             += ../build/bin/Debug/libsprt.a ../build/bin/Debug/libspasm_lib.a ../build/bin/Debug/libJSLib.a ../build/bin/Debug/libgtest.a ../build/bin/Debug/libgmock.a ../build/bin/Debug/libgtest_main.a
   LDRESP              =
-  LIBS               += $(LDDEPS)
+  LIBS               += $(LDDEPS) -lpthread
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(AR)  -rcs $(TARGET)
+  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/spasm.o \
+	$(OBJDIR)/test/ASTInterpreterTests.o \
+	$(OBJDIR)/test/CodeGenerationTests.o \
+	$(OBJDIR)/test/LexerTests.o \
+	$(OBJDIR)/test/ParserTests.o \
+	$(OBJDIR)/test/empty.o \
+	$(OBJDIR)/test/sprtTests.o \
 
   define PREBUILDCMDS
   endef
@@ -75,10 +81,11 @@ ifeq ($(config),debug32)
 endif
 
 ifeq ($(config),release32)
-  OBJDIR              = ../../JSImpl/build/obj/Release/x32/Release/sprt
-  TARGETDIR           = ../../JSImpl/build/bin/Release
-  TARGET              = $(TARGETDIR)/libsprt.a
+  OBJDIR              = ../build/obj/Release/x32/Release/Test
+  TARGETDIR           = ../build/bin/Release
+  TARGET              = $(TARGETDIR)/Test
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest/include" -I"../test/googletest/googlemock/include" -I".." -I"../../spasm/src" -I"../../spasm/src/asm"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
@@ -86,17 +93,22 @@ ifeq ($(config),release32)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -m32
-  LIBDEPS            +=
-  LDDEPS             +=
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Release" -L"." -m32
+  LIBDEPS            += ../build/bin/Release/libsprt.a ../build/bin/Release/libspasm_lib.a ../build/bin/Release/libJSLib.a ../build/bin/Release/libgtest.a ../build/bin/Release/libgmock.a ../build/bin/Release/libgtest_main.a
+  LDDEPS             += ../build/bin/Release/libsprt.a ../build/bin/Release/libspasm_lib.a ../build/bin/Release/libJSLib.a ../build/bin/Release/libgtest.a ../build/bin/Release/libgmock.a ../build/bin/Release/libgtest_main.a
   LDRESP              =
-  LIBS               += $(LDDEPS)
+  LIBS               += $(LDDEPS) -lpthread
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(AR)  -rcs $(TARGET)
+  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/spasm.o \
+	$(OBJDIR)/test/ASTInterpreterTests.o \
+	$(OBJDIR)/test/CodeGenerationTests.o \
+	$(OBJDIR)/test/LexerTests.o \
+	$(OBJDIR)/test/ParserTests.o \
+	$(OBJDIR)/test/empty.o \
+	$(OBJDIR)/test/sprtTests.o \
 
   define PREBUILDCMDS
   endef
@@ -107,10 +119,11 @@ ifeq ($(config),release32)
 endif
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../../JSImpl/build/obj/Debug/x64/Debug/sprt
-  TARGETDIR           = ../../JSImpl/build/bin/Debug
-  TARGET              = $(TARGETDIR)/libsprt.a
+  OBJDIR              = ../build/obj/Debug/x64/Debug/Test
+  TARGETDIR           = ../build/bin/Debug
+  TARGET              = $(TARGETDIR)/Test
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest/include" -I"../test/googletest/googlemock/include" -I".." -I"../../spasm/src" -I"../../spasm/src/asm"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
@@ -118,17 +131,22 @@ ifeq ($(config),debug64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -m64
-  LIBDEPS            +=
-  LDDEPS             +=
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Debug" -L"." -m64
+  LIBDEPS            += ../build/bin/Debug/libsprt.a ../build/bin/Debug/libspasm_lib.a ../build/bin/Debug/libJSLib.a ../build/bin/Debug/libgtest.a ../build/bin/Debug/libgmock.a ../build/bin/Debug/libgtest_main.a
+  LDDEPS             += ../build/bin/Debug/libsprt.a ../build/bin/Debug/libspasm_lib.a ../build/bin/Debug/libJSLib.a ../build/bin/Debug/libgtest.a ../build/bin/Debug/libgmock.a ../build/bin/Debug/libgtest_main.a
   LDRESP              =
-  LIBS               += $(LDDEPS)
+  LIBS               += $(LDDEPS) -lpthread
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(AR)  -rcs $(TARGET)
+  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/spasm.o \
+	$(OBJDIR)/test/ASTInterpreterTests.o \
+	$(OBJDIR)/test/CodeGenerationTests.o \
+	$(OBJDIR)/test/LexerTests.o \
+	$(OBJDIR)/test/ParserTests.o \
+	$(OBJDIR)/test/empty.o \
+	$(OBJDIR)/test/sprtTests.o \
 
   define PREBUILDCMDS
   endef
@@ -139,10 +157,11 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../../JSImpl/build/obj/Release/x64/Release/sprt
-  TARGETDIR           = ../../JSImpl/build/bin/Release
-  TARGET              = $(TARGETDIR)/libsprt.a
+  OBJDIR              = ../build/obj/Release/x64/Release/Test
+  TARGETDIR           = ../build/bin/Release
+  TARGET              = $(TARGETDIR)/Test
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
+  INCLUDES           += -I"../test/googletest/googletest/include" -I"../test/googletest/googlemock/include" -I".." -I"../../spasm/src" -I"../../spasm/src/asm"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
@@ -150,17 +169,22 @@ ifeq ($(config),release64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -m64
-  LIBDEPS            +=
-  LDDEPS             +=
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Release" -L"." -m64
+  LIBDEPS            += ../build/bin/Release/libsprt.a ../build/bin/Release/libspasm_lib.a ../build/bin/Release/libJSLib.a ../build/bin/Release/libgtest.a ../build/bin/Release/libgmock.a ../build/bin/Release/libgtest_main.a
+  LDDEPS             += ../build/bin/Release/libsprt.a ../build/bin/Release/libspasm_lib.a ../build/bin/Release/libJSLib.a ../build/bin/Release/libgtest.a ../build/bin/Release/libgmock.a ../build/bin/Release/libgtest_main.a
   LDRESP              =
-  LIBS               += $(LDDEPS)
+  LIBS               += $(LDDEPS) -lpthread
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(AR)  -rcs $(TARGET)
+  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/spasm.o \
+	$(OBJDIR)/test/ASTInterpreterTests.o \
+	$(OBJDIR)/test/CodeGenerationTests.o \
+	$(OBJDIR)/test/LexerTests.o \
+	$(OBJDIR)/test/ParserTests.o \
+	$(OBJDIR)/test/empty.o \
+	$(OBJDIR)/test/sprtTests.o \
 
   define PREBUILDCMDS
   endef
@@ -172,7 +196,7 @@ endif
 
 OBJDIRS := \
 	$(OBJDIR) \
-	$(OBJDIR)/src \
+	$(OBJDIR)/test \
 
 RESOURCES := \
 
@@ -182,13 +206,8 @@ all: $(OBJDIRS) $(TARGETDIR) prebuild prelink $(TARGET)
 	@:
 
 $(TARGET): $(GCH) $(OBJECTS) $(LIBDEPS) $(EXTERNAL_LIBS) $(RESOURCES) $(OBJRESP) $(LDRESP) | $(TARGETDIR) $(OBJDIRS)
-	@echo Archiving sprt
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) rm -f  $(TARGET)
-else
-	$(SILENT) if exist $(subst /,\\,$(TARGET)) del $(subst /,\\,$(TARGET))
-endif
-	$(SILENT) $(LINKCMD) $(LINKOBJS)
+	@echo Linking Test
+	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
 $(TARGETDIR):
@@ -200,7 +219,7 @@ $(OBJDIRS):
 	-$(call MKDIR,$@)
 
 clean:
-	@echo Cleaning sprt
+	@echo Cleaning Test
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -237,7 +256,27 @@ $(LDRESP): $(LDDEPS) | $(TARGETDIR) $(OBJDIRS)
 	$(SILENT) echo $^ > $@
 endif
 
-$(OBJDIR)/src/spasm.o: ../src/spasm.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src
+$(OBJDIR)/test/ASTInterpreterTests.o: ../test/ASTInterpreterTests.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/test
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/test/CodeGenerationTests.o: ../test/CodeGenerationTests.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/test
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/test/LexerTests.o: ../test/LexerTests.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/test
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/test/ParserTests.o: ../test/ParserTests.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/test
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/test/empty.o: ../test/empty.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/test
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/test/sprtTests.o: ../test/sprtTests.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/test
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 
