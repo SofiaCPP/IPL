@@ -17,6 +17,11 @@ solution 'JSImpl'
 
 
     local root = '../build/'
+    if _ACTION ~= 'ninja' then
+        location '.'
+    else
+        location './ninja'
+    end
 
     configuration 'Debug'
         targetdir(root .. 'bin/Debug')
@@ -36,6 +41,7 @@ solution 'JSImpl'
             kind 'StaticLib'
             language 'C++'
             uuid(os.uuid('JSLib'))
+            location(solution().location)
             files '../src/*.cpp'
             removefiles '../src/main.cpp'
             files '../src/*.h'
@@ -44,6 +50,7 @@ solution 'JSImpl'
             kind 'ConsoleApp'
             language 'C++'
             uuid(os.uuid('JSImpl'))
+            location(solution().location)
             files '../src/main.cpp'
             links 'JSLib'
 

@@ -15,6 +15,12 @@ if not solution() then
 
     local root = '../build/'
 
+    if _ACTION ~= 'ninja' then
+        location '.'
+    else
+        location './ninja'
+    end
+
     configuration 'Debug'
         targetdir(root .. 'bin/Debug')
         objdir(root .. 'obj/Debug')
@@ -38,6 +44,7 @@ end
         kind 'StaticLib'
         language 'C++'
         uuid(os.uuid('spasm_lib'))
+        location(solution().location)
         files '../src/asm/*.cpp'
         removefiles {
             '../src/asm/main.cpp',
@@ -50,6 +57,7 @@ end
         kind 'ConsoleApp'
         language 'C++'
         uuid(os.uuid('spasm'))
+        location(solution().location)
 		links 'spasm_lib'
         files '../src/asm/main.cpp'
         removefiles {
@@ -62,6 +70,7 @@ end
         kind 'ConsoleApp'
         language 'C++'
         uuid(os.uuid('sprun'))
+        location(solution().location)
         files '../src/main.cpp'
         links 'sprt'
 
