@@ -14,19 +14,19 @@ all: $(PROJECTS)
 
 Test: sprt spasm_lib JSLib gtest gmock gtest_main
 	@echo "==== Building Test ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../test -f Test.make
+	@${MAKE} --no-print-directory -C . -f Test.make
 
 gtest: 
 	@echo "==== Building gtest ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../test -f gtest.make
+	@${MAKE} --no-print-directory -C . -f gtest.make
 
 gmock: 
 	@echo "==== Building gmock ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../test -f gmock.make
+	@${MAKE} --no-print-directory -C . -f gmock.make
 
 gtest_main: 
 	@echo "==== Building gtest_main ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../test -f gtest_main.make
+	@${MAKE} --no-print-directory -C . -f gtest_main.make
 
 JSLib: 
 	@echo "==== Building JSLib ($(config)) ===="
@@ -38,46 +38,46 @@ JSImpl: JSLib
 
 sprt: 
 	@echo "==== Building sprt ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprt.make
+	@${MAKE} --no-print-directory -C . -f sprt.make
 
 spasm_lib: 
 	@echo "==== Building spasm_lib ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm_lib.make
+	@${MAKE} --no-print-directory -C . -f spasm_lib.make
 
 spasm: spasm_lib
 	@echo "==== Building spasm ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm.make
+	@${MAKE} --no-print-directory -C . -f spasm.make
 
 sprun: sprt
 	@echo "==== Building sprun ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprun.make
+	@${MAKE} --no-print-directory -C . -f sprun.make
 
 test_bench: 
 	@echo "==== Building test_bench ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../../gctest/solution -f test_bench.make
+	@${MAKE} --no-print-directory -C . -f test_bench.make
 
 leak_gc: test_bench
 	@echo "==== Building leak_gc ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../../gctest/solution -f leak_gc.make
+	@${MAKE} --no-print-directory -C . -f leak_gc.make
 
 dummy_gc: test_bench
 	@echo "==== Building dummy_gc ($(config)) ===="
-	@${MAKE} --no-print-directory -C ../../gctest/solution -f dummy_gc.make
+	@${MAKE} --no-print-directory -C . -f dummy_gc.make
 
 clean:
-	@${MAKE} --no-print-directory -C ../test -f Test.make clean
-	@${MAKE} --no-print-directory -C ../test -f gtest.make clean
-	@${MAKE} --no-print-directory -C ../test -f gmock.make clean
-	@${MAKE} --no-print-directory -C ../test -f gtest_main.make clean
+	@${MAKE} --no-print-directory -C . -f Test.make clean
+	@${MAKE} --no-print-directory -C . -f gtest.make clean
+	@${MAKE} --no-print-directory -C . -f gmock.make clean
+	@${MAKE} --no-print-directory -C . -f gtest_main.make clean
 	@${MAKE} --no-print-directory -C . -f JSLib.make clean
 	@${MAKE} --no-print-directory -C . -f JSImpl.make clean
-	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprt.make clean
-	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm_lib.make clean
-	@${MAKE} --no-print-directory -C ../../spasm/solution -f spasm.make clean
-	@${MAKE} --no-print-directory -C ../../spasm/solution -f sprun.make clean
-	@${MAKE} --no-print-directory -C ../../gctest/solution -f test_bench.make clean
-	@${MAKE} --no-print-directory -C ../../gctest/solution -f leak_gc.make clean
-	@${MAKE} --no-print-directory -C ../../gctest/solution -f dummy_gc.make clean
+	@${MAKE} --no-print-directory -C . -f sprt.make clean
+	@${MAKE} --no-print-directory -C . -f spasm_lib.make clean
+	@${MAKE} --no-print-directory -C . -f spasm.make clean
+	@${MAKE} --no-print-directory -C . -f sprun.make clean
+	@${MAKE} --no-print-directory -C . -f test_bench.make clean
+	@${MAKE} --no-print-directory -C . -f leak_gc.make clean
+	@${MAKE} --no-print-directory -C . -f dummy_gc.make clean
 
 help:
 	@echo "Usage: make [config=name] [target]"

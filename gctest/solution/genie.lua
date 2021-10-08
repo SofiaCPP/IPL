@@ -19,6 +19,12 @@ if not solution() then
 
     local root = '../build/'
 
+    if _ACTION ~= 'ninja' then
+        location '.'
+    else
+        location './ninja'
+    end
+
     configuration 'Debug'
         targetdir(root .. 'bin/Debug')
         objdir(root .. 'obj/Debug')
@@ -44,6 +50,7 @@ function setup()
     configuration 'gcc'
         removeflags 'ExtraWarnings'
     configuration '*'
+    location(solution().location)
 end
 
     project 'test_bench'

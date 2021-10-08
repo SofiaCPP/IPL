@@ -40,14 +40,13 @@ ifndef RESCOMP
   endif
 endif
 
-MAKEFILE = gtest.make
+MAKEFILE = spasm_lib.make
 
 ifeq ($(config),debug32)
-  OBJDIR              = ../build/obj/Debug/x32/Debug/gtest
+  OBJDIR              = ../build/obj/Debug/x32/Debug/spasm_lib
   TARGETDIR           = ../build/bin/Debug
-  TARGET              = $(TARGETDIR)/libgtest.a
+  TARGET              = $(TARGETDIR)/libspasm_lib.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
-  INCLUDES           += -I"googletest/googletest" -I"googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
@@ -65,7 +64,12 @@ ifeq ($(config),debug32)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/googletest/googletest/src/gtest-all.o \
+	$(OBJDIR)/spasm/src/asm/assembler.o \
+	$(OBJDIR)/spasm/src/asm/bytecode.o \
+	$(OBJDIR)/spasm/src/asm/lexer.o \
+	$(OBJDIR)/spasm/src/asm/symbol.o \
+	$(OBJDIR)/spasm/src/asm/token.o \
+	$(OBJDIR)/spasm/src/asm/tokenizer.o \
 
   define PREBUILDCMDS
   endef
@@ -76,11 +80,10 @@ ifeq ($(config),debug32)
 endif
 
 ifeq ($(config),release32)
-  OBJDIR              = ../build/obj/Release/x32/Release/gtest
+  OBJDIR              = ../build/obj/Release/x32/Release/spasm_lib
   TARGETDIR           = ../build/bin/Release
-  TARGET              = $(TARGETDIR)/libgtest.a
+  TARGET              = $(TARGETDIR)/libspasm_lib.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
-  INCLUDES           += -I"googletest/googletest" -I"googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
@@ -98,7 +101,12 @@ ifeq ($(config),release32)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/googletest/googletest/src/gtest-all.o \
+	$(OBJDIR)/spasm/src/asm/assembler.o \
+	$(OBJDIR)/spasm/src/asm/bytecode.o \
+	$(OBJDIR)/spasm/src/asm/lexer.o \
+	$(OBJDIR)/spasm/src/asm/symbol.o \
+	$(OBJDIR)/spasm/src/asm/token.o \
+	$(OBJDIR)/spasm/src/asm/tokenizer.o \
 
   define PREBUILDCMDS
   endef
@@ -109,11 +117,10 @@ ifeq ($(config),release32)
 endif
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../build/obj/Debug/x64/Debug/gtest
+  OBJDIR              = ../build/obj/Debug/x64/Debug/spasm_lib
   TARGETDIR           = ../build/bin/Debug
-  TARGET              = $(TARGETDIR)/libgtest.a
+  TARGET              = $(TARGETDIR)/libspasm_lib.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
-  INCLUDES           += -I"googletest/googletest" -I"googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
@@ -131,7 +138,12 @@ ifeq ($(config),debug64)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/googletest/googletest/src/gtest-all.o \
+	$(OBJDIR)/spasm/src/asm/assembler.o \
+	$(OBJDIR)/spasm/src/asm/bytecode.o \
+	$(OBJDIR)/spasm/src/asm/lexer.o \
+	$(OBJDIR)/spasm/src/asm/symbol.o \
+	$(OBJDIR)/spasm/src/asm/token.o \
+	$(OBJDIR)/spasm/src/asm/tokenizer.o \
 
   define PREBUILDCMDS
   endef
@@ -142,11 +154,10 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../build/obj/Release/x64/Release/gtest
+  OBJDIR              = ../build/obj/Release/x64/Release/spasm_lib
   TARGETDIR           = ../build/bin/Release
-  TARGET              = $(TARGETDIR)/libgtest.a
+  TARGET              = $(TARGETDIR)/libspasm_lib.a
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
-  INCLUDES           += -I"googletest/googletest" -I"googletest/googletest/include"
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_CFLAGS         += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
@@ -164,7 +175,12 @@ ifeq ($(config),release64)
   LINKCMD             = $(AR)  -rcs $(TARGET)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/googletest/googletest/src/gtest-all.o \
+	$(OBJDIR)/spasm/src/asm/assembler.o \
+	$(OBJDIR)/spasm/src/asm/bytecode.o \
+	$(OBJDIR)/spasm/src/asm/lexer.o \
+	$(OBJDIR)/spasm/src/asm/symbol.o \
+	$(OBJDIR)/spasm/src/asm/token.o \
+	$(OBJDIR)/spasm/src/asm/tokenizer.o \
 
   define PREBUILDCMDS
   endef
@@ -176,7 +192,7 @@ endif
 
 OBJDIRS := \
 	$(OBJDIR) \
-	$(OBJDIR)/googletest/googletest/src \
+	$(OBJDIR)/spasm/src/asm \
 
 RESOURCES := \
 
@@ -186,7 +202,7 @@ all: $(OBJDIRS) $(TARGETDIR) prebuild prelink $(TARGET)
 	@:
 
 $(TARGET): $(GCH) $(OBJECTS) $(LIBDEPS) $(EXTERNAL_LIBS) $(RESOURCES) $(OBJRESP) $(LDRESP) | $(TARGETDIR) $(OBJDIRS)
-	@echo Archiving gtest
+	@echo Archiving spasm_lib
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 else
@@ -204,7 +220,7 @@ $(OBJDIRS):
 	-$(call MKDIR,$@)
 
 clean:
-	@echo Cleaning gtest
+	@echo Cleaning spasm_lib
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -241,7 +257,27 @@ $(LDRESP): $(LDDEPS) | $(TARGETDIR) $(OBJDIRS)
 	$(SILENT) echo $^ > $@
 endif
 
-$(OBJDIR)/googletest/googletest/src/gtest-all.o: googletest/googletest/src/gtest-all.cc $(GCH) $(MAKEFILE) | $(OBJDIR)/googletest/googletest/src
+$(OBJDIR)/spasm/src/asm/assembler.o: ../../spasm/src/asm/assembler.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/spasm/src/asm
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/spasm/src/asm/bytecode.o: ../../spasm/src/asm/bytecode.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/spasm/src/asm
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/spasm/src/asm/lexer.o: ../../spasm/src/asm/lexer.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/spasm/src/asm
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/spasm/src/asm/symbol.o: ../../spasm/src/asm/symbol.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/spasm/src/asm
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/spasm/src/asm/token.o: ../../spasm/src/asm/token.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/spasm/src/asm
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
+
+$(OBJDIR)/spasm/src/asm/tokenizer.o: ../../spasm/src/asm/tokenizer.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/spasm/src/asm
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 

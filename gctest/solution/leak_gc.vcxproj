@@ -31,7 +31,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -39,7 +38,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -47,7 +45,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -55,7 +52,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -75,29 +71,29 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Debug\x32\Debug\leak_gc\</IntDir>
+    <OutDir>..\build\bin\Debug\</OutDir>
+    <IntDir>..\build\obj\Debug\x32\Debug\leak_gc\</IntDir>
     <TargetName>leak_gc</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\JSImpl\build\bin\Debug\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Debug\x64\Debug\leak_gc\</IntDir>
+    <OutDir>..\build\bin\Debug\</OutDir>
+    <IntDir>..\build\obj\Debug\x64\Debug\leak_gc\</IntDir>
     <TargetName>leak_gc</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Release\x32\Release\leak_gc\</IntDir>
+    <OutDir>..\build\bin\Release\</OutDir>
+    <IntDir>..\build\obj\Release\x32\Release\leak_gc\</IntDir>
     <TargetName>leak_gc</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\JSImpl\build\bin\Release\</OutDir>
-    <IntDir>..\..\JSImpl\build\obj\Release\x64\Release\leak_gc\</IntDir>
+    <OutDir>..\build\bin\Release\</OutDir>
+    <IntDir>..\build\obj\Release\x64\Release\leak_gc\</IntDir>
     <TargetName>leak_gc</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>false</LinkIncremental>

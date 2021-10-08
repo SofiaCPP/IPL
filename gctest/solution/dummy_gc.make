@@ -43,8 +43,8 @@ endif
 MAKEFILE = dummy_gc.make
 
 ifeq ($(config),debug32)
-  OBJDIR              = ../../JSImpl/build/obj/Debug/x32/Debug/dummy_gc
-  TARGETDIR           = ../../JSImpl/build/bin/Debug
+  OBJDIR              = ../build/obj/Debug/x32/Debug/dummy_gc
+  TARGETDIR           = ../build/bin/Debug
   TARGET              = $(TARGETDIR)/dummy_gc
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -54,9 +54,9 @@ ifeq ($(config),debug32)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Debug" -m32
-  LIBDEPS            += ../../JSImpl/build/bin/Debug/libtest_bench.a
-  LDDEPS             += ../../JSImpl/build/bin/Debug/libtest_bench.a
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Debug" -m32
+  LIBDEPS            += ../build/bin/Debug/libtest_bench.a
+  LDDEPS             += ../build/bin/Debug/libtest_bench.a
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
@@ -75,8 +75,8 @@ ifeq ($(config),debug32)
 endif
 
 ifeq ($(config),release32)
-  OBJDIR              = ../../JSImpl/build/obj/Release/x32/Release/dummy_gc
-  TARGETDIR           = ../../JSImpl/build/bin/Release
+  OBJDIR              = ../build/obj/Release/x32/Release/dummy_gc
+  TARGETDIR           = ../build/bin/Release
   TARGET              = $(TARGETDIR)/dummy_gc
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -86,9 +86,9 @@ ifeq ($(config),release32)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Release" -m32
-  LIBDEPS            += ../../JSImpl/build/bin/Release/libtest_bench.a
-  LDDEPS             += ../../JSImpl/build/bin/Release/libtest_bench.a
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Release" -m32
+  LIBDEPS            += ../build/bin/Release/libtest_bench.a
+  LDDEPS             += ../build/bin/Release/libtest_bench.a
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
@@ -107,8 +107,8 @@ ifeq ($(config),release32)
 endif
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../../JSImpl/build/obj/Debug/x64/Debug/dummy_gc
-  TARGETDIR           = ../../JSImpl/build/bin/Debug
+  OBJDIR              = ../build/obj/Debug/x64/Debug/dummy_gc
+  TARGETDIR           = ../build/bin/Debug
   TARGET              = $(TARGETDIR)/dummy_gc
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -118,9 +118,9 @@ ifeq ($(config),debug64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Debug" -m64
-  LIBDEPS            += ../../JSImpl/build/bin/Debug/libtest_bench.a
-  LDDEPS             += ../../JSImpl/build/bin/Debug/libtest_bench.a
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Debug" -m64
+  LIBDEPS            += ../build/bin/Debug/libtest_bench.a
+  LDDEPS             += ../build/bin/Debug/libtest_bench.a
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
@@ -139,8 +139,8 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../../JSImpl/build/obj/Release/x64/Release/dummy_gc
-  TARGETDIR           = ../../JSImpl/build/bin/Release
+  OBJDIR              = ../build/obj/Release/x64/Release/dummy_gc
+  TARGETDIR           = ../build/bin/Release
   TARGET              = $(TARGETDIR)/dummy_gc
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -DMTR_ENABLED
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
@@ -150,9 +150,9 @@ ifeq ($(config),release64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -g -O3 -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -L"../../JSImpl/build/bin/Release" -m64
-  LIBDEPS            += ../../JSImpl/build/bin/Release/libtest_bench.a
-  LDDEPS             += ../../JSImpl/build/bin/Release/libtest_bench.a
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Release" -m64
+  LIBDEPS            += ../build/bin/Release/libtest_bench.a
+  LDDEPS             += ../build/bin/Release/libtest_bench.a
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=

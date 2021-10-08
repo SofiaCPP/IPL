@@ -2,6 +2,7 @@ project 'Test'
     kind 'ConsoleApp'
     language 'C++'
     uuid(os.uuid('Test'))
+    location(solution().location)
 
     files '*.cpp'
 
@@ -29,6 +30,7 @@ group 'gtest'
         kind 'StaticLib'
         language 'C++'
         uuid(os.uuid('gtest'))
+        location(solution().location)
         files 'googletest/googletest/src/gtest-all.cc'
         files 'googletest/googletest/include/gtest/*.h'
         includedirs {
@@ -40,6 +42,7 @@ group 'gtest'
         kind 'StaticLib'
         language 'C++'
         uuid(os.uuid('gmock'))
+        location(solution().location)
         files 'googletest/googlemock/src/gmock-all.cc'
         files 'googletest/googlemock/include/gmock/*.h'
         includedirs {
@@ -52,6 +55,7 @@ group 'gtest'
         kind 'StaticLib'
         language 'C++'
         uuid(os.uuid('gtest_main'))
+        location(solution().location)
         files 'googletest/googletest/src/gtest_main.cc'
         includedirs {
             'googletest/googletest',

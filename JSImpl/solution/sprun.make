@@ -40,12 +40,12 @@ ifndef RESCOMP
   endif
 endif
 
-MAKEFILE = spasm_lib.make
+MAKEFILE = sprun.make
 
 ifeq ($(config),debug32)
-  OBJDIR              = ../../JSImpl/build/obj/Debug/x32/Debug/spasm_lib
-  TARGETDIR           = ../../JSImpl/build/bin/Debug
-  TARGET              = $(TARGETDIR)/libspasm_lib.a
+  OBJDIR              = ../build/obj/Debug/x32/Debug/sprun
+  TARGETDIR           = ../build/bin/Debug
+  TARGET              = $(TARGETDIR)/sprun
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
@@ -54,22 +54,17 @@ ifeq ($(config),debug32)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -m32
-  LIBDEPS            +=
-  LDDEPS             +=
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Debug" -m32
+  LIBDEPS            += ../build/bin/Debug/libsprt.a
+  LDDEPS             += ../build/bin/Debug/libsprt.a
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(AR)  -rcs $(TARGET)
+  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/asm/assembler.o \
-	$(OBJDIR)/src/asm/bytecode.o \
-	$(OBJDIR)/src/asm/lexer.o \
-	$(OBJDIR)/src/asm/symbol.o \
-	$(OBJDIR)/src/asm/token.o \
-	$(OBJDIR)/src/asm/tokenizer.o \
+	$(OBJDIR)/spasm/src/main.o \
 
   define PREBUILDCMDS
   endef
@@ -80,9 +75,9 @@ ifeq ($(config),debug32)
 endif
 
 ifeq ($(config),release32)
-  OBJDIR              = ../../JSImpl/build/obj/Release/x32/Release/spasm_lib
-  TARGETDIR           = ../../JSImpl/build/bin/Release
-  TARGET              = $(TARGETDIR)/libspasm_lib.a
+  OBJDIR              = ../build/obj/Release/x32/Release/sprun
+  TARGETDIR           = ../build/bin/Release
+  TARGET              = $(TARGETDIR)/sprun
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
@@ -91,22 +86,17 @@ ifeq ($(config),release32)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m32 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -m32
-  LIBDEPS            +=
-  LDDEPS             +=
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Release" -m32
+  LIBDEPS            += ../build/bin/Release/libsprt.a
+  LDDEPS             += ../build/bin/Release/libsprt.a
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(AR)  -rcs $(TARGET)
+  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/asm/assembler.o \
-	$(OBJDIR)/src/asm/bytecode.o \
-	$(OBJDIR)/src/asm/lexer.o \
-	$(OBJDIR)/src/asm/symbol.o \
-	$(OBJDIR)/src/asm/token.o \
-	$(OBJDIR)/src/asm/tokenizer.o \
+	$(OBJDIR)/spasm/src/main.o \
 
   define PREBUILDCMDS
   endef
@@ -117,9 +107,9 @@ ifeq ($(config),release32)
 endif
 
 ifeq ($(config),debug64)
-  OBJDIR              = ../../JSImpl/build/obj/Debug/x64/Debug/spasm_lib
-  TARGETDIR           = ../../JSImpl/build/bin/Debug
-  TARGET              = $(TARGETDIR)/libspasm_lib.a
+  OBJDIR              = ../build/obj/Debug/x64/Debug/sprun
+  TARGETDIR           = ../build/bin/Debug
+  TARGET              = $(TARGETDIR)/sprun
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
@@ -128,22 +118,17 @@ ifeq ($(config),debug64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -m64
-  LIBDEPS            +=
-  LDDEPS             +=
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Debug" -m64
+  LIBDEPS            += ../build/bin/Debug/libsprt.a
+  LDDEPS             += ../build/bin/Debug/libsprt.a
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(AR)  -rcs $(TARGET)
+  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/asm/assembler.o \
-	$(OBJDIR)/src/asm/bytecode.o \
-	$(OBJDIR)/src/asm/lexer.o \
-	$(OBJDIR)/src/asm/symbol.o \
-	$(OBJDIR)/src/asm/token.o \
-	$(OBJDIR)/src/asm/tokenizer.o \
+	$(OBJDIR)/spasm/src/main.o \
 
   define PREBUILDCMDS
   endef
@@ -154,9 +139,9 @@ ifeq ($(config),debug64)
 endif
 
 ifeq ($(config),release64)
-  OBJDIR              = ../../JSImpl/build/obj/Release/x64/Release/spasm_lib
-  TARGETDIR           = ../../JSImpl/build/bin/Release
-  TARGET              = $(TARGETDIR)/libspasm_lib.a
+  OBJDIR              = ../build/obj/Release/x64/Release/sprun
+  TARGETDIR           = ../build/bin/Release
+  TARGET              = $(TARGETDIR)/sprun
   DEFINES            += -D_SCL_SECURE_NO_WARNINGS
   ALL_CPPFLAGS       += $(CPPFLAGS) -MMD -MP -MP $(DEFINES) $(INCLUDES)
   ALL_ASMFLAGS       += $(ASMFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
@@ -165,22 +150,17 @@ ifeq ($(config),release64)
   ALL_OBJCFLAGS      += $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64
   ALL_OBJCPPFLAGS    += $(CXXFLAGS) $(CFLAGS) $(ALL_CPPFLAGS) $(ARCH) -Werror -Wall -Wextra -g -O3 -m64 -std=c++17
   ALL_RESFLAGS       += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  ALL_LDFLAGS        += $(LDFLAGS) -m64
-  LIBDEPS            +=
-  LDDEPS             +=
+  ALL_LDFLAGS        += $(LDFLAGS) -L"../build/bin/Release" -m64
+  LIBDEPS            += ../build/bin/Release/libsprt.a
+  LDDEPS             += ../build/bin/Release/libsprt.a
   LDRESP              =
   LIBS               += $(LDDEPS)
   EXTERNAL_LIBS      +=
   LINKOBJS            = $(OBJECTS)
-  LINKCMD             = $(AR)  -rcs $(TARGET)
+  LINKCMD             = $(CXX) -o $(TARGET) $(LINKOBJS) $(RESOURCES) $(ARCH) $(ALL_LDFLAGS) $(LIBS)
   OBJRESP             =
   OBJECTS := \
-	$(OBJDIR)/src/asm/assembler.o \
-	$(OBJDIR)/src/asm/bytecode.o \
-	$(OBJDIR)/src/asm/lexer.o \
-	$(OBJDIR)/src/asm/symbol.o \
-	$(OBJDIR)/src/asm/token.o \
-	$(OBJDIR)/src/asm/tokenizer.o \
+	$(OBJDIR)/spasm/src/main.o \
 
   define PREBUILDCMDS
   endef
@@ -192,7 +172,7 @@ endif
 
 OBJDIRS := \
 	$(OBJDIR) \
-	$(OBJDIR)/src/asm \
+	$(OBJDIR)/spasm/src \
 
 RESOURCES := \
 
@@ -202,13 +182,8 @@ all: $(OBJDIRS) $(TARGETDIR) prebuild prelink $(TARGET)
 	@:
 
 $(TARGET): $(GCH) $(OBJECTS) $(LIBDEPS) $(EXTERNAL_LIBS) $(RESOURCES) $(OBJRESP) $(LDRESP) | $(TARGETDIR) $(OBJDIRS)
-	@echo Archiving spasm_lib
-ifeq (posix,$(SHELLTYPE))
-	$(SILENT) rm -f  $(TARGET)
-else
-	$(SILENT) if exist $(subst /,\\,$(TARGET)) del $(subst /,\\,$(TARGET))
-endif
-	$(SILENT) $(LINKCMD) $(LINKOBJS)
+	@echo Linking sprun
+	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
 
 $(TARGETDIR):
@@ -220,7 +195,7 @@ $(OBJDIRS):
 	-$(call MKDIR,$@)
 
 clean:
-	@echo Cleaning spasm_lib
+	@echo Cleaning sprun
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
 	$(SILENT) rm -rf $(OBJDIR)
@@ -257,27 +232,7 @@ $(LDRESP): $(LDDEPS) | $(TARGETDIR) $(OBJDIRS)
 	$(SILENT) echo $^ > $@
 endif
 
-$(OBJDIR)/src/asm/assembler.o: ../src/asm/assembler.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src/asm
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
-
-$(OBJDIR)/src/asm/bytecode.o: ../src/asm/bytecode.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src/asm
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
-
-$(OBJDIR)/src/asm/lexer.o: ../src/asm/lexer.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src/asm
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
-
-$(OBJDIR)/src/asm/symbol.o: ../src/asm/symbol.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src/asm
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
-
-$(OBJDIR)/src/asm/token.o: ../src/asm/token.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src/asm
-	@echo $(notdir $<)
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
-
-$(OBJDIR)/src/asm/tokenizer.o: ../src/asm/tokenizer.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/src/asm
+$(OBJDIR)/spasm/src/main.o: ../../spasm/src/main.cpp $(GCH) $(MAKEFILE) | $(OBJDIR)/spasm/src
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -c "$<"
 
