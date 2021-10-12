@@ -15,6 +15,8 @@ virtual machines.
 
 ### Courses
 
+- https://som-st.github.io/ - search for teaching materials
+
 ### Videos
 
 ### Blogs
@@ -41,6 +43,7 @@ virtual machines.
 
 ## Virtual Machines
 
+- https://som-st.github.io/
 - https://github.com/rsms/sol
 - https://github.com/skx/simple.vm
 - https://github.com/feyeleanor/GoLightly
