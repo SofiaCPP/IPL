@@ -16,8 +16,14 @@ virtual machines.
 ### Courses
 
 - https://som-st.github.io/ - search for teaching materials
+- http://www.wolczko.com/CS294/
 
 ### Videos
+
+#### Conferences
+
+- https://soft-dev.org/events/vmss16/
+- [MoreVMs](https://www.youtube.com/c/programmingconf/playlists)
 
 ### Blogs
 
