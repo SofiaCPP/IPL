@@ -58,3 +58,4 @@ virtual machines.
 - https://github.com/kentdlee/CoCo
 - https://the-ravi-programming-language.readthedocs.io/en/latest/lua_bytecode_reference.html
 - https://opensource.com/article/18/4/introduction-python-bytecode
+- https://github.com/MoserMichael/pyasmtool
