@@ -55,6 +55,7 @@ virtual machines.
 - https://github.com/feyeleanor/GoLightly
 - https://github.com/andoma/vmir
 - https://github.com/WAVM/WAVM
+- https://github.com/bytecodealliance/wasmtime
 - https://github.com/kentdlee/CoCo
 - https://the-ravi-programming-language.readthedocs.io/en/latest/lua_bytecode_reference.html
 - https://opensource.com/article/18/4/introduction-python-bytecode
