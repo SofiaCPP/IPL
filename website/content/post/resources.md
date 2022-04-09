@@ -20,6 +20,8 @@ virtual machines.
 
 ### Videos
 
+- https://www.youtube.com/c/TimMorgan/videos
+
 #### Conferences
 
 - https://soft-dev.org/events/vmss16/
