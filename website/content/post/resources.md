@@ -1,7 +1,8 @@
 ---
 title: "Resources"
-date: 2018-09-29T00:24:06+03:00
+date: 2022-09-29T00:24:06+03:00
 draft: false
+featured: true
 
 ---
 

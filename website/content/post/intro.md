@@ -1,6 +1,6 @@
 ---
 title: "Introduction to IPL course"
-date: 2020-10-04
+date: 2022-10-05
 draft: false
 ---
 
