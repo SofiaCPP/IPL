@@ -1,7 +1,7 @@
 ---
 title: "Garbage Collection"
 date: 2020-11-23
-draft: false
+draft: true
 ---
 
 Garbage collection in theory and practice.

@@ -1,7 +1,7 @@
 ---
 title: "Objects in the virtual machine"
 date: 2020-11-16
-draft: false
+draft: true
 ---
 
 Representing objects inside the virtual machine.

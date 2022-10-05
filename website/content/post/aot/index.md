@@ -1,7 +1,7 @@
 ---
 title: "Ahead-of-Time Compilation"
 date: 2021-01-05
-draft: false
+draft: true
 ---
 
 Ahead-of-Time Compilation - optimizations and register allocation

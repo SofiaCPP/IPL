@@ -1,7 +1,7 @@
 ---
 title: "Values in Virtual Machines"
 date: 2020-11-02
-draft: false
+draft: true
 ---
 
 Representing values inside the virtual machine.

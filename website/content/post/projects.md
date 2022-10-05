@@ -1,7 +1,7 @@
 ---
 title: "Projects"
-date: 2020-12-22
-draft: false
+date: 2022-12-22
+draft: true
 ---
 
 The course projects for the 2020/2021 edition.

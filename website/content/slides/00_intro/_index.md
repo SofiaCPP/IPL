@@ -250,10 +250,8 @@ Garbage collection
 ## Resources
 
 - https://github.com/SofiaCPP/IPL
-
 - https://sofiacpp.github.io/IPL
-
-- Links to resources will be there too
+- https://sofiacpp.github.io/IPL/resources/
 
 ---
 ## Resources

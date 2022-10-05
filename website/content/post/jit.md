@@ -1,7 +1,7 @@
 ---
 title: "Just-In-Time Compilation"
 date: 2020-12-13
-draft: false
+draft: true
 ---
 
 Just-In-Time Compilation in theory and practice.
