@@ -270,17 +270,17 @@ WebAssembly is actually an IR.
 - C#, F#, Basic (some versions), etc target the .NET virtual machine
 - Common Intermediate Language
 
-    .class public Foo
-    {
-        .method public static int32 Add(int32, int32) cil managed
+        .class public Foo
         {
-            .maxstack 2
-            ldarg.0 // load the first argument;
-            ldarg.1 // load the second argument;
-            add     // add them;
-            ret     // return the result;
+            .method public static int32 Add(int32, int32) cil managed
+            {
+                .maxstack 2
+                ldarg.0 // load the first argument;
+                ldarg.1 // load the second argument;
+                add     // add them;
+                ret     // return the result;
+            }
         }
-    }
 
 ---
 ### Back end
