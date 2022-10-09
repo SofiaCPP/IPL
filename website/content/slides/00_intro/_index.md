@@ -1,13 +1,13 @@
 ---
 title: "Introduction to Implementation of Programming Languages"
-date: 2020-09-15T17:45:53+03:00
+date: 2022-09-15T17:45:53+03:00
 draft: false
 outputs:
     - Reveal
 ---
 # Implementation of Programming Languages
 
-FMI 2020
+FMI 2022
 
 ---
 # Who are we?
