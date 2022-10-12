@@ -111,11 +111,19 @@ Typical tokens are:
 ---
 ### double + string ~ wasteful
 
-- `std::variant<double, IPLString` will require *C++17*
-- `union` does't work good with strings
-- `union` with `string_view` -> *C++17*
-- tokens can just keep strings and leave the parser to turn them into numbers
+The token is either a string or a number, but we are keeping both, so it is
+somewhat wasteful.
 
+---
+#### Keeping data in token
+
+1. `std::variant<double, IPLString` will require *C++17*
+2. `union` does't work good with strings
+   - non-trivial destructor inside the `union`
+3. `union` with `string_view` over the source contents -> *C++17*
+   - this means we have to keep the contents of the source alive as long as
+     any token is still alive
+4. tokens can just keep strings and leave the parser to turn them into numbers
 
 ---
 ## Lexer
