@@ -11,7 +11,7 @@ public:
     ~ASTInterpreter();
 
 
-    typedef std::variant<double, IPLString> Value;
+    typedef std::variant<bool, double, IPLString> Value;
     typedef IPLSharedPtr<Value> ValuePtr;
     typedef IPLVector<ValuePtr> ValueStack;
 
