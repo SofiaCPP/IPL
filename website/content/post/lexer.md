@@ -1,7 +1,7 @@
 ---
 title: "Lexical Analysis"
 date: 2022-10-12
-draft: true
+draft: false
 ---
 
 Overview of lexers and how to use them
