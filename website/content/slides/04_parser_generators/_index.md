@@ -74,7 +74,7 @@ The FSA has for each (state, next token) -> (action, next state)
 - Bison generates LR(1) and GLR parsers
     - GLR parsers can have arbitrary lookahead and be ambigous
 - You don't always have to convert the grammar in an LR form
-    - operator precedence and assiociativity are handled for your
+    - operator precedence and assiociativity are handled for you
 
 ---
 ### Input
