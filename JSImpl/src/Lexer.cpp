@@ -100,7 +100,7 @@ private:
 	unsigned m_Line;
 	unsigned m_Column;
 	unsigned m_Current;
-	unsigned m_LastTokenPozition;
+	unsigned m_LastTokenPosition;
 	const char* m_Code;
 
 	IPLError m_Error;
@@ -126,7 +126,7 @@ Tokenizer::Tokenizer(const char* code, const LexerSettings& settings)
 	: m_Line(0)
 	, m_Column(0)
 	, m_Current(0)
-	, m_LastTokenPozition(0)
+	, m_LastTokenPosition(0)
 	, m_Code(code)
 	, m_Error()
 	, m_GenerationState(State::Success)
@@ -236,13 +236,13 @@ inline void Tokenizer::NextLine()
 {
 	++m_Current;
 	++m_Line;
-	m_LastTokenPozition = m_Column = 0;
+	m_LastTokenPosition = m_Column = 0;
 }
 
 inline Token Tokenizer::ProduceToken(TokenType type,const IPLString& lexeme, double number = 0.0)
 {
-	auto token = Token{ type, m_Line, m_LastTokenPozition, lexeme, number };
-	m_LastTokenPozition = m_Column;
+	auto token = Token{ type, m_Line, m_LastTokenPosition, lexeme, number };
+	m_LastTokenPosition = m_Column;
 	return token;
 }
 
