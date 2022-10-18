@@ -1,7 +1,7 @@
 ---
 title: "Parser Generators"
-date: 2022-10-16
-draft: true
+date: 2022-10-17
+draft: false
 ---
 
 Overview of parsers generators and how to use them.
