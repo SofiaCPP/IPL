@@ -1,12 +1,6 @@
-# Project Title
+# js2html
 
-js2html
-
-## Description
-
-Syntax highlighter for javascript.
-
-## Getting Started
+## Syntax highlighter for javascript.
 
 ### Dependencies
 
