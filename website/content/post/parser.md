@@ -1,12 +1,10 @@
 ---
 title: "Parsing"
-date: 2020-10-18
-draft: true
+date: 2022-10-16
+draft: false
 ---
 
-Overview of parsers and how to use them.
-
-This lecture will be entirely online - see the [Facebook group]({{< ref "/facebook" >}})
+Overview of parsers and how to create and use them.
 
 <!--more-->
 

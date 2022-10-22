@@ -1,12 +1,10 @@
 ---
 title: "Parser Generators"
-date: 2020-10-26
-draft: true
+date: 2022-10-17
+draft: false
 ---
 
 Overview of parsers generators and how to use them.
-
-This lecture will be entirely online - see the [Facebook group]({{< ref "/facebook" >}})
 
 <!--more-->
 
