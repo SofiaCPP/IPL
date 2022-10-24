@@ -33,7 +33,7 @@ outputs: ["Reveal"]
 
 ## Computational model
 
-- Regular Languages 
+- Regular Languages
 - Context Free Languages
 - *Everything that is computable*
 

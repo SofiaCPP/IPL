@@ -261,7 +261,7 @@ Real world virtual machines:
 - V8, SpiderMonkey, JavaScriptCore, ChakraCore
 - duktape
 - lua, luajit
-- cPython, PyPy 
+- cPython, PyPy
 
 ---
 # ?
