@@ -106,7 +106,7 @@ int main(int argc, const char* argv[])
             ".dot{color: turquoise;}"
             ".comment{color:darkseagreen;}"
         "</style>"
-        "</head><body>"
+        "</head><body>\n"
     );
 
     yylex();
