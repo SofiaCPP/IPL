@@ -34,5 +34,3 @@ var birds = {
 for (bird in birds) {
   System.print("The state bird of %(bird.key) is %(bird.value)")
 }
-
-
