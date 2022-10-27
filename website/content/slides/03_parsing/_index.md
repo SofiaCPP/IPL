@@ -35,9 +35,12 @@ Context Free Grammars are:
 1. formal grammars - they describe all the strings in a formal language
 2. context free - there is only one non-terminal on left hand side of each rule
 
-        <expr> ::= <expr> <op> <expr> | (<expr>) | <term>
-        <op>   ::= + | - | * | /
-        <term> ::= [0-9]+
+---
+##### CFG for arithmetic expressions
+
+    <expr> ::= <expr> <op> <expr> | (<expr>) | <term>
+    <op>   ::= + | - | * | /
+    <term> ::= [0-9]+
 
 > Does this grammar allow for operator precedence? (No, more later)
 
@@ -306,7 +309,7 @@ exactly the same in terms of algorithms and power.
 
 {{<  note >}}
 
-- First three are easy to implement by hand, the second three are better
+- First three are easy to implement by hand, the last three are better
   generated.
 - Pratt parsing is a mix between recursive descent and operator-precedence.
 

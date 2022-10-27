@@ -52,7 +52,7 @@ a *shift* or a *reduce* action.
 #### Ring any bells?
 
 Same as the shunting yard algorithm, but:
-- without the operator precedence 
+- without the operator precedence
     - it replaced by the grammar structure
 - There all the rules had just two children
 
