@@ -80,6 +80,8 @@ private:
     void skipWhitespaces();
 
     std::string parseType();
+
+    std::string parseWhitespaces();
 };
 
 

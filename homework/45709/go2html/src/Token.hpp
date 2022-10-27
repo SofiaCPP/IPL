@@ -18,6 +18,7 @@ enum class TokenType
     Identifier,
     Comment,
     End,
+    Whitespaces,
 };
 
 struct Token {

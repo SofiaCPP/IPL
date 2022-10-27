@@ -46,11 +46,13 @@ std::vector<Token> Lexer::tokenize() {
 }
 
 Token Lexer::nextToken() {
-    skipWhitespaces();
-    lastTokenPosition = column;
-
     if (isEnd(code[current])) {
         return produceToken(TokenType::End, "");
+    }
+
+    const auto& whitespaces = parseWhitespaces();
+    if (isStateSuccess()) {
+        return produceToken(TokenType::Whitespaces, whitespaces);
     }
 
     const auto& comment = parseComment();
@@ -199,8 +201,10 @@ std::string Lexer::parseNumber() {
     bool haveDot = false;
 
     while (!isEnd(code[current]) && !isNewLine(code[current]) &&
-            isDigit(code[current]) || code[current] == '.' && !haveDot)
-    {
+            isDigit(code[current]) || code[current] == '.' && !haveDot) {
+        if (code[current] == '.') {
+            haveDot = true;
+        }
         nextSymbol();
     }
 
@@ -353,17 +357,32 @@ std::string Lexer::parseOperator() {
     RETURN_FAIL("");
 }
 
-void Lexer::skipWhitespaces() {
+std::string Lexer::parseWhitespaces() {
+    std::string whitespaces;
+
     while (code[current] == '\n' || code[current] == ' ' || code[current] == '\t') {
         if (code[current] == '\n') {
             nextLine();
+            whitespaces += "\n";
         } else if(code[current] == ' ') {
             nextSymbol();
+            whitespaces += " ";
         } else if(code[current] == '\t') {
             nextSymbol();
-            column = (((column - 1) / 4) + 1) * 4;
+            auto endColumn = (((column - 1) / 4) + 1) * 4;
+            for (unsigned i = column; i < endColumn; ++i) {
+                whitespaces += " ";
+            }
+            whitespaces += " ";
         }
     }
+
+    if (whitespaces.empty()) {
+        RETURN_FAIL("");
+    } else {
+        RETURN_SUCCESS(whitespaces);
+    }
+
 }
 
 std::string Lexer::parseType() {
