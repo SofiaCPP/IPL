@@ -45,19 +45,6 @@ std::string HTMLBuilder::getText() {
 }
 
 std::string HTMLBuilder::getWord(const Token &token) {
-    std::string word;
-    if (token.line > line) {
-        do {
-            word += "\n";
-            ++line;
-        } while (token.line > line);
-        column = 0;
-    }
-    while (token.column > column) {
-        word += " ";
-        ++column;
-    }
-
     std::string cssClass;
 
     switch (token.type) {
@@ -90,7 +77,7 @@ std::string HTMLBuilder::getWord(const Token &token) {
             break;
     }
 
-    word += "<span class=\""+cssClass+"\">"+token.value+"</span>";
+    auto word = "<span class=\""+cssClass+"\">"+token.value+"</span>";
     column += token.value.size();
 
     return word;
