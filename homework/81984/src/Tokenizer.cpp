@@ -21,7 +21,6 @@ namespace Rb {
     Line = 0;
     Column = 0;
     Options = { .TokenizeWhitespaceCharacters = false, .StoreAllCharacterData = false };
-    PreviousToken = { .Type = Unknown };
 
     Keywords["alias"]    = Alias;
     Keywords["and"]      = And;
@@ -70,17 +69,7 @@ namespace Rb {
 
     TokenList Tokens;
 
-    while (*Expression != '\0') {
-      Token Token = ReadNextToken(Expression);
-
-      // Using the previous token to detect function identifiers
-      // Simpler approach?
-      if (Token.Type != Space) {
-        PreviousToken = Token;
-      }
-
-      Tokens.push_back(Token);
-    }
+    while (*Expression != '\0') Tokens.push_back(ReadNextToken(Expression));
 
     return Tokens;
   }
@@ -95,9 +84,6 @@ namespace Rb {
     if (Token.Type != Unknown) return Token;
 
     ReadKeyword(Expression, Token);
-    if (Token.Type != Unknown) return Token;
-
-    ReadFunctionIdentifier(Expression, Token);
     if (Token.Type != Unknown) return Token;
 
     ReadIdentifier(Expression, Token);
@@ -212,23 +198,11 @@ namespace Rb {
     String MatchedString = MatchRegex(Expression, IDENTIFIER_REGEX);
 
     if (MatchedString != NO_REGEX_MATCH) {
-      Token.Type = PreviousToken.Type == Def ? FunctionIdentifier : Identifier;
+      Token.Type = Identifier;
       Token.Data = MatchedString;
 
       Expression += MatchedString.length();
       Column += MatchedString.length();
-    }
-  }
-
-  void Tokenizer::ReadFunctionIdentifier(CStringReference Expression, TokenReference Token) {
-    String MatchedString = MatchRegex(Expression, FUNCTION_IDENTIFIER_REGEX);
-
-    if (MatchedString != NO_REGEX_MATCH) {
-      Token.Type = FunctionIdentifier;
-      Token.Data = MatchedString.substr(0, MatchedString.length() - 1);
-
-      Expression += MatchedString.length() - 1;
-      Column += MatchedString.length() - 1;
     }
   }
 

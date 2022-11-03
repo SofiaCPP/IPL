@@ -1,13 +1,26 @@
-#include "HtmlView.hpp"
+#include "HtmlSyntaxHighlighter.hpp"
 #include "FileProcessor.hpp"
 #include "Tokenizer.hpp"
 
+#define VIEW_WRAPPER_BEGIN "<div style=\""             \
+                           " display: flex;"           \
+                           " width: 100%;"             \
+                           " height: 100%;"            \
+                           " justify-content: center;" \
+                           " align-items: center;"     \
+                           " font-size: 3.5rem;"       \
+                           "\"><div style=\""          \
+                           " width: 100%;"             \
+                           " height: 100%;"            \
+                           "\">"
+
+#define VIEW_WRAPPER_END "</div></div>"
+
 namespace Rb {
-  HtmlView::HtmlView() {
+  HtmlSyntaxHighlighter::HtmlSyntaxHighlighter() {
     Options = { .ShowTokenInformationOnHover = false };
 
     TokenColors[Identifier]          = Blue;
-    TokenColors[FunctionIdentifier]  = Yellow;
     TokenColors[Symbol]              = Blue;
     TokenColors[SingleQuotedString]  = Red;
     TokenColors[DoubleQuotedString ] = Red;
@@ -75,11 +88,11 @@ namespace Rb {
     TokenColors[TripleEqual]         = Black;
   }
 
-  HtmlView::HtmlView(HtmlViewOptions HtmlViewOptions) : HtmlView() {
-    Options = HtmlViewOptions;
+  HtmlSyntaxHighlighter::HtmlSyntaxHighlighter(HtmlSyntaxHighlighterOptions HtmlSyntaxHighlighterOptions) : HtmlSyntaxHighlighter() {
+    Options = HtmlSyntaxHighlighterOptions;
   }
 
-  void HtmlView::Visualize(String FileName) {
+  void HtmlSyntaxHighlighter::Highlight(String FileName) {
     String Expression = FileProcessor::ReadFile(FileName);
     CString ExpressionReference = Expression.c_str();
 
@@ -93,60 +106,47 @@ namespace Rb {
       View += TokenInformationHoverScript();
     }
 
-    String TargetFileName = String(FileName) + ".html";
+    String ViewFileName = String(FileName) + ".html";
 
-    FileProcessor::WriteFile(TargetFileName, View);
+    FileProcessor::WriteFile(ViewFileName, View);
   }
 
-  String HtmlView::ProcessTokens(TokenListReference Tokens) {
-    String Tags = "<div style=\""
-                  " display: flex;"
-                  " width: 100%;"
-                  " height: 100%;"
-                  " justify-content: center;"
-                  " align-items: center;"
-                  " font-size: 3.5rem;"
-                  "\"><div style=\""
-                  " width: 100%;"
-                  " height: 100%;"
-                  "\">";
+  String HtmlSyntaxHighlighter::ProcessTokens(TokenListReference Tokens) {
+    String View = VIEW_WRAPPER_BEGIN;
 
-    for (Token Token : Tokens) Tags += ProcessTag(Token);
+    for (Token Token : Tokens) View += ProcessTag(Token);
 
-    Tags += "</div></div>";
+    View += VIEW_WRAPPER_END;
 
-    return Tags;
+    return View;
   }
 
-  String HtmlView::ProcessTag(TokenReference Token) {
-    String TagType = "";
-    String TagData = "";
-
-    switch (Token.Type)
-    {
-    case NewLine:
-      TagType = "br";
-      break;
-    case Space:
-      TagType = "strong";
-      TagData = "&nbsp;";
-      break;
-    default:
-      TagType = "strong";
-      TagData = Token.Data;
-      break;
-    }
+  String HtmlSyntaxHighlighter::ProcessTag(TokenReference Token) {
+    String TagType = ProcessTagType(Token);
+    String TagData = ProcessTagData(Token);
 
     String Tag = "<" + TagType + " " + ProcessAttributes(Token) + ">";
-
-    if (TagData != "") {
-      Tag += TagData + "</" + TagType + ">";
-    }
+    if (TagData != "") Tag += TagData + "</" + TagType + ">";
 
     return Tag;
   }
 
-  String HtmlView::ProcessAttributes(TokenReference Token) {
+  String HtmlSyntaxHighlighter::ProcessTagType(TokenReference Token) {
+    switch (Token.Type) {
+      case NewLine: return "br";
+      default:      return "strong";
+    }
+  }
+
+  String HtmlSyntaxHighlighter::ProcessTagData(TokenReference Token) {
+    switch (Token.Type) {
+      case Space:   return "&nbsp";
+      case NewLine: return "";
+      default:      return Token.Data;
+    }
+  }
+
+  String HtmlSyntaxHighlighter::ProcessAttributes(TokenReference Token) {
     return "class=\"token\""
            "style=\"color: " + ProcessTokenColor(Token) + "\""
            "data-html=\"true\""
@@ -158,7 +158,7 @@ namespace Rb {
             "\"";
   }
 
-  String HtmlView::ProcessTokenColor(TokenReference Token) {
+  String HtmlSyntaxHighlighter::ProcessTokenColor(TokenReference Token) {
     switch (TokenColors[Token.Type])
     {
     case Blue:    return "#00148C";
@@ -171,10 +171,9 @@ namespace Rb {
     }
   }
 
-  String HtmlView::ProcessTokenType(TokenReference Token) {
+  String HtmlSyntaxHighlighter::ProcessTokenType(TokenReference Token) {
     switch (Token.Type)
     {
-    case FunctionIdentifier:  return "FunctionIdentifier";
     case Identifier:          return "Identifier";
     case Symbol:              return "Symbol";
     case SingleQuotedString:  return "SingleQuotedString";
@@ -245,7 +244,7 @@ namespace Rb {
     }
   }
 
-  String HtmlView::ProcessTokenData(TokenReference Token) {
+  String HtmlSyntaxHighlighter::ProcessTokenData(TokenReference Token) {
     String Data = "";
 
     for (char Character : Token.Data) {
@@ -259,7 +258,7 @@ namespace Rb {
     return Data;
   }
 
-  String HtmlView::TokenInformationHoverScript() {
+  String HtmlSyntaxHighlighter::TokenInformationHoverScript() {
     return "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css\">"
            "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js\"></script>"
            "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js\"></script>"

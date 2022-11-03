@@ -1,5 +1,5 @@
-#ifndef __HTML_VIEW_HPP__
-#define __HTML_VIEW_HPP__
+#ifndef __HTML_SYNTAX_HIGHLIGHTER_HPP__
+#define __HTML_SYNTAX_HIGHLIGHTER_HPP__
 
 #include "Rb.hpp"
 #include "Tokenizer.hpp"
@@ -14,24 +14,26 @@ namespace Rb {
     Red
   };
 
-  struct HtmlViewOptions {
+  struct HtmlSyntaxHighlighterOptions {
     bool ShowTokenInformationOnHover;
   };
 
   typedef ::std::unordered_map<TokenType, TokenColor> TokenColorMap;
   typedef TokenList& TokenListReference;
 
-  class HtmlView {
+  class HtmlSyntaxHighlighter {
     TokenColorMap TokenColors;
-    HtmlViewOptions Options;
+    HtmlSyntaxHighlighterOptions Options;
   public:
-    HtmlView();
-    HtmlView(HtmlViewOptions HtmlViewOptions);
+    HtmlSyntaxHighlighter();
+    HtmlSyntaxHighlighter(HtmlSyntaxHighlighterOptions HtmlViewOptions);
 
-    void Visualize(String FileName);
+    void Highlight(String FileName);
   private:
     String ProcessTokens(TokenListReference Tokens);
     String ProcessTag(TokenReference Token);
+    String ProcessTagType(TokenReference Token);
+    String ProcessTagData(TokenReference Token);
     String ProcessAttributes(TokenReference Token);
     String ProcessTokenType(TokenReference Token);
     String ProcessTokenColor(TokenReference Token);

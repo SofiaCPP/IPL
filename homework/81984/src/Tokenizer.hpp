@@ -5,7 +5,6 @@
 
 namespace Rb {
   enum TokenType {
-    FunctionIdentifier,
     Identifier,
     Symbol,
     SingleQuotedString,
@@ -112,7 +111,6 @@ namespace Rb {
     void ReadWhitespace(CStringReference Expression, TokenReference Token);
     void ReadSpecialCharacter(CStringReference Expression, TokenReference Token);
     void ReadKeyword(CStringReference Expression, TokenReference Token);
-    void ReadFunctionIdentifier(CStringReference Expression, TokenReference Token);
     void ReadIdentifier(CStringReference Expression, TokenReference Token);
     void ReadSymbol(CStringReference Expression, TokenReference Token);
     void ReadString(CStringReference Expression, TokenReference Token);
