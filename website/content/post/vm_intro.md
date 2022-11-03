@@ -1,7 +1,7 @@
 ---
 title: "Introduction to Virtual Machines"
-date: 2020-11-02
-draft: true
+date: 2022-11-02
+draft: false
 ---
 
 Introduction to virtual machines as a model for computation.
