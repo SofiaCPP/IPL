@@ -9,6 +9,9 @@ outputs: ["Reveal"]
 
 - Languages and VMs
 - NanBoxing
+- NunBoxing
+- Pointer compression
+- Tagged arithmetic
 
 ---
 
