@@ -282,7 +282,7 @@ Instructions will be between 1 and 25 bytes.
 
 - 6 bits for OpCode - we have up to 64 opcodes
 - 2 bits - n - length of the arguments
-    - 2^n bytes per agrument
+    - 2^n bytes per argument
     - up to 3 arguments per instruction
 
 ---
