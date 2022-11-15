@@ -10,7 +10,7 @@ if x > 2:
     print("X is greater than two!")
 else:
     print("X is greater than two!")
- 
+
 def myfunc():
  global y
  y = "World"
@@ -19,3 +19,9 @@ def myfunc():
 myfunc()
 
 str("1")
+
+fruits = ["apple", "banana", "cherry"]
+for x in fruits:
+  print(x)
+  if x == "banana":
+    break
