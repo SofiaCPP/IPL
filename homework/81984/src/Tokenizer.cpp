@@ -22,39 +22,22 @@ namespace Rb {
     Column = 0;
     Options = { .TokenizeWhitespaceCharacters = false, .StoreAllCharacterData = false };
 
-    Keywords["alias"]    = Alias;
-    Keywords["and"]      = And;
-    Keywords["begin"]    = Begin;
-    Keywords["break"]    = Break;
-    Keywords["case"]     = Case;
     Keywords["class"]    = Class;
     Keywords["def"]      = Def;
-    Keywords["defined?"] = Defined;
     Keywords["do"]       = Do;
     Keywords["else"]     = Else;
     Keywords["elsif"]    = Elsif;
     Keywords["end"]      = End;
-    Keywords["ensure"]   = Ensure;
     Keywords["false"]    = False;
     Keywords["for"]      = For;
     Keywords["if"]       = If;
-    Keywords["in"]       = In;
     Keywords["module"]   = Module;
-    Keywords["next"]     = Next;
     Keywords["nil"]      = Nil;
-    Keywords["not"]      = Not;
-    Keywords["or"]       = Or;
-    Keywords["redo"]     = Redo;
-    Keywords["rescue"]   = Rescue;
-    Keywords["retry"]    = Retry;
     Keywords["return"]   = Return;
     Keywords["self"]     = Self;
     Keywords["super"]    = Super;
-    Keywords["then"]     = Then;
     Keywords["true"]     = True;
-    Keywords["undef"]    = Undef;
     Keywords["unless"]   = Unless;
-    Keywords["when"]     = When;
     Keywords["while"]    = While;
     Keywords["yield"]    = Yield;
   }
@@ -140,15 +123,14 @@ namespace Rb {
 
     switch (*Expression)
     {
-      case '^': Token.Type = Caret;               break;
       case ',': Token.Type = Comma;               break;
       case '#': Token.Type = Octothorp;           break;
       case '}': Token.Type = ClosedCurlyBrace;    break;
       case ')': Token.Type = ClosedParenthesis;   break;
       case ']': Token.Type = ClosedSquareBracket; break;
       case '-': Token.Type = Dash;                break;
-      case '.': Token.Type = ((MatchedSymbol = MatchRegex(Expression, TRIPLE_DOT_REGEX)) != NO_REGEX_MATCH) ? TripleDot : (MatchedSymbol = MatchRegex(Expression, DOUBLE_DOT_REGEX)) != NO_REGEX_MATCH ? DoubleDot : Dot;           break;
-      case '=': Token.Type = ((MatchedSymbol = MatchRegex(Expression, TRIPLE_EQUAL_REGEX)) != NO_REGEX_MATCH) ? TripleEqual : (MatchedSymbol = MatchRegex(Expression, DOUBLE_EQUAL_REGEX)) != NO_REGEX_MATCH ? DoubleEqual : Equal; break;
+      case '.': Token.Type = Dot;                 break;
+      case '=': Token.Type = (MatchedSymbol = MatchRegex(Expression, DOUBLE_EQUAL_REGEX)) != NO_REGEX_MATCH ? DoubleEqual : Equal; break;
       case '!': Token.Type = Exclamation;         break;
       case '>': Token.Type = ((MatchedSymbol = MatchRegex(Expression, GREATER_THAN_OR_EQAUL_REGEX)) != NO_REGEX_MATCH) ? GreaterThanOrEqual : GreaterThan; break;
       case '<': Token.Type = ((MatchedSymbol = MatchRegex(Expression, LESS_THAN_OR_EQAUL_REGEX)) != NO_REGEX_MATCH) ? LessThanOrEqual : LessThan;          break;
