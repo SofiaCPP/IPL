@@ -2,24 +2,29 @@
 
 %}
 
-DIGIT    [0-9]
+NUMBER    [0-9]
 ID       [a-zA-Z_0-9]*
-KEYWORD and|break|do|else|elseif|end|false|for|function|goto|if|in|local|nil|not|or|repeat|return|then|true|until|while
-OPERATOR "+"|"-"|"*"|"/"|"%"|"^"|"#"|"=="|"~="|"<="|">="|"<"|">"|"="|"("|")"|"{"|"}"|"["|"]"|"::"|";"|":"|","|"."|".."|"..."|"<<"|">>"|"&"|"|"|"//"|"~"|"'"|"--"|"?"|"\""|"\\n"
-
+KEYWORD and|break|else|false|goto|in|local|nil|not|or|repeat|return|then|true|until
+OPERATOR "+"|"-"|"*"|"/"|"%"|"^"|"#"|"=="|"~="|"<="|">="|"<"|">"|"="|"("|")"|"{"|"}"|"["|"]"|"::"|";"|":"|","|"."|".."|"..."|"<<"|">>"|"&"|"|"|"//"|"~"|"'"|"--"|"?"
+COMPOS_KEYWORD while|for|do|if|else|elseif|function
+COMPOS_END_KEY end
 
 %%
 
-{DIGIT}+    {
+{NUMBER}+    {
             printf("<span class=\"number\">%s</span>", yytext);
             }
 {KEYWORD}     printf("<span class=\"keyword\">%s</span>", yytext);
 
-(".") printf("<span class=\"string\">%s</span>", yytext);
+{COMPOS_KEYWORD} printf("<span class=\"keyword\">%s</span>", yytext);
+
+{COMPOS_END_KEY} printf("<span class=\"keyword\">%s</span>", yytext);
+
+(\".*\") printf("<span class=\"string\">%s</span>", yytext);
 
 {ID}    printf("<span class=\"identifier\">%s</span>", yytext);
 
-(--.) printf("<span class=\"comment\">%s</span>", yytext);
+(--.*) printf("<span class=\"comment\">%s</span>", yytext);
 
 {OPERATOR}  printf("<span class=\"operator\">%s</span>", yytext);
 
