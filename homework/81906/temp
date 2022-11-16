@@ -1,0 +1,24 @@
+"!"|"-"|"--"|"-<"|"-<<"|"->"|"::"|"<-"|"="|"=>"|">"|"?"|"#"|"*"|"@"|"\"|"_"|"`"|"|"|"~"
+    20 [|, |]
+    2 '
+    3 ''
+    10 ;
+    12 ,
+    24 {, }
+    25 {-, -}
+    
+as|case|of|class|data|family|instance|default|deriving|instance|do|forall|foreign|hiding|if|then|else|import|infix|infixl|infixr|instance|let|in|mdo|module|newtype|proc|qualified|rec|type|family|instance|where
+
+
+"-" |"="|">"|"?"|"#"|"*"|"@"|"\"|"_"|"`"|"|"|"~"|"&"|"-<"|"->"|"::"|"<-"|"=>"|"/="|"-<<" printf("<span class=\"operator\">%s</span>", yytext);
+
+<script>
+    function toggle(event){
+      let btn = event.currentTarget;
+      let span = btn.nextSibling;
+      if(span.style.display == "none")
+        display.style.display = "inline";
+      else
+        display.style.display = "none";
+    } 
+</script>
