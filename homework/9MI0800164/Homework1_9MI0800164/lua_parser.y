@@ -28,27 +28,6 @@ body:
 		| COMPOS_END_KEY { printf("%s</details>", $1); }
 		| FUNK {printf("<details class=\"keyword\" open><summary>%s</summary>", $1);}
 ;
-
-
-
-
-
-
-/* lines: */
-/* 		 elemnt | elemnt lines */
-/* ; */
-/* elemnt: */
-/* 		NUMBER | ID | KEYWORD | OPERATOR | statement | composition */ 
-/* ; */
-/* composition: */
-/* 					 FUNK func COMPOS_END_KEY */
-/* ; */
-/* func: */
-/* 		NUMBER | KEYWORD | OPERATOR | ID */
-/* ; */
-/* statement: */
-/* 				 STATEMENT_KEYWORD lines COMPOS_END_KEY */
-/* ; */
 %%
 
 int main(int argc, const char* argv[])
@@ -69,9 +48,6 @@ int main(int argc, const char* argv[])
         "        .identifier {"
         "            color: brown;"
         "        }"
-        /* "        .string {" */
-        /* "            color: orange;" */
-        /* "        }" */
         "        .number {"
         "            color: blue;"
         "        }"
@@ -82,7 +58,7 @@ int main(int argc, const char* argv[])
         "            font-style: bold;"
         "            color: blue;"
         "        }"
-				"        .comment {"
+	"        .comment {"
         "            color: gray;"
         "        }"
 				"        details { "
@@ -100,34 +76,3 @@ int main(int argc, const char* argv[])
     puts("</pre></body></html>");
     return 0;
 }
-
- /* int main(int argc, char *argv[]) { */
- /*  int i; */
- /*  FILE *yyout; */
-
- /*  for (i=0; i<26; i++) */
-
- /*  //vars[i] = 1;  //initialize all variables to true */
-
- /*  fprintf(yyout, "0 0 moveto\n"); */
-
- /*  if (argc == 1) */
- /*    yyparse(); */
-
- /*  if (argc == 2) { */
- /*    yyin = fopen(argv[1], "r"); */
- /*    yyparse(); */
- /*  } */
-
- /*  if (argc == 3) { */
-
- /*   yyout = fopen(argv[2],"w"); */
-
- /*   yyin = fopen(argv[1], "r"); */
- /*   yyparse(); */
- /*   fclose(yyout); */
- /*  } */
-
- /*  return 0; */
-/* } */
-
