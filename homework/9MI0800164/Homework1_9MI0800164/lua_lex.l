@@ -1,82 +1,63 @@
 %{
-
+	#include "lua_parser.tab.h"
 %}
 
-NUMBER    [0-9]
-ID       [a-zA-Z_0-9]*
-KEYWORD and|break|else|false|goto|in|local|nil|not|or|repeat|return|then|true|until
-OPERATOR "+"|"-"|"*"|"/"|"%"|"^"|"#"|"=="|"~="|"<="|">="|"<"|">"|"="|"("|")"|"{"|"}"|"["|"]"|"::"|";"|":"|","|"."|".."|"..."|"<<"|">>"|"&"|"|"|"//"|"~"|"'"|"--"|"?"
-COMPOS_KEYWORD while|for|do|if|else|elseif|function
-COMPOS_END_KEY end
+number    [0-9]
+id       [a-zA-Z_0-9]*
+keyword and|break|false|goto|in|local|nil|not|or|repeat|return|then|true|until|do
+operator "+"|"-"|"*"|"/"|"%"|"^"|"#"|"=="|"~="|"<="|">="|"<"|">"|"="|"("|")"|"{"|"}"|"["|"]"|"::"|";"|":"|","|"."|".."|"..."|"<<"|">>"|"&"|"|"|"//"|"~"|"'"|"--"|"?"
+open_bracket "("
+closing_bracket ")"
+func function
+statement_keyword while|for|if|else|elseif
+compos_end_key end
 
 %%
 
-{NUMBER}+    {
-            printf("<span class=\"number\">%s</span>", yytext);
+{number}+    {
+            printf("<span class=\"number\">%s</span>", yytext); yylval = strdup(yytext);
+						/* scanf(yytext, "$s", yylval.number); */
+						return (NUMBER);
             }
-{KEYWORD}     printf("<span class=\"keyword\">%s</span>", yytext);
+{keyword}     { printf("<span class=\"keyword\">%s</span>", yytext);
+								yylval = strdup(yytext);
+								return (KEYWORD);
+							}
 
-{COMPOS_KEYWORD} printf("<span class=\"keyword\">%s</span>", yytext);
+{statement_keyword} { yylval = strdup(yytext);
+								   return (STATEMENT_KEYWORD);
+								 }
 
-{COMPOS_END_KEY} printf("<span class=\"keyword\">%s</span>", yytext);
+{compos_end_key} { yylval = strdup(yytext);
+								   return (COMPOS_END_KEY);
+								 }
+
+{func} { yylval = strdup(yytext);
+				 return (FUNK);
+			 }
 
 (\".*\") printf("<span class=\"string\">%s</span>", yytext);
 
-{ID}    printf("<span class=\"identifier\">%s</span>", yytext);
+{id}    { printf("<span class=\"identifier\">%s</span>", yytext);yylval = strdup(yytext);
+					return (ID);
+				}
 
 (--.*) printf("<span class=\"comment\">%s</span>", yytext);
 
-{OPERATOR}  printf("<span class=\"operator\">%s</span>", yytext);
-
+{operator}  { printf("<span class=\"operator\">%s</span>", yytext);yylval = strdup(yytext);
+							return (OPERATOR);
+						}
 [ \t\n]+          printf("%s", yytext);
 
 .           printf( "Unrecognized character: %s\n", yytext );
 
 %%
+
 int yywrap()
 {
     return 1;
 }
-int main(int argc, const char* argv[])
+int yyerror()
 {
-    if ( argc > 0 )
-            yyin = fopen( "markov_chain.lua", "r" );
-    else
-            yyin = stdin;
-    puts(
-        "<!doctype>"
-        "<html>"
-        "<head>"
-        "    <title>markov_chain.lua</title>"
-        "    <style>"
-        "        .keyword {"
-        "            color: red;"
-        "        }"
-        "        .identifier {"
-        "            color: purple;"
-        "        }"
-        "        .string {"
-        "            color: orange;"
-        "        }"
-
-        "        .number {"
-        "            color: blue;"
-        "        }"
-        "        .string {"
-        "            color: green;"
-        "        }"
-        "        .operator {"
-        "            font-style: bold;"
-        "        }"
-				"        .comment {"
-        "            color: gray;"
-        "        }"
-        "    </style>"
-        "</head>"
-        "<body>"
-        "    <pre class=\"code\">"
-        );
-    yylex();
-    puts("</pre></body></html>");
-    return 0;
+	return 1;
 }
