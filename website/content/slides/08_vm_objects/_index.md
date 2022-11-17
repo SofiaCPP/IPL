@@ -123,7 +123,7 @@ Set on the object directly
 
 ---
 
-[JSC impl](www.filpizlo.com/papers.html)
+[JSC impl](http://www.filpizlo.com/papers.html)
 
 ---
 ## Hidden structures
