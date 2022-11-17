@@ -43,7 +43,7 @@ if (typeof $t == &quot;string&quot;) {
 } else {
     getprop $r, $t, &quot;length&quot; 
 }
-</code></pre></section><section><p><a href=www.filpizlo.com/papers.html>JSC impl</a></p></section><section><h2 id=hidden-structures>Hidden structures</h2></section><section><h2 id=implementation>Implementation</h2></section><section><h2 id=enhancing-value>Enhancing <code>Value</code></h2><ul><li><code>toString</code></li><li><code>getProperty</code></li><li><code>setProperty</code></li></ul></section><section><h3 id=tostring><code>toString</code></h3><pre><code>Value Value::toString(Spasm* vm) const
+</code></pre></section><section><p><a href=http://www.filpizlo.com/papers.html>JSC impl</a></p></section><section><h2 id=hidden-structures>Hidden structures</h2></section><section><h2 id=implementation>Implementation</h2></section><section><h2 id=enhancing-value>Enhancing <code>Value</code></h2><ul><li><code>toString</code></li><li><code>getProperty</code></li><li><code>setProperty</code></li></ul></section><section><h3 id=tostring><code>toString</code></h3><pre><code>Value Value::toString(Spasm* vm) const
 {
     switch(get_type())
     {
