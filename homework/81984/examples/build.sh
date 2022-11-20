@@ -1,15 +1,16 @@
 EXAMPLE=$1
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 if [ -z "$EXAMPLE" ]
 then
   echo "[Build] Compiling All Examples"
   for EXAMPLE in */
   do
-    g++ ./$EXAMPLE/main.cpp ../src/*.cpp -o ./$EXAMPLE/rb -Wall -Werror
+    g++ $SCRIPT_DIR/$EXAMPLE/main.cpp $SCRIPT_DIR/../src/**/*.cpp -o $SCRIPT_DIR/$EXAMPLE/rb -Wall -Werror
   done
   echo "[Build] Finished"
 else
   echo "[Build] Compiling Example: $EXAMPLE"
-  g++ ./$EXAMPLE/main.cpp ../src/*.cpp -o ./$EXAMPLE/rb -Wall -Werror
+  g++ $SCRIPT_DIR/$EXAMPLE/main.cpp $SCRIPT_DIR/../src/**/*.cpp -o $SCRIPT_DIR/$EXAMPLE/rb -Wall -Werror
   echo "[Build] Finished"
 fi
