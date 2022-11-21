@@ -21,6 +21,9 @@ using Map = std::unordered_map<T, E>;
 template <typename T>
 using Set = std::unordered_set<T>;
 
+template <typename T>
+using SharedPtr = std::shared_ptr<T>;
+
 using String = std::string;
 using Char = char;
 using Index = unsigned int;

@@ -1,5 +1,7 @@
 #include "parser.hpp"
 
+#include <iostream>
+
 Parser::Parser(Vector<Token> tokens) : tokens_(tokens), current_(0)
 {
 }
@@ -8,9 +10,15 @@ Program Parser::ParseProgram()
 {
   Program program;
 
-  while (Current().type != EndOfFile/*ProgramTypes*/)
+  while (Current().type != EndOfFile)
   {
-    Node* node;
+    if (Current().type == NewLine)
+    {
+      AssertMove(NewLine);
+      continue;
+    }
+
+    SharedPtr<Node> node;
 
     switch (Current().type)
     {
@@ -28,7 +36,7 @@ Program Parser::ParseProgram()
         }
         break;
       }
-      default: throw;
+      default: return program;
     }
 
     program.nodes.push_back(node);
@@ -37,9 +45,9 @@ Program Parser::ParseProgram()
   return program;
 }
 
-Function* Parser::ParseFunction()
+SharedPtr<Function> Parser::ParseFunction()
 {
-  Function* function = new Function();
+  SharedPtr<Function> function(new Function());
 
   AssertMove(Def);
 
@@ -62,9 +70,9 @@ Function* Parser::ParseFunction()
   return function;
 }
 
-Conditional* Parser::ParseConditional()
+SharedPtr<Conditional> Parser::ParseConditional()
 {
-  Conditional* conditional = new Conditional();
+  SharedPtr<Conditional> conditional(new Conditional());
 
   AssertMove(If);
 
@@ -103,9 +111,9 @@ Conditional* Parser::ParseConditional()
   return conditional;
 }
 
-Variable* Parser::ParseVariable()
+SharedPtr<Variable> Parser::ParseVariable()
 {
-  Variable* variable = new Variable();
+  SharedPtr<Variable> variable(new Variable());
 
   Assert(Identifier);
 
@@ -120,9 +128,9 @@ Variable* Parser::ParseVariable()
   return variable;
 }
 
-Call* Parser::ParseCall()
+SharedPtr<Call> Parser::ParseCall()
 {
-  Call* call = new Call();
+  SharedPtr<Call> call(new Call());
 
   call->caller = CurrentMove().data;
 
@@ -199,7 +207,26 @@ Arguments Parser::ParseArguments(bool required_parenthesis)
 Conditions Parser::ParseConditions()
 {
   Conditions conditions;
+
+  conditions.conditions.push_back(ParseCondition());
+
+  while (CurrentLogical()) {
+    conditions.lchain.push_back(CurrentMove().data);
+    conditions.conditions.push_back(ParseCondition());
+  }
+
   return conditions;
+}
+
+Condition Parser::ParseCondition()
+{
+  Condition condition;
+
+  condition.lhs = CurrentMove().data;
+  condition.op = CurrentMove().data;
+  condition.rhs = CurrentMove().data;
+
+  return condition;
 }
 
 Token Parser::Current()
@@ -210,6 +237,11 @@ Token Parser::Current()
 Token Parser::CurrentMove()
 {
   return tokens_[current_++];
+}
+
+bool Parser::CurrentLogical()
+{
+  return Current().type == And || Current().type == Or;
 }
 
 void Parser::Assert(TokenType type)

@@ -12,10 +12,10 @@ struct Node
 
 struct Program : Node
 {
-  List<Node*> nodes;
+  List<SharedPtr<Node>> nodes;
 
+  virtual ~Program() override = default;
   virtual void Accept(Visitor* visitor) override;
-  virtual ~Program() override;
 };
 
 struct Arguments : Node

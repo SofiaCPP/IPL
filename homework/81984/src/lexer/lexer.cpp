@@ -18,16 +18,18 @@
 
 Lexer::Lexer(LexerOptions options) : line_(0), column_(0), options_(options)
 {
-  keywords_["class"]    = Class;
-  keywords_["def"]      = Def;
-  keywords_["do"]       = Do;
-  keywords_["else"]     = Else;
-  keywords_["elsif"]    = Elsif;
-  keywords_["end"]      = End;
-  keywords_["if"]       = If;
-  keywords_["module"]   = Module;
-  keywords_["unless"]   = Unless;
-  keywords_["while"]    = While;
+  keywords_["and"]    = And;
+  keywords_["class"]  = Class;
+  keywords_["def"]    = Def;
+  keywords_["do"]     = Do;
+  keywords_["else"]   = Else;
+  keywords_["elsif"]  = Elsif;
+  keywords_["end"]    = End;
+  keywords_["if"]     = If;
+  keywords_["module"] = Module;
+  keywords_["or"]     = Or;
+  keywords_["unless"] = Unless;
+  keywords_["while"]  = While;
 }
 
 Vector<Token> Lexer::TokenizeExpression(CString& expression)
@@ -38,6 +40,8 @@ Vector<Token> Lexer::TokenizeExpression(CString& expression)
   Vector<Token> Tokens;
 
   while (*expression != '\0') Tokens.push_back(ReadNextToken(expression));
+
+  Tokens.push_back({ .type = EndOfFile, .line = line_, .column = column_ });
 
   return Tokens;
 }
@@ -79,7 +83,7 @@ Token Lexer::ReadNextToken(CString& expression)
 
 void Lexer::ReadWhitespace(CString& expression, Token& token)
 {
-  if (options_.tokenize_whitespaces)
+  if (options_.tokenize_spaces)
   {
     if (*expression == ' ')
     {
@@ -90,7 +94,11 @@ void Lexer::ReadWhitespace(CString& expression, Token& token)
       expression++;
       column_++;
     }
-    else if (*expression == '\n')
+  }
+
+  if (options_.tokenize_new_lines)
+  {
+    if (*expression == '\n')
     {
       token.type = NewLine;
 
@@ -101,10 +109,8 @@ void Lexer::ReadWhitespace(CString& expression, Token& token)
       line_++;
     }
   }
-  else
-  {
-    ClearWhitespaces(expression);
-  }
+
+  if (!options_.tokenize_spaces || !options_.tokenize_new_lines) ClearWhitespaces(expression);
 }
 
 void Lexer::ReadSpecialCharacter(CString& expression, Token& token)

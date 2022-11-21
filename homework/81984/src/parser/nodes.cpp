@@ -1,5 +1,7 @@
 #include "nodes.hpp"
 
+#include <iostream>
+
 void Node::Accept(Visitor* visitor)
 {
 }
@@ -11,16 +13,6 @@ Node::~Node()
 void Program::Accept(Visitor* visitor)
 {
   visitor->Visit(this);
-}
-
-Program::~Program()
-{
-  while(!nodes.empty())
-  {
-    delete nodes.back();
-
-    nodes.pop_back();
-  }
 }
 
 void Arguments::Accept(Visitor* visitor)

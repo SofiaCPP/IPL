@@ -11,6 +11,7 @@ enum TokenType
   DoubleQuotedString,
   Number,
 
+  And,
   Class,
   Def,
   Do,
@@ -19,6 +20,7 @@ enum TokenType
   End,
   If,
   Module,
+  Or,
   Unless,
   While,
 

@@ -6,7 +6,8 @@
 
 struct LexerOptions
 {
-  bool tokenize_whitespaces;
+  bool tokenize_spaces;
+  bool tokenize_new_lines;
   bool store_all_data;
 };
 
@@ -17,7 +18,7 @@ class Lexer
   Map<String, TokenType> keywords_;
   LexerOptions options_;
 public:
-  Lexer(LexerOptions options = { .tokenize_whitespaces = false, .store_all_data = false });
+  Lexer(LexerOptions options = { .tokenize_spaces = false, .tokenize_new_lines = false, .store_all_data = false });
 
   Vector<Token> TokenizeExpression(CString& expression);
 private:

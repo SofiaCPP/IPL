@@ -14,18 +14,20 @@ public:
 
   Program ParseProgram();
 private:
-  Function* ParseFunction();
-  Conditional* ParseConditional();
-  Variable* ParseVariable();
-  Call* ParseCall();
+  SharedPtr<Function> ParseFunction();
+  SharedPtr<Conditional> ParseConditional();
+  SharedPtr<Variable> ParseVariable();
+  SharedPtr<Call> ParseCall();
 
   Arguments ParseArguments(bool required_parenthesis = false);
-  Conditions ParseConditions();
   FunctionChain ParseFunctionChain();
   Block ParseBlock();
+  Conditions ParseConditions();
+  Condition ParseCondition();
 
   Token Current();
   Token CurrentMove();
+  bool CurrentLogical();
   void Assert(TokenType type);
   void AssertMove(TokenType type);
 };

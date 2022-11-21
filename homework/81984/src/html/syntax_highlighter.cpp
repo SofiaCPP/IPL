@@ -64,7 +64,7 @@ void SyntaxHighlighter::Highlight(String file_name)
   String expression = FileProcessor::ReadFile(file_name);
   CString cstring_expression = expression.c_str();
 
-  LexerOptions lexer_options = { .tokenize_whitespaces = true, .store_all_data = true };
+  LexerOptions lexer_options = { .tokenize_spaces = true, .tokenize_new_lines = true, .store_all_data = true };
   Lexer lexer(lexer_options);
   Vector<Token> tokens = lexer.TokenizeExpression(cstring_expression);
 
