@@ -1,7 +1,5 @@
 #include "nodes.hpp"
 
-#include <iostream>
-
 void Node::Accept(Visitor* visitor)
 {
 }

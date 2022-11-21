@@ -1,7 +1,5 @@
 #include "parser.hpp"
 
-#include <iostream>
-
 Parser::Parser(Vector<Token> tokens) : tokens_(tokens), current_(0)
 {
 }
@@ -50,18 +48,17 @@ SharedPtr<Function> Parser::ParseFunction()
   SharedPtr<Function> function(new Function());
 
   AssertMove(Def);
-
   Assert(Identifier);
   function->identifier = CurrentMove().data;
 
   if (Current().type == OpenParenthesis)
   {
+    AssertMove(OpenParenthesis);
     function->arguments = ParseArguments();
     AssertMove(ClosedParenthesis);
   }
 
   AssertMove(NewLine);
-
   function->body = ParseProgram();
 
   AssertMove(End);
@@ -75,33 +72,27 @@ SharedPtr<Conditional> Parser::ParseConditional()
   SharedPtr<Conditional> conditional(new Conditional());
 
   AssertMove(If);
-
   conditional->conditions = ParseConditions();
 
   AssertMove(NewLine);
-
   conditional->body = ParseProgram();
 
   while (Current().type == Elsif)
   {
     AssertMove(Elsif);
-
     Conditional acondition;
 
     acondition.conditions = ParseConditions();
     acondition.body = ParseProgram();
-
     conditional->aconditions.push_back(acondition);
   }
 
   if (Current().type == Else)
   {
     AssertMove(Else);
-
     Conditional acondition;
 
     acondition.body = ParseProgram();
-
     conditional->aconditions.push_back(acondition);
   }
 
@@ -116,13 +107,10 @@ SharedPtr<Variable> Parser::ParseVariable()
   SharedPtr<Variable> variable(new Variable());
 
   Assert(Identifier);
-
   variable->identifier = CurrentMove().data;
 
   AssertMove(Equal);
-
   variable->value = CurrentMove().data;
-
   AssertMove(NewLine);
 
   return variable;
@@ -132,6 +120,7 @@ SharedPtr<Call> Parser::ParseCall()
 {
   SharedPtr<Call> call(new Call());
 
+  Assert(Identifier);
   call->caller = CurrentMove().data;
 
   if (Current().type == Dot) call->fchain = ParseFunctionChain();
@@ -146,14 +135,18 @@ FunctionChain Parser::ParseFunctionChain()
 {
   FunctionChain fchain;
 
-  while (CurrentMove().type == Dot)
+  while (Current().type == Dot)
   {
+    AssertMove(Dot);
     Assert(Identifier);
+
     fchain.identifier.push_back(CurrentMove().data);
 
     if (Current().type == OpenParenthesis)
     {
-      fchain.arguments.push_back(ParseArguments(true));
+      AssertMove(OpenParenthesis);
+      fchain.arguments.push_back(ParseArguments());
+      AssertMove(ClosedParenthesis);
     }
     else
     {
@@ -167,39 +160,31 @@ FunctionChain Parser::ParseFunctionChain()
 Block Parser::ParseBlock()
 {
   Block block;
-
   AssertMove(Do);
 
   if (Current().type == StraightLine)
   {
     AssertMove(StraightLine);
-
     block.arguments = ParseArguments();
-
     AssertMove(StraightLine);
   }
 
   block.body = ParseProgram();
-
   AssertMove(End);
 
   return block;
 }
 
-Arguments Parser::ParseArguments(bool required_parenthesis)
+Arguments Parser::ParseArguments()
 {
   Arguments arguments;
 
-  if (required_parenthesis) AssertMove(OpenParenthesis);
-
-  while (Current().type == Identifier)
+  while (CurrentCallable())
   {
     arguments.variables.push_back(CurrentMove().data);
 
-    if (Current().type == Comma) AssertMove(Comma);
+    if (Current().type != ClosedParenthesis && Current().type != StraightLine) AssertMove(Comma);
   }
-
-  if (required_parenthesis) AssertMove(ClosedParenthesis);
 
   return arguments;
 }
@@ -242,6 +227,15 @@ Token Parser::CurrentMove()
 bool Parser::CurrentLogical()
 {
   return Current().type == And || Current().type == Or;
+}
+
+bool Parser::CurrentCallable()
+{
+  return Current().type == Identifier         ||
+         Current().type == Number             ||
+         Current().type == SingleQuotedString ||
+         Current().type == DoubleQuotedString ||
+         Current().type == Symbol;
 }
 
 void Parser::Assert(TokenType type)

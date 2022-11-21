@@ -19,7 +19,7 @@ private:
   SharedPtr<Variable> ParseVariable();
   SharedPtr<Call> ParseCall();
 
-  Arguments ParseArguments(bool required_parenthesis = false);
+  Arguments ParseArguments();
   FunctionChain ParseFunctionChain();
   Block ParseBlock();
   Conditions ParseConditions();
@@ -28,6 +28,7 @@ private:
   Token Current();
   Token CurrentMove();
   bool CurrentLogical();
+  bool CurrentCallable();
   void Assert(TokenType type);
   void AssertMove(TokenType type);
 };

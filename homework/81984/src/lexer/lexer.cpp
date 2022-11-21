@@ -127,6 +127,7 @@ void Lexer::ReadSpecialCharacter(CString& expression, Token& token)
     case '>': token.type = ((matched_symbol = MatchRegex(expression, GREATER_THAN_OR_EQAUL_REGEX)) != NO_REGEX_MATCH) ? GreaterThanOrEqual : GreaterThan; break;
     case '<': token.type = ((matched_symbol = MatchRegex(expression, LESS_THAN_OR_EQAUL_REGEX)) != NO_REGEX_MATCH) ? LessThanOrEqual : LessThan;          break;
     case '(': token.type = OpenParenthesis;     break;
+    case '|': token.type = StraightLine;        break;
   }
 
   if (token.type != Unknown)

@@ -4,6 +4,8 @@
 #include "../utils/types.hpp"
 #include "visitors.hpp"
 
+struct Visitor;
+
 struct Node
 {
   virtual void Accept(Visitor* visitor) = 0;
@@ -14,8 +16,8 @@ struct Program : Node
 {
   List<SharedPtr<Node>> nodes;
 
-  virtual ~Program() override = default;
   virtual void Accept(Visitor* visitor) override;
+  virtual ~Program() override = default;
 };
 
 struct Arguments : Node
