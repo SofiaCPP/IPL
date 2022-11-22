@@ -1,4 +1,5 @@
 #include "visitors.hpp"
+#include "../html/tags.hpp"
 
 #define TAB_SIZE 2
 
@@ -65,6 +66,7 @@ String DisplayVisitor::Visit(Block* node)
 {
   String display = "";
 
+  display += COLLAPSABLE_WRAPPER_BEGIN;
   display += highlighter.ProcessToken({ .type = Space, .data = " " });
   display += highlighter.ProcessToken({ .type = Do, .data = "do" });
 
@@ -84,14 +86,16 @@ String DisplayVisitor::Visit(Block* node)
 
   display += Tab();
   display += highlighter.ProcessToken({ .type = End, .data = "end" });
+  display += COLLAPSABLE_WRAPPER_END;
 
   return display;
 }
 
 String DisplayVisitor::Visit(Call* node)
 {
-  String display = Tab();
+  String display = "";
 
+  display += Tab();
   display += highlighter.ProcessToken({ .type = Identifier, .data = node->caller });
   display += node->fchain.Accept(*this);
   display += node->block.Accept(*this);
@@ -101,8 +105,9 @@ String DisplayVisitor::Visit(Call* node)
 
 String DisplayVisitor::Visit(Variable* node)
 {
-  String display = Tab();
+  String display = "";
 
+  display += Tab();
   display += highlighter.ProcessToken({ .type = Identifier, .data = node->identifier });
   display += highlighter.ProcessToken({ .type = Space, .data = " " });
   display += highlighter.ProcessToken({ .type = Equal, .data = "=" });
@@ -114,7 +119,10 @@ String DisplayVisitor::Visit(Variable* node)
 
 String DisplayVisitor::Visit(Function* node)
 {
-  String display = Tab();
+  String display = "";
+
+  display += COLLAPSABLE_WRAPPER_BEGIN;
+  display += Tab();
 
   display += highlighter.ProcessToken({ .type = Def, .data = "def" });
   display += highlighter.ProcessToken({ .type = Space, .data = " " });
@@ -135,6 +143,7 @@ String DisplayVisitor::Visit(Function* node)
 
   display += Tab();
   display += highlighter.ProcessToken({ .type = End, .data = "end" });
+  display += COLLAPSABLE_WRAPPER_END;
 
   return display;
 }
@@ -173,7 +182,10 @@ String DisplayVisitor::Visit(Conditions* node)
 
 String DisplayVisitor::Visit(Conditional* node)
 {
-  String display = Tab();
+  String display = "";
+
+  display += COLLAPSABLE_WRAPPER_BEGIN;
+  display += Tab();
 
   display += highlighter.ProcessToken({ .type = If, .data = "if" });
   display += highlighter.ProcessToken({ .type = Space, .data = " " });
@@ -186,6 +198,7 @@ String DisplayVisitor::Visit(Conditional* node)
 
   display += Tab();
   display += highlighter.ProcessToken({ .type = End, .data = "end" });
+  display += COLLAPSABLE_WRAPPER_END;
 
   for (Index it = 0; it < node->aconditions.size(); it++)
   {

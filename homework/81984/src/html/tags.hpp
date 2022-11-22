@@ -27,4 +27,10 @@
                                     "  });"                                                                                                    \
                                     "</script>"
 
+#define COLLAPSABLE_WRAPPER_BEGIN "<details open>" \
+                                  " <summary></summary>"
+
+
+#define COLLAPSABLE_WRAPPER_END "</details>"
+
 #endif
