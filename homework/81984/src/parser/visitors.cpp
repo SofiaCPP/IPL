@@ -1,5 +1,7 @@
 #include "visitors.hpp"
 
+#define TAB_SIZE 2
+
 DisplayVisitor::DisplayVisitor() : tabulation(0)
 {
 }
@@ -41,19 +43,18 @@ String DisplayVisitor::Visit(FunctionChain* node)
 
   for (Index it = 0; it < node->identifiers.size(); ++it)
   {
+    if (it < node->identifiers.size() - 1)
+    {
+      display += highlighter.ProcessToken({ .type = Dot, .data = "." });
+    }
+
     display += highlighter.ProcessToken({ .type = Identifier, .data = node->identifiers[it] });
 
     if (node->arguments[it].variables.size() > 0)
     {
-      display += highlighter.ProcessToken({ .type = OpenParenthesis, .data = ")" });
+      display += highlighter.ProcessToken({ .type = OpenParenthesis, .data = "(" });
       display += node->arguments[it].Accept(*this);
-      display += highlighter.ProcessToken({ .type = ClosedParenthesis, .data = "(" });
-    }
-
-
-    if (it < node->identifiers.size() - 1)
-    {
-      display += highlighter.ProcessToken({ .type = Dot, .data = "." });
+      display += highlighter.ProcessToken({ .type = ClosedParenthesis, .data = ")" });
     }
   }
 
@@ -64,18 +65,24 @@ String DisplayVisitor::Visit(Block* node)
 {
   String display = "";
 
+  display += highlighter.ProcessToken({ .type = Space, .data = " " });
   display += highlighter.ProcessToken({ .type = Do, .data = "do" });
 
   if (node->arguments.variables.size() > 0)
   {
+    display += highlighter.ProcessToken({ .type = Space, .data = " " });
     display += highlighter.ProcessToken({ .type = StraightLine, .data = "|" });
     display += node->arguments.Accept(*this);
     display += highlighter.ProcessToken({ .type = StraightLine, .data = "|" });
   }
 
   display += highlighter.ProcessToken({ .type = NewLine });
-  display += node->body.Accept(*this);
 
+  tabulation += TAB_SIZE;
+  display += node->body.Accept(*this);
+  tabulation -= TAB_SIZE;
+
+  display += Tab();
   display += highlighter.ProcessToken({ .type = End, .data = "end" });
 
   return display;
@@ -83,7 +90,7 @@ String DisplayVisitor::Visit(Block* node)
 
 String DisplayVisitor::Visit(Call* node)
 {
-  String display = "";
+  String display = Tab();
 
   display += highlighter.ProcessToken({ .type = Identifier, .data = node->caller });
   display += node->fchain.Accept(*this);
@@ -94,10 +101,12 @@ String DisplayVisitor::Visit(Call* node)
 
 String DisplayVisitor::Visit(Variable* node)
 {
-  String display = "";
+  String display = Tab();
 
   display += highlighter.ProcessToken({ .type = Identifier, .data = node->identifier });
+  display += highlighter.ProcessToken({ .type = Space, .data = " " });
   display += highlighter.ProcessToken({ .type = Equal, .data = "=" });
+  display += highlighter.ProcessToken({ .type = Space, .data = " " });
   display += highlighter.ProcessToken({  .type = Identifier, .data = node->value });
 
   return display;
@@ -105,9 +114,10 @@ String DisplayVisitor::Visit(Variable* node)
 
 String DisplayVisitor::Visit(Function* node)
 {
-  String display = "";
+  String display = Tab();
 
   display += highlighter.ProcessToken({ .type = Def, .data = "def" });
+  display += highlighter.ProcessToken({ .type = Space, .data = " " });
   display += highlighter.ProcessToken({ .type = Identifier, .data = node->identifier });
 
   if (node->arguments.variables.size() > 0)
@@ -118,8 +128,12 @@ String DisplayVisitor::Visit(Function* node)
   }
 
   display += highlighter.ProcessToken({ .type = NewLine });
-  display += node->body.Accept(*this);
 
+  tabulation += TAB_SIZE;
+  display += node->body.Accept(*this);
+  tabulation -= TAB_SIZE;
+
+  display += Tab();
   display += highlighter.ProcessToken({ .type = End, .data = "end" });
 
   return display;
@@ -130,7 +144,9 @@ String DisplayVisitor::Visit(Condition* node)
   String display = "";
 
   display += highlighter.ProcessToken({ .type = Identifier, .data = node->lhs });
+  display += highlighter.ProcessToken({ .type = Space, .data = " " });
   display += highlighter.ProcessToken({ .type = Identifier, .data = node->op });
+  display += highlighter.ProcessToken({ .type = Space, .data = " " });
   display += highlighter.ProcessToken({ .type = Identifier, .data = node->rhs });
 
   return display;
@@ -146,7 +162,9 @@ String DisplayVisitor::Visit(Conditions* node)
 
     if (it < node->lchain.size())
     {
+      display += highlighter.ProcessToken({ .type = Space, .data = " " });
       display += highlighter.ProcessToken({ .type = Identifier, .data = node->lchain[it] });
+      display += highlighter.ProcessToken({ .type = Space, .data = " " });
     }
   }
 
@@ -155,18 +173,36 @@ String DisplayVisitor::Visit(Conditions* node)
 
 String DisplayVisitor::Visit(Conditional* node)
 {
-  String display = "";
+  String display = Tab();
 
   display += highlighter.ProcessToken({ .type = If, .data = "if" });
+  display += highlighter.ProcessToken({ .type = Space, .data = " " });
   display += node->conditions.Accept(*this);
   display += highlighter.ProcessToken({ .type = NewLine });
+
+  tabulation += TAB_SIZE;
   display += node->body.Accept(*this);
+  tabulation -= TAB_SIZE;
+
+  display += Tab();
   display += highlighter.ProcessToken({ .type = End, .data = "end" });
 
   for (Index it = 0; it < node->aconditions.size(); it++)
   {
     display += highlighter.ProcessToken({ .type = NewLine });
     display += node->aconditions[it].Accept(*this);
+  }
+
+  return display;
+}
+
+String DisplayVisitor::Tab()
+{
+  String display = "";
+
+  for (Index it = 0; it < tabulation; it++)
+  {
+    display += highlighter.ProcessToken({ .type = Space, .data = " " });
   }
 
   return display;

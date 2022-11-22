@@ -33,6 +33,8 @@ struct DisplayVisitor
   String Visit(Condition* node);
   String Visit(Conditions* node);
   String Visit(Conditional* node);
+private:
+  String Tab();
 };
 
 #endif

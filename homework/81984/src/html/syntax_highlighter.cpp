@@ -10,28 +10,32 @@ SyntaxHighlighter::SyntaxHighlighter(SyntaxHighlighterOptions options) : options
   pallete_[DoubleQuotedString] = Red;
   pallete_[Number]             = Green;
 
-  pallete_[Class]   = Magenta;
-  pallete_[Def]     = Magenta;
-  pallete_[Do]      = Magenta;
-  pallete_[Else]    = Magenta;
-  pallete_[Elsif]   = Magenta;
-  pallete_[End]     = Magenta;
-  pallete_[If]      = Magenta;
-  pallete_[Module]  = Magenta;
-  pallete_[Unless]  = Magenta;
-  pallete_[While]   = Magenta;
+  pallete_[And]    = Magenta;
+  pallete_[Class]  = Magenta;
+  pallete_[Def]    = Magenta;
+  pallete_[Do]     = Magenta;
+  pallete_[Else]   = Magenta;
+  pallete_[Elsif]  = Magenta;
+  pallete_[End]    = Magenta;
+  pallete_[If]     = Magenta;
+  pallete_[Module] = Magenta;
+  pallete_[Or]     = Magenta;
+  pallete_[Unless] = Magenta;
+  pallete_[While]  = Magenta;
+  pallete_[While]  = Magenta;
 
-  pallete_[Comma]               = Black;
-  pallete_[ClosedParenthesis]   = Black;
-  pallete_[Dot]                 = Black;
-  pallete_[DoubleEqual]         = Black;
-  pallete_[Equal]               = Black;
-  pallete_[GreaterThan]         = Black;
-  pallete_[GreaterThanOrEqual]  = Black;
-  pallete_[LessThan]            = Black;
-  pallete_[LessThanOrEqual]     = Black;
-  pallete_[Octothorp]           = Green;
-  pallete_[OpenParenthesis]     = Black;
+  pallete_[Comma]              = Black;
+  pallete_[ClosedParenthesis]  = Black;
+  pallete_[Dot]                = Black;
+  pallete_[DoubleEqual]        = Black;
+  pallete_[Equal]              = Black;
+  pallete_[GreaterThan]        = Black;
+  pallete_[GreaterThanOrEqual] = Black;
+  pallete_[LessThan]           = Black;
+  pallete_[LessThanOrEqual]    = Black;
+  pallete_[Octothorp]          = Green;
+  pallete_[OpenParenthesis]    = Black;
+  pallete_[StraightLine]       = Black;
 }
 
 void SyntaxHighlighter::ProcessFile(String file_name)
