@@ -2,6 +2,7 @@
 #define RUBY_IPL_PARSER_VISITORS_HPP_
 
 #include "nodes.hpp"
+#include "../html/syntax_highlighter.hpp"
 
 struct Program;
 struct Arguments;
@@ -14,36 +15,24 @@ struct Condition;
 struct Conditions;
 struct Conditional;
 
-struct Visitor
+struct DisplayVisitor
 {
-  virtual ~Visitor() = 0;
+  SyntaxHighlighter highlighter;
+  Index tabulation;
 
-  virtual void* Visit(Program* node) = 0;
-  virtual void* Visit(Arguments* node) = 0;
-  virtual void* Visit(FunctionChain* node) = 0;
-  virtual void* Visit(Block* node) = 0;
-  virtual void* Visit(Call* node) = 0;
-  virtual void* Visit(Variable* node) = 0;
-  virtual void* Visit(Function* node) = 0;
-  virtual void* Visit(Condition* node) = 0;
-  virtual void* Visit(Conditions* node) = 0;
-  virtual void* Visit(Conditional* node) = 0;
-};
+  DisplayVisitor();
+  ~DisplayVisitor() = default;
 
-struct ControlBlockDetectionVisitor : Visitor
-{
-  virtual ~ControlBlockDetectionVisitor() override = default;
-
-  virtual void* Visit(Program* node);
-  virtual void* Visit(Arguments* node);
-  virtual void* Visit(FunctionChain* node);
-  virtual void* Visit(Block* node);
-  virtual void* Visit(Call* node);
-  virtual void* Visit(Variable* node);
-  virtual void* Visit(Function* node);
-  virtual void* Visit(Condition* node);
-  virtual void* Visit(Conditions* node);
-  virtual void* Visit(Conditional* node);
+  String Visit(Program* node);
+  String Visit(Arguments* node);
+  String Visit(FunctionChain* node);
+  String Visit(Block* node);
+  String Visit(Call* node);
+  String Visit(Variable* node);
+  String Visit(Function* node);
+  String Visit(Condition* node);
+  String Visit(Conditions* node);
+  String Visit(Conditional* node);
 };
 
 #endif

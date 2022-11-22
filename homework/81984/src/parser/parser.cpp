@@ -140,7 +140,7 @@ FunctionChain Parser::ParseFunctionChain()
     AssertMove(Dot);
     Assert(Identifier);
 
-    fchain.identifier.push_back(CurrentMove().data);
+    fchain.identifiers.push_back(CurrentMove().data);
 
     if (Current().type == OpenParenthesis)
     {

@@ -1,31 +1,6 @@
 #include "syntax_highlighter.hpp"
+#include "tags.hpp"
 #include "../utils/file_processor.hpp"
-
-#define VIEW_WRAPPER_BEGIN "<div style=\""             \
-                           " display: flex;"           \
-                           " width: 100%;"             \
-                           " height: 100%;"            \
-                           " justify-content: center;" \
-                           " align-items: center;"     \
-                           " font-size: 3.5rem;"       \
-                           "\"><pre style=\""          \
-                           " width: 100%;"             \
-                           " height: 100%;"            \
-                           "\">"
-
-#define VIEW_WRAPPER_END "</pre></div>"
-
-#define BOOTSTRAP_HOVER "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css\">" \
-                        "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js\"></script>"               \
-                        "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js\"></script>"            \
-                        "<script>"                                                                                                 \
-                        "  $(document).ready(() => {"                                                                              \
-                        "    $('.token').popover({"                                                                                \
-                        "      trigger: 'hover',"                                                                                  \
-                        "      placement: 'right'"                                                                                 \
-                        "    });"                                                                                                  \
-                        "  });"                                                                                                    \
-                        "</script>"
 
 SyntaxHighlighter::SyntaxHighlighter(SyntaxHighlighterOptions options) : options_(options)
 {
@@ -59,7 +34,7 @@ SyntaxHighlighter::SyntaxHighlighter(SyntaxHighlighterOptions options) : options
   pallete_[OpenParenthesis]     = Black;
 }
 
-void SyntaxHighlighter::Highlight(String file_name)
+void SyntaxHighlighter::ProcessFile(String file_name)
 {
   String expression = FileProcessor::ReadFile(file_name);
   CString cstring_expression = expression.c_str();
@@ -68,10 +43,14 @@ void SyntaxHighlighter::Highlight(String file_name)
   Lexer lexer(lexer_options);
   Vector<Token> tokens = lexer.TokenizeExpression(cstring_expression);
 
-  String view = ProcessTokens(tokens);
+  String view = "";
+
+  view += VIEW_WRAPPER_BEGIN;
+  view += ProcessTokens(tokens);
+  view += VIEW_WRAPPER_END;
 
   if (options_.hover_information) {
-    view += BOOTSTRAP_HOVER;
+    view += BOOTSTRAP_HOVER_INFORMATION;
   }
 
   String view_file_name = file_name + ".html";
@@ -79,12 +58,15 @@ void SyntaxHighlighter::Highlight(String file_name)
   FileProcessor::WriteFile(view_file_name, view);
 }
 
+String SyntaxHighlighter::ProcessToken(Token token)
+{
+  return ProcessTag(token);
+}
+
 String SyntaxHighlighter::ProcessTokens(Vector<Token>& tokens) {
-  String view = VIEW_WRAPPER_BEGIN;
+  String view = "";
 
   for (Token token : tokens) view += ProcessTag(token);
-
-  view += VIEW_WRAPPER_END;
 
   return view;
 }

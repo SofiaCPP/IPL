@@ -16,7 +16,8 @@ class SyntaxHighlighter
 public:
   SyntaxHighlighter(SyntaxHighlighterOptions options = { .hover_information = false });
 
-  void Highlight(String file_name);
+  void ProcessFile(String file_name);
+  String ProcessToken(Token token);
 private:
   String ProcessTokens(Vector<Token>& tokens);
   String ProcessTag(Token& token);

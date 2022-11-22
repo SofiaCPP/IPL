@@ -1,105 +1,173 @@
 #include "visitors.hpp"
 
-Visitor::~Visitor()
+DisplayVisitor::DisplayVisitor() : tabulation(0)
 {
 }
 
-void* Visitor::Visit(Program* node)
+String DisplayVisitor::Visit(Program* node)
 {
-  return (void*)0;
+  String display = "";
+
+  for (SharedPtr<Node> program_node : node->nodes)
+  {
+    display += program_node->Accept(*this);
+    display += highlighter.ProcessToken({ .type = NewLine });
+  }
+
+  return display;
 }
 
-void* Visitor::Visit(Arguments* node)
+String DisplayVisitor::Visit(Arguments* node)
 {
-  return (void*)0;
+  String display = "";
+
+  for (Index it = 0; it < node->variables.size(); it++)
+  {
+    display += highlighter.ProcessToken({ .type = Identifier, .data = node->variables[it] });
+
+    if (it < node->variables.size() - 1)
+    {
+      display += highlighter.ProcessToken({ .type = Comma, .data = "," });
+      display += highlighter.ProcessToken({ .type = Space, .data = " " });
+    }
+  }
+
+  return display;
 }
 
-void* Visitor::Visit(FunctionChain* node)
+String DisplayVisitor::Visit(FunctionChain* node)
 {
-  return (void*)0;
+  String display = "";
+
+  for (Index it = 0; it < node->identifiers.size(); ++it)
+  {
+    display += highlighter.ProcessToken({ .type = Identifier, .data = node->identifiers[it] });
+
+    if (node->arguments[it].variables.size() > 0)
+    {
+      display += highlighter.ProcessToken({ .type = OpenParenthesis, .data = ")" });
+      display += node->arguments[it].Accept(*this);
+      display += highlighter.ProcessToken({ .type = ClosedParenthesis, .data = "(" });
+    }
+
+
+    if (it < node->identifiers.size() - 1)
+    {
+      display += highlighter.ProcessToken({ .type = Dot, .data = "." });
+    }
+  }
+
+  return display;
 }
 
-void* Visitor::Visit(Block* node)
+String DisplayVisitor::Visit(Block* node)
 {
-  return (void*)0;
+  String display = "";
+
+  display += highlighter.ProcessToken({ .type = Do, .data = "do" });
+
+  if (node->arguments.variables.size() > 0)
+  {
+    display += highlighter.ProcessToken({ .type = StraightLine, .data = "|" });
+    display += node->arguments.Accept(*this);
+    display += highlighter.ProcessToken({ .type = StraightLine, .data = "|" });
+  }
+
+  display += highlighter.ProcessToken({ .type = NewLine });
+  display += node->body.Accept(*this);
+
+  display += highlighter.ProcessToken({ .type = End, .data = "end" });
+
+  return display;
 }
 
-void* Visitor::Visit(Call* node)
+String DisplayVisitor::Visit(Call* node)
 {
-  return (void*)0;
+  String display = "";
+
+  display += highlighter.ProcessToken({ .type = Identifier, .data = node->caller });
+  display += node->fchain.Accept(*this);
+  display += node->block.Accept(*this);
+
+  return display;
 }
 
-void* Visitor::Visit(Variable* node)
+String DisplayVisitor::Visit(Variable* node)
 {
-  return (void*)0;
+  String display = "";
+
+  display += highlighter.ProcessToken({ .type = Identifier, .data = node->identifier });
+  display += highlighter.ProcessToken({ .type = Equal, .data = "=" });
+  display += highlighter.ProcessToken({  .type = Identifier, .data = node->value });
+
+  return display;
 }
 
-void* Visitor::Visit(Function* node)
+String DisplayVisitor::Visit(Function* node)
 {
-  return (void*)0;
+  String display = "";
+
+  display += highlighter.ProcessToken({ .type = Def, .data = "def" });
+  display += highlighter.ProcessToken({ .type = Identifier, .data = node->identifier });
+
+  if (node->arguments.variables.size() > 0)
+  {
+    display += highlighter.ProcessToken({ .type = OpenParenthesis, .data = "(" });
+    display += node->arguments.Accept(*this);
+    display += highlighter.ProcessToken({ .type = ClosedParenthesis, .data = ")" });
+  }
+
+  display += highlighter.ProcessToken({ .type = NewLine });
+  display += node->body.Accept(*this);
+
+  display += highlighter.ProcessToken({ .type = End, .data = "end" });
+
+  return display;
 }
 
-void* Visitor::Visit(Condition* node)
+String DisplayVisitor::Visit(Condition* node)
 {
-  return (void*)0;
+  String display = "";
+
+  display += highlighter.ProcessToken({ .type = Identifier, .data = node->lhs });
+  display += highlighter.ProcessToken({ .type = Identifier, .data = node->op });
+  display += highlighter.ProcessToken({ .type = Identifier, .data = node->rhs });
+
+  return display;
 }
 
-void* Visitor::Visit(Conditions* node)
+String DisplayVisitor::Visit(Conditions* node)
 {
-  return (void*)0;
+  String display = "";
+
+  for (Index it = 0; it < node->conditions.size(); it++)
+  {
+    display += node->conditions[it].Accept(*this);
+
+    if (it < node->lchain.size())
+    {
+      display += highlighter.ProcessToken({ .type = Identifier, .data = node->lchain[it] });
+    }
+  }
+
+  return display;
 }
 
-void* Visitor::Visit(Conditional* node)
+String DisplayVisitor::Visit(Conditional* node)
 {
-  return (void*)0;
-}
+  String display = "";
 
-void* ControlBlockDetectionVisitor::Visit(Program* node)
-{
-  return (void*)false;
-}
+  display += highlighter.ProcessToken({ .type = If, .data = "if" });
+  display += node->conditions.Accept(*this);
+  display += highlighter.ProcessToken({ .type = NewLine });
+  display += node->body.Accept(*this);
+  display += highlighter.ProcessToken({ .type = End, .data = "end" });
 
-void* ControlBlockDetectionVisitor::Visit(Arguments* node)
-{
-  return (void*)false;
-}
+  for (Index it = 0; it < node->aconditions.size(); it++)
+  {
+    display += highlighter.ProcessToken({ .type = NewLine });
+    display += node->aconditions[it].Accept(*this);
+  }
 
-void* ControlBlockDetectionVisitor::Visit(FunctionChain* node)
-{
-  return (void*)false;
-}
-
-void* ControlBlockDetectionVisitor::Visit(Block* node)
-{
-  return (void*)true;
-}
-
-void* ControlBlockDetectionVisitor::Visit(Call* node)
-{
-  return (void*)false;
-}
-
-void* ControlBlockDetectionVisitor::Visit(Variable* node)
-{
-  return (void*)false;
-}
-
-void* ControlBlockDetectionVisitor::Visit(Function* node)
-{
-  return (void*)true;
-}
-
-void* ControlBlockDetectionVisitor::Visit(Condition* node)
-{
-  return (void*)false;
-}
-
-void* ControlBlockDetectionVisitor::Visit(Conditions* node)
-{
-  return (void*)false;
-}
-
-void* ControlBlockDetectionVisitor::Visit(Conditional* node)
-{
-  return (void*)true;
+  return display;
 }

@@ -1,59 +1,60 @@
 #include "nodes.hpp"
 
-void Node::Accept(Visitor* visitor)
+String Node::Accept(DisplayVisitor& visitor)
 {
+  return "";
 }
 
 Node::~Node()
 {
 }
 
-void Program::Accept(Visitor* visitor)
+String Program::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
 
-void Arguments::Accept(Visitor* visitor)
+String Arguments::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
 
-void FunctionChain::Accept(Visitor* visitor)
+String FunctionChain::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
 
-void Block::Accept(Visitor* visitor)
+String Block::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
 
-void Call::Accept(Visitor* visitor)
+String Call::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
 
-void Variable::Accept(Visitor* visitor)
+String Variable::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
 
-void Function::Accept(Visitor* visitor)
+String Function::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
 
-void Condition::Accept(Visitor* visitor)
+String Condition::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
 
-void Conditions::Accept(Visitor* visitor)
+String Conditions::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
 
-void Conditional::Accept(Visitor* visitor)
+String Conditional::Accept(DisplayVisitor& visitor)
 {
-  visitor->Visit(this);
+  return visitor.Visit(this);
 }
