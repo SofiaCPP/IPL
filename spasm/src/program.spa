@@ -1,12 +1,9 @@
-read
+read 1
+const 2 1
 label next
-dup
-push 1
-<
-jmpt bye
-push 1
--
-dup
-print
+less 3 1 2
+jmpt 3 bye
+sub 1 1 2
+print 1
 jmp next
 label bye
