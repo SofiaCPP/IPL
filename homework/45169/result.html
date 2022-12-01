@@ -1,0 +1,60 @@
+<!DOCTYPE html><html>
+<head>
+<meta charset="utf-8">
+<title>Python script</title>
+<style>.code { background-color: #373737; padding: 1.5rem; }.string {color: blanchedalmond;}.whitespace { background-color: #0000000d; border-radius: 50%; display: inline-block; height: 7px;width: 7px; overflow: hidden; }.keyword { color: greenyellow; }.operator { color: antiquewhite; }.number { color: slategray; }.bracket { color: violet; }.identifier { color: cornsilk; }div.collapsable {  margin-top: -1rem;  overflow: hidden;}.collapsable_dots {  margin-left: 1rem;  color: burlywood;}/* Style the button that is used to open and close the collapsible content */.collapsible_btn {  cursor: pointer;  font-size: .7rem;  margin: -2.3rem 0 0 -1.5rem;  position: absolute;}</style>
+</head>
+<body style="background: black;color: white;"><pre class="code">
+<span class="comment"># This is an example program to test python lexer</span><span class="new_line">
+</span><span class="string">"""
+Multiline
+string
+example
+"""</span>
+
+<span class="identifier">x</span><span class="whitespace"> </span><span class="operator">=</span><span class="whitespace"> </span><span class="number">5</span><span class="new_line">
+</span><span class="keyword">if </span><span class="whitespace"> </span><span class="identifier">x</span><span class="whitespace"> </span><span class="operator">></span><span class="whitespace"> </span><span class="number">2</span><span class="colon">:
+</span>
+<button class="collapsible_btn active">–</button><div class="collapsable collapsable_dots" style="display: none;">...</div><div class="collapsable" style="display: block;"><span class="whitespace"> </span><span class="whitespace"> </span><span class="whitespace"> </span><span class="whitespace"> </span><span class="identifier">print</span><span class="bracket">(</span><span class="string">"X is greater than two!"</span><span class="bracket">)</span><span class="new_line">
+</span></div><span class="keyword">else:
+</span>
+<button class="collapsible_btn active">–</button><div class="collapsable collapsable_dots" style="display: none;">...</div><div class="collapsable" style="display: block;"><span class="whitespace"> </span><span class="whitespace"> </span><span class="whitespace"> </span><span class="whitespace"> </span><span class="identifier">print</span><span class="bracket">(</span><span class="string">"X is greater than two!"</span><span class="bracket">)</span></div>
+<span class="keyword">def </span><span class="whitespace"> </span><span class="identifier">myfunc</span><span class="bracket">(</span><span class="bracket">)</span><span class="colon">:
+</span>
+<button class="collapsible_btn active">–</button><div class="collapsable collapsable_dots" style="display: none;">...</div><div class="collapsable" style="display: block;"><span class="whitespace"> </span><span class="keyword">global </span><span class="whitespace"> </span><span class="identifier">y</span><span class="new_line">
+</span><span class="whitespace"> </span><span class="identifier">y</span><span class="whitespace"> </span><span class="operator">=</span><span class="whitespace"> </span><span class="string">"World"</span><span class="new_line">
+</span><span class="whitespace"> </span><span class="identifier">print</span><span class="bracket">(</span><span class="string">"Hello "</span><span class="whitespace"> </span><span class="operator">+</span><span class="whitespace"> </span><span class="identifier">y</span><span class="bracket">)</span></div>
+<span class="identifier">myfunc</span><span class="bracket">(</span><span class="bracket">)</span></div>
+<span class="identifier">str</span><span class="bracket">(</span><span class="string">"1"</span><span class="bracket">)</span>
+
+<span class="identifier">fruits</span><span class="whitespace"> </span><span class="operator">=</span><span class="whitespace"> </span>[<span class="string">"apple"</span>,<span class="whitespace"> </span><span class="string">"banana"</span>,<span class="whitespace"> </span><span class="string">"cherry"</span>]<span class="new_line">
+</span><span class="keyword">for </span><span class="whitespace"> </span><span class="identifier">x</span><span class="whitespace"> </span><span class="keyword">in </span><span class="whitespace"> </span><span class="identifier">fruits</span><span class="colon">:
+</span>
+<button class="collapsible_btn active">–</button><div class="collapsable collapsable_dots" style="display: none;">...</div><div class="collapsable" style="display: block;"><span class="whitespace"> </span><span class="whitespace"> </span><span class="identifier">print</span><span class="bracket">(</span><span class="identifier">x</span><span class="bracket">)</span><span class="new_line">
+</span><span class="whitespace"> </span><span class="whitespace"> </span><span class="keyword">if </span><span class="whitespace"> </span><span class="identifier">x</span><span class="whitespace"> </span><span class="operator">==</span><span class="whitespace"> </span><span class="string">"banana"</span><span class="colon">:
+</span>
+<button class="collapsible_btn active">–</button><div class="collapsable collapsable_dots" style="display: none;">...</div><div class="collapsable" style="display: block;"><span class="whitespace"> </span><span class="whitespace"> </span><span class="whitespace"> </span><span class="whitespace"> </span><span class="keyword">break
+</span><span class="new_line">
+</span></pre>
+</body>
+<script>var coll = document.getElementsByClassName("collapsible_btn");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+coll[i].addEventListener("click", function() {
+this.classList.toggle("active");
+var dots = this.nextElementSibling;
+if (dots.style.display === "block") {
+dots.style.display = "none";
+} else {
+dots.style.display = "block";
+}
+var content = this.nextElementSibling.nextElementSibling;
+if (content.style.display === "block") {
+content.style.display = "none";
+this.innerHTML="+"} else {
+content.style.display = "block";
+this.innerHTML="–"}
+});
+}
+</script></html>
