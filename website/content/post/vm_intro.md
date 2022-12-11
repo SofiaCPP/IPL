@@ -6,8 +6,6 @@ draft: false
 
 Introduction to virtual machines as a model for computation.
 
-This lecture will be entirely online - see the [Facebook group]({{< ref "/facebook" >}})
-
 <!--more-->
 
 [Slideshow]({{< ref "/slides/05_vm_intro" >}})

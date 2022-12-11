@@ -6,8 +6,6 @@ draft: false
 
 Representing values inside the virtual machine.
 
-This lecture will be entirely online - see the [Facebook group]({{< ref "/facebook" >}})
-
 <!--more-->
 
 [Slideshow]({{< ref "/slides/06_vm_values" >}})
