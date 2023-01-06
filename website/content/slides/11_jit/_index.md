@@ -266,7 +266,7 @@ Translate Spasm calling convention to x86_64 and back
 
 - Translate Spasm negative registers to positive offsets from `RDX`
   - make sure to skip `rbp`, `r15` stored on the stack
-- Translate Spasm positive registeers to negative offsets from `RDX`
+- Translate Spasm positive registers to negative offsets from `RDX`
 
 > The native stack grows towards lower addresses!
 
@@ -327,12 +327,12 @@ How to handle vararg functions?
     mov rcx, r8 # add
     add rcx, r9
 
-    mov [rdi + 16], rcx # store result
+    mov [rdi - 16], rcx # store result
 
 ---
 ##### JIT - Epilog
 
-    mov eax, [rdi + 16]
+    mov eax, [rdi - 16]
     mov rsp, r15
     pop r15
     pop rbp
