@@ -74,7 +74,15 @@ Spasm::RunResult Spasm::run()
             case OpCodes::Push:
             {
                 const auto count = PC_t(read_reg(size));
-                assert(m_SP + count <= &data_stack[data_stack.size() - 1]);
+                if(!(m_SP + count <= &data_stack[data_stack.size() - 1]))
+                {
+                    float resizeCoeff = 2.f;
+                    if (count > data_stack.size())
+                    {
+                        resizeCoeff = float(ceil(count / data_stack.size()) + 1);
+                    }
+                    resizeDataStack(resizeCoeff);
+                }
                 std::fill(m_SP, m_SP + count, data_t{});
                 m_SP += count;
                 break;
@@ -234,6 +242,25 @@ Spasm::RunResult Spasm::run()
     }
     return RunResult::Success;
 }
+
+/*!
+** Resizes the data stack. m_FP and m_SP are updated.
+*/
+void Spasm::resizeDataStack(float resizeCoefficient)
+{
+	data_t* stackStart = &(data_stack[0]);
+	size_t fpOffset = m_FP - stackStart;
+	size_t spOffset = m_SP - stackStart;
+
+	size_t currentSize = data_stack.size();
+	size_t newSize = size_t(currentSize * resizeCoefficient);
+	data_stack.resize(newSize);
+
+	stackStart = &(data_stack[0]);
+	m_FP = stackStart + fpOffset;
+	m_SP = stackStart + spOffset;
+}
+
 
 /*!
 ** Pushes the next data_t object on the data stack
@@ -448,7 +475,10 @@ data_t Spasm::get_local(reg_t reg)
 void Spasm::set_local(reg_t reg, data_t data)
 {
     assert(&data_stack[0] <= (m_FP + reg));
-    assert((m_FP + reg) < &data_stack[data_stack.size() - 1]);
+    if(!((m_FP + reg) < &data_stack[data_stack.size() - 1]))
+    {
+        resizeDataStack();
+    }
     m_FP[reg] = data;
 }
 
@@ -461,7 +491,10 @@ data_t Spasm::pop_data()
 
 void Spasm::push_data(data_t data)
 {
-    assert(m_SP < &data_stack[data_stack.size() - 1]);
+    if(!(m_SP < &data_stack[data_stack.size() - 1]))
+    {
+        resizeDataStack();
+    }
     *(m_SP++) = data;
 }
 
