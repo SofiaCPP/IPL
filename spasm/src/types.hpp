@@ -9,7 +9,7 @@
 
 namespace SpasmImpl
 {
-typedef int8_t byte;
+typedef uint8_t byte;
 typedef size_t PC_t;
 typedef Spasm::Value data_t;
 
