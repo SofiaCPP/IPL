@@ -13,7 +13,7 @@ namespace ASM
 class Bytecode_Stream
 {
    public:
-    typedef int8_t byte;
+    typedef uint8_t byte;
     typedef byte Opcode_t;
 
     virtual ~Bytecode_Stream();
