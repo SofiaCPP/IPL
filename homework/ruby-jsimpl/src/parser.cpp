@@ -251,7 +251,7 @@ expression_ptr parser::parse_block()
     assert_next(PIPE);
   }
   assert_next(NEWLINE);
-  return std::make_shared<function_definition>(nullptr, parse_program_expression());
+  return std::make_shared<function_definition>(nullptr, vector<expression_ptr>(), parse_program_expression());
 }
 
 expression_ptr parser::parse_literal_expression()

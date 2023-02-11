@@ -13,13 +13,13 @@ public:
   virtual void accept(expression_visitor& visitor) = 0;
 };
 
-#define CREATE_MEMBER_CONSTRUCTOR_ARGUMENTS(type, name) \
-  const type& name,
+#define CREATE_MEMBER_CONSTRUCTOR_ARGUMENTS(type, name, def) \
+  const type& name = def,
 
-#define CREATE_MEMBER_CONSTRUCTOR_INITIALIZER(type, name) \
+#define CREATE_MEMBER_CONSTRUCTOR_INITIALIZER(type, name, def) \
   m_##name(name),
 
-#define CREATE_MEMBER_ATTRIBUTES(type, name) \
+#define CREATE_MEMBER_ATTRIBUTES(type, name, def) \
   type m_##name;
 
 #define CREATE_EXPRESSION_CLASS(name, MEMBERS_ITERATOR)                                \
