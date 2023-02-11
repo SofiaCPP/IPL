@@ -1,0 +1,4 @@
+spaghetti.tree е синтактичното дърво на spaghetti.hs, генерирано от tree-sitter
+([1]) и неговата граматика за haskell([2]).
+[1]: https://github.com/tree-sitter/tree-sitter
+[2]: https://github.com/tree-sitter/tree-sitter-haskell
