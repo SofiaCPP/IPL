@@ -9,11 +9,11 @@ class lexer
   map<string, token_type> m_keywords;
 
   string m_expression;
-  uint m_expression_point;
+  uint m_position;
 public:
-  lexer();
+  lexer(const string& expression);
 
-  vector<token> tokenize(const string& expression);
+  vector<token> tokenize();
 private:
   void read_next_token();
 

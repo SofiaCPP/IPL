@@ -84,7 +84,7 @@
   MEMBERS_ITERATOR(expression_ptr, body)
 
 #define PROGRAM_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(vector<expression_ptr>, exprs)
+  MEMBERS_ITERATOR(vector<expression_ptr>, statements)
 
 #define CREATE_EXPRESSIONS(CREATE_EXPRESSION_CLASS)                                          \
   CREATE_EXPRESSION_CLASS(literal_nil, NO_MEMBERS)                                    \
@@ -92,9 +92,10 @@
   CREATE_EXPRESSION_CLASS(literal_number, LITERAL_NUMBER_MEMBERS)                     \
   CREATE_EXPRESSION_CLASS(literal_string, LITERAL_STRING_MEMBERS)                     \
   CREATE_EXPRESSION_CLASS(literal_symbol, LITERAL_SYMBOL_MEMBERS)                     \
-  CREATE_EXPRESSION_CLASS(literal_array, LITERAL_LIST_MEMBERS)                        \
+  CREATE_EXPRESSION_CLASS(literal_list, LITERAL_LIST_MEMBERS)                        \
   CREATE_EXPRESSION_CLASS(literal_hash_element, LITERAL_HASH_ELEMENT_MEMBERS)         \
   CREATE_EXPRESSION_CLASS(literal_hash, LITERAL_HASH_MEMBERS)                         \
+  CREATE_EXPRESSION_CLASS(identifier_expression, IDENTIFIER_MEMBERS)                  \
   CREATE_EXPRESSION_CLASS(variable_definition, VARIABLE_DEFINITION_MEMBERS)           \
   CREATE_EXPRESSION_CLASS(function_definition, FUNCTION_DEFINITION_MEMBERS)           \
   CREATE_EXPRESSION_CLASS(unary_expression, UNARY_EXPRESSION_MEMBERS)                 \

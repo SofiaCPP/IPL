@@ -9,7 +9,7 @@ class token
 {
 public:
   token_type m_type;
-  string m_content;
+  string m_lexeme;
 };
 
 #endif

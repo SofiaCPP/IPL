@@ -76,6 +76,8 @@ enum token_type
   SYMBOL,
   SINGLE_QUOTE_STRING,
   DOUBLE_QUOTE_STRING,
+  TRUE,
+  FALSE,
 
   UNRECOGNIZED
 };

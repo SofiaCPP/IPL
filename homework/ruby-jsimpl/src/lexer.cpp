@@ -2,7 +2,8 @@
 
 #include "token/token_regexes.hpp"
 
-lexer::lexer()
+lexer::lexer(const string& expression) :
+  m_expression(expression), m_position(0)
 {
   m_keywords["if"]     = IF;
   m_keywords["elsif"]  = ELSIF;
@@ -25,16 +26,15 @@ lexer::lexer()
   m_keywords["module"] = MODULE;
   m_keywords["def"]    = DEF;
   m_keywords["nil"]    = NIL;
+  m_keywords["true"]   = TRUE;
+  m_keywords["false"]  = FALSE;
 }
 
-vector<token> lexer::tokenize(const string& expression)
+vector<token> lexer::tokenize()
 {
-  m_expression = expression;
-  m_expression_point = 0;
-
   vector<token> tokens;
 
-  while (m_expression_point < m_expression.length())
+  while (m_position < m_expression.length())
   {
     clear_whitespaces();
 
@@ -50,7 +50,7 @@ vector<token> lexer::tokenize(const string& expression)
 void lexer::read_next_token()
 {
   m_token.m_type = UNRECOGNIZED;
-  m_token.m_content = "";
+  m_token.m_lexeme = "";
 
   match_keyword_token();
   if (m_token.m_type != UNRECOGNIZED) return;
@@ -78,7 +78,7 @@ void lexer::match_keyword_token()
   {
     m_token.m_type = m_keywords[match];
 
-    m_expression_point += match.length();
+    m_position += match.length();
   }
 }
 
@@ -89,9 +89,9 @@ void lexer::match_identifier_token()
   if (match != NO_TOKEN_REGEX_MATCH)
   {
     m_token.m_type = IDENTIFIER;
-    m_token.m_content = match;
+    m_token.m_lexeme = match;
 
-    m_expression_point += match.length();
+    m_position += match.length();
   }
 }
 
@@ -102,9 +102,9 @@ void lexer::match_number_token()
   if (match != NO_TOKEN_REGEX_MATCH)
   {
     m_token.m_type = NUMBER;
-    m_token.m_content = match;
+    m_token.m_lexeme = match;
 
-    m_expression_point += match.length();
+    m_position += match.length();
   }
 }
 
@@ -115,9 +115,9 @@ void lexer::match_string_token()
   if (match != NO_TOKEN_REGEX_MATCH)
   {
     m_token.m_type = SINGLE_QUOTE_STRING;
-    m_token.m_content = match;
+    m_token.m_lexeme = match;
 
-    m_expression_point += match.length();
+    m_position += match.length();
 
     return;
   }
@@ -127,9 +127,9 @@ void lexer::match_string_token()
   if (match != NO_TOKEN_REGEX_MATCH)
   {
     m_token.m_type = DOUBLE_QUOTE_STRING;
-    m_token.m_content = match;
+    m_token.m_lexeme = match;
 
-    m_expression_point += match.length();
+    m_position += match.length();
   }
 }
 
@@ -140,9 +140,9 @@ void lexer::match_symbol_token()
   if (match != NO_TOKEN_REGEX_MATCH)
   {
     m_token.m_type = SYMBOL;
-    m_token.m_content = match;
+    m_token.m_lexeme = match;
 
-    m_expression_point += match.length();
+    m_position += match.length();
   }
 }
 
@@ -150,7 +150,7 @@ void lexer::match_character_combination_token()
 {
   string match = NO_TOKEN_REGEX_MATCH;
 
-  switch (m_expression[m_expression_point])
+  switch (m_expression[m_position])
   {
   case '\n': m_token.m_type = NEWLINE;              break;
   case ';':  m_token.m_type = SEMICOLON;             break;
@@ -180,16 +180,16 @@ void lexer::match_character_combination_token()
   if (m_token.m_type != UNRECOGNIZED)
   {
     if (match != NO_TOKEN_REGEX_MATCH)
-      m_expression_point += match.length();
+      m_position += match.length();
     else
-      ++m_expression_point;
+      ++m_position;
   }
 }
 
 
 void lexer::clear_whitespaces()
 {
-  while (m_expression[m_expression_point] == ' ') ++m_expression_point;
+  while (m_expression[m_position] == ' ') ++m_position;
 }
 
 string lexer::match_regex(const regex& regex)

@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <regex>
+#include <cassert>
 
 using string = std::string;
 using exception = std::exception;
