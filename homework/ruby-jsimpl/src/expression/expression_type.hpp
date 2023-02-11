@@ -32,35 +32,35 @@
   MEMBERS_ITERATOR(string, value, "")
 
 #define VARIABLE_DEFINITION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(expression_ptr, identifier, nullptr)        \
+  MEMBERS_ITERATOR(expression_ptr, name, nullptr)     \
   MEMBERS_ITERATOR(expression_ptr, value, nullptr)
 
-#define FUNCTION_DEFINITION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(expression_ptr, identifier, nullptr)        \
-  MEMBERS_ITERATOR(vector<expression_ptr>, args, vector<expression_ptr>()) \
+#define FUNCTION_DEFINITION_MEMBERS(MEMBERS_ITERATOR)              \
+  MEMBERS_ITERATOR(expression_ptr, name, nullptr)                  \
+  MEMBERS_ITERATOR(expression_ptr, args, vector<expression_ptr>()) \
   MEMBERS_ITERATOR(expression_ptr, body, nullptr)
 
 #define UNARY_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(token_type, oper, UNRECOGNIZED)               \
+  MEMBERS_ITERATOR(token_type, oper, UNRECOGNIZED) \
   MEMBERS_ITERATOR(expression_ptr, expr, nullptr)
 
 #define BINARY_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(token_type, oper, UNRECOGNIZED)                \
-  MEMBERS_ITERATOR(expression_ptr, left, nullptr)            \
+  MEMBERS_ITERATOR(token_type, oper, UNRECOGNIZED)  \
+  MEMBERS_ITERATOR(expression_ptr, left, nullptr)   \
   MEMBERS_ITERATOR(expression_ptr, right, nullptr)
 
-#define IF_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(expression_ptr, condition, nullptr)   \
-  MEMBERS_ITERATOR(expression_ptr, then_expr, nullptr)   \
+#define IF_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)        \
+  MEMBERS_ITERATOR(expression_ptr, condition, nullptr) \
+  MEMBERS_ITERATOR(expression_ptr, then_expr, nullptr) \
   MEMBERS_ITERATOR(expression_ptr, else_expr, nullptr)
 
-#define CASE_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)      \
-  MEMBERS_ITERATOR(expression_ptr, condition, nullptr)          \
+#define CASE_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                \
+  MEMBERS_ITERATOR(expression_ptr, condition, nullptr)                           \
   MEMBERS_ITERATOR(vector<expression_ptr>, when_exprs, vector<expression_ptr>()) \
   MEMBERS_ITERATOR(expression_ptr, else_expr, nullptr)
 
-#define WHEN_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(expression_ptr, condition, nullptr)     \
+#define WHEN_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)      \
+  MEMBERS_ITERATOR(expression_ptr, condition, nullptr) \
   MEMBERS_ITERATOR(expression_ptr, body, nullptr)
 
 #define WHILE_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)     \
@@ -82,8 +82,8 @@
 #define RETURN_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
   MEMBERS_ITERATOR(expression_ptr, expr, nullptr)
 
-#define CLASS_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(expression_ptr, identifier, nullptr)     \
+#define CLASS_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)      \
+  MEMBERS_ITERATOR(expression_ptr, identifier, nullptr) \
   MEMBERS_ITERATOR(expression_ptr, body, nullptr)
 
 #define PROGRAM_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
@@ -109,9 +109,9 @@
   CREATE_EXPRESSION_CLASS(while_expression, WHILE_EXPRESSION_MEMBERS)                 \
   CREATE_EXPRESSION_CLASS(for_expression, FOR_EXPRESSION_MEMBERS)                     \
   CREATE_EXPRESSION_CLASS(call_expression, CALL_EXPRESSION_MEMBERS)                   \
-  CREATE_EXPRESSION_CLASS(arguments_expression, ARGUMENTS_EXPRESSION_MEMBERS)                   \
+  CREATE_EXPRESSION_CLASS(arguments_expression, ARGUMENTS_EXPRESSION_MEMBERS)         \
   CREATE_EXPRESSION_CLASS(class_expression, CLASS_EXPRESSION_MEMBERS)                 \
   CREATE_EXPRESSION_CLASS(program_expression, PROGRAM_EXPRESSION_MEMBERS)
-  // CREATE_EXPRESSION_CLASS(return_expression, RETURN_EXPRESSION_MEMBERS)               \
+  // CREATE_EXPRESSION_CLASS(return_expression, RETURN_EXPRESSION_MEMBERS)            \
 
 #endif

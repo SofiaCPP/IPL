@@ -21,10 +21,10 @@ using map = std::unordered_map<K, V>;
 template <typename T>
 using ptr = std::shared_ptr<T>;
 
-template <typename T, class... args>
-inline std::shared_ptr<T> create_pointer(args&&... arguments)
+template <typename T, class... ARGS>
+inline std::shared_ptr<T> create_pointer(ARGS&&... args)
 {
-  return std::make_shared<T, args...>(arguments...);
+  return std::make_shared<T, ARGS...>(args...);
 }
 
 #endif

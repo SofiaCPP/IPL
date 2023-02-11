@@ -7,8 +7,8 @@
 class expression_serialization_visitor : public expression_visitor
 {
 private:
-  string json;
-
+  string m_output;
+  uint m_indent;
 public:
   virtual void visit(literal_nil* expression);
   virtual void visit(literal_boolean* expression);
