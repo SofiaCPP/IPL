@@ -10,7 +10,7 @@
 using string = std::string;
 using exception = std::exception;
 using regex = std::regex;
-using regex_match = std::smatch;
+using regex_match = std::cmatch;
 
 template <typename T>
 using vector = std::vector<T>;
