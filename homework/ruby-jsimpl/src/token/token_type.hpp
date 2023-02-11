@@ -3,7 +3,7 @@
 
 enum token_type
 {
-  NEWLINE,
+  NEW_LINE,
   SEMICOLON,
 
   OPEN_CURLY_BRACE,

@@ -63,18 +63,21 @@
   MEMBERS_ITERATOR(expression_ptr, condition, nullptr)     \
   MEMBERS_ITERATOR(expression_ptr, body, nullptr)
 
-#define WHILE_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(expression_ptr, condition, nullptr)      \
+#define WHILE_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)     \
+  MEMBERS_ITERATOR(expression_ptr, condition, nullptr) \
   MEMBERS_ITERATOR(expression_ptr, body, nullptr)
 
-#define FOR_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(expression_ptr, variable, nullptr)     \
-  MEMBERS_ITERATOR(expression_ptr, expr, nullptr)         \
+#define FOR_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)      \
+  MEMBERS_ITERATOR(expression_ptr, variable, nullptr) \
+  MEMBERS_ITERATOR(expression_ptr, expr, nullptr)     \
   MEMBERS_ITERATOR(expression_ptr, body, nullptr)
 
-#define CALL_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
-  MEMBERS_ITERATOR(expression_ptr, caller, nullptr)        \
+#define CALL_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)   \
+  MEMBERS_ITERATOR(expression_ptr, caller, nullptr) \
   MEMBERS_ITERATOR(expression_ptr, block, nullptr)
+
+#define ARGUMENTS_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
+  MEMBERS_ITERATOR(vector<expression_ptr>, args, vector<expression_ptr>())
 
 #define RETURN_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
   MEMBERS_ITERATOR(expression_ptr, expr, nullptr)
@@ -86,13 +89,13 @@
 #define PROGRAM_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
   MEMBERS_ITERATOR(vector<expression_ptr>, statements, vector<expression_ptr>())
 
-#define CREATE_EXPRESSIONS(CREATE_EXPRESSION_CLASS)                                          \
+#define CREATE_EXPRESSIONS(CREATE_EXPRESSION_CLASS)                                   \
   CREATE_EXPRESSION_CLASS(literal_nil, NO_MEMBERS)                                    \
   CREATE_EXPRESSION_CLASS(literal_boolean, LITERAL_BOOLEAN_MEMBERS)                   \
   CREATE_EXPRESSION_CLASS(literal_number, LITERAL_NUMBER_MEMBERS)                     \
   CREATE_EXPRESSION_CLASS(literal_string, LITERAL_STRING_MEMBERS)                     \
   CREATE_EXPRESSION_CLASS(literal_symbol, LITERAL_SYMBOL_MEMBERS)                     \
-  CREATE_EXPRESSION_CLASS(literal_list, LITERAL_LIST_MEMBERS)                        \
+  CREATE_EXPRESSION_CLASS(literal_list, LITERAL_LIST_MEMBERS)                         \
   CREATE_EXPRESSION_CLASS(literal_hash_element, LITERAL_HASH_ELEMENT_MEMBERS)         \
   CREATE_EXPRESSION_CLASS(literal_hash, LITERAL_HASH_MEMBERS)                         \
   CREATE_EXPRESSION_CLASS(identifier_expression, IDENTIFIER_MEMBERS)                  \
@@ -106,6 +109,7 @@
   CREATE_EXPRESSION_CLASS(while_expression, WHILE_EXPRESSION_MEMBERS)                 \
   CREATE_EXPRESSION_CLASS(for_expression, FOR_EXPRESSION_MEMBERS)                     \
   CREATE_EXPRESSION_CLASS(call_expression, CALL_EXPRESSION_MEMBERS)                   \
+  CREATE_EXPRESSION_CLASS(arguments_expression, ARGUMENTS_EXPRESSION_MEMBERS)                   \
   CREATE_EXPRESSION_CLASS(class_expression, CLASS_EXPRESSION_MEMBERS)                 \
   CREATE_EXPRESSION_CLASS(program_expression, PROGRAM_EXPRESSION_MEMBERS)
   // CREATE_EXPRESSION_CLASS(return_expression, RETURN_EXPRESSION_MEMBERS)               \

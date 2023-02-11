@@ -16,20 +16,22 @@ private:
   expression_ptr parse_statement();
   expression_ptr parse_expression();
 
-  expression_ptr parse_identifier();
 
-  expression_ptr parse_if_statement(expression_ptr body = nullptr);
-  expression_ptr parse_case_statement();
+  expression_ptr parse_if_expression(expression_ptr body = nullptr);
+  expression_ptr parse_case_expression();
   expression_ptr parse_when_expression();
-  expression_ptr parse_while_statement(expression_ptr body = nullptr);
-  expression_ptr parse_for_statement();
-  expression_ptr parse_class_statement();
-  expression_ptr parse_function_definition_statement();
+  expression_ptr parse_while_expression(expression_ptr body = nullptr);
+  expression_ptr parse_for_expression();
+  expression_ptr parse_class_expression();
+  expression_ptr parse_function_expression();
+  expression_ptr parse_identifier_expression();
   expression_ptr parse_call_expression();
-  expression_ptr parse_block();
+  expression_ptr parse_arguments_expression();
+  expression_ptr parse_block_expression();
 
   expression_ptr parse_literal_expression();
   expression_ptr parse_literal_nil();
+  expression_ptr parse_literal_boolean();
   expression_ptr parse_literal_number();
   expression_ptr parse_literal_string();
   expression_ptr parse_literal_symbol();
@@ -37,9 +39,10 @@ private:
   expression_ptr parse_literal_hash();
   expression_ptr parse_literal_hash_element();
 
+  token_type current_token_type();
   string assert_next(token_type type, token_type backup_type = UNRECOGNIZED);
-  bool is_unary_operator();
-  bool is_binary_operator();
+  bool is_current_token_unary_operator();
+  bool is_current_token_binary_operator();
 };
 
 #endif

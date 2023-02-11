@@ -1,55 +1,108 @@
-__Undefined_Tokens_and_Expression__
+# RUBY JSIMPL
+
+## Grammar Subset
 ```
-DOUBLE_DOT
-TRIPLE_DOT
+PROGRAM : STATEMENT*
 
-QUESTION_MARK
+STATEMENT : STATEMENT if EXPRESSION
+          | STATEMENT unless EXPRESSION
+          | STATEMENT while EXPRESSION
+          | STATEMENT until EXPRESSION
+          | if EXPRESSION
+              PROGRAM
+            [(
+            elsif EXPRESSION
+              PROGRAM
+            )*]
+            [
+            else EXPRESSION
+              PROGRAM
+            ]
+            end
+          | unless EXPRESSION
+              PROGRAM
+            [
+            else
+              PROGRAM
+            ]
+            end
+          | case EXPRESSION
+              [(when EXPRESSION : PROGRAM)*]
+              [else : PROGRAM]
+            end
+          | while EXPRESSION
+              PROGRAM
+            end
+          | until EXPRESSION
+              PROGRAM
+            end
+          | for IDENTIFIER in EXPRESSION do
+              PROGRAM
+            end
+          | class IDENTIFIER
+              PROGRAM
+            end
+          | module IDENTIFIER
+              PROGRAM
+            end
+          | def IDENTIFIER \( ARGUMENTS \)
+              PROGRAM
+            end
+          | EXPRESSION
 
-CARET
-CARET_EQUAL
-TILDA
+EXPRESSION  :  UNARY_EXPRESSION
+            |  BINARY_EXPRESSION
+            |  CALL
+            |  LITERAL
 
-AMPERSAND_EQUAL
-DOUBLE_AMPERSAND_EQUAL
-PIPE_EQUAL
-DOUBLE_PIPE_EQUAL
+UNARY_EXPRESSION  : ! EXPRESSION
+                  | not EXPRESSION
+                  | + EXPRESSION
+                  | - EXPRESSION
 
+BINARY_EXPRESSION : EXPRESSION or EXPRESSION
+                  | EXPRESSION and EXPRESSION
+                  | EXPRESSION || EXPRESSION
+                  | EXPRESSION && EXPRESSION
+                  | EXPRESSION + EXPRESSION
+                  | EXPRESSION += EXPRESSION
+                  | EXPRESSION - EXPRESSION
+                  | EXPRESSION -= EXPRESSION
+                  | EXPRESSION * EXPRESSION
+                  | EXPRESSION *= EXPRESSION
+                  | EXPRESSION ** EXPRESSION
+                  | EXPRESSION **= EXPRESSION
+                  | EXPRESSION / EXPRESSION
+                  | EXPRESSION /= EXPRESSION
+                  | EXPRESSION % EXPRESSION
+                  | EXPRESSION %= EXPRESSION
+                  | EXPRESSION = EXPRESSION
+                  | EXPRESSION == EXPRESSION
 
-DOUBLE_LESS_THAN
-DOUBLE_LESS_THAN_EQUAL
-DOUBLE_GREATER_THAN
-DOUBLE_GREATER_THAN_EQUAL
+CALL  : IDENTIFIER [\( ARGUMENTS \)] [BLOCK]
 
-TRIPLE_EQUAL
-SPACESHIP
+IDENTIFIER  : [a-zA-Z_][a-zA-Z0-9_]*[:: IDENTIFIER]*[. IDENTIFIER]*
 
-EQUAL_TILDA
-EXCLAMATION_MARK_TILDA
+LITERAL : nil
+        | number
+        | STRING
+        | SYMBOL
+        | LIST
+        | HASH
 
-AT_SIGN
-PLUS_AT_SIGN
-MINUS_AT_SIGN
+BLOCK : do [| ARGUMENTS |]
+          PROGRAM
+        end
 
-DOLLAR_SIGN
+ARGUMENTS : IDENTIFIER [(, IDENTIFIER)*]
 
-OPEN_CLOSE_SQUARE_BRACKET
-OPEN_CLOSE_SQUARE_BRACKET_EQUAL
+STRING  : 'characters*'
+        | "characters*"
 
-YIELD
-BEGIN
-RESCUE
-ENSURE
-SELF
-SUPER
-DEFINED
-UNDEF
-ALIAS
-BEGIN_HOOK
-END_HOOK
+SYMBOL  : :IDENTIFIER
+        | :STRING
 
-OPERATION
+LIST  : \[ [EXPRESSION, [(, EXPRESSION)*] \]
 
-BACKTICK_STRING
-HEREDOC_STRING
-REGEX
+HASH  : { [IDENTIFIER => EXPRESSION, [(, IDENTIFIER => EXPRESSION)*]] }
 ```

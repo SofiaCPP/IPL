@@ -179,7 +179,7 @@ void lexer::match_character_combination_token()
 
   switch (m_expression[m_position])
   {
-  case '\n': m_token.m_type = NEWLINE;               break;
+  case '\n': m_token.m_type = NEW_LINE;               break;
   case ';':  m_token.m_type = SEMICOLON;             break;
   case '{':  m_token.m_type = OPEN_CURLY_BRACE;      break;
   case '}':  m_token.m_type = CLOSED_CURLY_BRACE;    break;
