@@ -179,7 +179,7 @@ void lexer::match_character_combination_token()
 
   switch (m_expression[m_position])
   {
-  case '\n': m_token.m_type = NEW_LINE;               break;
+  case '\n': m_token.m_type = NEW_LINE;              break;
   case ';':  m_token.m_type = SEMICOLON;             break;
   case '{':  m_token.m_type = OPEN_CURLY_BRACE;      break;
   case '}':  m_token.m_type = CLOSED_CURLY_BRACE;    break;
@@ -197,10 +197,10 @@ void lexer::match_character_combination_token()
   case '+':  m_token.m_type = (match = match_regex(m_regexes["PLUS_EQUAL_REGEX"])) != NO_TOKEN_REGEX_MATCH ? PLUS_EQUAL : PLUS;    break;
   case '-':  m_token.m_type = (match = match_regex(m_regexes["MINUS_EQUAL_REGEX"])) != NO_TOKEN_REGEX_MATCH ? MINUS_EQUAL : MINUS; break;
   case '*':  m_token.m_type = (match = match_regex(m_regexes["DOUBLE_ASTERISK_EQUAL_REGEX"])) != NO_TOKEN_REGEX_MATCH ? DOUBLE_ASTERISK_EQUAL : (match = match_regex(m_regexes["DOUBLE_ASTERISK_REGEX"])) != NO_TOKEN_REGEX_MATCH ? DOUBLE_ASTERISK : (match = match_regex(m_regexes["ASTERISK_EQUAL_REGEX"])) != NO_TOKEN_REGEX_MATCH ? ASTERISK_EQUAL : ASTERISK; break;
-  case '/':  m_token.m_type = (match = match_regex(m_regexes["SLASH_EQUAL_REGEX"])) != NO_TOKEN_REGEX_MATCH ? SLASH_EQUAL : SLASH;          break;
-  case '%':  m_token.m_type = (match = match_regex(m_regexes["PROCENT_EQUAL_REGEX"])) != NO_TOKEN_REGEX_MATCH ? PROCENT_EQUAL : PROCENT;    break;
+  case '/':  m_token.m_type = (match = match_regex(m_regexes["SLASH_EQUAL_REGEX"])) != NO_TOKEN_REGEX_MATCH ? SLASH_EQUAL : SLASH;               break;
+  case '%':  m_token.m_type = (match = match_regex(m_regexes["PROCENT_EQUAL_REGEX"])) != NO_TOKEN_REGEX_MATCH ? PROCENT_EQUAL : PROCENT;         break;
   case '&':  m_token.m_type = (match = match_regex(m_regexes["DOUBLE_AMPERSAND_REGEX"])) != NO_TOKEN_REGEX_MATCH ? DOUBLE_AMPERSAND : AMPERSAND; break;
-  case '|':  m_token.m_type = (match = match_regex(m_regexes["DOUBLE_PIPE_REGEX"])) != NO_TOKEN_REGEX_MATCH ? DOUBLE_PIPE : PIPE;           break;
+  case '|':  m_token.m_type = (match = match_regex(m_regexes["DOUBLE_PIPE_REGEX"])) != NO_TOKEN_REGEX_MATCH ? DOUBLE_PIPE : PIPE;                break;
   default:   m_token.m_type = UNRECOGNIZED; break;
   }
 
