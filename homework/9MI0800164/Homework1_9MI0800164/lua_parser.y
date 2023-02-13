@@ -33,9 +33,9 @@ body:
 int main(int argc, const char* argv[])
 {
     if ( argc > 0 )
-            yyin = fopen( "markov_chain.lua", "r" );
+        yyin = fopen( "markov_chain.lua", "r" );
     else
-            yyin = stdin;
+        yyin = stdin;
     puts(
         "<!doctype>"
         "<html>"
