@@ -37,7 +37,7 @@
 
 #define FUNCTION_DEFINITION_MEMBERS(MEMBERS_ITERATOR)              \
   MEMBERS_ITERATOR(expression_ptr, name, nullptr)                  \
-  MEMBERS_ITERATOR(expression_ptr, args, vector<expression_ptr>()) \
+  MEMBERS_ITERATOR(expression_ptr, args, nullptr) \
   MEMBERS_ITERATOR(expression_ptr, body, nullptr)
 
 #define UNARY_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \

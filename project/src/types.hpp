@@ -24,7 +24,7 @@ using ptr = std::shared_ptr<T>;
 template <typename T, class... ARGS>
 inline std::shared_ptr<T> create_pointer(ARGS&&... args)
 {
-  return std::make_shared<T, ARGS...>(args...);
+  return std::make_shared<T>(args...);
 }
 
 #endif

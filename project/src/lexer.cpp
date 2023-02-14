@@ -1,7 +1,5 @@
 #include "lexer.hpp"
 
-#include "token/token_regexes.hpp"
-
 #define NO_TOKEN_REGEX_MATCH string("")
 
 lexer::lexer(const string& expression) :
