@@ -3,12 +3,12 @@
 
 #include "../types.hpp"
 #include "expression_visitor.hpp"
+#include "../token/token_type.hpp"
 
 class expression_serialization_visitor : public expression_visitor
 {
 private:
   string m_output;
-  uint m_indent;
 public:
   virtual void visit(literal_nil* expression);
   virtual void visit(literal_boolean* expression);
@@ -29,8 +29,13 @@ public:
   virtual void visit(while_expression* expression);
   virtual void visit(for_expression* expression);
   virtual void visit(call_expression* expression);
+  virtual void visit(arguments_expression* expression);
   virtual void visit(class_expression* expression);
   virtual void visit(program_expression* expression);
+
+  void to_json(const string& name);
+private:
+  void visit_token(token_type type);
 };
 
 #endif

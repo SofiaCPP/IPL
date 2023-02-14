@@ -9,8 +9,20 @@ expression_ptr parser::parse_program_expression()
 {
   ptr<program_expression> program = create_pointer<program_expression>();
 
-  while (m_position < m_tokens.size())
-    program->m_statements.push_back(parse_statement());
+  while (
+    m_position < m_tokens.size()  &&
+    current_token_type() != END   &&
+    current_token_type() != ELSIF &&
+    current_token_type() != ELSE  &&
+    current_token_type() != WHEN
+  ) {
+    if (current_token_type() == NEW_LINE)
+      ++m_position;
+    else
+      program->m_statements.push_back(parse_statement());
+  }
+
+  LOG(program->m_statements.size());
 
   return program;
 }
@@ -73,13 +85,15 @@ expression_ptr parser::parse_identifier_expression()
 
   while (current_token_type() == DOUBLE_COLON)
   {
-    value += assert_next((DOUBLE_COLON));
+    assert_next((DOUBLE_COLON));
+    value += "::";
     value += assert_next(IDENTIFIER);
   }
 
   while (current_token_type() == DOT)
   {
-    value += assert_next(DOT);
+    assert_next(DOT);
+    value += ".";
     value += assert_next(IDENTIFIER);
   }
 
@@ -126,8 +140,6 @@ expression_ptr parser::parse_if_expression(expression_ptr body)
 
   if (current_token_type() == ELSIF)
   {
-    ++m_position;
-
     return create_pointer<if_expression>(condition, then_expr, parse_if_expression());
   }
   else if (current_token_type() == ELSE)
@@ -152,14 +164,14 @@ expression_ptr parser::parse_case_expression()
 
   vector<expression_ptr> when_exprs;
   while (current_token_type() == WHEN)
-  {
     when_exprs.push_back(parse_when_expression());
-    assert_next(NEW_LINE);
-  }
 
   expression_ptr else_expr = nullptr;
   if (current_token_type() == ELSE)
+  {
+    ++m_position;
     else_expr = parse_program_expression();
+  }
 
   assert_next(END);
 
@@ -172,7 +184,7 @@ expression_ptr parser::parse_when_expression()
 
   expression_ptr condition = parse_expression();
 
-  assert_next(COLON);
+  assert_next(THEN);
 
   return create_pointer<when_expression>(condition, parse_program_expression());
 }
@@ -294,7 +306,9 @@ expression_ptr parser::parse_arguments_expression()
   while (current_token_type() == IDENTIFIER)
   {
     args.push_back(parse_identifier_expression());
-    ++m_position;
+
+    if (current_token_type() == COMMA)
+      ++m_position;
   }
 
   return create_pointer<arguments_expression>(args);
@@ -315,7 +329,11 @@ expression_ptr parser::parse_block_expression()
 
   assert_next(NEW_LINE);
 
-  return create_pointer<function_definition>(nullptr, args, parse_program_expression());
+  expression_ptr body = parse_program_expression();
+
+  assert_next(END);
+
+  return create_pointer<function_definition>(nullptr, args, body);
 }
 
 expression_ptr parser::parse_literal_expression()
@@ -329,13 +347,23 @@ expression_ptr parser::parse_literal_expression()
   case SYMBOL:              return parse_literal_symbol();
   case OPEN_SQUARE_BRACKET: return parse_literal_list();
   case OPEN_CURLY_BRACE:    return parse_literal_hash();
+  case TRUE:
+  case FALSE:               return parse_literal_boolean();
   }
+
+  assert(false);
 }
 
 expression_ptr parser::parse_literal_nil()
 {
   assert_next(NIL);
   return create_pointer<literal_nil>();
+}
+
+expression_ptr parser::parse_literal_boolean()
+{
+  string value = assert_next(TRUE, FALSE);
+  return create_pointer<literal_boolean>(value == "true" ? true : false);
 }
 
 expression_ptr parser::parse_literal_number()
@@ -379,7 +407,7 @@ expression_ptr parser::parse_literal_hash()
   assert_next(OPEN_CURLY_BRACE);
 
   ptr<literal_hash> hash = create_pointer<literal_hash>();
-  while (current_token_type() == CLOSED_CURLY_BRACE)
+  while (current_token_type() != CLOSED_CURLY_BRACE)
   {
     hash->m_values.push_back(parse_literal_hash_element());
 
@@ -415,7 +443,7 @@ string parser::assert_next(token_type type, token_type backup_type)
   else
     assert(current_token_type() == type);
 
-  return m_tokens[m_position].m_lexeme;
+  return m_tokens[m_position++].m_lexeme;
 }
 
 bool parser::is_current_token_unary_operator()
@@ -448,6 +476,10 @@ bool parser::is_current_token_binary_operator()
     current_token_type() == DOUBLE_PIPE           ||
     current_token_type() == OR                    ||
     current_token_type() == EQUAL                 ||
-    current_token_type() == DOUBLE_EQUAL
+    current_token_type() == DOUBLE_EQUAL          ||
+    current_token_type() == LESS_THAN             ||
+    current_token_type() == LESS_THAN_EQUAL       ||
+    current_token_type() == GREATER_THAN          ||
+    current_token_type() == GREATER_THAN_EQUAL
   );
 }

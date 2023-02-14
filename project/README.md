@@ -27,8 +27,8 @@ STATEMENT : STATEMENT if EXPRESSION
             ]
             end
           | case EXPRESSION
-              [(when EXPRESSION : PROGRAM)*]
-              [else : PROGRAM]
+              [(when EXPRESSION then PROGRAM)*]
+              [else PROGRAM]
             end
           | while EXPRESSION
               PROGRAM

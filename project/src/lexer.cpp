@@ -29,7 +29,6 @@ lexer::lexer(const string& expression) :
   m_keywords["true"]   = TRUE;
   m_keywords["false"]  = FALSE;
 
-  m_regexes["KEYWORD_TOKEN_REGEX"] =                regex("^[a-z]+");
   m_regexes["IDENTIFIER_TOKEN_REGEX"] =             regex("^[a-zA-Z_][a-zA-Z0-9_]*");
   m_regexes["NUMBER_TOKEN_REGEX"] =                 regex("^[+-]?([0-9]*[.])?[0-9]+");
   m_regexes["SINGLE_QUOTE_STRING_TOKEN_REGEX"] =    regex("^'.*'");
@@ -97,7 +96,7 @@ void lexer::read_next_token()
 
 void lexer::match_keyword_token()
 {
-  string match = match_regex(m_regexes["KEYWORD_TOKEN_REGEX"]);
+  string match = match_regex(m_regexes["IDENTIFIER_TOKEN_REGEX"]);
 
   if (match != NO_TOKEN_REGEX_MATCH && m_keywords.find(match) != m_keywords.end())
   {

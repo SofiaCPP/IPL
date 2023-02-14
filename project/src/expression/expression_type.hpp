@@ -35,9 +35,9 @@
   MEMBERS_ITERATOR(expression_ptr, name, nullptr)     \
   MEMBERS_ITERATOR(expression_ptr, value, nullptr)
 
-#define FUNCTION_DEFINITION_MEMBERS(MEMBERS_ITERATOR)              \
-  MEMBERS_ITERATOR(expression_ptr, name, nullptr)                  \
-  MEMBERS_ITERATOR(expression_ptr, args, nullptr) \
+#define FUNCTION_DEFINITION_MEMBERS(MEMBERS_ITERATOR) \
+  MEMBERS_ITERATOR(expression_ptr, name, nullptr)     \
+  MEMBERS_ITERATOR(expression_ptr, args, nullptr)     \
   MEMBERS_ITERATOR(expression_ptr, body, nullptr)
 
 #define UNARY_EXPRESSION_MEMBERS(MEMBERS_ITERATOR) \
@@ -112,6 +112,5 @@
   CREATE_EXPRESSION_CLASS(arguments_expression, ARGUMENTS_EXPRESSION_MEMBERS)         \
   CREATE_EXPRESSION_CLASS(class_expression, CLASS_EXPRESSION_MEMBERS)                 \
   CREATE_EXPRESSION_CLASS(program_expression, PROGRAM_EXPRESSION_MEMBERS)
-  // CREATE_EXPRESSION_CLASS(return_expression, RETURN_EXPRESSION_MEMBERS)            \
 
 #endif

@@ -21,6 +21,7 @@ class when_expression;
 class while_expression;
 class for_expression;
 class call_expression;
+class arguments_expression;
 class class_expression;
 class program_expression;
 
@@ -50,6 +51,7 @@ public:
   virtual void visit(while_expression* expression) = 0;
   virtual void visit(for_expression* expression) = 0;
   virtual void visit(call_expression* expression) = 0;
+  virtual void visit(arguments_expression* expression) = 0;
   virtual void visit(class_expression* expression) = 0;
   virtual void visit(program_expression* expression) = 0;
 };
