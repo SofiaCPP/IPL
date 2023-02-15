@@ -18,7 +18,6 @@ public:
 private:
   void read_next_token();
 
-  void match_keyword_token();
   void match_identifier_token();
   void match_number_token();
   void match_string_token();

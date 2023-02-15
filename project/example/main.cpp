@@ -10,10 +10,9 @@ int main()
   parser par(lex.tokenize());
   expression_serialization_visitor vis;
 
-  expression_ptr expression = par.parse_program_expression();
+  ptr<expression> expression = par.parse_program_expression();
   expression->accept(vis);
-  LOG("HERE");
-  vis.to_json("main.json");
+  vis.output("main.json");
 
   return 0;
 }

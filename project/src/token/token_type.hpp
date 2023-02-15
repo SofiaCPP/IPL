@@ -3,6 +3,26 @@
 
 enum token_type
 {
+  CLASS,
+  MODULE,
+  DEF,
+  IF,
+  ELSIF,
+  ELSE,
+  UNLESS,
+  CASE,
+  WHEN,
+  THEN,
+  AND,
+  OR,
+  NOT,
+  WHILE,
+  UNTIL,
+  FOR,
+  IN,
+  DO,
+  END,
+
   NEW_LINE,
   SEMICOLON,
 
@@ -13,8 +33,8 @@ enum token_type
   OPEN_SQUARE_BRACKET,
   CLOSED_SQUARE_BRACKET,
 
+  EQUAL_GREATER_THAN,
   EXCLAMATION_MARK,
-
   DOT,
   COMMA,
   COLON,
@@ -25,10 +45,8 @@ enum token_type
   GREATER_THAN,
   GREATER_THAN_EQUAL,
   EXCLAMATION_MARK_EQUAL,
-
   EQUAL,
   DOUBLE_EQUAL,
-
   PLUS,
   PLUS_EQUAL,
   MINUS,
@@ -41,43 +59,19 @@ enum token_type
   SLASH_EQUAL,
   PROCENT,
   PROCENT_EQUAL,
-
   AMPERSAND,
   DOUBLE_AMPERSAND,
   PIPE,
   DOUBLE_PIPE,
 
-  EQUAL_GREATER_THAN,
-
-  IF,
-  ELSIF,
-  ELSE,
-  UNLESS,
-  CASE,
-  WHEN,
-  THEN,
-  FOR,
-  WHILE,
-  UNTIL,
-  DO,
-  END,
-  RETURN,
-  AND,
-  OR,
-  NOT,
-  IN,
-  CLASS,
-  MODULE,
-  DEF,
-
-  NIL,
-  NUMBER,
   IDENTIFIER,
-  SYMBOL,
   SINGLE_QUOTE_STRING,
   DOUBLE_QUOTE_STRING,
+  SYMBOL,
+  NUMBER,
   TRUE,
   FALSE,
+  NIL,
 
   UNRECOGNIZED
 };

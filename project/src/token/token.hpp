@@ -2,7 +2,6 @@
 #define TOKEN_TOKEN_HPP
 
 #include "../types.hpp"
-
 #include "token_type.hpp"
 
 class token

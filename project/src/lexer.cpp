@@ -5,6 +5,9 @@
 lexer::lexer(const string& expression) :
   m_expression(expression), m_position(0)
 {
+  m_keywords["class"]  = CLASS;
+  m_keywords["module"] = MODULE;
+  m_keywords["def"]    = DEF;
   m_keywords["if"]     = IF;
   m_keywords["elsif"]  = ELSIF;
   m_keywords["else"]   = ELSE;
@@ -12,43 +15,39 @@ lexer::lexer(const string& expression) :
   m_keywords["case"]   = CASE;
   m_keywords["when"]   = WHEN;
   m_keywords["then"]   = THEN;
-  m_keywords["for"]    = FOR;
-  m_keywords["while"]  = WHILE;
-  m_keywords["until"]  = UNTIL;
-  m_keywords["do"]     = DO;
-  m_keywords["end"]    = END;
-  m_keywords["return"] = RETURN;
   m_keywords["and"]    = AND;
   m_keywords["or"]     = OR;
   m_keywords["not"]    = NOT;
+  m_keywords["while"]  = WHILE;
+  m_keywords["until"]  = UNTIL;
+  m_keywords["for"]    = FOR;
   m_keywords["in"]     = IN;
-  m_keywords["class"]  = CLASS;
-  m_keywords["module"] = MODULE;
-  m_keywords["def"]    = DEF;
-  m_keywords["nil"]    = NIL;
+  m_keywords["do"]     = DO;
+  m_keywords["end"]    = END;
   m_keywords["true"]   = TRUE;
   m_keywords["false"]  = FALSE;
+  m_keywords["nil"]    = NIL;
 
-  m_regexes["IDENTIFIER_TOKEN_REGEX"] =             regex("^[a-zA-Z_][a-zA-Z0-9_]*");
-  m_regexes["NUMBER_TOKEN_REGEX"] =                 regex("^[+-]?([0-9]*[.])?[0-9]+");
-  m_regexes["SINGLE_QUOTE_STRING_TOKEN_REGEX"] =    regex("^'.*'");
-  m_regexes["DOUBLE_QUOTE_STRING_TOKEN_REGEX"] =    regex("^\".*\"");
-  m_regexes["SYMBOL_TOKEN_REGEX"] =                 regex("^:([a-zA-Z_][a-zA-Z0-9_]*|'[a-zA-Z_][a-zA-Z0-9_]*'|\"[a-zA-Z_][a-zA-Z0-9_]*\")");
+  m_regexes["EQUAL_GREATER_THAN_REGEX"]           = regex("^\\=>");
+  m_regexes["DOUBLE_COLON_TOKEN_REGEX"]           = regex("^::");
+  m_regexes["LESS_THAN_EQUAL_TOKEN_REGEX"]        = regex("^<\\=");
+  m_regexes["GREATER_THAN_EQUAL_TOKEN_REGEX"]     = regex("^>\\=");
   m_regexes["EXCLAMATION_MARK_EQUAL_TOKEN_REGEX"] = regex("^!\\=");
-  m_regexes["DOUBLE_COLON_TOKEN_REGEX"] =           regex("^::");
-  m_regexes["LESS_THAN_EQUAL_TOKEN_REGEX"] =        regex("^<\\=");
-  m_regexes["GREATER_THAN_EQUAL_TOKEN_REGEX"] =     regex("^>\\=");
-  m_regexes["DOUBLE_EQUAL_TOKEN_REGEX"] =           regex("^\\=\\=");
-  m_regexes["EQUAL_GREATER_THAN_REGEX"] =           regex("^\\=>");
-  m_regexes["PLUS_EQUAL_REGEX"] =                   regex("^\\+\\=");
-  m_regexes["MINUS_EQUAL_REGEX"] =                  regex("^-\\=");
-  m_regexes["DOUBLE_ASTERISK_EQUAL_REGEX"] =        regex("^\\*\\*\\=");
-  m_regexes["DOUBLE_ASTERISK_REGEX"] =              regex("^\\*\\*");
-  m_regexes["ASTERISK_EQUAL_REGEX"] =               regex("^\\*\\=");
-  m_regexes["SLASH_EQUAL_REGEX"] =                  regex("^/\\=");
-  m_regexes["PROCENT_EQUAL_REGEX"] =                regex("^%\\=");
-  m_regexes["DOUBLE_AMPERSAND_REGEX"] =             regex("^&&");
-  m_regexes["DOUBLE_PIPE_REGEX"] =                  regex("^\\|\\|");
+  m_regexes["DOUBLE_EQUAL_TOKEN_REGEX"]           = regex("^\\=\\=");
+  m_regexes["PLUS_EQUAL_REGEX"]                   = regex("^\\+\\=");
+  m_regexes["MINUS_EQUAL_REGEX"]                  = regex("^-\\=");
+  m_regexes["ASTERISK_EQUAL_REGEX"]               = regex("^\\*\\=");
+  m_regexes["DOUBLE_ASTERISK_REGEX"]              = regex("^\\*\\*");
+  m_regexes["DOUBLE_ASTERISK_EQUAL_REGEX"]        = regex("^\\*\\*\\=");
+  m_regexes["SLASH_EQUAL_REGEX"]                  = regex("^/\\=");
+  m_regexes["PROCENT_EQUAL_REGEX"]                = regex("^%\\=");
+  m_regexes["DOUBLE_AMPERSAND_REGEX"]             = regex("^&&");
+  m_regexes["DOUBLE_PIPE_REGEX"]                  = regex("^\\|\\|");
+  m_regexes["IDENTIFIER_TOKEN_REGEX"]             = regex("^[a-zA-Z_][a-zA-Z0-9_]*");
+  m_regexes["SINGLE_QUOTE_STRING_TOKEN_REGEX"]    = regex("^'.*'");
+  m_regexes["DOUBLE_QUOTE_STRING_TOKEN_REGEX"]    = regex("^\".*\"");
+  m_regexes["SYMBOL_TOKEN_REGEX"]                 = regex("^:([a-zA-Z_][a-zA-Z0-9_]*|'[a-zA-Z_][a-zA-Z0-9_]*'|\"[a-zA-Z_][a-zA-Z0-9_]*\")");
+  m_regexes["NUMBER_TOKEN_REGEX"]                 = regex("^[+-]?([0-9]*[.])?[0-9]+");
 }
 
 vector<token> lexer::tokenize()
@@ -73,9 +72,6 @@ void lexer::read_next_token()
   m_token.m_type = UNRECOGNIZED;
   m_token.m_lexeme = "";
 
-  match_keyword_token();
-  if (m_token.m_type != UNRECOGNIZED) return;
-
   match_identifier_token();
   if (m_token.m_type != UNRECOGNIZED) return;
 
@@ -94,25 +90,16 @@ void lexer::read_next_token()
   ++m_position;
 }
 
-void lexer::match_keyword_token()
-{
-  string match = match_regex(m_regexes["IDENTIFIER_TOKEN_REGEX"]);
-
-  if (match != NO_TOKEN_REGEX_MATCH && m_keywords.find(match) != m_keywords.end())
-  {
-    m_token.m_type = m_keywords[match];
-
-    m_position += match.length();
-  }
-}
-
 void lexer::match_identifier_token()
 {
   string match = match_regex(m_regexes["IDENTIFIER_TOKEN_REGEX"]);
 
   if (match != NO_TOKEN_REGEX_MATCH)
   {
-    m_token.m_type = IDENTIFIER;
+    if (m_keywords.find(match) != m_keywords.end())
+      m_token.m_type = m_keywords[match];
+    else
+      m_token.m_type = IDENTIFIER;
     m_token.m_lexeme = match;
 
     m_position += match.length();
@@ -209,7 +196,6 @@ void lexer::match_character_combination_token()
       ++m_position;
   }
 }
-
 
 void lexer::clear_whitespaces()
 {

@@ -11,36 +11,39 @@ class parser
 public:
   parser(const vector<token>& tokens);
 
-  expression_ptr parse_program_expression();
+  ptr<expression> parse_program_expression();
 private:
-  expression_ptr parse_statement();
-  expression_ptr parse_expression();
+  ptr<expression> parse_statement();
+  ptr<expression> parse_expression();
 
+  ptr<expression> parse_class_expression();
+  ptr<expression> parse_function_expression();
+  ptr<expression> parse_identifier_expression();
 
-  expression_ptr parse_if_expression(expression_ptr body = nullptr);
-  expression_ptr parse_case_expression();
-  expression_ptr parse_when_expression();
-  expression_ptr parse_while_expression(expression_ptr body = nullptr);
-  expression_ptr parse_for_expression();
-  expression_ptr parse_class_expression();
-  expression_ptr parse_function_expression();
-  expression_ptr parse_identifier_expression();
-  expression_ptr parse_call_expression();
-  expression_ptr parse_arguments_expression();
-  expression_ptr parse_block_expression();
+  ptr<expression> parse_arguments_expression();
+  ptr<expression> parse_call_expression();
+  ptr<expression> parse_block_expression();
 
-  expression_ptr parse_literal_expression();
-  expression_ptr parse_literal_nil();
-  expression_ptr parse_literal_boolean();
-  expression_ptr parse_literal_number();
-  expression_ptr parse_literal_string();
-  expression_ptr parse_literal_symbol();
-  expression_ptr parse_literal_list();
-  expression_ptr parse_literal_hash();
-  expression_ptr parse_literal_hash_element();
+  ptr<expression> parse_if_expression(ptr<expression> body = nullptr);
+  ptr<expression> parse_case_expression();
+  ptr<expression> parse_when_expression();
 
-  token_type current_token_type();
-  string assert_next(token_type type, token_type backup_type = UNRECOGNIZED);
+  ptr<expression> parse_while_expression(ptr<expression> body = nullptr);
+  ptr<expression> parse_for_expression();
+
+  ptr<expression> parse_literal_expression();
+  ptr<expression> parse_hash_expression();
+  ptr<expression> parse_hash_element_expression();
+  ptr<expression> parse_list_expression();
+  ptr<expression> parse_string_expression();
+  ptr<expression> parse_symbol_expression();
+  ptr<expression> parse_number_expression();
+  ptr<expression> parse_boolean_expression();
+  ptr<expression> parse_nil_expression();
+
+  token current_token();
+  string assert_token(token_type type, token_type backup_type = UNRECOGNIZED);
+
   bool is_current_token_unary_operator();
   bool is_current_token_binary_operator();
 };

@@ -1,5 +1,10 @@
 # RUBY JSIMPL
 
+## Example
+```
+Run ./build.sh to compile the program and execute it to serialize :)
+```
+
 ## Grammar Subset
 ```
 PROGRAM : STATEMENT*
@@ -94,7 +99,7 @@ BLOCK : do [| ARGUMENTS |]
           PROGRAM
         end
 
-ARGUMENTS : IDENTIFIER [(, IDENTIFIER)*]
+ARGUMENTS : [IDENTIFIER [(, IDENTIFIER)*]]
 
 STRING  : 'characters*'
         | "characters*"
