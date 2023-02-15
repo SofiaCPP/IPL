@@ -1,11 +1,6 @@
 #ifndef RUBY_JSIMPL_INCLUDE
 #define RUBY_JSIMPL_INCLUDE
 
-#include <iostream>
-#define LOG(log)  do {                             \
-                    std::cout << log << std::endl; \
-                  } while (false);
-
 #include <string>
 #include <vector>
 #include <unordered_map>

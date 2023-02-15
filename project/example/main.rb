@@ -36,6 +36,10 @@ until false
   true
 end
 
+call_function() if a == 5
+call_function2(arg1) unless b == 4
+call_function3(arg1, arg2) while true
+call_function4 until Class::Module.fetch(test) == :'test'
 
 function_identifier() do |argument1|
   argument1

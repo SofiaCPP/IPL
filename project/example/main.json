@@ -342,6 +342,103 @@
       }
     },
     {
+      "type": "if_expression",
+      "condition": {
+        "type": "binary_expression",
+        "operator": "==",
+        "left": {
+          "type": "call_expression",
+          "caller": {
+            "type": "identifier_expression",
+            "value": "a"
+          }
+        },
+        "right": {
+          "type": "number_expression",
+          "value": "5.000000"
+        }
+      },
+      "then_expr": {
+        "type": "call_expression",
+        "caller": {
+          "type": "identifier_expression",
+          "value": "call_function"
+        }
+      }
+    },
+    {
+      "type": "if_expression",
+      "condition": {
+        "type": "unary_expression",
+        "operator": "!",
+        "expr": {
+          "type": "binary_expression",
+          "operator": "==",
+          "left": {
+            "type": "call_expression",
+            "caller": {
+              "type": "identifier_expression",
+              "value": "b"
+            }
+          },
+          "right": {
+            "type": "number_expression",
+            "value": "4.000000"
+          }
+        }
+      },
+      "then_expr": {
+        "type": "call_expression",
+        "caller": {
+          "type": "identifier_expression",
+          "value": "call_function2"
+        }
+      }
+    },
+    {
+      "type": "while_expression",
+      "condition": {
+        "type": "boolean_expression",
+        "value": "true"
+      },
+      "body": {
+        "type": "call_expression",
+        "caller": {
+          "type": "identifier_expression",
+          "value": "call_function3"
+        }
+      }
+    },
+    {
+      "type": "while_expression",
+      "condition": {
+        "type": "unary_expression",
+        "operator": "!",
+        "expr": {
+          "type": "binary_expression",
+          "operator": "==",
+          "left": {
+            "type": "call_expression",
+            "caller": {
+              "type": "identifier_expression",
+              "value": "Class::Module.fetch"
+            }
+          },
+          "right": {
+            "type": "symbol_expression",
+            "value": ":'test'"
+          }
+        }
+      },
+      "body": {
+        "type": "call_expression",
+        "caller": {
+          "type": "identifier_expression",
+          "value": "call_function4"
+        }
+      }
+    },
+    {
       "type": "call_expression",
       "caller": {
         "type": "identifier_expression",
