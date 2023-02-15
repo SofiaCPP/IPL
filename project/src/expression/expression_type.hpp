@@ -8,12 +8,12 @@
   MEMBERS_ITERATOR(vector<ptr<expression>>, statements, vector<ptr<expression>>())
 
 #define CLASS_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                  \
-  MEMBERS_ITERATOR(ptr<expression>, name, nullptr)                                   \
+  MEMBERS_ITERATOR(ptr<expression>, name, nullptr)                                  \
   MEMBERS_ITERATOR(ptr<expression>, body, nullptr)
 
 #define FUNCTION_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                               \
-  MEMBERS_ITERATOR(ptr<expression>, name, nullptr)                                   \
-  MEMBERS_ITERATOR(ptr<expression>, args, nullptr)                                   \
+  MEMBERS_ITERATOR(ptr<expression>, name, nullptr)                                  \
+  MEMBERS_ITERATOR(ptr<expression>, args, nullptr)                                  \
   MEMBERS_ITERATOR(ptr<expression>, body, nullptr)
 
 #define IDENTIFIER_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                             \
@@ -23,21 +23,21 @@
   MEMBERS_ITERATOR(vector<ptr<expression>>, args, vector<ptr<expression>>())
 
 #define CALL_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                   \
-  MEMBERS_ITERATOR(ptr<expression>, caller, nullptr)                                 \
+  MEMBERS_ITERATOR(ptr<expression>, caller, nullptr)                                \
   MEMBERS_ITERATOR(ptr<expression>, block, nullptr)
 
 #define IF_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                     \
-  MEMBERS_ITERATOR(ptr<expression>, condition, nullptr)                              \
-  MEMBERS_ITERATOR(ptr<expression>, then_expr, nullptr)                              \
+  MEMBERS_ITERATOR(ptr<expression>, condition, nullptr)                             \
+  MEMBERS_ITERATOR(ptr<expression>, then_expr, nullptr)                             \
   MEMBERS_ITERATOR(ptr<expression>, else_expr, nullptr)
 
 #define CASE_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                   \
-  MEMBERS_ITERATOR(ptr<expression>, condition, nullptr)                              \
-  MEMBERS_ITERATOR(vector<ptr<expression>>, when_exprs, vector<ptr<expression>>())    \
+  MEMBERS_ITERATOR(ptr<expression>, condition, nullptr)                             \
+  MEMBERS_ITERATOR(vector<ptr<expression>>, when_exprs, vector<ptr<expression>>())  \
   MEMBERS_ITERATOR(ptr<expression>, else_expr, nullptr)
 
 #define WHEN_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                   \
-  MEMBERS_ITERATOR(ptr<expression>, condition, nullptr)                              \
+  MEMBERS_ITERATOR(ptr<expression>, condition, nullptr)                             \
   MEMBERS_ITERATOR(ptr<expression>, body, nullptr)
 
 #define UNARY_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                  \
@@ -46,23 +46,23 @@
 
 #define BINARY_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                 \
   MEMBERS_ITERATOR(token_type, oper, UNRECOGNIZED)                                  \
-  MEMBERS_ITERATOR(ptr<expression>, left, nullptr)                                   \
+  MEMBERS_ITERATOR(ptr<expression>, left, nullptr)                                  \
   MEMBERS_ITERATOR(ptr<expression>, right, nullptr)
 
 #define WHILE_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                  \
-  MEMBERS_ITERATOR(ptr<expression>, condition, nullptr)                              \
+  MEMBERS_ITERATOR(ptr<expression>, condition, nullptr)                             \
   MEMBERS_ITERATOR(ptr<expression>, body, nullptr)
 
 #define FOR_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                    \
-  MEMBERS_ITERATOR(ptr<expression>, var, nullptr)                                    \
-  MEMBERS_ITERATOR(ptr<expression>, expr, nullptr)                                   \
+  MEMBERS_ITERATOR(ptr<expression>, var, nullptr)                                   \
+  MEMBERS_ITERATOR(ptr<expression>, expr, nullptr)                                  \
   MEMBERS_ITERATOR(ptr<expression>, body, nullptr)
 
 #define HASH_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                   \
   MEMBERS_ITERATOR(vector<ptr<expression>>, elements, vector<ptr<expression>>())
 
 #define HASH_ELEMENT_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                           \
-  MEMBERS_ITERATOR(ptr<expression>, key, nullptr)                                    \
+  MEMBERS_ITERATOR(ptr<expression>, key, nullptr)                                   \
   MEMBERS_ITERATOR(ptr<expression>, value, nullptr)
 
 #define LIST_EXPRESSION_MEMBERS(MEMBERS_ITERATOR)                                   \
