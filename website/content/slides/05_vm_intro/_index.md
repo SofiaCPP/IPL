@@ -1,6 +1,6 @@
 ---
 title: "Introduction to Virtual Machines"
-date: 2018-11-07T17:45:53+03:00
+date: 2020-11-01T17:45:53+03:00
 draft: false
 outputs: ["Reveal"]
 ---
@@ -33,7 +33,7 @@ outputs: ["Reveal"]
 
 ## Computational model
 
-- Regular Languages 
+- Regular Languages
 - Context Free Languages
 - *Everything that is computable*
 
@@ -90,10 +90,10 @@ The tape is not infinite :/
 
 {{% note %}}
 
-All the fancy output like sound and graphics is writting at dedicated addresses
+All the fancy output like sound and graphics is writing at dedicated addresses
 in memory.
 
-So to writting something on the screen, used to be write the bytes in
+So to writing something on the screen, used to be write the bytes in
 0xF000-0xFFFF and the hardware will just blit them on the screen.
 Playing a sound - set some address to the frequency of the tone.
 
@@ -223,7 +223,7 @@ Out-of-order execution, branch prediction -> meltdown, spectre show that our
 
 VMs can be statically or dynamically typed
 
-- certain registers / memory locations / instructios can work only on certain
+- certain registers / memory locations / instructions can work only on certain
   argument types.
 
 ---
@@ -271,7 +271,7 @@ Fixed size instructions vs variable length instructions:
 ---
 ### Instruction set
 
-We'll be doing varible length instructions
+We'll be doing variable length instructions
 
 > The instruction set is subject to change, so do not start the press (yet!).
 
@@ -295,7 +295,7 @@ https://docs.google.com/spreadsheets/d/1Q90x60BF-7T0jqPngScsjlaGBXXHRx4tszwCTSRY
 
 1. push arguments on stack
 2. call function
-3. callee can access arguments from the stack with regiters
+3. callee can access arguments from the stack with registers
     - 0 - count of arguments
     - -1 - first argument
     - -n - n-th argument

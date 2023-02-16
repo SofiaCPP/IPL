@@ -1,13 +1,10 @@
 ---
 title: "Ahead-of-Time Compilation"
-date: 2021-01-05
-draft: true
+date: 2023-01-12
+draft: false
 ---
 
 Ahead-of-Time Compilation - optimizations and register allocation
-
-
-This lecture will be entirely online - see the [Facebook group]({{< ref "/facebook" >}})
 
 <!--more-->
 

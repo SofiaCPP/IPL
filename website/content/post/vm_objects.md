@@ -1,12 +1,10 @@
 ---
 title: "Objects in the virtual machine"
-date: 2020-11-16
-draft: true
+date: 2022-11-16
+draft: false
 ---
 
 Representing objects inside the virtual machine.
-
-This lecture will be entirely online - see the [Facebook group]({{< ref "/facebook" >}})
 
 <!--more-->
 
