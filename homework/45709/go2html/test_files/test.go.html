@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>go2html</title>
+    <style>
+        .invalid    {text-decoration: underline; text-decoration-style: wavy; text-decoration-color: red;}
+        .operator   {font-weight: bold;}
+        .keyword    {color: #fa7;}
+        .type       {color: #d35;}
+        .number     {color: #09b;}
+        .string     {color: #0a4;}
+        .identifier {color: #bbe;}
+        .comment    {color: #99a;}
+        .container  {color: #fff; background-color: #222; padding: 10px; width: 800px; margin: auto;}
+        .container pre {margin: 0;}
+    </style>
+</head>
+<body>
+    <div class="container">
+<pre><span class="keyword">package</span> <span class="identifier">main</span>
+
+<span class="comment">//import fmt package</span>
+<span class="keyword">import</span> <span class="string">"fmt"</span>
+
+<span class="keyword">type</span> <span class="identifier">person</span> <span class="keyword">struct</span> <span class="operator">{</span>
+    <span class="identifier">name</span> <span class="type">string</span>
+    <span class="identifier">age</span>  <span class="type">uint8</span>
+<span class="operator">}</span>
+
+<span class="keyword">func</span> <span class="identifier">main</span><span class="operator">(</span><span class="operator">)</span> <span class="operator">{</span>
+    <span class="identifier">martin</span> <span class="operator">:=</span> <span class="identifier">person</span><span class="operator">{</span><span class="string">"Martin Kostov"</span><span class="operator">,</span> <span class="number">22</span><span class="operator">}</span>
+
+    <span class="identifier">fmt</span><span class="operator">.</span><span class="identifier">Println</span><span class="operator">(</span><span class="identifier">martin</span><span class="operator">)</span>
+<span class="operator">}</span></pre>
+    </div>
+</body>
+</html>
