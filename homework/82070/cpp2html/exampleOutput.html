@@ -1,0 +1,82 @@
+<!doctype><html><head>    <title>
+exampleInput.cpp
+</title>    <style>        .keyword {            color: blue;        }        .number {            color: red;        }        .string {            color: orange;        }        .operator {            font-weight: 900;        }        .preprocesor {            color: purple;        }        .comment {            color: green;        }        .inclusion {            color: teal;        }    </style></head><body>    <pre class="code">
+<span class="preprocesor">#include</span> <span class="inclusion">&lt;iostream></span>
+<span class="preprocesor">#include</span> <span class="inclusion">&lt;cmath></span>
+<span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">std</span>;
+
+<span class="keyword">struct</span> <span class="identifier">point</span> {
+	<span class="keyword">double</span> <span class="identifier">x</span>;
+	<span class="keyword">double</span> <span class="identifier">y</span>;
+	<span class="keyword">void</span> <span class="identifier">set_point</span>(<span class="keyword">double</span>, <span class="keyword">double</span>);
+	<span class="keyword">void</span> <span class="identifier">print</span>();
+};
+
+<span class="keyword">int</span> <span class="identifier">main</span>() {
+	<span class="keyword">const</span> <span class="keyword">int</span> <span class="identifier">maxPoints</span> <span class="operator">=</span> <span class="number">32</span>;
+	<span class="keyword">int</span> <span class="identifier">counterPoints</span> <span class="operator">=</span> <span class="number">0</span>, <span class="identifier">counterTriangle</span> <span class="operator">=</span> <span class="number">0</span>, <span class="identifier">counterPokeball</span> <span class="operator">=</span> <span class="number">0</span>, <span class="identifier">outside</span>;
+	<span class="identifier">point</span> <span class="identifier">arrPoints</span>[<span class="identifier">maxPoints</span>];
+	<span class="keyword">for</span> (<span class="keyword">int</span> <span class="identifier">i</span> <span class="operator">=</span> <span class="number">0</span>; <span class="identifier">i</span> <span class="operator"><</span> <span class="identifier">maxPoints</span>; <span class="operator">++</span><span class="identifier">i</span>) {
+		<span class="keyword">double</span> <span class="identifier">x</span>, <span class="identifier">y</span>;
+		<span class="identifier">cin</span> <span class="operator">>></span> <span class="identifier">x</span> <span class="operator">>></span> <span class="identifier">y</span>;
+		<span class="keyword">if</span> (<span class="identifier">cin</span><span class="operator">.</span><span class="identifier">good</span>()) {
+			<span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">set_point</span>(<span class="identifier">x</span>, <span class="identifier">y</span>);
+			<span class="identifier">counterPoints</span><span class="operator">++</span>;
+		}
+		<span class="keyword">else</span> {
+			<span class="identifier">cin</span><span class="operator">.</span><span class="identifier">clear</span>();
+			<span class="identifier">cin</span><span class="operator">.</span><span class="identifier">ignore</span>(<span class="identifier">numeric_limits</span><span class="inclusion">&lt;streamsize></span>::<span class="identifier">max</span>(), <span class="string">'\n'</span>);
+			<span class="keyword">break</span>;
+		}
+	}
+	<span class="keyword">for</span> (<span class="keyword">int</span> <span class="identifier">i</span> <span class="operator">=</span> <span class="number">0</span>; <span class="identifier">i</span> <span class="operator"><</span> <span class="identifier">counterPoints</span>; <span class="operator">++</span><span class="identifier">i</span>) {
+		<span class="keyword">bool</span> <span class="identifier">insideTriangle</span> <span class="operator">=</span> <span class="keyword">false</span>, <span class="identifier">insidePokeball</span> <span class="operator">=</span> <span class="keyword">false</span>;
+		<span class="identifier">point</span> <span class="identifier">triangleVertex</span>, <span class="identifier">lineCrossOx</span>, <span class="identifier">lineCrossOy</span>, <span class="identifier">pokeballCenter</span>;
+		<span class="identifier">triangleVertex</span><span class="operator">.</span><span class="identifier">set_point</span>(<span class="number">2</span>, <span class="number">2</span>);
+		<span class="identifier">lineCrossOx</span><span class="operator">.</span><span class="identifier">set_point</span>(<span class="number">6</span>, <span class="number">0</span>);
+		<span class="identifier">lineCrossOy</span><span class="operator">.</span><span class="identifier">set_point</span>(<span class="number">0</span>, <span class="number">6</span>);
+		<span class="identifier">pokeballCenter</span><span class="operator">.</span><span class="identifier">set_point</span>(<span class="operator">-</span><span class="number">9</span>, <span class="number">0</span>);
+		<span class="keyword">if</span> (<span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">x</span> <span class="operator">>=</span> <span class="identifier">triangleVertex</span><span class="operator">.</span><span class="identifier">x</span>
+			<span class="operator">&&</span> <span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">y</span> <span class="operator">>=</span> <span class="identifier">triangleVertex</span><span class="operator">.</span><span class="identifier">y</span>
+			<span class="operator">&&</span> <span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">x</span> <span class="operator">*</span> <span class="identifier">lineCrossOy</span><span class="operator">.</span><span class="identifier">y</span> <span class="operator">+</span> <span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">y</span> <span class="operator">*</span> <span class="identifier">lineCrossOx</span><span class="operator">.</span><span class="identifier">x</span> <span class="operator"><=</span> <span class="identifier">lineCrossOx</span><span class="operator">.</span><span class="identifier">x</span> <span class="operator">*</span> <span class="identifier">lineCrossOy</span><span class="operator">.</span><span class="identifier">y</span>) {
+			<span class="identifier">insideTriangle</span> <span class="operator">=</span> <span class="keyword">true</span>;
+			<span class="identifier">counterTriangle</span><span class="operator">++</span>;
+		}
+		<span class="keyword">else</span> {
+			<span class="keyword">const</span> <span class="keyword">double</span> <span class="identifier">smallCircleR</span> <span class="operator">=</span> <span class="number">1</span>, <span class="identifier">largeCircleR</span> <span class="operator">=</span> <span class="number">3</span>;
+			<span class="keyword">double</span> <span class="identifier">distanceX</span> <span class="operator">=</span> <span class="identifier">abs</span>(<span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">x</span> <span class="operator">-</span> <span class="identifier">pokeballCenter</span><span class="operator">.</span><span class="identifier">x</span>);
+			<span class="keyword">double</span> <span class="identifier">distanceY</span> <span class="operator">=</span> <span class="identifier">abs</span>(<span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">y</span> <span class="operator">-</span> <span class="identifier">pokeballCenter</span><span class="operator">.</span><span class="identifier">y</span>);
+			<span class="keyword">double</span> <span class="identifier">distanceFromPokeballCenter</span> <span class="operator">=</span> <span class="identifier">sqrt</span>(<span class="identifier">distanceX</span> <span class="operator">*</span> <span class="identifier">distanceX</span> <span class="operator">+</span> <span class="identifier">distanceY</span> <span class="operator">*</span> <span class="identifier">distanceY</span>);
+			<span class="keyword">if</span> (<span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">x</span> <span class="operator">>=</span> <span class="identifier">pokeballCenter</span><span class="operator">.</span><span class="identifier">x</span> <span class="operator">-</span> <span class="identifier">largeCircleR</span>
+				<span class="operator">&&</span> <span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">x</span> <span class="operator"><=</span> <span class="identifier">pokeballCenter</span><span class="operator">.</span><span class="identifier">x</span> <span class="operator">+</span> <span class="identifier">largeCircleR</span>
+				<span class="operator">&&</span> <span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">y</span> <span class="operator">>=</span> <span class="identifier">pokeballCenter</span><span class="operator">.</span><span class="identifier">y</span>
+				<span class="operator">&&</span> <span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">y</span> <span class="operator"><=</span> <span class="identifier">pokeballCenter</span><span class="operator">.</span><span class="identifier">y</span> <span class="operator">+</span> <span class="identifier">largeCircleR</span>
+				<span class="operator">&&</span> <span class="identifier">distanceFromPokeballCenter</span> <span class="operator">>=</span> <span class="identifier">smallCircleR</span> <span class="operator">&&</span> <span class="identifier">distanceFromPokeballCenter</span> <span class="operator"><=</span> <span class="identifier">largeCircleR</span>) {
+				<span class="identifier">insidePokeball</span> <span class="operator">=</span> <span class="keyword">true</span>;
+				<span class="identifier">counterPokeball</span><span class="operator">++</span>;
+			}
+		}
+		<span class="identifier">arrPoints</span>[<span class="identifier">i</span>]<span class="operator">.</span><span class="identifier">print</span>();
+		<span class="keyword">if</span> (<span class="identifier">insideTriangle</span>) {
+			<span class="identifier">cout</span> <span class="operator"><<</span> <span class="string">"inside, "</span> <span class="operator"><<</span> <span class="identifier">i</span> <span class="operator">+</span> <span class="number">1</span> <span class="operator"><<</span> <span class="string">" in the list of points (It is inside the triangle)."</span> <span class="operator"><<</span> <span class="identifier">endl</span>;
+		}
+		<span class="keyword">else</span> <span class="keyword">if</span> (<span class="identifier">insidePokeball</span>) {
+			<span class="identifier">cout</span> <span class="operator"><<</span> <span class="string">"inside, "</span> <span class="operator"><<</span> <span class="identifier">i</span> <span class="operator">+</span> <span class="number">1</span> <span class="operator"><<</span> <span class="string">" in the list of points (It is inside the pokeball)."</span> <span class="operator"><<</span> <span class="identifier">endl</span>;
+		}
+		<span class="keyword">else</span> {
+			<span class="identifier">cout</span> <span class="operator"><<</span> <span class="string">"outside, "</span> <span class="operator"><<</span> <span class="identifier">i</span> <span class="operator">+</span> <span class="number">1</span> <span class="operator"><<</span> <span class="string">" in the list of points"</span> <span class="operator"><<</span> <span class="identifier">endl</span>;
+		}
+	}
+	<span class="identifier">outside</span> <span class="operator">=</span> <span class="identifier">counterPoints</span> <span class="operator">-</span> (<span class="identifier">counterTriangle</span> <span class="operator">+</span> <span class="identifier">counterPokeball</span>);
+	<span class="identifier">cout</span> <span class="operator"><<</span> <span class="identifier">counterTriangle</span> <span class="operator"><<</span> <span class="string">" points inside triangle, "</span> <span class="operator"><<</span> <span class="identifier">counterPokeball</span> <span class="operator"><<</span> <span class="string">" points inside pokeball, "</span> <span class="operator"><<</span> <span class="identifier">outside</span> <span class="operator"><<</span> <span class="string">" points outside out of "</span> <span class="operator"><<</span> <span class="identifier">counterPoints</span> <span class="operator"><<</span> <span class="string">" points."</span> <span class="operator"><<</span> <span class="identifier">endl</span>;
+	<span class="keyword">return</span> <span class="number">0</span>;
+}
+
+<span class="keyword">void</span> <span class="identifier">point</span>::<span class="identifier">set_point</span>(<span class="keyword">double</span> <span class="identifier">x</span>, <span class="keyword">double</span> <span class="identifier">y</span>) {
+	<span class="keyword">this</span><span class="operator">-</span><span class="operator">></span><span class="identifier">x</span> <span class="operator">=</span> <span class="identifier">x</span>;
+	<span class="keyword">this</span><span class="operator">-</span><span class="operator">></span><span class="identifier">y</span> <span class="operator">=</span> <span class="identifier">y</span>;
+}
+
+<span class="keyword">void</span> <span class="identifier">point</span>::<span class="identifier">print</span>() {
+	<span class="identifier">cout</span> <span class="operator"><<</span> <span class="string">"<"</span> <span class="operator"><<</span> <span class="keyword">this</span><span class="operator">-</span><span class="operator">></span><span class="identifier">x</span> <span class="operator"><<</span> <span class="string">", "</span> <span class="operator"><<</span> <span class="keyword">this</span><span class="operator">-</span><span class="operator">></span><span class="identifier">y</span> <span class="operator"><<</span> <span class="string">">: "</span>;
+}</pre></body></html>
