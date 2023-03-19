@@ -1,13 +1,11 @@
 ---
 title: "Garbage Collection"
-date: 2020-11-23
-draft: true
+date: 2022-11-23
+draft: false
 ---
 
 Garbage collection in theory and practice.
 
-
-This lecture will be entirely online - see the [Facebook group]({{< ref "/facebook" >}})
 
 <!--more-->
 

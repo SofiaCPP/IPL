@@ -20,11 +20,12 @@ outputs: ["Reveal"]
 Adding two numbers in an interpreter requires:
 
 1. loading the instruction
-2. decoding the intstruction
+2. decoding the instruction
 3. dispatching the opcode
 4. doing the addition
 5. storing the result
 
+---
 All is actually 2 instructions on a x86_64 CPU
 
     ; rax = rbx + rcx
@@ -35,12 +36,12 @@ All is actually 2 instructions on a x86_64 CPU
 ### Flexibility
 
 - generate native code only for functions that will affect performance
-- generate for the actual target CPU, instead of distributting prebuilt binaries
+- generate for the actual target CPU, instead of distributing binaries
 
 ---
 ### Optimization
 
-- All function arguments can be treated as contants
+- All function arguments can be treated as constants
   - constant propagation everywhere
 - unroll loops
 - remove branches
@@ -82,7 +83,7 @@ All is actually 2 instructions on a x86_64 CPU
 
 - Consoles
 - Mobile
-- Pic
+- Micro controllers
 
 ---
 ### How to create and execute code
@@ -110,7 +111,7 @@ All is actually 2 instructions on a x86_64 CPU
 Most VMs have tiers that allow to trade off between latency and throughput.
 
 - _latency_ - how soon the VM starts executing your code
-- _thoughput_ - how fast the VM executes your code
+- _throughput_ - how fast the VM executes your code
 
 ---
 #### JIT tiers
@@ -119,11 +120,11 @@ VMs have more than two tiers, but they are levels between the two extremes
 
 - baseline
   - no optimizations
-  - can handle everypossible type
+  - can handle every possible type
   - profiling code to detect what needs to optimization and how to optimize it
 - optimized
   - highly specialized for certain types and parameters
-  - fallbacks when it can't handle the provided types or parameters
+  - fallback when it can't handle the provided types or parameters
 
 ---
 #### Template JIT
@@ -265,7 +266,7 @@ Translate Spasm calling convention to x86_64 and back
 
 - Translate Spasm negative registers to positive offsets from `RDX`
   - make sure to skip `rbp`, `r15` stored on the stack
-- Translate Spasm positive registeers to negative offsets from `RDX`
+- Translate Spasm positive registers to negative offsets from `RDX`
 
 > The native stack grows towards lower addresses!
 
@@ -326,12 +327,12 @@ How to handle vararg functions?
     mov rcx, r8 # add
     add rcx, r9
 
-    mov [rdi + 16], rcx # store result
+    mov [rdi - 16], rcx # store result
 
 ---
 ##### JIT - Epilog
 
-    mov eax, [rdi + 16]
+    mov eax, [rdi - 16]
     mov rsp, r15
     pop r15
     pop rbp

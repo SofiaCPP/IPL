@@ -1,13 +1,11 @@
 ---
 title: "Just-In-Time Compilation"
-date: 2020-12-13
-draft: true
+date: 2023-01-05
+draft: false
 ---
 
 Just-In-Time Compilation in theory and practice.
 
-
-This lecture will be entirely online - see the [Facebook group]({{< ref "/facebook" >}})
 
 <!--more-->
 
