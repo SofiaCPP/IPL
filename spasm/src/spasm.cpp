@@ -480,7 +480,7 @@ int64_t Spasm::read_integer(size_t size)
     switch (size)
     {
         case 0:
-            return m_ByteCode[m_PC++];
+            return *reinterpret_cast<int8_t*>(&m_ByteCode[m_PC++]);
         case 1:
         {
             auto result = *reinterpret_cast<int16_t*>(&m_ByteCode[0] + m_PC);

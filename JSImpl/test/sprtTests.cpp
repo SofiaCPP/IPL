@@ -277,12 +277,12 @@ TEST_F(SPRTTest, Call)
 		OpCodes::PushFrom, 4,       // 20
 		OpCodes::Call, 25,      // 22
 		OpCodes::Print, 4,      // 24
-        OpCodes::Halt,          // 25
+		OpCodes::Halt,          // 25
 		OpCodes::Print, 0,      // 27
-		OpCodes::Print, -1,     // 29
-		OpCodes::Print, -2,     // 31
-		OpCodes::Mul, 1, -2, -1,// 33
-        OpCodes::Ret, 1,        // 35
+		OpCodes::Print, Spasm::byte(-1),                   // 29
+		OpCodes::Print, Spasm::byte(-2),                   // 31
+		OpCodes::Mul, 1, Spasm::byte(-2), Spasm::byte(-1), // 33
+		OpCodes::Ret, 1,        // 35
 	};
 
 	Run(bytecode, sizeof(bytecode));
