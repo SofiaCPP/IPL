@@ -38,7 +38,7 @@ end
         uuid(os.uuid('sprt'))
         files '../src/*.cpp'
         removefiles '../src/main.cpp'
-        files '../src/*.h'
+        files '../src/*.hpp'
 
     project 'spasm_lib'
         kind 'StaticLib'
@@ -51,7 +51,7 @@ end
             '../src/asm/lexdump.cpp',
             '../src/asm/lexdump3.cpp',
         }
-        files '../src/asm/*.h'
+        files '../src/asm/*.hpp'
 
     project 'spasm'
         kind 'ConsoleApp'
@@ -64,7 +64,7 @@ end
             '../src/asm/lexdump.cpp',
             '../src/asm/lexdump3.cpp',
         }
-        files '../src/asm/*.h'
+        files '../src/asm/*.hpp'
 
     project 'sprun'
         kind 'ConsoleApp'
