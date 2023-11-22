@@ -4,7 +4,9 @@ project 'Test'
     uuid(os.uuid('Test'))
     location(solution().location)
 
-    files '*.cpp'
+    pchheader 'precompiled.h'
+    pchsource 'precompiled.cpp'
+    files 'ASTInterpreterTests.cpp'
 
     includedirs {
         'googletest/googletest/include',

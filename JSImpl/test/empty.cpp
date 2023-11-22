@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "precompiled.h"
 #include <memory>
 #include <cmath>
 #include <spasm.hpp>

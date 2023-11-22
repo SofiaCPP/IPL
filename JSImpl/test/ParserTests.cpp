@@ -1,10 +1,10 @@
+#include "precompiled.h"
+
 #include <src/CommonTypes.h>
 #include <src/Lexer.h>
 #include <src/Parser.h>
 #include <src/ASTPrinter.h>
 #include <src/ASTInterpreter.h>
-
-#include <gtest/gtest.h>
 
 #include <sstream>
 

@@ -6,6 +6,8 @@
 #undef NOT_IMPLEMENTED
 #define NOT_IMPLEMENTED (void)e; throw std::runtime_error("not-implemented")
 
+// Lets do a comment
+
 namespace
 {
     template <typename T>

@@ -1,9 +1,8 @@
+#include "precompiled.h"
 #include <src/CommonTypes.h>
 #include <src/Lexer.h>
 #include <src/Parser.h>
 #include "src/ByteCodeGenerator.h"
-
-#include <gtest/gtest.h>
 
 #include <sstream>
 
