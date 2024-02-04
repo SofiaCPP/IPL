@@ -17,22 +17,29 @@
 # This must be a macro(), as inside a function string() can only
 # update variables in the function scope.
 macro(fix_default_compiler_settings_)
-  if (MSVC)
-    # For MSVC, CMake sets certain flags to defaults we want to override.
+  if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC|Clang")
+    # For MSVC and Clang, CMake sets certain flags to defaults we want to
+    # override.
     # This replacement code is taken from sample in the CMake Wiki at
     # https://gitlab.kitware.com/cmake/community/wikis/FAQ#dynamic-replace.
     foreach (flag_var
+             CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+             CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO
              CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
              CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
       if (NOT BUILD_SHARED_LIBS AND NOT gtest_force_shared_crt)
         # When Google Test is built as a shared library, it should also use
-        # shared runtime libraries.  Otherwise, it may end up with multiple
+        # shared runtime libraries. Otherwise, it may end up with multiple
         # copies of runtime library data in different modules, resulting in
         # hard-to-find crashes. When it is built as a static library, it is
         # preferable to use CRT as static libraries, as we don't have to rely
         # on CRT DLLs being available. CMake always defaults to using shared
         # CRT libraries, so we override that default here.
         string(REPLACE "/MD" "-MT" ${flag_var} "${${flag_var}}")
+
+        # When using Ninja with Clang, static builds pass -D_DLL on Windows.
+        # This is incorrect and should not happen, so we fix that here.
+        string(REPLACE "-D_DLL" "" ${flag_var} "${${flag_var}}")
       endif()
 
       # We prefer more strict warning checking for building Google Test.
@@ -48,15 +55,14 @@ macro(fix_default_compiler_settings_)
 endmacro()
 
 # Defines the compiler/linker flags used to build Google Test and
-# Google Mock.  You can tweak these definitions to suit your need.  A
+# Google Mock. You can tweak these definitions to suit your need. A
 # variable's value is empty before it's explicitly assigned to.
 macro(config_compiler_and_linker)
   # Note: pthreads on MinGW is not supported, even if available
-  # instead, we use windows threading primitives
+  # instead, we use windows threading primitives.
   unset(GTEST_HAS_PTHREAD)
   if (NOT gtest_disable_pthreads AND NOT MINGW)
     # Defines CMAKE_USE_PTHREADS_INIT and CMAKE_THREAD_LIBS_INIT.
-    set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads)
     if (CMAKE_USE_PTHREADS_INIT)
       set(GTEST_HAS_PTHREAD ON)
@@ -67,46 +73,44 @@ macro(config_compiler_and_linker)
   if (MSVC)
     # Newlines inside flags variables break CMake's NMake generator.
     # TODO(vladl@google.com): Add -RTCs and -RTCu to debug builds.
-    set(cxx_base_flags "-GS -W4 -WX -wd4251 -wd4275 -nologo -J -Zi")
-    if (MSVC_VERSION LESS 1400)  # 1400 is Visual Studio 2005
-      # Suppress spurious warnings MSVC 7.1 sometimes issues.
-      # Forcing value to bool.
-      set(cxx_base_flags "${cxx_base_flags} -wd4800")
-      # Copy constructor and assignment operator could not be generated.
-      set(cxx_base_flags "${cxx_base_flags} -wd4511 -wd4512")
-      # Compatibility warnings not applicable to Google Test.
-      # Resolved overload was found by argument-dependent lookup.
-      set(cxx_base_flags "${cxx_base_flags} -wd4675")
-    endif()
-    if (MSVC_VERSION LESS 1500)  # 1500 is Visual Studio 2008
-      # Conditional expression is constant.
-      # When compiling with /W4, we get several instances of C4127
-      # (Conditional expression is constant). In our code, we disable that
-      # warning on a case-by-case basis. However, on Visual Studio 2005,
-      # the warning fires on std::list. Therefore on that compiler and earlier,
-      # we disable the warning project-wide.
-      set(cxx_base_flags "${cxx_base_flags} -wd4127")
-    endif()
-    if (NOT (MSVC_VERSION LESS 1700))  # 1700 is Visual Studio 2012.
-      # Suppress "unreachable code" warning on VS 2012 and later.
-      # http://stackoverflow.com/questions/3232669 explains the issue.
-      set(cxx_base_flags "${cxx_base_flags} -wd4702")
-    endif()
-
+    set(cxx_base_flags "-GS -W4 -WX -wd4251 -wd4275 -nologo -J")
     set(cxx_base_flags "${cxx_base_flags} -D_UNICODE -DUNICODE -DWIN32 -D_WIN32")
     set(cxx_base_flags "${cxx_base_flags} -DSTRICT -DWIN32_LEAN_AND_MEAN")
     set(cxx_exception_flags "-EHsc -D_HAS_EXCEPTIONS=1")
     set(cxx_no_exception_flags "-EHs-c- -D_HAS_EXCEPTIONS=0")
     set(cxx_no_rtti_flags "-GR-")
+    # Suppress "unreachable code" warning,
+    # https://stackoverflow.com/questions/3232669 explains the issue.
+    set(cxx_base_flags "${cxx_base_flags} -wd4702")
+    # Ensure MSVC treats source files as UTF-8 encoded.
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+      set(cxx_base_flags "${cxx_base_flags} -utf-8")
+    endif()
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
+      set(cxx_base_flags "${cxx_base_flags} /fp:precise -Wno-inconsistent-missing-override -Wno-microsoft-exception-spec -Wno-unused-function -Wno-unused-but-set-variable")
+    endif()
+  elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
+      CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
+    set(cxx_base_flags "-Wall -Wshadow -Wconversion -Wundef")
+    set(cxx_exception_flags "-fexceptions")
+    set(cxx_no_exception_flags "-fno-exceptions")
+    set(cxx_strict_flags "-W -Wpointer-arith -Wreturn-type -Wcast-qual -Wwrite-strings -Wswitch -Wunused-parameter -Wcast-align -Winline -Wredundant-decls")
+    set(cxx_no_rtti_flags "-fno-rtti")
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+      set(cxx_strict_flags "${cxx_strict_flags} -Wchar-subscripts")
+    endif()
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "IntelLLVM")
+      set(cxx_base_flags "${cxx_base_flags} -Wno-implicit-float-size-conversion -ffp-model=precise")
+    endif()
   elseif (CMAKE_COMPILER_IS_GNUCXX)
-    set(cxx_base_flags "-Wall -Wshadow -Werror")
+    set(cxx_base_flags "-Wall -Wshadow -Wundef")
     if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0.0)
       set(cxx_base_flags "${cxx_base_flags} -Wno-error=dangling-else")
     endif()
     set(cxx_exception_flags "-fexceptions")
     set(cxx_no_exception_flags "-fno-exceptions")
     # Until version 4.3.2, GCC doesn't define a macro to indicate
-    # whether RTTI is enabled.  Therefore we define GTEST_HAS_RTTI
+    # whether RTTI is enabled. Therefore we define GTEST_HAS_RTTI
     # explicitly.
     set(cxx_no_rtti_flags "-fno-rtti -DGTEST_HAS_RTTI=0")
     set(cxx_strict_flags
@@ -123,7 +127,7 @@ macro(config_compiler_and_linker)
     set(cxx_exception_flags "-qeh")
     set(cxx_no_exception_flags "-qnoeh")
     # Until version 9.0, Visual Age doesn't define a macro to indicate
-    # whether RTTI is enabled.  Therefore we define GTEST_HAS_RTTI
+    # whether RTTI is enabled. Therefore we define GTEST_HAS_RTTI
     # explicitly.
     set(cxx_no_rtti_flags "-qnortti -DGTEST_HAS_RTTI=0")
   elseif (CMAKE_CXX_COMPILER_ID STREQUAL "HP")
@@ -148,42 +152,50 @@ macro(config_compiler_and_linker)
     "${CMAKE_CXX_FLAGS} ${cxx_base_flags} ${cxx_no_exception_flags}")
   set(cxx_default "${cxx_exception}")
   set(cxx_no_rtti "${cxx_default} ${cxx_no_rtti_flags}")
-  set(cxx_use_own_tuple "${cxx_default} -DGTEST_USE_OWN_TR1_TUPLE=1")
 
   # For building the gtest libraries.
   set(cxx_strict "${cxx_default} ${cxx_strict_flags}")
 endmacro()
 
-# Defines the gtest & gtest_main libraries.  User tests should link
+# Defines the gtest & gtest_main libraries. User tests should link
 # with one of them.
 function(cxx_library_with_type name type cxx_flags)
   # type can be either STATIC or SHARED to denote a static or shared library.
   # ARGN refers to additional arguments after 'cxx_flags'.
   add_library(${name} ${type} ${ARGN})
+  add_library(${cmake_package_name}::${name} ALIAS ${name})
   set_target_properties(${name}
     PROPERTIES
     COMPILE_FLAGS "${cxx_flags}")
-  # Generate debug library name with a postfix.
+  # Set the output directory for build artifacts.
   set_target_properties(${name}
     PROPERTIES
-    DEBUG_POSTFIX "d")
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    COMPILE_PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+  # Make PDBs match library name.
+  get_target_property(pdb_debug_postfix ${name} DEBUG_POSTFIX)
+  set_target_properties(${name}
+    PROPERTIES
+    PDB_NAME "${name}"
+    PDB_NAME_DEBUG "${name}${pdb_debug_postfix}"
+    COMPILE_PDB_NAME "${name}"
+    COMPILE_PDB_NAME_DEBUG "${name}${pdb_debug_postfix}")
+
   if (BUILD_SHARED_LIBS OR type STREQUAL "SHARED")
     set_target_properties(${name}
       PROPERTIES
       COMPILE_DEFINITIONS "GTEST_CREATE_SHARED_LIBRARY=1")
-    if (NOT "${CMAKE_VERSION}" VERSION_LESS "2.8.11")
-      target_compile_definitions(${name} INTERFACE
-        $<INSTALL_INTERFACE:GTEST_LINKED_AS_SHARED_LIBRARY=1>)
-    endif()
+    target_compile_definitions(${name} INTERFACE
+      $<INSTALL_INTERFACE:GTEST_LINKED_AS_SHARED_LIBRARY=1>)
   endif()
   if (DEFINED GTEST_HAS_PTHREAD)
-    if ("${CMAKE_VERSION}" VERSION_LESS "3.1.0")
-      set(threads_spec ${CMAKE_THREAD_LIBS_INIT})
-    else()
-      set(threads_spec Threads::Threads)
-    endif()
-    target_link_libraries(${name} PUBLIC ${threads_spec})
+    target_link_libraries(${name} PUBLIC Threads::Threads)
   endif()
+
+  target_compile_features(${name} PUBLIC cxx_std_14)
 endfunction()
 
 ########################################################################
@@ -200,11 +212,11 @@ endfunction()
 
 # cxx_executable_with_flags(name cxx_flags libs srcs...)
 #
-# creates a named C++ executable that depends on the given libraries and
+# Creates a named C++ executable that depends on the given libraries and
 # is built from the given source files with the given compiler flags.
 function(cxx_executable_with_flags name cxx_flags libs)
   add_executable(${name} ${ARGN})
-  if (MSVC AND (NOT (MSVC_VERSION LESS 1700)))  # 1700 is Visual Studio 2012.
+  if (MSVC)
     # BigObj required for tests.
     set(cxx_flags "${cxx_flags} -bigobj")
   endif()
@@ -227,30 +239,31 @@ endfunction()
 
 # cxx_executable(name dir lib srcs...)
 #
-# creates a named target that depends on the given libs and is built
-# from the given source files.  dir/name.cc is implicitly included in
+# Creates a named target that depends on the given libs and is built
+# from the given source files. dir/name.cc is implicitly included in
 # the source file list.
 function(cxx_executable name dir libs)
   cxx_executable_with_flags(
     ${name} "${cxx_default}" "${libs}" "${dir}/${name}.cc" ${ARGN})
 endfunction()
 
-# Sets PYTHONINTERP_FOUND and PYTHON_EXECUTABLE.
-find_package(PythonInterp)
+if(gtest_build_tests)
+  find_package(Python3)
+endif()
 
 # cxx_test_with_flags(name cxx_flags libs srcs...)
 #
-# creates a named C++ test that depends on the given libs and is built
+# Creates a named C++ test that depends on the given libs and is built
 # from the given source files with the given compiler flags.
 function(cxx_test_with_flags name cxx_flags libs)
   cxx_executable_with_flags(${name} "${cxx_flags}" "${libs}" ${ARGN})
-  add_test(NAME ${name} COMMAND ${name})
+    add_test(NAME ${name} COMMAND "$<TARGET_FILE:${name}>")
 endfunction()
 
 # cxx_test(name libs srcs...)
 #
-# creates a named test target that depends on the given libs and is
-# built from the given source files.  Unlike cxx_test_with_flags,
+# Creates a named test target that depends on the given libs and is
+# built from the given source files. Unlike cxx_test_with_flags,
 # test/name.cc is already implicitly included in the source file list.
 function(cxx_test name libs)
   cxx_test_with_flags("${name}" "${cxx_default}" "${libs}"
@@ -259,38 +272,25 @@ endfunction()
 
 # py_test(name)
 #
-# creates a Python test with the given name whose main module is in
-# test/name.py.  It does nothing if Python is not installed.
+# Creates a Python test with the given name whose main module is in
+# test/name.py. It does nothing if Python is not installed.
 function(py_test name)
-  if (PYTHONINTERP_FOUND)
-    if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.1)
-      if (CMAKE_CONFIGURATION_TYPES)
-	# Multi-configuration build generators as for Visual Studio save
-	# output in a subdirectory of CMAKE_CURRENT_BINARY_DIR (Debug,
-	# Release etc.), so we have to provide it here.
-        add_test(
-          NAME ${name}
-          COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test/${name}.py
-              --build_dir=${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG> ${ARGN})
-      else (CMAKE_CONFIGURATION_TYPES)
-	# Single-configuration build generators like Makefile generators
-	# don't have subdirs below CMAKE_CURRENT_BINARY_DIR.
-        add_test(
-          NAME ${name}
-          COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test/${name}.py
-              --build_dir=${CMAKE_CURRENT_BINARY_DIR} ${ARGN})
-      endif (CMAKE_CONFIGURATION_TYPES)
-    else (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.1)
-      # ${CMAKE_CURRENT_BINARY_DIR} is known at configuration time, so we can
-      # directly bind it from cmake. ${CTEST_CONFIGURATION_TYPE} is known
-      # only at ctest runtime (by calling ctest -c <Configuration>), so
-      # we have to escape $ to delay variable substitution here.
-      add_test(
-        ${name}
-        ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test/${name}.py
-          --build_dir=${CMAKE_CURRENT_BINARY_DIR}/\${CTEST_CONFIGURATION_TYPE} ${ARGN})
-    endif (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 3.1)
-  endif(PYTHONINTERP_FOUND)
+  if (NOT Python3_Interpreter_FOUND)
+    return()
+  endif()
+
+  get_cmake_property(is_multi "GENERATOR_IS_MULTI_CONFIG")
+  set(build_dir "${CMAKE_CURRENT_BINARY_DIR}")
+  if (is_multi)
+    set(build_dir "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>")
+  endif()
+
+  add_test(NAME ${name}
+      COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/test/${name}.py
+          --build_dir=${build_dir} ${ARGN})
+
+  # Make the Python import path consistent between Bazel and CMake.
+  set_tests_properties(${name} PROPERTIES ENVIRONMENT PYTHONPATH=${CMAKE_SOURCE_DIR})
 endfunction()
 
 # install_project(targets...)
@@ -299,19 +299,35 @@ endfunction()
 function(install_project)
   if(INSTALL_GTEST)
     install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/"
+      COMPONENT "${PROJECT_NAME}"
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
     # Install the project targets.
     install(TARGETS ${ARGN}
       EXPORT ${targets_export_name}
+      COMPONENT "${PROJECT_NAME}"
       RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
       ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
       LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+      # Install PDBs.
+      foreach(t ${ARGN})
+        get_target_property(t_pdb_name ${t} COMPILE_PDB_NAME)
+        get_target_property(t_pdb_name_debug ${t} COMPILE_PDB_NAME_DEBUG)
+        get_target_property(t_pdb_output_directory ${t} PDB_OUTPUT_DIRECTORY)
+        install(FILES
+          "${t_pdb_output_directory}/\${CMAKE_INSTALL_CONFIG_NAME}/$<$<CONFIG:Debug>:${t_pdb_name_debug}>$<$<NOT:$<CONFIG:Debug>>:${t_pdb_name}>.pdb"
+          COMPONENT "${PROJECT_NAME}"
+          DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          OPTIONAL)
+      endforeach()
+    endif()
     # Configure and install pkgconfig files.
     foreach(t ${ARGN})
       set(configured_pc "${generated_dir}/${t}.pc")
       configure_file("${PROJECT_SOURCE_DIR}/cmake/${t}.pc.in"
         "${configured_pc}" @ONLY)
       install(FILES "${configured_pc}"
+        COMPONENT "${PROJECT_NAME}"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
     endforeach()
   endif()
