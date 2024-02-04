@@ -58,7 +58,7 @@ private:
     void EnterScope();
     void LeaveScope();
     friend struct VariableScope;
-    friend struct StackScope;;
+    friend struct StackScope;
 
     ValueStack m_Evaluation;
     IPLUnorderedMap<IPLString, ValueStack> m_Variables;
