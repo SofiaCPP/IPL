@@ -10,8 +10,7 @@
             "name": "msvc-ninja-asan",
             "hidden": false,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
+            "binaryDir": "${sourceDir}/out/${presetName}",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe",
@@ -31,7 +30,7 @@
             "name": "clang-ninja-debug",
             "hidden": false,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "binaryDir": "${sourceDir}/out/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
@@ -40,7 +39,7 @@
             "name": "clang-ninja-release",
             "hidden": false,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "binaryDir": "${sourceDir}/out/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
