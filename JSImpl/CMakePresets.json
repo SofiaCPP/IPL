@@ -37,13 +37,62 @@
         },
         {
             "name": "clang-ninja-release",
-            "hidden": false,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
+        },
+        {
+            "name": "clang-ninja-asan",
+            "inherits": [ "clang-ninja-debug"],
+            "environment": {
+                "CFLAGS": "-fsanitize=address",
+                "CXXFLAGS": "-fsanitize=address"
+            }
+        },
+        {
+            "name": "clang-ninja-ubsan",
+            "inherits": [ "clang-ninja-debug"],
+            "environment": {
+                "CFLAGS": "-fsanitize=undefined",
+                "CXXFLAGS": "-fsanitize=undefined"
+            }
+        },
+        {
+            "name": "clang-ninja-msan",
+            "inherits": [ "clang-ninja-debug"],
+            "environment": {
+                "CFLAGS": "-fsanitize=memory",
+                "CXXFLAGS": "-fsanitize=memory"
+            }
+        },
+        {
+            "name": "clang-ninja-tsan",
+            "inherits": [ "clang-ninja-debug"],
+            "environment": {
+                "CFLAGS": "-fsanitize=thread",
+                "CXXFLAGS": "-fsanitize=thread"
+            }
+        },
+        {
+            "name": "clang-ninja-lsan",
+            "inherits": [ "clang-ninja-debug"],
+            "environment": {
+                "CFLAGS": "-fsanitize=leak",
+                "CXXFLAGS": "-fsanitize=leak"
+            }
+        },
+        {
+            "name": "clang-ninja-coverage",
+            "inherits": [ "clang-ninja-debug"],
+            "environment": {
+                "CFLAGS": "-fprofile-instr-generate -fcoverage-mapping",
+                "CXXFLAGS": "-fprofile-instr-generate -fcoverage-mapping"
+            }
         }
+   
+
     ],
     "buildPresets": [
         {
@@ -76,6 +125,38 @@
             "name": "clang-ninja-release",
             "inherits": [ "base-tests" ],
             "configurePreset": "clang-ninja-release"
+        },
+        {
+            "name": "clang-ninja-asan",
+            "inherits": [ "base-tests" ],
+            "configurePreset": "clang-ninja-asan"
+        },
+        {
+            "name": "clang-ninja-ubsan",
+            "inherits": [ "base-tests" ],
+            "configurePreset": "clang-ninja-ubsan"
+        },
+        {
+            "name": "clang-ninja-msan",
+            "inherits": [ "base-tests" ],
+            "configurePreset": "clang-ninja-msan"
+        },
+        {
+            "name": "clang-ninja-tsan",
+            "inherits": [ "base-tests" ],
+            "configurePreset": "clang-ninja-tsan"
+        },
+        {
+            "name": "clang-ninja-lsan",
+            "inherits": [ "base-tests" ],
+            "configurePreset": "clang-ninja-lsan"
+        },
+        {
+            "name": "clang-ninja-coverage",
+            "inherits": [ "base-tests" ],
+            "configurePreset": "clang-ninja-coverage",
+            "environment": {
+                "LLVM_PROFILE_FILE": "coverage-%p.profraw"}
         }
     ]
 }
