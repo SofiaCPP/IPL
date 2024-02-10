@@ -1,0 +1,82 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 28,
+        "patch": 1
+    },
+    "configurePresets": [
+        {
+            "name": "msvc-ninja-asan",
+            "hidden": false,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "environment": {
+                "CFLAGS": "/EHsc /Zi /fsanitize=address",
+                "CXXFLAGS": "/EHsc /Zi /fsanitize=address"
+            }
+        },
+        {
+            "name": "clang-ninja-debug",
+            "hidden": false,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "clang-ninja-release",
+            "hidden": false,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "clang-ninja-debug",
+            "configurePreset": "clang-ninja-debug"
+        },
+        {
+            "name": "clang-ninja-release",
+            "configurePreset": "clang-ninja-release"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "base-tests",
+            "hidden": true,
+            "output": {
+                "outputOnFailure": true,
+                "shortProgress": true
+            },
+            "execution": {
+                "jobs": 4
+            }
+        },
+        {
+            "name": "clang-ninja-debug",
+            "inherits": [ "base-tests" ],
+            "configurePreset": "clang-ninja-debug"
+        },
+        {
+            "name": "clang-ninja-release",
+            "inherits": [ "base-tests" ],
+            "configurePreset": "clang-ninja-release"
+        }
+    ]
+}
