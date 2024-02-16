@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.27)
 
 set(SPASM_HEADER_FILES
     assembler.hpp
