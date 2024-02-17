@@ -80,3 +80,169 @@ TEST_F(ASTInterpret, StringLessNumber)
 {
 	ASSERT_THROW(Run("var data = 'John' < 42"), std::runtime_error);
 }
+
+TEST_F(ASTInterpret, Division)
+{
+	Run("var answer = 6 / 3");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_DOUBLE_EQ(ValueAsNumber("answer"), 2.0);
+}
+
+TEST_F(ASTInterpret, LessEqualEq)
+{
+	Run("var answer = 6 <= 6");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_TRUE(ValueAsBool("answer"));
+}
+
+TEST_F(ASTInterpret, LessEqualLess)
+{
+	Run("var answer = 4 <= 6");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_TRUE(ValueAsBool("answer"));
+}
+
+TEST_F(ASTInterpret, LessEqualGt)
+{
+	Run("var answer = 8 <= 6");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_FALSE(ValueAsBool("answer"));
+}
+
+TEST_F(ASTInterpret, GreaterEqualEq)
+{
+	Run("var answer = 6 >= 6");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_TRUE(ValueAsBool("answer"));
+}
+
+TEST_F(ASTInterpret, GreaterEqualLess)
+{
+	Run("var answer = 4 >= 6");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_FALSE(ValueAsBool("answer"));
+}
+
+TEST_F(ASTInterpret, GreaterEqualGt)
+{
+	Run("var answer = 8 >= 6");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_TRUE(ValueAsBool("answer"));
+}
+
+TEST_F(ASTInterpret, Greater)
+{
+	Run("var greater = 6 > 5;"
+		"var notGreater = 5 > 6;"
+		"var equal = 6 > 6"
+	);
+	ASSERT_TRUE(HasVariable("greater"));
+	ASSERT_TRUE(ValueAsBool("greater"));
+
+	ASSERT_TRUE(HasVariable("notGreater"));
+	ASSERT_FALSE(ValueAsBool("notGreater"));
+
+	ASSERT_TRUE(HasVariable("equal"));
+	ASSERT_FALSE(ValueAsBool("equal"));
+}
+
+TEST_F(ASTInterpret, EqualEq)
+{
+	Run("var number = 6 == 6;"
+		"var string = 'John' == 'John';"
+		"var notEqual = 6 == 7"
+		"var notEqualString = 'John' == 'Doe'"
+	);
+	ASSERT_TRUE(HasVariable("number"));
+	ASSERT_TRUE(ValueAsBool("number"));
+
+	ASSERT_TRUE(HasVariable("string"));
+	ASSERT_TRUE(ValueAsBool("string"));
+
+	ASSERT_TRUE(HasVariable("notEqual"));
+	ASSERT_FALSE(ValueAsBool("notEqual"));
+
+	ASSERT_TRUE(HasVariable("notEqualString"));
+	ASSERT_FALSE(ValueAsBool("notEqualString"));
+}
+
+TEST_F(ASTInterpret, EqualNotEq)
+{
+	Run("var answer = 6 == 7");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_FALSE(ValueAsBool("answer"));
+}
+
+TEST_F(ASTInterpret, NotEqualEq)
+{
+	Run("var answer = 6 != 6;"
+		"var answerString = 'John' != 'John';"
+	);
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_FALSE(ValueAsBool("answer"));
+
+	ASSERT_TRUE(HasVariable("answerString"));
+	ASSERT_FALSE(ValueAsBool("answerString"));
+}
+
+TEST_F(ASTInterpret, NotEqualNotEq)
+{
+	Run("var answer = 6 != 7;"
+		"var answerString = 'John' != 'Doe';"
+	);
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_TRUE(ValueAsBool("answer"));
+
+	ASSERT_TRUE(HasVariable("answerString"));
+	ASSERT_TRUE(ValueAsBool("answerString"));
+}
+
+TEST_F(ASTInterpret, And)
+{
+	ASSERT_THROW(Run("var answer = true && 42"), std::runtime_error);
+}
+
+TEST_F(ASTInterpret, Substract)
+{
+	Run("var answer = 6 - 3");
+	ASSERT_TRUE(HasVariable("answer"));
+	ASSERT_DOUBLE_EQ(ValueAsNumber("answer"), 3.0);
+}
+
+TEST_F(ASTInterpret, StringToBoolTrue)
+{
+	Run("var answer = 'John';"
+		"var number = -1;"
+		"if (answer) { number = 1 } else { number = 0 }"
+	);
+
+	ASSERT_TRUE(HasVariable("number"));
+	ASSERT_DOUBLE_EQ(ValueAsNumber("number"), 1.0);
+}
+
+TEST_F(ASTInterpret, StringToBoolFalse)
+{
+	Run("var answer = '';"
+		"var number = -1;"
+		"if (answer) { number = 1 } else { number = 0 }"
+	);
+
+	ASSERT_TRUE(HasVariable("number"));
+	ASSERT_DOUBLE_EQ(ValueAsNumber("number"), 0.0);
+}
+
+TEST_F(ASTInterpret, While)
+{
+	Run("var i = 1;"
+		"var s = 1;"
+		"while (i < 10) {"
+		"	s = s * i;"
+		"	i = i + 1;"
+		"}"
+	);
+	ASSERT_TRUE(HasVariable("i"));
+	ASSERT_DOUBLE_EQ(ValueAsNumber("i"), 10.0);
+
+	ASSERT_TRUE(HasVariable("s"));
+	ASSERT_DOUBLE_EQ(ValueAsNumber("s"), 362880.0);
+}

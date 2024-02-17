@@ -25,7 +25,7 @@ using IPLSharedPtr = std::shared_ptr<T>;
 template <typename T, class... Args>
 inline IPLSharedPtr<T> IPLMakeSharePtr(Args&&... args) {
 	return std::make_shared<T, Args...>(args...);
-};
+}
 
 template< typename T>
 using IPLEnableShared = std::enable_shared_from_this<T>;

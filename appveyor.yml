@@ -1,7 +1,7 @@
 version: '{build}'
 
 image:
-  - Visual Studio 2019
+  - Visual Studio 2022
   - Ubuntu
 
 environment:
@@ -14,43 +14,22 @@ configuration:
   - Release
 
 platform:
-  - Win32
   - x64
 
-build:
-  project: JSImpl/solution/JSImpl.sln
-  verbosity: minimal
-  parallel: true
+before_build:
+  - appveyor AddMessage "Generating project files"
+  - cmake -B out
 
-for:
--
-  matrix:
-    only:
-      - image: Ubuntu
-  build_script:
-    - make -C $APPVEYOR_BUILD_FOLDER/JSImpl/solution -j config=`echo ${CONFIGURATION} | sed -e 'y/DR/dr/'``echo ${PLATFORM} | sed -e 's/x64/64/'`
-  test_script:
-    - '$APPVEYOR_BUILD_FOLDER/JSImpl/build/bin/$CONFIGURATION/Test'
-  after_test:
-    - curl -F "file=@$APPVEYOR_BUILD_FOLDER/test_detail.xml" "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
-
-matrix:
-    exclude:
-      - image: Ubuntu
-        platform: Win32
-
-
-before_test:
-  - appveyor AddMessage "Running Tests"
-  - appveyor SetVariable -Name "GTEST_OUTPUT" -Value "xml"
-  - echo Running tests for %APPVEYOR_JOB_ID%
-  - sh: echo Running tests for $APPVEYOR_JOB_ID
+build_script:
+  - ps: cmake --build out --config $Env:CONFIGURATION
 
 test_script:
-  - '%APPVEYOR_BUILD_FOLDER%/JSImpl/build/bin/%CONFIGURATION%/Test.exe'
+  - ps: ctest --test-dir out -C $Env:CONFIGURATION --output-on-failure --output-junit test_results.xml
 
 after_test:
-  - curl -F "file=@%APPVEYOR_BUILD_FOLDER%/test_detail.xml" https://ci.appveyor.com/api/testresults/junit/%APPVEYOR_JOB_ID%
+  - ps: echo "$Env:APPVEYOR_JOB_ID in $pwd"
+  - ps: $wc = New-Object 'System.Net.WebClient'
+  - ps: $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($Env:APPVEYOR_JOB_ID)", (Resolve-Path .\out\test_results.xml))
 
 clone_depth: 1
 
