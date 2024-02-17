@@ -28,7 +28,8 @@ test_script:
 
 after_test:
   - ps: echo "$Env:APPVEYOR_JOB_ID in $pwd"
-  - ps: curl -F "file=@out/test_detail.xml" "https://ci.appveyor.com/api/testresults/junit/$Env:APPVEYOR_JOB_ID"
+  - ps: $wc = New-Object 'System.Net.WebClient'
+  - ps: $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($Env:APPVEYOR_JOB_ID)", (Resolve-Path .\out\test_results.xml))
 
 clone_depth: 1
 
