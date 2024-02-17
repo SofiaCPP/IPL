@@ -7,7 +7,8 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  smoke:
+    name: Build and test ${{ matrix.c_compiler }} ${{ matrix.build_type }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -22,7 +23,7 @@ jobs:
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
         os: [ubuntu-latest, windows-latest]
-        build_type: [Debug, RelWithDebInfo]
+        build_type: [Debug, Release]
         # Add clang once it is recent enough to work
         c_compiler: [gcc, cl]
         include:
@@ -62,6 +63,29 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: ctest --test-dir ${{ steps.strings.outputs.build-output-dir }} --build-config ${{ matrix.build_type }} --output-junit test_results.xml
+
+    - name: Upload Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Results_${{ matrix.c_compiler }}_${{ matrix.build_type }}_${{ matrix.os }}
+        path: ${{ steps.strings.outputs.build-output-dir}}/test_results.xml
+  publish-results:
+    name: "Publish Test Results"
+    needs: smoke
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write # or use comment_mode: off
+    if: always()
+    steps:
+      - name: Download Results
+        uses: actions/download-artifact@v4
+        with:
+          path: results
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: "results/**/*.xml"
 
