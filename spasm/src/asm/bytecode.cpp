@@ -36,7 +36,7 @@ int64_t to_bits(double d)
     DoubleToBits v;
     v.as_double = d;
     return v.as_bits;
-};
+}
 
 void Bytecode_File::push_integer(int64_t number, int size)
 {
