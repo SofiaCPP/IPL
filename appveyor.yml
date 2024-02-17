@@ -14,7 +14,6 @@ configuration:
   - Release
 
 platform:
-  - Win32
   - x64
 
 build:
@@ -33,12 +32,6 @@ for:
     - '$APPVEYOR_BUILD_FOLDER/JSImpl/build/bin/$CONFIGURATION/Test'
   after_test:
     - curl -F "file=@$APPVEYOR_BUILD_FOLDER/test_detail.xml" "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
-
-matrix:
-    exclude:
-      - image: Ubuntu
-        platform: Win32
-
 
 before_test:
   - appveyor AddMessage "Running Tests"
