@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "precompiled.h"
 
 #include <src/CommonTypes.h>
 #include <src/Lexer.h>

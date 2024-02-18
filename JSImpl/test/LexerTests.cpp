@@ -1,7 +1,6 @@
+#include "precompiled.h"
 #include <src/Lexer.h>
 #include <src/CommonTypes.h>
-
-#include <gtest/gtest.h>
 
 TEST(Lexer, Less)
 {

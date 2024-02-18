@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "precompiled.h"
 
 #include <spasm.hpp>
 #include <assembler.hpp>
