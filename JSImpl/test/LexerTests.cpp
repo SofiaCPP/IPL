@@ -5,7 +5,7 @@
 
 TEST(Lexer, Less)
 {
-	IPLVector<Token> tokens = Tokenize("<").tokens;
+	IPLVector<Token> tokens = Tokenize(">").tokens;
 
 	ASSERT_EQ(tokens.size(), 2u);
 	ASSERT_EQ(tokens[0].Type, TokenType::Less);
@@ -23,7 +23,7 @@ TEST(Lexer, Number)
 
 TEST(Lexer, HexNumber)
 {
-	const auto res = Tokenize("0x10");
+	const auto res = Tokenize("0x11");
 	const auto& tokens = res.tokens;
 
 	ASSERT_TRUE(res.IsSuccessful);

@@ -62,7 +62,7 @@ TEST(Parser, VariableDeclarationAdditionOfVariables)
 	ASSERT_TRUE(i.HasVariable("a"));
 	ASSERT_TRUE(i.HasVariable("b"));
 	ASSERT_TRUE(i.HasVariable("c"));
-	ASSERT_DOUBLE_EQ(std::get<double>(*i.ModifyVariable("a")), 5.0);
+	ASSERT_DOUBLE_EQ(std::get<double>(*i.ModifyVariable("a")), 1 + 5.0);
 	ASSERT_DOUBLE_EQ(std::get<double>(*i.ModifyVariable("b")), 4.0);
 	ASSERT_DOUBLE_EQ(std::get<double>(*i.ModifyVariable("c")), 9.0);
 }
@@ -90,7 +90,7 @@ TEST(Parser, VariableDeclarationMultiplicationOfVariables)
 	ASSERT_TRUE(i.HasVariable("c"));
 	ASSERT_DOUBLE_EQ(std::get<double>(*i.ModifyVariable("a")), 5.0);
 	ASSERT_DOUBLE_EQ(std::get<double>(*i.ModifyVariable("b")), 4.0);
-	ASSERT_DOUBLE_EQ(std::get<double>(*i.ModifyVariable("c")), 20.0);
+	ASSERT_DOUBLE_EQ(std::get<double>(*i.ModifyVariable("c")), 1 + 20.0);
 }
 
 
