@@ -1,0 +1,1 @@
+cat example.js | ./parser > js2html.html
