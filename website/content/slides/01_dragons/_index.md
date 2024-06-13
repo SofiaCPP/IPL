@@ -322,7 +322,7 @@ WebAssembly is actually an IR.
 - AOT - less overhead, faster startup, generally better performance
 - JIT - better chance for optimizations, since some of the program arguments
   will be constants once the program has started, some of the virtual calls can
-  be devirtuallized at runtime
+  be devirtualized at runtime
 
 ---
 ## Transpiler
@@ -330,7 +330,7 @@ WebAssembly is actually an IR.
 > Takes program written in one language and translates that to another language.
 
 - cfront
-- CoffeScript, TypeScript
+- CoffeeScript, TypeScript
 - nim
 
 ---
@@ -363,7 +363,7 @@ collection and most of the standard library of the language.
     - code generation is a bit harder, but the machine is more efficient
 
 ---
-### RPN as an interperter
+### RPN as an interpreter
 
 Calculating an expression using postfix notation is actually an interpreter for
 expressions.
@@ -389,7 +389,7 @@ expressions.
 ### Crash course in JSImpl
 
 - repository organization
-- continous integration
+- continuous integration
 - pull requests
 
 ---
