@@ -1,0 +1,28 @@
+<html><pre><p style="display:inline; color:brown">public</p> <p style="display:inline; color:brown">class</p> <p style="display:inline; color:red">Prime</p> <p style="display:inline; color:blue">{</p>
+	<p style="display:inline; color:brown">public</p> <p style="display:inline; color:brown">static</p> <p style="display:inline; color:brown">void</p> <p style="display:inline; color:red">main</p><p style="display:inline; color:blue">(</p><p style="display:inline; color:brown">String</p><p style="display:inline; color:blue">[</p><p style="display:inline; color:blue">]</p> 
+<p style="display:inline; color:red">args</p><p style="display:inline; color:blue">)</p> <p style="display:inline; color:blue">{</p>
+		<p style="display:inline; color:brown">int</p> <p style="display:inline; color:red">low</p> <p style="display:inline; color:blue">=</p> 20.000000<p style="display:inline; color:blue">,</p> <p style="display:inline; color:red">high</p> <p style="display:inline; color:blue">=</p> 50.000000<p style="display:inline; color:blue">;</p>
+		<p style="display:inline; color:brown">while</p> <p style="display:inline; color:blue">(</p><p style="display:inline; color:red">low</p> <p style="display:inline; color:blue"><</p> <p style="display:inline; color:red">high</p><p style="display:inline; color:blue">)</p> <p style="display:inline; color:blue">{</p>
+			<p style="display:inline; color:brown">boolean</p> <p style="display:inline; color:red">flag</p> <p style="display:inline; color:blue">=</p> <p style="display:inline; color:brown">false</p><p style="display:inline; color:blue">;</p>
+			<p style="display:inline; color:brown">for</p> <p style="display:inline; color:blue">(</p><p style="display:inline; color:brown">int</p> <p style="display:inline; color:red">i</p> <p style="display:inline; color:blue">=</p> 2.000000<p style="display:inline; color:blue">;</p> <p style="display:inline; color:red">i</p> <p style="display:inline; color:blue"><=</p><p style="display:inline; color:red">low</p> <p style="display:inline; color:blue">/</p> 2.000000<p style="display:inline; color:blue">;</p> <p style="display:inline; color:blue">++</p><p style="display:inline; color:red">i</p><p style="display:inline; color:blue">)</p> <p style="display:inline; color:blue">{</p>
+				
+<p style="display:inline; color:green">// condition for nonprime number</p>
+				<p style="display:inline; color:brown">if</p> <p style="display:inline; color:blue">(</p><p style="display:inline; color:red">low</p> <p style="display:inline; color:blue">%</p> <p style="display:inline; color:red">i</p> <p style="display:inline; color:blue">==</p> 0.000000<p style="display:inline; color:blue">)</p> <p style="display:inline; color:blue">{</p>
+					<p style="display:inline; color:red">flag</p> <p style="display:inline; color:blue">=</p> <p style="display:inline; color:brown">true</p><p style="display:inline; color:blue">;</p>
+					<p style="display:inline; color:brown">break</p><p style="display:inline; color:blue">;</p>
+				<p style="display:inline; color:blue">}</p>
+
+			<p style="display:inline; color:blue">}</p>
+
+			<p style="display:inline; color:brown">if</p> <p style="display:inline; color:blue">(</p><p style="display:inline; color:blue">!</p><p style="display:inline; color:red">flag</p> <p style="display:inline; color:blue">&&</p> <p style="display:inline; color:red">low</p> <p style="display:inline; color:blue">!=</p> 0.000000<p style="display:inline; color:blue">&&</p> <p style="display:inline; color:red">low</p> <p style="display:inline; color:blue">!=</p> 1.000000<p style="display:inline; color:blue">)</p> <p style="display:inline; color:blue">{</p>
+				<p style="display:inline; color:red">System</p><p style="display:inline; color:blue">.</p><p style="display:inline; color:red">out</p><p style="display:inline; color:blue">.</p><p style="display:inline; color:red">print</p><p style="display:inline; color:blue">(</p><p style="display:inline; color:red">low</p> <p style="display:inline; color:blue">+</p> <p style="display:inline; color:purple">" "</p><p style="display:inline; color:blue">)</p><p style="display:inline; color:blue">;</p>
+			<p style="display:inline; color:blue">}</p>
+
+			<p style="display:inline; color:blue">++</p><p style="display:inline; color:red">low</p><p style="display:inline; color:blue">;</p>
+		<p style="display:inline; color:blue">}</p>
+
+	<p style="display:inline; color:blue">}</p>
+
+<p style="display:inline; color:blue">}</p>
+
+</pre></html>
