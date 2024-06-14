@@ -18,7 +18,7 @@ outputs: ["Reveal"]
 ---
 ## Theory reminders
 
-1. [Theory](https://www.slideshare.net/eelcovisser/garbage-collection-69688448)
+1. [Theory](https://github.com/TUDelft-IN4303-2016/lectures/raw/master/11-garbage-collection/Garbage%20Collection.pdf)
 0. [Barriers](https://www.cs.kent.ac.uk/pubs/2010/3011/content.pdf)
 0. [Lua GC](http://www.inf.puc-rio.br/~roberto/talks/gc-lua.pdf)
 0. [V8 GC](http://jayconrod.com/posts/55/a-tour-of-v8-garbage-collection)
