@@ -1,0 +1,51 @@
+body {
+    font-family: monospace;
+    background-color: rgb(36, 42, 45);
+    color:white
+}
+
+span {
+    white-space: pre-wrap;
+}
+
+.number {
+    color:lawngreen
+}
+
+.identifier {
+    color:rgb(243, 255, 158)
+}
+
+.function_or_table {
+    color:rgb(235, 152, 8)
+}
+
+.reserved_keyword {
+    color:rgba(11, 144, 171, 0.962)
+}
+
+.operator {
+    color: rgb(200, 75, 40);
+}
+
+.complimentary_symbol {
+    color:rgb(226, 168, 147)
+}
+
+.boolean {
+    color:rgb(46, 113, 35)
+}
+
+.bracket {
+    color:rgb(106, 138, 50)
+}
+
+.string {
+    color:rgb(128, 126, 63)
+}
+
+.comment {
+    color:rgb(209, 195, 1)
+}
+
+
