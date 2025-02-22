@@ -3,17 +3,19 @@
 
 #include "program.h"
 
-void run(uint8_t* code, int limit, int& pc, int& ops, int* counts);
-void add(uint8_t* code, int limit, int& pc, int& ops, int* counts);
-void sub(uint8_t* code, int limit, int& pc, int& ops, int* counts);
-void mul(uint8_t* code, int limit, int& pc, int& ops, int* counts);
-void div(uint8_t* code, int limit, int& pc, int& ops, int* counts);
-void print(uint8_t* code, int limit, int& pc, int& ops, int* counts);
-void halt(uint8_t* code, int limit, int& pc, int& ops, int* counts);
-void restart(uint8_t* code, int limit, int& pc, int& ops, int* counts);
+#define CC __attribute__((preserve_none))
+
+CC void run(uint8_t* code, int limit, int& pc, int& ops, int* counts);
+CC void add(uint8_t* code, int limit, int& pc, int& ops, int* counts);
+CC void sub(uint8_t* code, int limit, int& pc, int& ops, int* counts);
+CC void mul(uint8_t* code, int limit, int& pc, int& ops, int* counts);
+CC void div(uint8_t* code, int limit, int& pc, int& ops, int* counts);
+CC void print(uint8_t* code, int limit, int& pc, int& ops, int* counts);
+CC void halt(uint8_t* code, int limit, int& pc, int& ops, int* counts);
+CC void restart(uint8_t* code, int limit, int& pc, int& ops, int* counts);
 
 
-typedef void (*Instruction)(uint8_t* code, int limit, int& pc, int& ops, int* counts);
+typedef CC void (*Instruction)(uint8_t* code, int limit, int& pc, int& ops, int* counts);
 
 Instruction table[7] = {
     add,
@@ -25,53 +27,53 @@ Instruction table[7] = {
     restart,
 };
 
-void run(uint8_t* code, int limit, int& pc, int& ops, int* counts)
+CC void run(uint8_t* code, int limit, int& pc, int& ops, int* counts)
 {
     [[clang::musttail]] return table[code[pc]](code, limit, pc, ops, counts);
 }
 
-void add(uint8_t* code, int limit, int& pc, int& ops, int* counts)
+CC void add(uint8_t* code, int limit, int& pc, int& ops, int* counts)
 {
     ++counts[0];
     if (++ops == limit) return;
     [[clang::musttail]] return table[code[++pc]](code, limit, pc, ops, counts);
 }
 
-void sub(uint8_t* code, int limit, int& pc, int& ops, int* counts)
+CC void sub(uint8_t* code, int limit, int& pc, int& ops, int* counts)
 {
     ++counts[1];
     if (++ops == limit) return;
     [[clang::musttail]] return table[code[++pc]](code, limit, pc, ops, counts);
 }
 
-void mul(uint8_t* code, int limit, int& pc, int& ops, int* counts)
+CC void mul(uint8_t* code, int limit, int& pc, int& ops, int* counts)
 {
     ++counts[2];
     if (++ops == limit) return;
     [[clang::musttail]] return table[code[++pc]](code, limit, pc, ops, counts);
 }
 
-void div(uint8_t* code, int limit, int& pc, int& ops, int* counts)
+CC void div(uint8_t* code, int limit, int& pc, int& ops, int* counts)
 {
     ++counts[3];
     if (++ops == limit) return;
     [[clang::musttail]] return table[code[++pc]](code, limit, pc, ops, counts);
 }
 
-void print(uint8_t* code, int limit, int& pc, int& ops, int* counts)
+CC void print(uint8_t* code, int limit, int& pc, int& ops, int* counts)
 {
     ++counts[4];
     if (++ops == limit) return;
     [[clang::musttail]] return table[code[++pc]](code, limit, pc, ops, counts);
 }
 
-void halt(uint8_t* code, int limit, int& pc, int& ops, int* counts)
+CC void halt(uint8_t* code, int limit, int& pc, int& ops, int* counts)
 {
     ++counts[5];
     if (++ops == limit) return;
 }
 
-void restart(uint8_t* code, int limit, int& pc, int& ops, int* counts)
+CC void restart(uint8_t* code, int limit, int& pc, int& ops, int* counts)
 {
     ++counts[6];
     if (++ops == limit) return;

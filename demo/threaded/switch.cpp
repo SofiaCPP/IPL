@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cstdint>
 
+#include "program.h"
+
 void run_switch(uint8_t* code, int limit)
 {
     int counts[] = { 0, 0, 0, 0, 0, 0, 0 };
@@ -61,6 +63,7 @@ void run_switch(uint8_t* code, int limit)
             }
         }
     }
+#if !defined(NO_PRINT)
     std::printf("add: %d\n", counts[0]);
     std::printf("sub: %d\n", counts[1]);
     std::printf("mul: %d\n", counts[2]);
@@ -68,16 +71,11 @@ void run_switch(uint8_t* code, int limit)
     std::printf("print: %d\n", counts[4]);
     std::printf("halt: %d\n", counts[5]);
     std::printf("restart: %d\n", counts[6]);
+#endif
 }
 
 int main()
 {
-    uint8_t program[] = {
-        0, 0, 0, 0,
-        1, 2, 1, 2,
-        4, 3, 4, 3,
-        6,
-    };
     run_switch(program, 32 * 1000 * 1000);
     return 0;
 }
